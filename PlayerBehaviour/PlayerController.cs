@@ -8,6 +8,7 @@ namespace PlayerBehaviour
     /// <summary>
     /// Используется для управления персонажем.
     /// Задает движение и поворот.
+    /// Используется левый стик.
     /// 
     /// Оптимизировано.
     /// </summary>
@@ -20,17 +21,19 @@ namespace PlayerBehaviour
         private Transform bodyTransform;
         [SerializeField,Tooltip("Камера персонажа")]
         private Camera playerCamera;
-
+                private GameObject playerBody;
         [SerializeField, Tooltip("Скорость движения"), Range(1, 25)]
         private float moveSpeed;
         [SerializeField, Tooltip("Плавность движения"), Range(1, 10)]
         private float rotateSpeed;
+        [SerializeField, Tooltip("Величина задержки движения"), Range(1, 3)]
+        private float iddleSize;
         [SerializeField, Tooltip("Частота обновления"), Range(0.001f, 0.05f)]
         private float updateFrequency;
 
         private float currentMagnitude; // текущее значение магнитуды векторов
         //меньше которого используется сглаженное время
-        private float angle; // угол для поворота
+        private static float angle; // угол для поворота
 
         private Vector3 moveVector3;
         private Vector3 tempVectorTransform;
@@ -75,6 +78,32 @@ namespace PlayerBehaviour
                 moveSpeed = value;
             }
         }
+
+        public Transform BodyTransform
+        {
+            get
+            {
+                return bodyTransform;
+            }
+
+            set
+            {
+                bodyTransform = value;
+            }
+        }
+
+        public static float Angle
+        {
+            get
+            {
+                return angle;
+            }
+
+            set
+            {
+                angle = value;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -86,14 +115,6 @@ namespace PlayerBehaviour
             isUpdating = true;
             playerTransform = GetComponent<Transform>();
             InitialisationOfCoroutines();
-        }
-
-        /// <summary>
-        /// Выполняется только у локального игрока
-        /// </summary>
-        private void FixedUpdate()
-        {
-            // dosomething... maybe
         }
 
         /// <summary>
@@ -141,19 +162,24 @@ namespace PlayerBehaviour
         {
             currentMagnitude = (playerTransform.position - tempVectorTransform).magnitude;
 
-            if (currentMagnitude > 1f)
-                // Если двигаем стик, то плавно разгоняемся
-                // иначе плавно замедляемся
-                if (isUpdating)
-                    playerTransform.position =
-                        Vector3.MoveTowards(playerTransform.position, tempVectorTransform,
-                            magnitudeTemp * Time.deltaTime);
-                else
-                    playerTransform.position = Vector3.Lerp(playerTransform.position, tempVectorTransform,
-                        moveSpeed*Time.deltaTime);
-
-            bodyTransform.rotation = Quaternion.Lerp(bodyTransform.rotation
-                , Quaternion.Euler(0, angle, 0), rotateSpeed * Time.deltaTime);
+            if (!PlayerFight.IsFighting)
+            {
+                if (currentMagnitude > iddleSize)
+                {
+                    // Если двигаем стик, то плавно разгоняемся
+                    // иначе плавно замедляемся
+                    if (isUpdating)
+                        playerTransform.position =
+                            Vector3.MoveTowards(playerTransform.position, tempVectorTransform,
+                                magnitudeTemp * Time.deltaTime);
+                    else
+                        playerTransform.position = Vector3.Lerp(playerTransform.position, tempVectorTransform,
+                            moveSpeed * Time.deltaTime);
+                }
+                
+            }
+            bodyTransform.rotation = Quaternion.Slerp(bodyTransform.rotation
+                    , Quaternion.Euler(0, angle, 0), rotateSpeed * Time.deltaTime);
         }
 
         /// <summary>
