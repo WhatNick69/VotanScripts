@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 namespace VotanObjectBehaviour
 {
+    /// <summary>
+    /// Абстрактный метод, позволяющий 
+    /// </summary>
     public abstract class AbstractObjectConditions
         : MonoBehaviour
     {

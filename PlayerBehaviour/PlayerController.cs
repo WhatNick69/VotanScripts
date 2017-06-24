@@ -39,6 +39,7 @@ namespace PlayerBehaviour
         private Vector3 tempVectorTransform;
         private bool isUpdating; // надо ли обновлять позицию?
         private float magnitudeTemp;
+        private bool isMovingStraight;
 
         private bool continueCalculateInCoroutine;
         #endregion
@@ -125,6 +126,13 @@ namespace PlayerBehaviour
             Timing.RunCoroutine(CoroutineForFixedUpdatePositionAndRotation());
         }
 
+        public void StraightMoving(Vector3 vectorOfMoving)
+        {
+            playerTransform.position = Vector3.Lerp(playerTransform.position,
+                            tempVectorTransform, moveSpeed * Time.deltaTime);
+        }
+
+
         /// <summary>
         /// Корутин на обновление позиции и поворота
         /// </summary>
@@ -173,13 +181,18 @@ namespace PlayerBehaviour
                             Vector3.MoveTowards(playerTransform.position, tempVectorTransform,
                                 magnitudeTemp * Time.deltaTime);
                     else
-                        playerTransform.position = Vector3.Lerp(playerTransform.position, tempVectorTransform,
-                            moveSpeed * Time.deltaTime);
+                        playerTransform.position = Vector3.Lerp(playerTransform.position, 
+                            tempVectorTransform,moveSpeed * Time.deltaTime);
                 }
-                
             }
-            bodyTransform.rotation = Quaternion.Slerp(bodyTransform.rotation
-                    , Quaternion.Euler(0, angle, 0), rotateSpeed * Time.deltaTime);
+            else
+            {
+
+            }
+
+            if (!PlayerFight.IsRotating)
+                bodyTransform.localRotation = Quaternion.Slerp(bodyTransform.rotation
+                        , Quaternion.Euler(0, angle, 0), rotateSpeed * Time.deltaTime);
         }
 
         /// <summary>
@@ -193,7 +206,8 @@ namespace PlayerBehaviour
             if (moveVector3.magnitude >= 0.1f)
             {
                 isUpdating = true;
-                magnitudeTemp = moveVector3.magnitude*moveSpeed;    
+                magnitudeTemp = moveVector3.magnitude*moveSpeed; 
+                //magnitudeTemp = moveSpeed;
                 tempVectorTransform = (moveVector3 + playerTransform.position);
             }
             else
@@ -207,8 +221,10 @@ namespace PlayerBehaviour
         /// </summary>
         private void RotatePlayeGetNewRotation()
         {
-            if (isUpdating)
+            if (isUpdating && !PlayerFight.IsRotating)
                 angle = Mathf.Atan2(moveVector3.x, moveVector3.z) * Mathf.Rad2Deg;
         }                 
+
+
     }
 }

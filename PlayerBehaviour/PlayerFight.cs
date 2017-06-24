@@ -1,6 +1,5 @@
 ﻿using MovementEffects;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
@@ -16,7 +15,7 @@ namespace PlayerBehaviour
         #region Переменные
         [SerializeField, Tooltip("Частота обновления"), Range(0.01f, 0.1f)]
         private float updateFrequency;
-        [SerializeField, Tooltip("Скорость вращения оружием")]
+        [SerializeField, Tooltip("Скорость вращения оружием"),Range(40,75)]
         private float gunSpeed;
         [SerializeField, Tooltip("Модель игрока")]
         private Transform playerBody;
@@ -25,7 +24,10 @@ namespace PlayerBehaviour
         private Vector2 fightVector;
         private float boostValue = 1;
         private Vector3 rotateBodyOfPlayerVector;
+        private float sumAngle;
+        private static bool isRotating;
         private static bool isFighting;
+        private bool isControlRightStick;
 
         public static bool IsFighting
         {
@@ -37,6 +39,32 @@ namespace PlayerBehaviour
             set
             {
                 isFighting = value;
+            }
+        }
+
+        public float GunSpeed
+        {
+            get
+            {
+                return gunSpeed;
+            }
+
+            set
+            {
+                gunSpeed = value;
+            }
+        }
+
+        public static bool IsRotating
+        {
+            get
+            {
+                return isRotating;
+            }
+
+            set
+            {
+                isRotating = value;
             }
         }
         #endregion
@@ -92,32 +120,31 @@ namespace PlayerBehaviour
               , CrossPlatformInputManager.GetAxis("FightState")) * boostValue;
         }
 
-        private void Update()
-        {
-           
-        }
-
         /// <summary>
         /// Совершает действие, относительно положению правого стика.
         /// Вращение влево, вправо, рывок или защита.
         /// </summary>
         private void CheckFightState()
         {
-            if (fightVector.magnitude != 0)
+            if (fightVector.magnitude != 0
+                && isControlRightStick)
             {
-                isFighting = true;
+                Debug.Log("+");
                 // Вращение влево, либо вправо
                 if (Math.Abs(fightVector.x) > Math.Abs(fightVector.y))
                 {
+                    Debug.Log("--");
+                    isRotating = true;
                     PlayerController.Angle += gunSpeed * fightVector.x;
                 }
                 // Рывок или защита
                 else
                 {
+                    isFighting = true;
                     // Рывок
                     if (fightVector.y > 0)
                     {
-
+                        //StraightAttack();
                     }
                     // Защита
                     else
@@ -129,8 +156,11 @@ namespace PlayerBehaviour
             else
             {
                 //PlayerController.Angle = playerBody.localEulerAngles.y;
+                isRotating = false;
                 isFighting = false;
             }
         }
+
+
     }
 }
