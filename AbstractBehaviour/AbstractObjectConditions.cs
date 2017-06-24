@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace VotanObjectBehaviour
+namespace AbstractBehaviour
 {
     /// <summary>
     /// Абстрактный метод, позволяющий 

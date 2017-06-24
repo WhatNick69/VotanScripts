@@ -1,4 +1,5 @@
-﻿using MovementEffects;
+﻿using AbstractBehaviour;
+using MovementEffects;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,18 +17,21 @@ namespace PlayerBehaviour
         [SerializeField, Tooltip("Частота обновления"), Range(0.01f, 0.1f)]
         private float updateFrequency;
         [SerializeField, Tooltip("Скорость вращения оружием"),Range(40,75)]
-        private float gunSpeed;
+        private float weaponSpeed;
         [SerializeField, Tooltip("Модель игрока")]
         private Transform playerBody;
-        private Transform player;
+        [SerializeField, Tooltip("Контроллер игрока")]
+        private PlayerController playerController;
 
-        private Vector2 fightVector;
+        private Vector3 fightVector;
         private float boostValue = 1;
         private Vector3 rotateBodyOfPlayerVector;
         private float sumAngle;
         private static bool isRotating;
         private static bool isFighting;
         private bool isControlRightStick;
+        private float weaponDamage;
+        private DamageType attackType;
 
         public static bool IsFighting
         {
@@ -39,19 +43,6 @@ namespace PlayerBehaviour
             set
             {
                 isFighting = value;
-            }
-        }
-
-        public float GunSpeed
-        {
-            get
-            {
-                return gunSpeed;
-            }
-
-            set
-            {
-                gunSpeed = value;
             }
         }
 
@@ -74,18 +65,7 @@ namespace PlayerBehaviour
         /// </summary>
         void Start()
         {
-            player = GetComponent<Transform>();
             InitialisationCoroutineForFightControl();
-        }
-
-        /// <summary>
-        /// Этот метод позволяет установить скорость вращения оружия.
-        /// Саня - юзай его, когда потребуется.
-        /// </summary>
-        /// <param name="gunSpeed"></param>
-        public void SetGunSpeed(float gunSpeed)
-        {
-            this.gunSpeed = gunSpeed;
         }
 
         /// <summary>
@@ -101,7 +81,7 @@ namespace PlayerBehaviour
         /// стика с заданной частотой
         /// </summary>
         /// <returns></returns>
-        IEnumerator<float> CoroutineFightCheckTaps()
+        private IEnumerator<float> CoroutineFightCheckTaps()
         {
             while (true)
             {
@@ -116,8 +96,8 @@ namespace PlayerBehaviour
         /// </summary>
         private void GetStickVector()
         {
-            fightVector = new Vector2(CrossPlatformInputManager.GetAxis("AttackSide")
-              , CrossPlatformInputManager.GetAxis("FightState")) * boostValue;
+            fightVector = new Vector3(CrossPlatformInputManager.GetAxis("AttackSide")
+              ,0, CrossPlatformInputManager.GetAxis("FightState")) * boostValue;
         }
 
         /// <summary>
@@ -126,25 +106,26 @@ namespace PlayerBehaviour
         /// </summary>
         private void CheckFightState()
         {
-            if (fightVector.magnitude != 0
-                && isControlRightStick)
+            if (fightVector.magnitude != 0)
             {
-                Debug.Log("+");
                 // Вращение влево, либо вправо
-                if (Math.Abs(fightVector.x) > Math.Abs(fightVector.y))
+                if (Math.Abs(fightVector.x) > Math.Abs(fightVector.z))
                 {
-                    Debug.Log("--");
                     isRotating = true;
-                    PlayerController.Angle += gunSpeed * fightVector.x;
+                    PlayerController.Angle += weaponSpeed * fightVector.x;
                 }
                 // Рывок или защита
                 else
                 {
-                    isFighting = true;
                     // Рывок
-                    if (fightVector.y > 0)
+                    if (fightVector.z > 0)
                     {
-                        //StraightAttack();
+                        Debug.Log("Перед проверкой");
+                        if (!isFighting)
+                        {
+                            Debug.Log("ЗАпускаем корутин");
+                            Timing.RunCoroutine(CoroutineForStraightAttack());
+                        }
                     }
                     // Защита
                     else
@@ -155,12 +136,33 @@ namespace PlayerBehaviour
             }
             else
             {
-                //PlayerController.Angle = playerBody.localEulerAngles.y;
                 isRotating = false;
                 isFighting = false;
             }
         }
 
+        private IEnumerator<float> CoroutineForStraightAttack()
+        {
+            isFighting = true;
+            playerController.StraightMoving(fightVector*10);
+            yield return Timing.WaitForSeconds(2);
+            isFighting = false;
+        }
 
+        /// <summary>
+        /// Принять параметры оружия
+        /// 
+        /// Саня, этот метод для тебя 
+        /// кек
+        /// </summary>
+        /// <param name="weaponDamage"></param>
+        /// <param name="attackType"></param>
+        /// <param name="weaponSpeed"></param>
+        public void GetWeaponParameters(float weaponDamage,DamageType attackType,float weaponSpeed)
+        {
+            this.weaponDamage = weaponDamage;
+            this.attackType = attackType;
+            this.weaponSpeed = weaponSpeed;
+        }
     }
 }

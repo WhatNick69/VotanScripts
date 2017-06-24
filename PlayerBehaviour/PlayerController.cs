@@ -128,10 +128,9 @@ namespace PlayerBehaviour
 
         public void StraightMoving(Vector3 vectorOfMoving)
         {
-            playerTransform.position = Vector3.Lerp(playerTransform.position,
-                            tempVectorTransform, moveSpeed * Time.deltaTime);
+            Debug.Log("Рывок");
+            tempVectorTransform = vectorOfMoving + playerTransform.position;
         }
-
 
         /// <summary>
         /// Корутин на обновление позиции и поворота
@@ -141,7 +140,7 @@ namespace PlayerBehaviour
         {
             while (true)
             {
-                if (continueCalculateInCoroutine)
+                if (!PlayerFight.IsFighting)
                 {
                     MovePlayerGetNetPosition();
                     RotatePlayeGetNewRotation();
@@ -187,7 +186,8 @@ namespace PlayerBehaviour
             }
             else
             {
-
+                playerTransform.position = Vector3.Lerp(playerTransform.position,
+                            tempVectorTransform, moveSpeed * Time.deltaTime);
             }
 
             if (!PlayerFight.IsRotating)
@@ -224,7 +224,5 @@ namespace PlayerBehaviour
             if (isUpdating && !PlayerFight.IsRotating)
                 angle = Mathf.Atan2(moveVector3.x, moveVector3.z) * Mathf.Rad2Deg;
         }                 
-
-
     }
 }

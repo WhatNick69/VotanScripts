@@ -1,8 +1,8 @@
-﻿using MovementEffects;
+﻿using AbstractBehaviour;
+using MovementEffects;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using VotanObjectBehaviour;
 
 namespace PlayerBehaviour
 {
@@ -10,7 +10,7 @@ namespace PlayerBehaviour
     /// Описывает рингбар здоровья, ману, броню, ярость
     /// </summary>
     public class PlayerConditions
-    : AbstractObjectConditions
+        : AbstractObjectConditions
     {
         #region Переменные
         [SerializeField, Tooltip("Мана персонажа")]

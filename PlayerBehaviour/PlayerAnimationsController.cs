@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using VotanObjectBehaviour;
+﻿using AbstractBehaviour;
 
 namespace PlayerBehaviour
 {
@@ -18,6 +17,10 @@ namespace PlayerBehaviour
             PlayAnimation(9);
         }
 
+        /// <summary>
+        /// Проиграть анимацию
+        /// </summary>
+        /// <param name="animationState"></param>
         public void PlayAnimation(int animationState)
         {
             int beginAnim = (int)animationsStateList[animationState].x;

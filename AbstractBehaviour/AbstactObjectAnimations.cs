@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace VotanObjectBehaviour
+namespace AbstractBehaviour
 {
     /// <summary>
     /// Абстрактным образом описывает анимацию для любого игрового объекта
@@ -9,13 +9,18 @@ namespace VotanObjectBehaviour
     public abstract class AbstactObjectAnimations 
         : MonoBehaviour
     {
+        #region Переменные
         [SerializeField, Tooltip("Анимация персонажа")]
         protected Animation animationOfPlayer;
         [SerializeField, Tooltip("Лист векторов")]
         protected List<Vector2> animationsStateList = new List<Vector2>();
         protected string animationName;
         protected float frameLenght;
+        #endregion 
 
+        /// <summary>
+        /// Инициализация клипа анимации
+        /// </summary>
         protected void InitialisationAnimationClipName()
         {
             foreach (AnimationState clip in animationOfPlayer)

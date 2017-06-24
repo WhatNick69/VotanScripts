@@ -3,32 +3,45 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyMove 
-    : MonoBehaviour {
-
-    private NavMeshAgent agent;
-    private Transform playerUnitTransform;
-    private bool isAlive;
-    [SerializeField,Tooltip("Частота обновления позиции врага")]
-    private float frequencySearching;
-
-    private void Start()
+namespace EnemyBehaviour
+{
+    /// <summary>
+    /// Движение врага
+    /// </summary>
+    public class EnemyMove
+        : MonoBehaviour
     {
-        agent = GetComponent<NavMeshAgent>();
-        playerUnitTransform = GameObject.FindWithTag("Player").transform;
-        isAlive = true;
-        Timing.RunCoroutine(CoroutineForSearchingByPlayerObject());
-    }
-    
-    IEnumerator<float> CoroutineForSearchingByPlayerObject()
-    {
-        while (isAlive)
+        private NavMeshAgent agent;
+        private Transform playerUnitTransform;
+        private bool isAlive;
+        [SerializeField, Tooltip("Частота обновления позиции врага"),Range(0.1f,3)]
+        private float frequencySearching;
+
+        /// <summary>
+        /// Инициализация
+        /// </summary>
+        private void Start()
         {
-            if (agent != null)
+            agent = GetComponent<NavMeshAgent>();
+            playerUnitTransform = GameObject.FindWithTag("Player").transform;
+            isAlive = true;
+            Timing.RunCoroutine(CoroutineForSearchingByPlayerObject());
+        }
+
+        /// <summary>
+        /// Движение противника. Корутина.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerator<float> CoroutineForSearchingByPlayerObject()
+        {
+            while (isAlive)
             {
-                agent.SetDestination(playerUnitTransform.position);
+                if (agent != null)
+                {
+                    agent.SetDestination(playerUnitTransform.position);
+                }
+                yield return Timing.WaitForSeconds(frequencySearching);
             }
-            yield return Timing.WaitForSeconds(frequencySearching);
         }
     }
 }
