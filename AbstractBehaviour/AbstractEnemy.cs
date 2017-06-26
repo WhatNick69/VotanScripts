@@ -14,7 +14,7 @@ namespace AbstractBehaviour
 		[SerializeField]
 		Transform rightShoulderPoint, leftShoulderPoint, // точки противника
 			facePoint, backPoint;
-
+		public Animator enAnim;
 		[SerializeField,Tooltip("Здоровье")]
         private float health = 1;
 

@@ -13,7 +13,6 @@ namespace AbstractBehaviour
 	public abstract class AbstractAttack
 		: MonoBehaviour
 	{
-		
 		protected List<AbstractEnemy> listEnemy;
 		protected List<AbstractEnemy> attackList;
 		[SerializeField]
@@ -38,6 +37,12 @@ namespace AbstractBehaviour
 		}
 
 
+		
+		/// <summary>
+		/// Возвращает позиции персонажа
+		/// </summary>
+		/// <param name="index"></param>
+		/// <returns></returns>
 		public Transform PlayerPosition(int index)
 		{
 			if (index == 0) return playerRightPoint;

@@ -37,7 +37,7 @@ namespace GameBehaviour
 				listEnemy[k].SetPlayerPoint(1, playerAttack.PlayerPosition(1));
 				listEnemy[k].SetPlayerPoint(2, playerAttack.PlayerPosition(2));
 				listEnemy[k].SetPlayerPoint(3, playerAttack.PlayerPosition(3));
-				
+				listEnemy[k].enAnim = enemy.GetComponent<Animator>();
 				k++;
             }
         }

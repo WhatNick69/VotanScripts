@@ -15,7 +15,7 @@ namespace EnemyBehaviour
     class KnightEnemy
         : AbstractEnemy
     {
-		IEnumerator<float> CoroutineAttack()
+		/*IEnumerator<float> CoroutineAttack()
 		{
 			while (true)
 			{
@@ -26,11 +26,22 @@ namespace EnemyBehaviour
 				}
 				yield return Timing.WaitForSeconds(0.07f);
 			}
-		}
+		}*/
 		private void Start()
 		{
-			StartCoroutine(CoroutineAttack());
+			//Timing.RunCoroutine(CoroutineAttack());
 		}
 
+		private void FixedUpdate()
+		{
+			if (enAnim.GetBool("isEnemyAttack"))
+			{
+				if (EnemyAttack())
+				{
+
+					LibraryPlayerPosition.playerConditions.GetDamage(1);
+				}
+			}
+		}
 	}
 }
