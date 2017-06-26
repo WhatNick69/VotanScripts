@@ -12,7 +12,8 @@ namespace GameBehaviour
     public class EnemyCreator 
         : MonoBehaviour
     {
-        public GameObject enemy;
+		[SerializeField]
+		private GameObject enemy;
         private PlayerAttack playerAttack;
         private List<AbstractEnemy> listEnemy;
         private int k = 0;
@@ -30,10 +31,14 @@ namespace GameBehaviour
                 yield return Timing.WaitForSeconds(timeToInstantiate);
 
                 playerAttack.AddEnemyToList(Instantiate(enemy).GetComponent<AbstractEnemy>());
-
                 listEnemy = playerAttack.ReturnList();
                 listEnemy[k].transform.position = new Vector3(Random.Range(-7, 7), 1.5f, Random.Range(-7, 7));
-                k++;
+				listEnemy[k].SetPlayerPoint(0, playerAttack.PlayerPosition(0));
+				listEnemy[k].SetPlayerPoint(1, playerAttack.PlayerPosition(1));
+				listEnemy[k].SetPlayerPoint(2, playerAttack.PlayerPosition(2));
+				listEnemy[k].SetPlayerPoint(3, playerAttack.PlayerPosition(3));
+				
+				k++;
             }
         }
 

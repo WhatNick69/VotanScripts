@@ -1,21 +1,21 @@
 ﻿using MovementEffects;
 using System.Collections.Generic;
 using UnityEngine;
-
+using VotanLibraries;
+using PlayerBehaviour;
 namespace AbstractBehaviour
 {
     /// <summary>
     /// Абстрактный враг
     /// </summary>
     public abstract class AbstractEnemy
-      : MonoBehaviour
+      : AbstractAttack
     {
-        [SerializeField]
-        Transform startGunPoint, finishGunPoint,
-            rightShoulderPoint, leftShoulderPoint,
-            facePoint, backPoint;
+		[SerializeField]
+		Transform rightShoulderPoint, leftShoulderPoint, // точки противника
+			facePoint, backPoint;
 
-        [SerializeField,Tooltip("Здоровье")]
+		[SerializeField,Tooltip("Здоровье")]
         private float health = 1;
 
         public float Health
@@ -39,7 +39,9 @@ namespace AbstractBehaviour
             if (Child == 2) return facePoint.position; //Face
             if (Child == 3) return backPoint.position; //Back
             if (Child == 4) return transform.position; // Позиция врага
-            else return Vector3.zero;
+			if (Child == 5) return playerStartGunPoint.position;
+			if (Child == 6) return playerFinishGunPoint.position;
+			else return Vector3.zero;
         }
 
         /// <summary>
@@ -79,5 +81,6 @@ namespace AbstractBehaviour
             Health -= dmg;
             if (Health <= 0) Die();
         }
-    }
+		
+	}
 }

@@ -9,10 +9,17 @@ namespace PlayerBehaviour
     public class PlayerAttack
         : AbstractAttack
     {
-        /// <summary>
-        /// Инициализация
-        /// </summary>
-        void Start()
+		IWeapon playerKillStik;
+		PlayerWeapon PW;
+		public void GetWeapon(int damage, int damageType, float spinSpeed)
+		{
+			PW = new PlayerWeapon(damage, (DamageType)damageType, spinSpeed);
+			playerKillStik = PW;
+		}
+		/// <summary>
+		/// Инициализация
+		/// </summary>
+		void Start()
         {
             listEnemy = new List<AbstractEnemy>();
             attackList = new List<AbstractEnemy>();
@@ -31,8 +38,8 @@ namespace PlayerBehaviour
                         if (!attackList.Contains(listEnemy[i])) attackList.Add(listEnemy[i]);
                     }
                 }
-            EnemyAttack(1);
-        }
+            EnemyAttack(1, DamageType.Powerful);//EnemyAttack(playerKillStik.Damage);
+		}
     }
 }
 
