@@ -5,29 +5,64 @@ using PlayerBehaviour;
 
 namespace VotanLibraries
 {
-	public class LibraryPlayerPosition : MonoBehaviour
+	public class LibraryPlayerPosition 
+        : MonoBehaviour
 	{
 		[SerializeField]
-		GameObject player;
-		public static PlayerConditions playerConditions;
-		protected static Transform playerPoint, playerRightPoint,
+        private static GameObject player;
+        private static Transform mainCameraPlayerTransform;
+		private static PlayerConditions playerConditions;
+        private static Transform playerPoint, playerRightPoint,
 			playerLeftPoint, playerFacePoint, playerBackPoint; // точки персонажа
+        public static System.Random rnd = new System.Random();
 
-		
+        public static PlayerConditions PlayerConditions
+        {
+            get
+            {
+                return playerConditions;
+            }
 
-		public static Vector3 GetPlayerPoint(int index) // возвращает точки персонажа игрока
+            set
+            {
+                playerConditions = value;
+            }
+        }
+
+        public static Transform MainCameraPlayerTransform
+        {
+            get
+            {
+                return mainCameraPlayerTransform;
+            }
+
+            set
+            {
+                mainCameraPlayerTransform = value;
+            }
+        }
+
+        public static Vector3 GetPlayerPoint(int index) // возвращает точки персонажа игрока
 		{
-			if (index == 0) return playerRightPoint.position;
-			if (index == 1) return playerLeftPoint.position;
-			if (index == 3) return playerFacePoint.position;
-			if (index == 4) return playerBackPoint.position;
+            switch (index)
+            {
+                case 0:
+                    return playerRightPoint.position;
+                case 1:
+                    return playerLeftPoint.position;
+                case 2:
+                    return playerFacePoint.position;
+                case 3:
+                    return playerBackPoint.position;
+            }
 			return Vector3.zero;
 		}
 
 		private void Start()
 		{
 			player = GameObject.FindWithTag("Player");
-			playerRightPoint = player.GetComponent<PlayerAttack>().PlayerPosition(0);
+            mainCameraPlayerTransform = GameObject.FindWithTag("MainCamera").transform;
+            playerRightPoint = player.GetComponent<PlayerAttack>().PlayerPosition(0);
 			playerLeftPoint = player.GetComponent<PlayerAttack>().PlayerPosition(1);
 			playerFacePoint = player.GetComponent<PlayerAttack>().PlayerPosition(2);
 			playerBackPoint = player.GetComponent<PlayerAttack>().PlayerPosition(3);

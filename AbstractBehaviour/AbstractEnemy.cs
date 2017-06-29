@@ -1,86 +1,94 @@
-﻿using MovementEffects;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using VotanLibraries;
-using PlayerBehaviour;
+
 namespace AbstractBehaviour
 {
     /// <summary>
-    /// Абстрактный враг
+    /// Абстрактный класс для реализации любого врага
     /// </summary>
     public abstract class AbstractEnemy
-      : AbstractAttack
+      : MonoBehaviour
     {
 		[SerializeField]
-		Transform rightShoulderPoint, leftShoulderPoint, // точки противника
+		protected Transform rightShoulderPoint, leftShoulderPoint, // точки противника
 			facePoint, backPoint;
-		public Animator enAnim;
-		[SerializeField,Tooltip("Здоровье")]
-        private float health = 1;
+        [SerializeField,Tooltip("Аниматор врага")]
+        public Animator enAnim;
+        // ссылка на компонент, реализующий состояние врага
+        [SerializeField]
+        private AbstractObjectConditions absObjCond;
+        [SerializeField]
+        private AbstractAttack absAttack;
 
-        public float Health
+        public AbstractAttack AbsAttack
         {
             get
             {
-                return health;
+                return absAttack;
             }
 
             set
             {
-                health = value;
+                absAttack = value;
             }
         }
 
-        // Возвращает положение врага или его точек в сцене
-        public Vector3 ReturnPosition(int Child)
+        public AbstractObjectConditions AbsObjCond
         {
-            if (Child == 0) return rightShoulderPoint.position; //Right
-            if (Child == 1) return leftShoulderPoint.position; //Left
-            if (Child == 2) return facePoint.position; //Face
-            if (Child == 3) return backPoint.position; //Back
-            if (Child == 4) return transform.position; // Позиция врага
-			if (Child == 5) return playerStartGunPoint.position;
-			if (Child == 6) return playerFinishGunPoint.position;
-			else return Vector3.zero;
+            get
+            {
+                return absObjCond;
+            }
+
+            set
+            {
+                absObjCond = value;
+            }
         }
 
         /// <summary>
-        /// Умереть
+        /// Возвращает положение врага или его точек в сцене
         /// </summary>
-        public void Die()
-        {
-            Destroy(gameObject, 0.05f);
-            //Timing.RunCoroutine(CoroutineDie());
-        }
-
-        /// <summary>
-        /// Корутин
-        /// </summary>
+        /// <param name="child"></param>
         /// <returns></returns>
-        private IEnumerator<float> CoroutineDie()
+        public Vector3 ReturnPosition(int child)
         {
-            yield return Timing.WaitForSeconds(0.05f);
-
+            switch (child)
+            {
+                case 0:
+                    return rightShoulderPoint.position; //Right
+                case 1:
+                    return leftShoulderPoint.position; //Left
+                case 2:
+                    return facePoint.position; //Face
+                case 3:
+                    return backPoint.position; //Back
+                case 4:
+                    return transform.position; // Позиция врага
+                case 5:
+                    return absAttack.PlayerStartGunPoint.position;
+                case 6:
+                    return absAttack.PlayerFinishGunPoint.position;
+            }  
+			return Vector3.zero;
         }
 
         /// <summary>
         /// Вернуть здоровье
         /// </summary>
         /// <returns></returns>
-        public float ReturnHealth()
+        public virtual float ReturnHealth()
         {
-            return Health;
+            return absObjCond.HealthValue;
         }
 
         /// <summary>
         /// Получить урон
         /// </summary>
         /// <param name="dmg"></param>
-        public void GetDamage(float dmg)
+        public virtual void GetDamage(float dmg)
         {
-            Health -= dmg;
-            if (Health <= 0) Die();
+            absObjCond.HealthValue -= LibraryStaticFunctions.GetPlusMinusDmg(dmg, 0.1f);
         }
-		
 	}
 }

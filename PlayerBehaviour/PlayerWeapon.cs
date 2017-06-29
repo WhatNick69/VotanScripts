@@ -28,7 +28,8 @@ namespace PlayerBehaviour
 		void SetWeapon(int damage);
 	}
 
-	public class PlayerWeapon : MonoBehaviour, IWeapon
+	public class PlayerWeapon 
+        : MonoBehaviour, IWeapon
 	{
 		DamageType attackType;
 		public string TypeName1 { get; set; }

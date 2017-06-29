@@ -20,23 +20,27 @@ namespace GameBehaviour
         [SerializeField,Tooltip("Время, между генерации противника"),Range(0.5f,5)]
         private float timeToInstantiate;
 
+        [SerializeField]
+        private Transform respawnPoint;
+
         /// <summary>
         /// Корутина для создания врагов
         /// </summary>
         /// <returns></returns>
         private IEnumerator<float> CoroutineInstantiate()
         {
-            while (k < 500)
+            while (k < 50)
             {
                 yield return Timing.WaitForSeconds(timeToInstantiate);
 
                 playerAttack.AddEnemyToList(Instantiate(enemy).GetComponent<AbstractEnemy>());
                 listEnemy = playerAttack.ReturnList();
-                listEnemy[k].transform.position = new Vector3(Random.Range(-7, 7), 1.5f, Random.Range(-7, 7));
-				listEnemy[k].SetPlayerPoint(0, playerAttack.PlayerPosition(0));
-				listEnemy[k].SetPlayerPoint(1, playerAttack.PlayerPosition(1));
-				listEnemy[k].SetPlayerPoint(2, playerAttack.PlayerPosition(2));
-				listEnemy[k].SetPlayerPoint(3, playerAttack.PlayerPosition(3));
+                //listEnemy[k].transform.position = new Vector3(Random.Range(-7, 7), 1.5f, Random.Range(-7, 7));
+                listEnemy[k].transform.position = respawnPoint.transform.position;
+                listEnemy[k].AbsAttack.SetPlayerPoint(0, playerAttack.PlayerPosition(0));
+				listEnemy[k].AbsAttack.SetPlayerPoint(1, playerAttack.PlayerPosition(1));
+				listEnemy[k].AbsAttack.SetPlayerPoint(2, playerAttack.PlayerPosition(2));
+				listEnemy[k].AbsAttack.SetPlayerPoint(3, playerAttack.PlayerPosition(3));
 				listEnemy[k].enAnim = enemy.GetComponent<Animator>();
 				k++;
             }

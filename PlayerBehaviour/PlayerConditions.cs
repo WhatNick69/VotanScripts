@@ -3,6 +3,7 @@ using MovementEffects;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using VotanLibraries;
 
 namespace PlayerBehaviour
 {
@@ -80,7 +81,7 @@ namespace PlayerBehaviour
         /// </summary>
         private void Start()
         {
-            isAlive = true;
+            IsAlive = true;
             isRageRegen = true;
             ringRageUIAnimation = ringRageUI.GetComponent<Animation>();
             initialisatedHealthValue = healthValue;
@@ -91,14 +92,6 @@ namespace PlayerBehaviour
             colorChannelGreen = 1;
             StartRingbarAnimation();
             StartRageCoroutineRegen();
-        }
-
-        /// <summary>
-        /// Покадровое обновление
-        /// </summary>
-        private void Update()
-        {
-            //HealthValue -= 0.25f;
         }
 
         /// <summary>
@@ -143,7 +136,7 @@ namespace PlayerBehaviour
                 {
                     yield return Timing.WaitForSeconds(1);
                 }
-                if (!isAlive) isRageRegen = false;              
+                if (!IsAlive) isRageRegen = false;              
             }
         }
 
@@ -153,7 +146,7 @@ namespace PlayerBehaviour
         /// <param name="damageValue"></param>
         public void GetDamage(float damageValue)
         {
-            healthValue -= damageValue;
+            HealthValue -= LibraryStaticFunctions.GetPlusMinusDmg(damageValue, 0.1f);
         }
 
         /// <summary>
@@ -195,6 +188,7 @@ namespace PlayerBehaviour
         {
             base.DieState();
             playerBody.SetActive(false);
+            GetComponent<PlayerController>().IsAliveFromConditions = false;
         }
     }
 }

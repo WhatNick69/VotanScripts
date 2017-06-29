@@ -8,16 +8,18 @@ namespace PlayerBehaviour
     /// Компонент-атака для персонажа
     /// </summary>
     public class PlayerAttack
-        : AbstractAttack
+        : AbstractAttack 
     {
 		IWeapon playerKillStik;
-		PlayerWeapon PW;
+		PlayerWeapon pW;
 		Animator playerAnim;
+
 		public void GetWeapon(int damage, int damageType, float spinSpeed)
 		{
-			PW = new PlayerWeapon(damage, (DamageType)damageType, spinSpeed);
-			playerKillStik = PW;
+			pW = new PlayerWeapon(damage, (DamageType)damageType, spinSpeed);
+			playerKillStik = pW;
 		}
+
 		/// <summary>
 		/// Инициализация
 		/// </summary>
@@ -32,8 +34,8 @@ namespace PlayerBehaviour
         /// </summary>
         private void FixedUpdate()
         {
-			if (playerAnim.GetBool("isAttack"))
-			{
+			//if (playerAnim.GetBool("isAttack"))
+			//{
 				for (int i = 0; i < listEnemy.Count; i++)
 					if (listEnemy[i])
 					{
@@ -43,7 +45,7 @@ namespace PlayerBehaviour
 						}
 					}
 				EnemyAttack(1, DamageType.Powerful);//EnemyAttack(playerKillStik.Damage);
-			}
+			//}
 		}
     }
 }

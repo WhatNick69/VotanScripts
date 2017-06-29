@@ -40,6 +40,7 @@ namespace PlayerBehaviour
         private bool isUpdating; // надо ли обновлять позицию?
         private float magnitudeTemp;
         private bool isMovingStraight;
+        private bool isAliveFromConditions;
 
         private bool continueCalculateInCoroutine;
         #endregion
@@ -105,6 +106,19 @@ namespace PlayerBehaviour
                 angle = value;
             }
         }
+
+        public bool IsAliveFromConditions
+        {
+            get
+            {
+                return isAliveFromConditions;
+            }
+
+            set
+            {
+                isAliveFromConditions = value;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -116,6 +130,7 @@ namespace PlayerBehaviour
             isUpdating = true;
             playerTransform = GetComponent<Transform>();
             InitialisationOfCoroutines();
+            isAliveFromConditions = true;
         }
 
         /// <summary>
@@ -158,7 +173,8 @@ namespace PlayerBehaviour
         /// </summary>
         private void Update()
         {
-            UpdateNewTransformPositionAndRotation();
+            if (isAliveFromConditions)
+                UpdateNewTransformPositionAndRotation();
         }
 
         /// <summary>

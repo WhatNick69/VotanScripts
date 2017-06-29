@@ -16,7 +16,7 @@ namespace AbstractBehaviour
         protected float initialisatedHealthValue;
         protected float colorChannelRed;
         protected float colorChannelGreen;
-        protected bool isAlive; // жив ли игрок
+        private bool isAlive; // жив ли игрок
 
         /// <summary>
         /// Свойство для здоровья персонажа
@@ -46,9 +46,27 @@ namespace AbstractBehaviour
             }
         }
 
+        public bool IsAlive
+        {
+            get
+            {
+                return isAlive;
+            }
+
+            set
+            {
+                isAlive = value;
+            }
+        }
+
         public virtual void DieState()
         {
             isAlive = false;
+        }
+
+        public virtual void DestroyObject()
+        {
+            Destroy(gameObject, 0.05f);
         }
 
         /// <summary>
@@ -56,6 +74,7 @@ namespace AbstractBehaviour
         /// </summary>
         private void RefreshHealthCircle()
         {
+            Debug.Log("Обновляем");
             circleHealthUI.fillAmount = healthValue / initialisatedHealthValue;
             if (circleHealthUI.fillAmount >= 0.5f)
             {
