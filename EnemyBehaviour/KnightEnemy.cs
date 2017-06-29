@@ -15,7 +15,7 @@ namespace EnemyBehaviour
 			//{
 				if (AbsAttack.EnemyAttack())
 				{
-					LibraryPlayerPosition.PlayerConditions.GetDamage(1);
+			    LibraryPlayerPosition.PlayerConditions.GetDamage(1);
 				}
 			//}
 		}

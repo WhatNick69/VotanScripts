@@ -25,7 +25,8 @@ namespace EnemyBehaviour
         /// </summary>
         private void RandomSpeedSet()
         {
-            agent.speed = agentSpeed + (float)((LibraryPlayerPosition.rnd.NextDouble() * 2 - 1) * agentSpeed * 0.1f);
+            agent.speed = LibraryStaticFunctions.GetPlusMinusVal(agentSpeed, 0.25f);
+            agentSpeed = agent.speed;
             Debug.Log(gameObject.name + " my speed is: " + agent.speed.ToString());
         }
 

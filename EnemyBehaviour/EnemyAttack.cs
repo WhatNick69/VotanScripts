@@ -17,7 +17,5 @@ namespace EnemyBehaviour
             listEnemy = new List<AbstractEnemy>();
             attackList = new List<AbstractEnemy>();
         }
-
-
     }
 }

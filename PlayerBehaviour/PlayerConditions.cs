@@ -25,6 +25,7 @@ namespace PlayerBehaviour
         private float rageRegenSize;
         [SerializeField, Tooltip("Модель игрока")]
         private GameObject playerBody;
+        private PlayerArmory playerArmory;
 
         private bool isRageRegen; // можно ли регенерить ярость
         private float initialisatedRageValuePlayer; // начальное значение ярости
@@ -81,6 +82,7 @@ namespace PlayerBehaviour
         /// </summary>
         private void Start()
         {
+            playerArmory = GetComponent<PlayerArmory>();
             IsAlive = true;
             isRageRegen = true;
             ringRageUIAnimation = ringRageUI.GetComponent<Animation>();
@@ -146,7 +148,15 @@ namespace PlayerBehaviour
         /// <param name="damageValue"></param>
         public void GetDamage(float damageValue)
         {
-            HealthValue -= LibraryStaticFunctions.GetPlusMinusDmg(damageValue, 0.1f);
+            if (!playerArmory.IsAlive)
+            {
+                HealthValue -= LibraryStaticFunctions.GetPlusMinusVal(damageValue, 0.1f);
+            }
+            else
+            {
+                playerArmory.DecreaseArmoryLevel(-
+                LibraryStaticFunctions.GetPlusMinusVal(damageValue, 0.1f));
+            }
         }
 
         /// <summary>

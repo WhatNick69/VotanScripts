@@ -88,7 +88,7 @@ namespace AbstractBehaviour
         /// <param name="dmg"></param>
         public virtual void GetDamage(float dmg)
         {
-            absObjCond.HealthValue -= LibraryStaticFunctions.GetPlusMinusDmg(dmg, 0.1f);
+            absObjCond.HealthValue -= LibraryStaticFunctions.GetPlusMinusVal(dmg, 0.1f);
         }
 	}
 }

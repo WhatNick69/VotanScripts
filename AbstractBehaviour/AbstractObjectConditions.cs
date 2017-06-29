@@ -5,6 +5,7 @@ namespace AbstractBehaviour
 {
     /// <summary>
     /// Абстрактный метод, позволяющий 
+    /// реализовать бар здоровья/брони
     /// </summary>
     public abstract class AbstractObjectConditions
         : MonoBehaviour
@@ -21,7 +22,7 @@ namespace AbstractBehaviour
         /// <summary>
         /// Свойство для здоровья персонажа
         /// </summary>
-        public float HealthValue
+        public virtual float HealthValue
         {
             get
             {
@@ -72,7 +73,7 @@ namespace AbstractBehaviour
         /// <summary>
         /// Обновить RingbarUIImage (заполненность и цвет)
         /// </summary>
-        private void RefreshHealthCircle()
+        public virtual void RefreshHealthCircle()
         {
             Debug.Log("Обновляем");
             circleHealthUI.fillAmount = healthValue / initialisatedHealthValue;
@@ -86,6 +87,5 @@ namespace AbstractBehaviour
             }
             circleHealthUI.color = new Color(colorChannelRed, colorChannelGreen, 0);
         }
-
     }
 }
