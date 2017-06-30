@@ -1,4 +1,5 @@
 ﻿using AbstractBehaviour;
+using EnemyBehaviour;
 using MovementEffects;
 using PlayerBehaviour;
 using System.Collections.Generic;
@@ -16,9 +17,12 @@ namespace GameBehaviour
 		private GameObject enemy;
         private PlayerAttack playerAttack;
         private List<AbstractEnemy> listEnemy;
-        private int k = 0;
+        [SerializeField, Tooltip("Количество врагов для генерации"), Range(1, 500)]
+        private float players;
         [SerializeField,Tooltip("Время, между генерации противника"),Range(0.5f,5)]
         private float timeToInstantiate;
+        [SerializeField, Tooltip("Random радиус"), Range(3, 25)]
+        private float randomRadius;
 
         [SerializeField]
         private Transform respawnPoint;
@@ -29,11 +33,12 @@ namespace GameBehaviour
         /// <returns></returns>
         private IEnumerator<float> CoroutineInstantiate()
         {
-            while (k < 50)
+            int k = 0;
+            while (k < players)
             {
                 yield return Timing.WaitForSeconds(timeToInstantiate);
 
-                playerAttack.AddEnemyToList(Instantiate(enemy).GetComponent<AbstractEnemy>());
+                InstantiateOnServer();
                 listEnemy = playerAttack.ReturnList();
                 //listEnemy[k].transform.position = new Vector3(Random.Range(-7, 7), 1.5f, Random.Range(-7, 7));
                 listEnemy[k].transform.position = respawnPoint.transform.position;
@@ -44,6 +49,13 @@ namespace GameBehaviour
 				listEnemy[k].enAnim = enemy.GetComponent<Animator>();
 				k++;
             }
+        }
+
+        private void InstantiateOnServer()
+        {
+            GameObject enemyObjNew = Instantiate(enemy);
+            playerAttack.AddEnemyToList(enemyObjNew.GetComponent<AbstractEnemy>());
+            enemyObjNew.GetComponent<EnemyMove>().RandomRadius = randomRadius;
         }
 
         /// <summary>

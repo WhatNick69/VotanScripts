@@ -5,76 +5,89 @@ using AbstractBehaviour;
 
 namespace PlayerBehaviour
 {
-	interface IWeapon
+	/// <summary>
+    /// Интерфейс для описания оружия
+    /// </summary>
+    interface IWeapon
 	{
-		string TypeName1 { get; set; }
-		string TypeName2 { get; set; }
-		string WeponName { get; set; }
-		string GripName { get; set; }
+        DamageType attackType { get; set; }
+        string typeName1 { get; set; }
+		string typeName2 { get; set; }
+		string weaponName { get; set; }
+		string gripName { get; set; }
 		GameObject player { get; set; }
-		// Типы урона оружия зависящие от камня
-		// Использовать эти значения
-		//  FrostDamage, // 0
-		//	FireDamage, // 1
-		//	PowerfulDamage, // 2
-		//	ElectricDamage // 3
 
-		int AttackType { get; set; }
-		int Damage { get; set; }
-		float SpinSpeed { get; set; }
+		int damage { get; set; }
+		float spinSpeed { get; set; }
 
-		void SetWeapon(int damage, int attackType, float spinSpeed);
-		void SetWeapon(int damage, int attackType);
+		void SetWeapon(int damage, DamageType attackType, float spinSpeed);
+		void SetWeapon(int damage, DamageType attackType);
 		void SetWeapon(int damage);
 	}
 
-	public class PlayerWeapon 
+	/// <summary>
+    /// Класс, описывающий поведение оружия
+    /// </summary>
+    public class PlayerWeapon 
         : MonoBehaviour, IWeapon
 	{
-		DamageType attackType;
-		public string TypeName1 { get; set; }
-		public string TypeName2 { get; set; }
-		public string WeponName { get; set; }
-		public string GripName { get; set; }
+		public DamageType attackType { get; set; }
+        public string typeName1 { get; set; }
+		public string typeName2 { get; set; }
+		public string weaponName { get; set; }
+		public string gripName { get; set; }
 		[SerializeField]
 		public GameObject player { get; set; }
-		// Типы урона оружия зависящие от камня
-		// Использовать эти значения
-		//  FrostDamage, // 0
-		//	FireDamage, // 1
-		//	PowerfulDamage, // 2
-		//	ElectricDamage // 3
 
-		public int AttackType { get; set; }
-		public int Damage { get; set; }
-		public float SpinSpeed { get; set; }
+		public int damage { get; set; }
+		public float spinSpeed { get; set; }
 		
-		public PlayerWeapon(int damage, DamageType attackType, float spinSpeed) // Конструктор
+		/// <summary>
+        /// Конструктор класса
+        /// </summary>
+        /// <param name="damage"></param>
+        /// <param name="attackType"></param>
+        /// <param name="spinSpeed"></param>
+        public PlayerWeapon(int damage, DamageType attackType, float spinSpeed) 
 		{
-			Damage = damage;
-			AttackType = (int)attackType;
-			SpinSpeed = spinSpeed;
+			this.damage = damage;
+			this.attackType = attackType;
+			this.spinSpeed = spinSpeed;
 			player = GameObject.FindWithTag("Player");
-			player.GetComponent<PlayerFight>().GetWeaponParameters(Damage, (DamageType)AttackType , SpinSpeed);
+			player.GetComponent<PlayerFight>().GetWeaponParameters(damage, attackType , spinSpeed);
 		}
 
-		// Прегрузки метода котрый измняет показатели оружия 
-		public void SetWeapon(int damage, int attackType, float spinSpeed)
+		/// <summary>
+        /// Задать характеристики оружия через урон, тип урона и скорость
+        /// </summary>
+        /// <param name="damage"></param>
+        /// <param name="attackType"></param>
+        /// <param name="spinSpeed"></param>
+        public void SetWeapon(int damage, DamageType attackType, float spinSpeed)
 		{
-			Damage = damage;
-			AttackType = attackType;
-			SpinSpeed = spinSpeed;
+			this.damage = damage;
+			this.attackType = attackType;
+			this.spinSpeed = spinSpeed;
 		}
 
-		public void SetWeapon(int damage, int attackType)
+		/// <summary>
+        /// Задать характеристики оружия через урон и тип урона
+        /// </summary>
+        /// <param name="damage"></param>
+        /// <param name="attackType"></param>
+        public void SetWeapon(int damage, DamageType attackType)
 		{
-			Damage = damage;
-			AttackType = attackType;
+			this.damage = damage;
+			this.attackType = attackType;
 		}
 
-		public void SetWeapon(int damage)
+		/// <summary>
+        /// Задать характеристики оружия через урон
+        /// </summary>
+        /// <param name="damage"></param>
+        public void SetWeapon(int damage)
 		{
-			Damage = damage;
+			this.damage = damage;
 		}
 	}
 }

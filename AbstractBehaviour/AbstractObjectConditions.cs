@@ -31,9 +31,9 @@ namespace AbstractBehaviour
 
             set
             {
+                healthValue = value;
                 if (healthValue > 0)
                 {
-                    healthValue = value;
                     isAlive = true;
                     RefreshHealthCircle();
                 }
@@ -67,7 +67,7 @@ namespace AbstractBehaviour
 
         public virtual void DestroyObject()
         {
-            Destroy(gameObject, 0.05f);
+            Destroy(gameObject);
         }
 
         /// <summary>
@@ -75,7 +75,6 @@ namespace AbstractBehaviour
         /// </summary>
         public virtual void RefreshHealthCircle()
         {
-            Debug.Log("Обновляем");
             circleHealthUI.fillAmount = healthValue / initialisatedHealthValue;
             if (circleHealthUI.fillAmount >= 0.5f)
             {

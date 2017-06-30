@@ -8,13 +8,12 @@ namespace VotanLibraries
 	public class LibraryPlayerPosition 
         : MonoBehaviour
 	{
-		[SerializeField]
         private static GameObject player;
+        private static Transform playerObjectTransform;
         private static Transform mainCameraPlayerTransform;
-		private static PlayerConditions playerConditions;
+        private static PlayerConditions playerConditions;
         private static Transform playerPoint, playerRightPoint,
 			playerLeftPoint, playerFacePoint, playerBackPoint; // точки персонажа
-        public static System.Random rnd = new System.Random();
 
         public static PlayerConditions PlayerConditions
         {
@@ -42,6 +41,32 @@ namespace VotanLibraries
             }
         }
 
+        public static GameObject Player
+        {
+            get
+            {
+                return player;
+            }
+
+            set
+            {
+                player = value;
+            }
+        }
+
+        public static Transform PlayerObjectTransform
+        {
+            get
+            {
+                return playerObjectTransform;
+            }
+
+            set
+            {
+                playerObjectTransform = value;
+            }
+        }
+
         public static Vector3 GetPlayerPoint(int index) // возвращает точки персонажа игрока
 		{
             switch (index)
@@ -58,9 +83,10 @@ namespace VotanLibraries
 			return Vector3.zero;
 		}
 
-		private void Start()
+		private void Awake()
 		{
 			player = GameObject.FindWithTag("Player");
+            playerObjectTransform = player.GetComponent<PlayerController>().PlayerObjectTransform;
             mainCameraPlayerTransform = GameObject.FindWithTag("MainCamera").transform;
             playerRightPoint = player.GetComponent<PlayerAttack>().PlayerPosition(0);
 			playerLeftPoint = player.GetComponent<PlayerAttack>().PlayerPosition(1);

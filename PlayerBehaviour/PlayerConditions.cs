@@ -23,8 +23,7 @@ namespace PlayerBehaviour
         private Animation ringRageUIAnimation;
         [SerializeField,Tooltip("Размер регена ярости")]
         private float rageRegenSize;
-        [SerializeField, Tooltip("Модель игрока")]
-        private GameObject playerBody;
+        private GameObject playerObject;
         private PlayerArmory playerArmory;
 
         private bool isRageRegen; // можно ли регенерить ярость
@@ -89,9 +88,11 @@ namespace PlayerBehaviour
             initialisatedHealthValue = healthValue;
             initialisatedRageValuePlayer = rageValuePlayer;
             rageValuePlayer = 1;
+            playerObject = LibraryPlayerPosition.PlayerObjectTransform.gameObject;
 
             colorChannelRed = 0;
             colorChannelGreen = 1;
+
             StartRingbarAnimation();
             StartRageCoroutineRegen();
         }
@@ -197,7 +198,7 @@ namespace PlayerBehaviour
         public override void DieState()
         {
             base.DieState();
-            playerBody.SetActive(false);
+            playerObject.SetActive(false);
             GetComponent<PlayerController>().IsAliveFromConditions = false;
         }
     }

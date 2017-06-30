@@ -24,5 +24,15 @@ namespace VotanLibraries
             return dmg + (float)((rnd.NextDouble()
                 * 2 - 1) * dmg * range); 
         }
+
+        /// <summary>
+        /// Случайная позиция врага во время отдыха
+        /// </summary>
+        /// <param name="radius"></param>
+        /// <returns></returns>
+        public static float GetRandomAxisOfEnemyRest(float radius)
+        {
+            return (float)(rnd.NextDouble()* (radius*2))-radius;
+        }
     }
 }

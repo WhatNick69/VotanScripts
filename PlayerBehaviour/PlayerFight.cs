@@ -18,8 +18,6 @@ namespace PlayerBehaviour
         private float updateFrequency;
         [SerializeField, Tooltip("Скорость вращения оружием"),Range(40,75)]
         private float weaponSpeed;
-        [SerializeField, Tooltip("Модель игрока")]
-        private Transform playerBody;
         [SerializeField, Tooltip("Контроллер игрока")]
         private PlayerController playerController;
 
@@ -63,7 +61,7 @@ namespace PlayerBehaviour
         /// <summary>
         /// Инициализация
         /// </summary>
-        void Start()
+        private void Start()
         {
             InitialisationCoroutineForFightControl();
         }
@@ -120,10 +118,8 @@ namespace PlayerBehaviour
                     // Рывок
                     if (fightVector.z > 0)
                     {
-                        Debug.Log("Перед проверкой");
                         if (!isFighting)
                         {
-                            Debug.Log("ЗАпускаем корутин");
                             Timing.RunCoroutine(CoroutineForStraightAttack());
                         }
                     }
@@ -137,15 +133,14 @@ namespace PlayerBehaviour
             else
             {
                 isRotating = false;
-                isFighting = false;
             }
         }
 
         private IEnumerator<float> CoroutineForStraightAttack()
         {
             isFighting = true;
-            playerController.StraightMoving(fightVector*10);
-            yield return Timing.WaitForSeconds(2);
+            playerController.StraightMoving();
+            yield return Timing.WaitForSeconds(1);
             isFighting = false;
         }
 

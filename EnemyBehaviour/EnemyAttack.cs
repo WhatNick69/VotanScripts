@@ -1,5 +1,6 @@
 ﻿using AbstractBehaviour;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace EnemyBehaviour
 {
@@ -9,6 +10,22 @@ namespace EnemyBehaviour
     class EnemyAttack 
         : AbstractAttack
     {
+        [SerializeField, Tooltip("Урон от удара врага")]
+        private float dmgEnemy;
+
+        public float DmgEnemy
+        {
+            get
+            {
+                return dmgEnemy;
+            }
+
+            set
+            {
+                dmgEnemy = value;
+            }
+        }
+
         /// <summary>
         /// Инициализация
         /// </summary>

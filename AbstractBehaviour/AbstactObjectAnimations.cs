@@ -18,9 +18,7 @@ namespace AbstractBehaviour
         protected float frameLenght;
         #endregion 
 
-
         // запилить в Animator переменную, отвечающую за скорость анимации
-
 
         /// <summary>
         /// Инициализация клипа анимации

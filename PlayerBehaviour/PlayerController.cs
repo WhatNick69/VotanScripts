@@ -16,12 +16,12 @@ namespace PlayerBehaviour
         : MonoBehaviour
     {
         #region Переменные
-        private Transform playerTransform;
+        [SerializeField, Tooltip("Объект персонажа")]
+        private Transform playerObjectTransform;
         [SerializeField,Tooltip("Модель персонажа")]
-        private Transform bodyTransform;
-        [SerializeField,Tooltip("Камера персонажа")]
-        private Camera playerCamera;
-                private GameObject playerBody;
+        private Transform playerModelTransform;
+        [SerializeField, Tooltip("Позиция для атаки")]
+        private Transform attackTransform;
         [SerializeField, Tooltip("Скорость движения"), Range(1, 25)]
         private float moveSpeed;
         [SerializeField, Tooltip("Плавность движения"), Range(1, 10)]
@@ -81,16 +81,16 @@ namespace PlayerBehaviour
             }
         }
 
-        public Transform BodyTransform
+        public Transform PlayerModelTransform
         {
             get
             {
-                return bodyTransform;
+                return playerModelTransform;
             }
 
             set
             {
-                bodyTransform = value;
+                playerModelTransform = value;
             }
         }
 
@@ -119,6 +119,19 @@ namespace PlayerBehaviour
                 isAliveFromConditions = value;
             }
         }
+
+        public Transform PlayerObjectTransform
+        {
+            get
+            {
+                return playerObjectTransform;
+            }
+
+            set
+            {
+                playerObjectTransform = value;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -126,11 +139,10 @@ namespace PlayerBehaviour
         /// </summary>
         private void Start()
         {
+            isAliveFromConditions = true;
             continueCalculateInCoroutine = true;
             isUpdating = true;
-            playerTransform = GetComponent<Transform>();
             InitialisationOfCoroutines();
-            isAliveFromConditions = true;
         }
 
         /// <summary>
@@ -141,10 +153,18 @@ namespace PlayerBehaviour
             Timing.RunCoroutine(CoroutineForFixedUpdatePositionAndRotation());
         }
 
-        public void StraightMoving(Vector3 vectorOfMoving)
+        public void StraightMoving()
         {
             Debug.Log("Рывок");
-            tempVectorTransform = vectorOfMoving + playerTransform.position;
+            attackTransform.position = 
+                new Vector3(attackTransform.position.x, 
+                playerObjectTransform.position.y, attackTransform.position.z);
+            tempVectorTransform = attackTransform.position;
+        }
+
+        private void Costule()
+        {
+
         }
 
         /// <summary>
@@ -183,7 +203,7 @@ namespace PlayerBehaviour
         /// </summary>
         private void UpdateNewTransformPositionAndRotation()
         {
-            currentMagnitude = (playerTransform.position - tempVectorTransform).magnitude;
+            currentMagnitude = (playerObjectTransform.position - tempVectorTransform).magnitude;
 
             if (!PlayerFight.IsFighting)
             {
@@ -192,23 +212,21 @@ namespace PlayerBehaviour
                     // Если двигаем стик, то плавно разгоняемся
                     // иначе плавно замедляемся
                     if (isUpdating)
-                        playerTransform.position =
-                            Vector3.MoveTowards(playerTransform.position, tempVectorTransform,
+                        playerObjectTransform.position =
+                            Vector3.MoveTowards(playerObjectTransform.position, tempVectorTransform,
                                 magnitudeTemp * Time.deltaTime);
                     else
-                        playerTransform.position = Vector3.Lerp(playerTransform.position, 
+                        playerObjectTransform.position = Vector3.Lerp(playerObjectTransform.position, 
                             tempVectorTransform,moveSpeed * Time.deltaTime);
                 }
+                playerModelTransform.localRotation = Quaternion.Slerp(playerModelTransform.rotation
+                    , Quaternion.Euler(0, angle, 0), rotateSpeed * Time.deltaTime);
             }
             else
             {
-                playerTransform.position = Vector3.Lerp(playerTransform.position,
-                            tempVectorTransform, moveSpeed * Time.deltaTime);
+                playerObjectTransform.position = Vector3.Lerp(playerObjectTransform.position,
+                           tempVectorTransform, moveSpeed * Time.deltaTime);
             }
-
-            if (!PlayerFight.IsRotating)
-                bodyTransform.localRotation = Quaternion.Slerp(bodyTransform.rotation
-                        , Quaternion.Euler(0, angle, 0), rotateSpeed * Time.deltaTime);
         }
 
         /// <summary>
@@ -224,7 +242,7 @@ namespace PlayerBehaviour
                 isUpdating = true;
                 magnitudeTemp = moveVector3.magnitude*moveSpeed; 
                 //magnitudeTemp = moveSpeed;
-                tempVectorTransform = (moveVector3 + playerTransform.position);
+                tempVectorTransform = (moveVector3 + playerObjectTransform.position);
             }
             else
             {

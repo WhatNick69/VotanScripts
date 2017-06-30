@@ -218,7 +218,8 @@ namespace AbstractBehaviour
 						playerFinishGunPoint.position, attackList[i].ReturnPosition(2)
 						, attackList[i].ReturnPosition(3)))
 					{
-						attackList[i].GetDamage(1);
+                        if (LibraryPlayerPosition.PlayerConditions.IsAlive)
+						    attackList[i].GetDamage(1);
 						if (attackList[i].ReturnHealth() <= 0 || !attackList[i])
 						{
 							attackList.RemoveAt(i);

@@ -1,6 +1,7 @@
 ﻿using AbstractBehaviour;
 using System.Collections.Generic;
 using UnityEngine;
+using VotanLibraries;
 
 namespace PlayerBehaviour
 {
@@ -18,9 +19,12 @@ namespace PlayerBehaviour
         private List<GameObject> shieldParts;
 
         private bool isHelmetDeactive;
-        private List<bool> kirasaPartsDeactive;
-        private List<bool> shieldPartsDeactive;
+        private bool isKirasaDeactive;
+        private bool isShieldDeactive;
+        private float kirasaPartArmory;
+        private float shieldPartArmory;
 
+        private float tempArmory;
 
         private void Start()
         {
@@ -29,8 +33,9 @@ namespace PlayerBehaviour
             colorChannelRed = 1;
             circleHealthUI.color = new Color(0,colorChannelRed, colorChannelGreen);
             initialisatedHealthValue = healthValue;
-            kirasaPartsDeactive = new List<bool>();
-            shieldPartsDeactive = new List<bool>();
+
+            kirasaPartArmory = 0.25f / kirasaParts.Count;
+            shieldPartArmory = 0.25f / shieldParts.Count;
         }
 
         public void DecreaseArmoryLevel(float value)
@@ -50,20 +55,66 @@ namespace PlayerBehaviour
 
         public override void RefreshHealthCircle()
         {
+            float a = circleHealthUI.fillAmount;
             circleHealthUI.fillAmount = healthValue / initialisatedHealthValue;
+            a -= circleHealthUI.fillAmount;
+            tempArmory += a;
             CheckArmoryLevel();
         }
 
         private void CheckArmoryLevel()
         {
-            if (healthValue <= initialisatedHealthValue-(initialisatedHealthValue/4) && !isHelmetDeactive)
+            if (!isHelmetDeactive && healthValue <= initialisatedHealthValue -
+                (initialisatedHealthValue / 4))
             {
                 isHelmetDeactive = true;
                 helmet.SetActive(false);
+                tempArmory -= 0.25f;
             }
-            else if (false)
-            {
 
+            if (!isShieldDeactive && healthValue <= initialisatedHealthValue -
+                (initialisatedHealthValue / 4) * 2)
+            {
+                while (tempArmory >= shieldPartArmory)
+                {
+                    int a;
+                    if (shieldParts.Count > 1)
+                    {
+                        a = LibraryStaticFunctions.rnd.Next(1, shieldParts.Count);
+                    }
+                    else
+                    {
+                        a = 0;
+                        isShieldDeactive = true;
+                        break;
+                    }
+
+                    shieldParts[a].SetActive(false);
+                    shieldParts.RemoveAt(a);
+                    tempArmory -= shieldPartArmory;
+                }
+            }
+
+            if (!isKirasaDeactive && healthValue <= initialisatedHealthValue -
+                (initialisatedHealthValue / 4) * 3)
+            {
+                while (tempArmory >= kirasaPartArmory)
+                {
+                    int a;
+                    if (kirasaParts.Count > 1)
+                    {
+                        a = LibraryStaticFunctions.rnd.Next(1, kirasaParts.Count);
+                    }
+                    else
+                    {
+                        a = 0;
+                        isKirasaDeactive = true;
+                        break;
+                    }
+                    kirasaParts[a].SetActive(false);
+                    kirasaParts.RemoveAt(a);
+                    tempArmory -= kirasaPartArmory;
+                }
             }
         }
     }
