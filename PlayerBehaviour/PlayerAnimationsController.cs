@@ -27,7 +27,7 @@ namespace PlayerBehaviour
             int finishAnim = (int)animationsStateList[animationState].y;
             //Debug.Log(beginAnim + " and " + finishAnim);
 
-            animationOfPlayer.Play("AttackSuper");
+            //animationOfPlayer.Play("Take 001");
         }
     }
 }

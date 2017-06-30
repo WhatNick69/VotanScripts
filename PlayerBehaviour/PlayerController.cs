@@ -65,9 +65,6 @@ namespace PlayerBehaviour
             }
         }
 
-        /// <summary>
-        /// Read-Write скорости игрока
-        /// </summary>
         public float MoveSpeed
         {
             get
@@ -153,6 +150,9 @@ namespace PlayerBehaviour
             Timing.RunCoroutine(CoroutineForFixedUpdatePositionAndRotation());
         }
 
+        /// <summary>
+        /// Рывок-атака
+        /// </summary>
         public void StraightMoving()
         {
             Debug.Log("Рывок");
@@ -162,16 +162,11 @@ namespace PlayerBehaviour
             tempVectorTransform = attackTransform.position;
         }
 
-        private void Costule()
-        {
-
-        }
-
         /// <summary>
         /// Корутин на обновление позиции и поворота
         /// </summary>
         /// <returns></returns>
-        IEnumerator<float> CoroutineForFixedUpdatePositionAndRotation()
+        private IEnumerator<float> CoroutineForFixedUpdatePositionAndRotation()
         {
             while (true)
             {
@@ -222,7 +217,7 @@ namespace PlayerBehaviour
                 playerModelTransform.localRotation = Quaternion.Slerp(playerModelTransform.rotation
                     , Quaternion.Euler(0, angle, 0), rotateSpeed * Time.deltaTime);
             }
-            else
+            else if (!PlayerFight.IsDefensing)
             {
                 playerObjectTransform.position = Vector3.Lerp(playerObjectTransform.position,
                            tempVectorTransform, moveSpeed * Time.deltaTime);

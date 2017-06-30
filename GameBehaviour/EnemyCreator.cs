@@ -16,6 +16,7 @@ namespace GameBehaviour
 		[SerializeField]
 		private GameObject enemy;
         private PlayerAttack playerAttack;
+        [SerializeField]
         private List<AbstractEnemy> listEnemy;
         [SerializeField, Tooltip("Количество врагов для генерации"), Range(1, 500)]
         private float players;
@@ -51,6 +52,9 @@ namespace GameBehaviour
             }
         }
 
+        /// <summary>
+        /// Инстанцирование врага на сцене
+        /// </summary>
         private void InstantiateOnServer()
         {
             GameObject enemyObjNew = Instantiate(enemy);

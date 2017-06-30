@@ -23,7 +23,7 @@ namespace EnemyBehaviour
 			//{
 			if (AbsAttack.EnemyAttack())
 			{
-			    LibraryPlayerPosition.PlayerConditions.GetDamage(enemyAttack.DmgEnemy);
+                LibraryPlayerPosition.PlayerConditions.GetDamage(enemyAttack.DmgEnemy);
 			}
 			//}
 		}

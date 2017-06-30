@@ -92,6 +92,9 @@ namespace EnemyBehaviour
             }
         }
 
+        /// <summary>
+        /// Установить случайную позицию для врага во время отдыха
+        /// </summary>
         private void SetRandomPosition()
         {
             if (agent != null)

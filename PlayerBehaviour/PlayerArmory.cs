@@ -26,6 +26,9 @@ namespace PlayerBehaviour
 
         private float tempArmory;
 
+        /// <summary>
+        /// Инициализация
+        /// </summary>
         private void Start()
         {
             IsAlive = true;
@@ -34,12 +37,17 @@ namespace PlayerBehaviour
             circleHealthUI.color = new Color(0,colorChannelRed, colorChannelGreen);
             initialisatedHealthValue = healthValue;
 
-            kirasaPartArmory = 0.25f / kirasaParts.Count;
-            shieldPartArmory = 0.25f / shieldParts.Count;
+            kirasaPartArmory = 0.33f / kirasaParts.Count;
+            shieldPartArmory = 0.33f / shieldParts.Count;
         }
 
+        /// <summary>
+        /// Снизить показатель брони
+        /// </summary>
+        /// <param name="value"></param>
         public void DecreaseArmoryLevel(float value)
         {
+            Debug.Log(value);
             if (healthValue > 0)
             {
                 healthValue += value;
@@ -53,6 +61,9 @@ namespace PlayerBehaviour
             }
         }
 
+        /// <summary>
+        /// Обновить бар брони
+        /// </summary>
         public override void RefreshHealthCircle()
         {
             float a = circleHealthUI.fillAmount;
@@ -62,58 +73,74 @@ namespace PlayerBehaviour
             CheckArmoryLevel();
         }
 
+        /// <summary>
+        /// Проверить уровень брони
+        /// </summary>
         private void CheckArmoryLevel()
         {
-            if (!isHelmetDeactive && healthValue <= initialisatedHealthValue -
-                (initialisatedHealthValue / 4))
+            // если шлем целый
+            if (!isHelmetDeactive && !isShieldDeactive && !isKirasaDeactive)
             {
-                isHelmetDeactive = true;
-                helmet.SetActive(false);
-                tempArmory -= 0.25f;
-            }
-
-            if (!isShieldDeactive && healthValue <= initialisatedHealthValue -
-                (initialisatedHealthValue / 4) * 2)
-            {
-                while (tempArmory >= shieldPartArmory)
+                if (tempArmory >= 0.33f)
                 {
-                    int a;
-                    if (shieldParts.Count > 1)
-                    {
-                        a = LibraryStaticFunctions.rnd.Next(1, shieldParts.Count);
-                    }
-                    else
-                    {
-                        a = 0;
-                        isShieldDeactive = true;
-                        break;
-                    }
-
-                    shieldParts[a].SetActive(false);
-                    shieldParts.RemoveAt(a);
-                    tempArmory -= shieldPartArmory;
+                    isHelmetDeactive = true;
+                    helmet.SetActive(false);
+                    tempArmory -= 0.33f;
+                }
+                else
+                {
+                    return;
                 }
             }
 
-            if (!isKirasaDeactive && healthValue <= initialisatedHealthValue -
-                (initialisatedHealthValue / 4) * 3)
+            // если щит целый
+            if (!isShieldDeactive && isHelmetDeactive && !isKirasaDeactive)
             {
-                while (tempArmory >= kirasaPartArmory)
+                if (tempArmory >= shieldPartArmory)
                 {
-                    int a;
-                    if (kirasaParts.Count > 1)
+                    while (tempArmory >= shieldPartArmory)
                     {
-                        a = LibraryStaticFunctions.rnd.Next(1, kirasaParts.Count);
+                        int a;
+                        if (shieldParts.Count > 1)
+                        {
+                            a = LibraryStaticFunctions.rnd.Next(1, shieldParts.Count);
+                        }
+                        else
+                        {
+                            a = 0;
+                            isShieldDeactive = true;
+                            break;
+                        }
+                        shieldParts[a].SetActive(false);
+                        shieldParts.RemoveAt(a);
+                        tempArmory -= shieldPartArmory;
                     }
-                    else
+                }
+            }
+
+            // если броня целая
+            if (!isKirasaDeactive && isHelmetDeactive && isShieldDeactive)
+            {
+                if (tempArmory >= shieldPartArmory)
+                {
+                    while (tempArmory >= kirasaPartArmory)
                     {
-                        a = 0;
-                        isKirasaDeactive = true;
-                        break;
+                        int a;
+                        if (kirasaParts.Count > 1)
+                        {
+                            a = LibraryStaticFunctions.rnd.Next(1, kirasaParts.Count);
+                        }
+                        else
+                        {
+                            a = 0;
+                            isKirasaDeactive = true;
+                            break;
+                        }
+
+                        kirasaParts[a].SetActive(false);
+                        kirasaParts.RemoveAt(a);
+                        tempArmory -= kirasaPartArmory;
                     }
-                    kirasaParts[a].SetActive(false);
-                    kirasaParts.RemoveAt(a);
-                    tempArmory -= kirasaPartArmory;
                 }
             }
         }

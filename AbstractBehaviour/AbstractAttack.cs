@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using MovementEffects;
+using System.Collections.Generic;
 using UnityEngine;
 using VotanLibraries;
 
@@ -33,6 +34,7 @@ namespace AbstractBehaviour
 		private float c;
 		private float ta;
 		private float tb;
+        public bool isMayToDamage;
 
         public Transform PlayerStartGunPoint
         {
@@ -205,7 +207,7 @@ namespace AbstractBehaviour
         /// </summary>
         /// <param name="Damage"></param>
         /// <param name="DamTyp"></param>
-        public void EnemyAttack(int Damage, DamageType DamTyp)// для игрока
+        public void EnemyAttack(float Damage, DamageType DamTyp)// для игрока
 		{
 			for (int i = 0; i < attackList.Count; i++)
 			{
@@ -219,7 +221,7 @@ namespace AbstractBehaviour
 						, attackList[i].ReturnPosition(3)))
 					{
                         if (LibraryPlayerPosition.PlayerConditions.IsAlive)
-						    attackList[i].GetDamage(1);
+                            attackList[i].GetDamage(1);
 						if (attackList[i].ReturnHealth() <= 0 || !attackList[i])
 						{
 							attackList.RemoveAt(i);
@@ -229,22 +231,31 @@ namespace AbstractBehaviour
 			}
 		}
 
+        IEnumerator<float> CoroutineForEnemyTest()
+        {
+            isMayToDamage = false;
+            yield return Timing.WaitForSeconds(1);
+            isMayToDamage = true;
+        }
+
 		/// <summary>
         /// Атака по персонажу
         /// </summary>
         /// <returns></returns>
         public bool EnemyAttack()// для врага
 		{
-			if (Bush(enemyStartGunPoint.position, enemyFinishGunPoint.position, 
+			if (isMayToDamage && (Bush(enemyStartGunPoint.position, enemyFinishGunPoint.position, 
                 LibraryPlayerPosition.GetPlayerPoint(0), LibraryPlayerPosition.GetPlayerPoint(1)) ||
 				Bush(enemyStartGunPoint.position, enemyFinishGunPoint.position, 
-                LibraryPlayerPosition.GetPlayerPoint(2), LibraryPlayerPosition.GetPlayerPoint(3)))
+                LibraryPlayerPosition.GetPlayerPoint(2), LibraryPlayerPosition.GetPlayerPoint(3))))
 			{
-				return true;
+                Timing.RunCoroutine(CoroutineForEnemyTest());
+                return true;
 			}
 			else
 			{
-				return false;
+                Debug.Log("нет удара");
+                return false;
 			}
 		}
 	}

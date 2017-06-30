@@ -16,7 +16,7 @@ namespace PlayerBehaviour
         #region Переменные
         [SerializeField, Tooltip("Частота обновления"), Range(0.01f, 0.1f)]
         private float updateFrequency;
-        [SerializeField, Tooltip("Скорость вращения оружием"),Range(40,75)]
+        [SerializeField, Tooltip("Скорость вращения оружием"), Range(40, 70)]
         private float weaponSpeed;
         [SerializeField, Tooltip("Контроллер игрока")]
         private PlayerController playerController;
@@ -25,11 +25,26 @@ namespace PlayerBehaviour
         private float boostValue = 1;
         private Vector3 rotateBodyOfPlayerVector;
         private float sumAngle;
+
         private static bool isRotating;
         private static bool isFighting;
-        private bool isControlRightStick;
-        private float weaponDamage;
-        private DamageType attackType;
+        private static bool isDefensing;
+
+        private PlayerWeapon myWeapon;
+
+        public PlayerWeapon MyWeapon
+        {
+            get
+            {
+                return myWeapon;
+            }
+
+            set
+            {
+                myWeapon = value;
+            }
+        }
+
 
         public static bool IsFighting
         {
@@ -54,6 +69,32 @@ namespace PlayerBehaviour
             set
             {
                 isRotating = value;
+            }
+        }
+
+        public static bool IsDefensing
+        {
+            get
+            {
+                return isDefensing;
+            }
+
+            set
+            {
+                isDefensing = value;
+            }
+        }
+
+        public float WeaponSpeed
+        {
+            get
+            {
+                return weaponSpeed;
+            }
+
+            set
+            {
+                weaponSpeed = value;
             }
         }
         #endregion
@@ -95,7 +136,7 @@ namespace PlayerBehaviour
         private void GetStickVector()
         {
             fightVector = new Vector3(CrossPlatformInputManager.GetAxis("AttackSide")
-              ,0, CrossPlatformInputManager.GetAxis("FightState")) * boostValue;
+              , 0, CrossPlatformInputManager.GetAxis("FightState")) * boostValue;
         }
 
         /// <summary>
@@ -124,14 +165,21 @@ namespace PlayerBehaviour
                         }
                     }
                     // Защита
-                    else
+                    else if (fightVector.z < 0)
                     {
-
+                        isRotating = false;
+                        isDefensing = true;
+                        isFighting = true;
                     }
                 }
             }
             else
             {
+                if (isDefensing)
+                {
+                    isDefensing = false;
+                    isFighting = false;
+                }
                 isRotating = false;
             }
         }
@@ -142,22 +190,6 @@ namespace PlayerBehaviour
             playerController.StraightMoving();
             yield return Timing.WaitForSeconds(1);
             isFighting = false;
-        }
-
-        /// <summary>
-        /// Принять параметры оружия
-        /// 
-        /// Саня, этот метод для тебя 
-        /// кек
-        /// </summary>
-        /// <param name="weaponDamage"></param>
-        /// <param name="attackType"></param>
-        /// <param name="weaponSpeed"></param>
-        public void GetWeaponParameters(float weaponDamage,DamageType attackType,float weaponSpeed)
-        {
-            this.weaponDamage = weaponDamage;
-            this.attackType = attackType;
-            this.weaponSpeed = weaponSpeed;
         }
     }
 }
