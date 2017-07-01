@@ -20,14 +20,14 @@ public class TriaglesRender : MonoBehaviour {
 	private Transform C1;
 
 	public float AB, AC, BC, AA1;
-	public bool Bbb;
+	
 
 	float a, b, c;
  	float d, e, f;
 	public float S;
 	public float H;
 	float sootn;
-	public float Y;
+	public static float Y;
 
 	/// <summary>
 	/// Проверяеn принадлежность точки "X" к плосскости заданной точками y,x,w
@@ -78,7 +78,7 @@ public class TriaglesRender : MonoBehaviour {
 	/// Возвращает нужную высоту по Y
 	/// </summary>
 	/// <returns></returns>
-	public float GetHightOnY()
+	public static float GetHightOnY()
 	{
 		return Y;
 	}
