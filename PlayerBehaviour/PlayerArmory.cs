@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using VotanLibraries;
+using System;
 
 namespace PlayerBehaviour
 {
@@ -37,8 +38,8 @@ namespace PlayerBehaviour
             circleHealthUI.color = new Color(0,colorChannelRed, colorChannelGreen);
             initialisatedHealthValue = healthValue;
 
-            kirasaPartArmory = 0.33f / kirasaParts.Count;
-            shieldPartArmory = 0.33f / shieldParts.Count;
+            kirasaPartArmory = 0.4f / kirasaParts.Count;
+            shieldPartArmory = 0.4f / shieldParts.Count;
         }
 
         /// <summary>
@@ -47,7 +48,6 @@ namespace PlayerBehaviour
         /// <param name="value"></param>
         public void DecreaseArmoryLevel(float value)
         {
-            Debug.Log(value);
             if (healthValue > 0)
             {
                 healthValue += value;
@@ -81,11 +81,11 @@ namespace PlayerBehaviour
             // если шлем целый
             if (!isHelmetDeactive && !isShieldDeactive && !isKirasaDeactive)
             {
-                if (tempArmory >= 0.33f)
+                if (tempArmory >= 0.2f)
                 {
                     isHelmetDeactive = true;
                     helmet.SetActive(false);
-                    tempArmory -= 0.33f;
+                    tempArmory -= 0.2f;
                 }
                 else
                 {
@@ -143,6 +143,13 @@ namespace PlayerBehaviour
                     }
                 }
             }
+        }
+
+        public override float GetDamageWithResistance(float damage, DamageType dmgType)
+        {
+            // на тот случай, если будем вводить в игру 
+            // повреждения по стихиям для игрока
+            return 0;
         }
     }
 }

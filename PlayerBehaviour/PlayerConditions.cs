@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using VotanLibraries;
+using System;
 
 namespace PlayerBehaviour
 {
@@ -217,6 +218,13 @@ namespace PlayerBehaviour
             base.DieState();
             playerObject.SetActive(false);
             GetComponent<PlayerController>().IsAliveFromConditions = false;
+        }
+
+        public override float GetDamageWithResistance(float damage, DamageType dmgType)
+        {
+            // на тот случай, если будем вводить в игру 
+            // повреждения по стихиям для игрока
+            return 0;
         }
     }
 }

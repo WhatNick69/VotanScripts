@@ -1,4 +1,5 @@
 ﻿using MovementEffects;
+using PlayerBehaviour;
 using System.Collections.Generic;
 using UnityEngine;
 using VotanLibraries;
@@ -21,13 +22,13 @@ namespace AbstractBehaviour
 		Transform playerPoint, playerRightPoint,
 		playerLeftPoint, playerFacePoint, playerBackPoint; // точки персонажа
         [SerializeField]
-        private Transform enemyStartGunPoint;
+        protected Transform enemyStartGunPoint;
         [SerializeField]
-        private Transform enemyFinishGunPoint; // точки оружия персонажа и врага
+        protected Transform enemyFinishGunPoint; // точки оружия персонажа и врага
         [SerializeField]
-        private Transform playerStartGunPoint;
+        protected Transform playerStartGunPoint;
         [SerializeField]
-        private Transform playerFinishGunPoint;
+        protected Transform playerFinishGunPoint;
 
         private float a;
 		private float b;
@@ -202,62 +203,17 @@ namespace AbstractBehaviour
 			return new Vector3(A, 2, B);
 		}
 
-		/// <summary>
-        /// Атака по врагу
-        /// </summary>
-        /// <param name="Damage"></param>
-        /// <param name="DamTyp"></param>
-        public void EnemyAttack(float Damage, DamageType DamTyp)// для игрока
-		{
-			for (int i = 0; i < attackList.Count; i++)
-			{
-				if (attackList[i])
-				{
-					if (Bush(playerStartGunPoint.position,
-						playerFinishGunPoint.position, attackList[i].ReturnPosition(0),
-						attackList[i].ReturnPosition(1)) ||
-						Bush(playerStartGunPoint.position,
-						playerFinishGunPoint.position, attackList[i].ReturnPosition(2)
-						, attackList[i].ReturnPosition(3)))
-					{
-                        if (LibraryPlayerPosition.PlayerConditions.IsAlive)
-                            attackList[i].GetDamage(1);
-						if (attackList[i].ReturnHealth() <= 0 || !attackList[i])
-						{
-							attackList.RemoveAt(i);
-						}
-					}
-				}
-			}
-		}
-
-        IEnumerator<float> CoroutineForEnemyTest()
-        {
-            isMayToDamage = false;
-            yield return Timing.WaitForSeconds(1);
-            isMayToDamage = true;
-        }
-
-		/// <summary>
-        /// Атака по персонажу
+        /// <summary>
+        /// Корутин, который говорит, как часто этот враг может наносить
+        /// урон персонажу
         /// </summary>
         /// <returns></returns>
-        public bool EnemyAttack()// для врага
-		{
-			if (isMayToDamage && (Bush(enemyStartGunPoint.position, enemyFinishGunPoint.position, 
-                LibraryPlayerPosition.GetPlayerPoint(0), LibraryPlayerPosition.GetPlayerPoint(1)) ||
-				Bush(enemyStartGunPoint.position, enemyFinishGunPoint.position, 
-                LibraryPlayerPosition.GetPlayerPoint(2), LibraryPlayerPosition.GetPlayerPoint(3))))
-			{
-                Timing.RunCoroutine(CoroutineForEnemyTest());
-                return true;
-			}
-			else
-			{
-                Debug.Log("нет удара");
-                return false;
-			}
-		}
+        protected IEnumerator<float> CoroutineMayDoDamageForPlayer()
+        {
+            isMayToDamage = false;
+            yield return Timing.WaitForSeconds(0.25f);
+            isMayToDamage = true;
+        }
 	}
 
 	/// <summary>

@@ -1,6 +1,7 @@
 ﻿using AbstractBehaviour;
 using System.Collections.Generic;
-using UnityEngine;
+using VotanLibraries;
+using VotanInterfaces;
 
 namespace PlayerBehaviour
 {
@@ -8,7 +9,7 @@ namespace PlayerBehaviour
     /// Компонент-атака для персонажа
     /// </summary>
     public class PlayerAttack
-        : AbstractAttack 
+        : AbstractAttack, IPlayerAttack
     {
         private PlayerFight playerFight;
 
@@ -37,8 +38,38 @@ namespace PlayerBehaviour
                     }
                 }
             }
-			EnemyAttack(playerFight.MyWeapon.Damage, playerFight.MyWeapon.AttackType);
+            AttackToEnemy(playerFight.MyWeapon.Damage, playerFight.MyWeapon.AttackType);
 		}
+
+        /// <summary>
+        /// Атака врага
+        /// </summary>
+        /// <param name="damage"></param>
+        /// <param name="dmgType"></param>
+        public void AttackToEnemy(float damage, DamageType dmgType)
+        {
+            for (int i = 0; i < attackList.Count; i++)
+            {
+                if (attackList[i])
+                {
+                    if (Bush(playerStartGunPoint.position,
+                        playerFinishGunPoint.position, attackList[i].ReturnPosition(0),
+                        attackList[i].ReturnPosition(1)) ||
+                        Bush(playerStartGunPoint.position,
+                        playerFinishGunPoint.position, attackList[i].ReturnPosition(2)
+                        , attackList[i].ReturnPosition(3)))
+                    {
+                        if (LibraryPlayerPosition.PlayerConditions.IsAlive)
+                            attackList[i].GetDamage(damage, dmgType, playerFight.MyWeapon); // атака
+
+                        if (attackList[i].ReturnHealth() <= 0 || !attackList[i])
+                        {
+                            attackList.RemoveAt(i);
+                        }
+                    }
+                }
+            }
+        }
     }
 }                                                                      
 

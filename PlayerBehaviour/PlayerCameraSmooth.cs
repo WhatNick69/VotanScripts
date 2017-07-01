@@ -25,11 +25,28 @@ namespace PlayerBehaviour
         [SerializeField, Tooltip("Частота обновления позиции слежения"),
             Range(0.01f, 1)]
         private float frequencyUpdate;
+        [SerializeField, Tooltip("Дистанция, минимальная для обновления"),
+            Range(0.1f,2)]
+        private float distanceBetweenDestAndPers;
 
         private Transform cameraTransform;
         private Transform playerObjectTransform;
         private bool isUpdating;
-        
+        private bool isNormalized;
+
+        public bool IsNormalized
+        {
+            get
+            {
+                return isNormalized;
+            }
+
+            set
+            {
+                isNormalized = value;
+            }
+        }
+
         /// <summary>
         /// Инициализация
         /// </summary>
@@ -44,6 +61,18 @@ namespace PlayerBehaviour
             playerController =
                 LibraryPlayerPosition.Player.GetComponent<PlayerController>();
             Timing.RunCoroutine(CoroutineGetPositionOfPlayer());
+        }
+
+        public void CameraZoom()
+        {
+            standartVectorForCamera =
+                new Vector3(0, 4.5f, -4);
+        }
+
+        public void CheckVectorForCamera()
+        {
+            if (standartVectorForCamera.y != 9)
+                isNormalized = false;
         }
 
         /// <summary>
@@ -72,12 +101,19 @@ namespace PlayerBehaviour
             yield return Timing.WaitForSeconds(frequencyUpdate);
             while (playerController.IsAliveFromConditions)
             {
+                if (!isNormalized)
+                {
+                    standartVectorForCamera = new Vector3(0, 9f, -8);
+                    isNormalized = true;
+                }
+
                 targetRotation =
                     Quaternion.LookRotation(playerObjectTransform.position - 
                     cameraTransform.position);
                 targetPosition =
                     playerObjectTransform.position + standartVectorForCamera;
-                if (Quaternion.Angle(cameraTransform.rotation, targetRotation) >= 3)
+                if (Quaternion.Angle(cameraTransform.rotation, targetRotation) >= 3
+                    || Vector3.Distance(cameraTransform.position,targetPosition) >= distanceBetweenDestAndPers)
                     isUpdating = true;
                 else
                     isUpdating = false;

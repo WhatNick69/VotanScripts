@@ -47,6 +47,9 @@ namespace AbstractBehaviour
             }
         }
 
+        public abstract float GetDamageWithResistance(float damage,
+            DamageType dmgType);
+
         public bool IsAlive
         {
             get

@@ -214,8 +214,12 @@ namespace PlayerBehaviour
                         playerObjectTransform.position = Vector3.Lerp(playerObjectTransform.position, 
                             tempVectorTransform,moveSpeed * Time.deltaTime);
                 }
-                playerModelTransform.localRotation = Quaternion.Slerp(playerModelTransform.rotation
-                    , Quaternion.Euler(0, angle, 0), rotateSpeed * Time.deltaTime);
+                if (PlayerFight.IsRotating)
+                    playerModelTransform.localRotation = Quaternion.Slerp(playerModelTransform.rotation
+                        , Quaternion.Euler(0, angle, 0), rotateSpeed*2f * Time.deltaTime);
+                else
+                    playerModelTransform.localRotation = Quaternion.Slerp(playerModelTransform.rotation
+                        , Quaternion.Euler(0, angle, 0), rotateSpeed * Time.deltaTime);
             }
             else if (!PlayerFight.IsDefensing)
             {

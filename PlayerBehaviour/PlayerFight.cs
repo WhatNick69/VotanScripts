@@ -14,10 +14,8 @@ namespace PlayerBehaviour
         : MonoBehaviour
     {
         #region Переменные
-        [SerializeField, Tooltip("Частота обновления"), Range(0.01f, 0.1f)]
+        [SerializeField, Tooltip("Частота обновления"), Range(0.12f, 0.5f)]
         private float updateFrequency;
-        [SerializeField, Tooltip("Скорость вращения оружием"), Range(40, 70)]
-        private float weaponSpeed;
         [SerializeField, Tooltip("Контроллер игрока")]
         private PlayerController playerController;
 
@@ -31,7 +29,14 @@ namespace PlayerBehaviour
         private static bool isDefensing;
 
         private PlayerWeapon myWeapon;
+        private PlayerCameraSmooth playerCamSmooth;
 
+        private bool isSpining;
+        private float tempSpinSpeed;
+        private float spiningSpeedInCoroutine;
+        #endregion
+
+        #region Свойства
         public PlayerWeapon MyWeapon
         {
             get
@@ -44,7 +49,6 @@ namespace PlayerBehaviour
                 myWeapon = value;
             }
         }
-
 
         public static bool IsFighting
         {
@@ -84,19 +88,6 @@ namespace PlayerBehaviour
                 isDefensing = value;
             }
         }
-
-        public float WeaponSpeed
-        {
-            get
-            {
-                return weaponSpeed;
-            }
-
-            set
-            {
-                weaponSpeed = value;
-            }
-        }
         #endregion
 
         /// <summary>
@@ -104,6 +95,7 @@ namespace PlayerBehaviour
         /// </summary>
         private void Start()
         {
+            playerCamSmooth = GetComponent<PlayerCameraSmooth>();
             InitialisationCoroutineForFightControl();
         }
 
@@ -140,6 +132,23 @@ namespace PlayerBehaviour
         }
 
         /// <summary>
+        /// Плавное замедление вращения оружием
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        private IEnumerator<float> CoroutineSlowMotionFighting(float x)
+        {
+            spiningSpeedInCoroutine = myWeapon.SpinSpeed;
+            while (spiningSpeedInCoroutine > 0)
+            {
+                PlayerController.Angle += spiningSpeedInCoroutine * tempSpinSpeed;
+                yield return Timing.WaitForSeconds(0.1f);
+                spiningSpeedInCoroutine -= 10;
+            }
+            isRotating = false;
+        }
+
+        /// <summary>
         /// Совершает действие, относительно положению правого стика.
         /// Вращение влево, вправо, рывок или защита.
         /// </summary>
@@ -151,13 +160,15 @@ namespace PlayerBehaviour
                 if (Math.Abs(fightVector.x) > Math.Abs(fightVector.z))
                 {
                     isRotating = true;
-                    PlayerController.Angle += weaponSpeed * fightVector.x;
+                    isSpining = true;
+                    PlayerController.Angle += myWeapon.SpinSpeed * fightVector.x;
+                    tempSpinSpeed = fightVector.x;
                 }
                 // Рывок или защита
                 else
                 {
                     // Рывок
-                    if (fightVector.z > 0)
+                    if (fightVector.z > 0.25f)
                     {
                         if (!isFighting)
                         {
@@ -170,8 +181,14 @@ namespace PlayerBehaviour
                         isRotating = false;
                         isDefensing = true;
                         isFighting = true;
+                        playerCamSmooth.CameraZoom();
                     }
                 }
+            }
+            else if (isSpining)
+            {
+                isSpining = false;
+                Timing.RunCoroutine(CoroutineSlowMotionFighting(fightVector.x));
             }
             else
             {
@@ -180,12 +197,14 @@ namespace PlayerBehaviour
                     isDefensing = false;
                     isFighting = false;
                 }
-                isRotating = false;
+                playerCamSmooth.CheckVectorForCamera();
             }
         }
 
         private IEnumerator<float> CoroutineForStraightAttack()
         {
+            spiningSpeedInCoroutine = 0;
+            IsRotating = false;
             isFighting = true;
             playerController.StraightMoving();
             yield return Timing.WaitForSeconds(1);

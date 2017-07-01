@@ -1,6 +1,10 @@
 ﻿using AbstractBehaviour;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using VotanInterfaces;
+using VotanLibraries;
+using MovementEffects;
 
 namespace EnemyBehaviour
 {
@@ -8,7 +12,7 @@ namespace EnemyBehaviour
     /// Компонент-атака для врага
     /// </summary>
     class EnemyAttack 
-        : AbstractAttack
+        : AbstractAttack, IEnemyAttack
     {
         [SerializeField, Tooltip("Урон от удара врага")]
         private float dmgEnemy;
@@ -23,6 +27,26 @@ namespace EnemyBehaviour
             set
             {
                 dmgEnemy = value;
+            }
+        }
+
+        /// <summary>
+        /// Атакуем персонажа
+        /// </summary>
+        /// <returns></returns>
+        public bool AttackToPlayer()
+        {
+            if (isMayToDamage && (Bush(enemyStartGunPoint.position, enemyFinishGunPoint.position,
+                 LibraryPlayerPosition.GetPlayerPoint(0), LibraryPlayerPosition.GetPlayerPoint(1)) ||
+                 Bush(enemyStartGunPoint.position, enemyFinishGunPoint.position,
+                 LibraryPlayerPosition.GetPlayerPoint(2), LibraryPlayerPosition.GetPlayerPoint(3))))
+            {
+                Timing.RunCoroutine(CoroutineMayDoDamageForPlayer());
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 

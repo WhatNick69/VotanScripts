@@ -11,21 +11,23 @@ namespace EnemyBehaviour
     {
         private EnemyAttack enemyAttack;
 
+        /// <summary>
+        /// Инициализация
+        /// </summary>
         private void Start()
         {
             enemyAttack = GetComponent<EnemyAttack>();
         }
 
-
-		private void FixedUpdate()
+		/// <summary>
+        /// Таймовое обновление
+        /// </summary>
+        private void FixedUpdate()
 		{
-			//if (enAnim.GetBool("isEnemyAttack"))
-			//{
-			if (AbsAttack.EnemyAttack())
+			if (enemyAttack.AttackToPlayer())
 			{
                 LibraryPlayerPosition.PlayerConditions.GetDamage(enemyAttack.DmgEnemy);
 			}
-			//}
 		}
 	}
 }

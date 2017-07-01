@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using AbstractBehaviour;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using MovementEffects;
 
 namespace PlayerBehaviour
 {
@@ -19,6 +22,7 @@ namespace PlayerBehaviour
         void SetWeapon(float damage, DamageType attackType, float spinSpeed);
 		void SetWeapon(float damage, DamageType attackType);
 		void SetWeapon(float damage);
+        void WhileTime();
 	}
 
 	/// <summary>
@@ -38,10 +42,16 @@ namespace PlayerBehaviour
         private float defenceValue;
         [SerializeField]
         private DamageType attackType;
-        [SerializeField, Tooltip("Скорость вращения"), Range(40, 70)]
+        [SerializeField, Tooltip("Скорость вращения"), Range(40, 100)]
         private float spinSpeed;
+        private float originalSpinSpeed;
+
         [SerializeField]
 		public GameObject player { get; set; }
+        [SerializeField,Tooltip("Величина замедления при попадании по врагу"),Range(0.1f,0.5f)]
+        public float stopValue;
+        [SerializeField, Tooltip("Задержка перед возвращением скорости"),Range(0.5f,3)]
+        public float speedReturnLatency;
 
         public float Damage
         {
@@ -165,6 +175,38 @@ namespace PlayerBehaviour
         {
             GameObject player = GameObject.FindGameObjectWithTag("Player");
             player.GetComponent<PlayerFight>().MyWeapon = this;
+            originalSpinSpeed = spinSpeed;
+        }
+
+        /// <summary>
+        /// Временно снижаем скорость вращения 
+        /// оружием при попадании по врагу
+        /// </summary>
+        public void WhileTime()
+        {
+            Timing.RunCoroutine(CoroutineDoSlowMotionSpinSpeed());
+        }
+
+        /// <summary>
+        /// Корутин на замедление вращения
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator<float> CoroutineDoSlowMotionSpinSpeed()
+        {
+            float spSpeed = spinSpeed* stopValue;
+
+            spinSpeed -= spSpeed;
+            yield return Timing.WaitForSeconds(speedReturnLatency);
+
+            for (int i = 0;i<10;i++)
+            {
+                spinSpeed += spSpeed / 10;
+                if (spinSpeed > originalSpinSpeed)
+                {
+                    spinSpeed = originalSpinSpeed;
+                }
+                yield return Timing.WaitForSeconds(0.1f);
+            }
         }
     }
 }

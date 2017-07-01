@@ -24,6 +24,7 @@ namespace EnemyBehaviour
         private float agentSpeed;
 
         private float randomRadius;
+        private float rotationSpeed;
 
         public float RandomRadius
         {
@@ -38,6 +39,32 @@ namespace EnemyBehaviour
             }
         }
 
+        public float AgentSpeed
+        {
+            get
+            {
+                return agentSpeed;
+            }
+
+            set
+            {
+                agentSpeed = value;
+            }
+        }
+
+        public float RotationSpeed
+        {
+            get
+            {
+                return rotationSpeed;
+            }
+
+            set
+            {
+                rotationSpeed = value;
+            }
+        }
+
         /// <summary>
         /// Задаем 
         /// </summary>
@@ -45,15 +72,18 @@ namespace EnemyBehaviour
         {
             agent.speed = LibraryStaticFunctions.GetPlusMinusVal(agentSpeed, 0.25f);
             agentSpeed = agent.speed;
+            rotationSpeed = agent.angularSpeed;
         }
 
         /// <summary>
         /// Установить новую скорость для агента
         /// </summary>
         /// <param name="newValue"></param>
-        public void SetNewSpeedOfNavMeshAgent(float newValue)
+        public void SetNewSpeedOfNavMeshAgent(float newValue,float newRotSpeed=0)
         {
             agent.speed = newValue;
+            if (newRotSpeed != 0)
+                agent.angularSpeed = newRotSpeed;
         }
 
         /// <summary>

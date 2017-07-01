@@ -1,4 +1,8 @@
-﻿using UnityEngine;
+﻿using MovementEffects;
+using PlayerBehaviour;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using VotanLibraries;
 
 namespace AbstractBehaviour
@@ -19,6 +23,7 @@ namespace AbstractBehaviour
         private AbstractObjectConditions absObjCond;
         [SerializeField]
         private AbstractAttack absAttack;
+        private bool isMayGetDamage = true;
 
         public AbstractAttack AbsAttack
         {
@@ -86,9 +91,26 @@ namespace AbstractBehaviour
         /// Получить урон
         /// </summary>
         /// <param name="dmg"></param>
-        public virtual void GetDamage(float dmg)
+        public virtual void GetDamage(float dmg,DamageType dmgType,PlayerWeapon weapon)
         {
-            absObjCond.HealthValue -= LibraryStaticFunctions.GetPlusMinusVal(dmg, 0.1f);
+            if (isMayGetDamage)
+            {
+                weapon.WhileTime();
+                Timing.RunCoroutine(CoroutineForGetDamage());
+                dmg = absObjCond.GetDamageWithResistance(dmg, dmgType);
+                absObjCond.HealthValue -= LibraryStaticFunctions.GetPlusMinusVal(dmg, 0.1f);
+            }
+        }
+
+        /// <summary>
+        /// Может ли враг получать урон?
+        /// </summary>
+        /// <returns></returns>
+        protected IEnumerator<float> CoroutineForGetDamage()
+        {
+            isMayGetDamage = false;
+            yield return Timing.WaitForSeconds(0.25f);
+            isMayGetDamage = true;
         }
 	}
 }
