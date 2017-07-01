@@ -10,38 +10,23 @@ namespace AbstractBehaviour
         : MonoBehaviour
     {
         #region Переменные
-        [SerializeField, Tooltip("Анимация персонажа")]
-        protected Animation animationOfPlayer;
-        [SerializeField, Tooltip("Лист векторов")]
-        protected List<Vector2> animationsStateList = new List<Vector2>();
-        protected string animationName;
-        protected float frameLenght;
-        #endregion 
+        [SerializeField, Tooltip("Аниматор объекта")]
+        private Animator animatorOfObject;
 
-        // запилить в Animator переменную, отвечающую за скорость анимации
-
-        /// <summary>
-        /// Инициализация клипа анимации
-        /// </summary>
-        protected void InitialisationAnimationClipName()
+        public Animator AnimatorOfObject
         {
-            foreach (AnimationState clip in animationOfPlayer)
+            get
             {
-                animationName = clip.name;
-                frameLenght = 1/(animationOfPlayer[animationName].length 
-                    * animationOfPlayer[animationName].clip.frameRate);
-                break;
+                return animatorOfObject;
+            }
+
+            set
+            {
+                animatorOfObject = value;
             }
         }
+        #endregion
 
-        /// <summary>
-        /// Получить вектор анимации из листа по индексу
-        /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        protected Vector2 GetAnimationPartByIndex(int index)
-        {
-            return animationsStateList[index];
-        }
+
     }
 }

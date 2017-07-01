@@ -30,6 +30,7 @@ namespace PlayerBehaviour
         private float iddleSize;
         [SerializeField, Tooltip("Частота обновления"), Range(0.001f, 0.05f)]
         private float updateFrequency;
+        private PlayerAnimationsController playerAnimController;
 
         private float currentMagnitude; // текущее значение магнитуды векторов
         //меньше которого используется сглаженное время
@@ -140,6 +141,7 @@ namespace PlayerBehaviour
             continueCalculateInCoroutine = true;
             isUpdating = true;
             InitialisationOfCoroutines();
+            playerAnimController = GetComponent<PlayerAnimationsController>();
         }
 
         /// <summary>
@@ -188,6 +190,10 @@ namespace PlayerBehaviour
         /// </summary>
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.W))
+                playerAnimController.AnimatorOfObject.SetBool("isDamage", true);
+            if (Input.GetKeyUp(KeyCode.W))
+                playerAnimController.AnimatorOfObject.SetBool("isDamage", false);
             if (isAliveFromConditions)
                 UpdateNewTransformPositionAndRotation();
         }
@@ -199,13 +205,14 @@ namespace PlayerBehaviour
         private void UpdateNewTransformPositionAndRotation()
         {
             currentMagnitude = (playerObjectTransform.position - tempVectorTransform).magnitude;
-
+            
             if (!PlayerFight.IsFighting)
             {
                 if (currentMagnitude > iddleSize)
                 {
                     // Если двигаем стик, то плавно разгоняемся
                     // иначе плавно замедляемся
+
                     if (isUpdating)
                         playerObjectTransform.position =
                             Vector3.MoveTowards(playerObjectTransform.position, tempVectorTransform,

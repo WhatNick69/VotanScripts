@@ -24,6 +24,7 @@ namespace PlayerBehaviour
 			listEnemy = new List<AbstractEnemy>();
             attackList = new List<AbstractEnemy>();
             playerFight = GetComponent<PlayerFight>();
+            Debug.Log(playerFight);
         }
 
         /// <summary>
