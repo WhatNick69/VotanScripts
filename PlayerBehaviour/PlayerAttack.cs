@@ -27,10 +27,12 @@ namespace PlayerBehaviour
             Debug.Log(playerFight);
         }
 
-        /// <summary>
-        /// Обновление с заданной частотой
-        /// </summary>
-        private void FixedUpdate()
+	
+
+		/// <summary>
+		/// Обновление с заданной частотой
+		/// </summary>
+		private void FixedUpdate()
         {
             for (int i = 0; i < listEnemy.Count; i++)
             {

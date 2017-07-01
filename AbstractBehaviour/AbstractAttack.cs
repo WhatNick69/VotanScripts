@@ -188,7 +188,7 @@ namespace AbstractBehaviour
 			ta = b / a;
 			tb = c / a;
 			//Debug.Log("a: " + a + ", b: " + b + ", c: " + c + ", ta: " + ta + ", tb: " + tb);
-			return (ta >= 0 && ta <= 1 && tb >= 0 && tb <= 1);
+			return (ta >= 0 && ta <= 1.6 && tb >= 0 && tb <= 1.6);
 		}
 
 		/// <summary>
