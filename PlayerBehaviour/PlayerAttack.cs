@@ -26,10 +26,12 @@ namespace PlayerBehaviour
             playerFight = GetComponent<PlayerFight>();
         }
 
-        /// <summary>
-        /// Обновление с заданной частотой
-        /// </summary>
-        private void FixedUpdate()
+	
+
+		/// <summary>
+		/// Обновление с заданной частотой
+		/// </summary>
+		private void FixedUpdate()
         {
             for (int i = 0; i < listEnemy.Count; i++)
             {
