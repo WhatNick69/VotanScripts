@@ -14,9 +14,11 @@ namespace AbstractBehaviour
     public abstract class AbstractAttack
 		: MonoBehaviour
 	{
-        // Лист врагов
+		// Лист врагов
+		[SerializeField]
 		protected List<AbstractEnemy> listEnemy;
-        // Лист атаки
+		// Лист атаки
+		[SerializeField]
 		protected List<AbstractEnemy> attackList;
 		[SerializeField]
 		Transform playerPoint, playerRightPoint,
@@ -35,7 +37,7 @@ namespace AbstractBehaviour
 		private float c;
 		private float ta;
 		private float tb;
-        public bool isMayToDamage;
+        public bool isMayToDamage = true;
 
         public Transform PlayerStartGunPoint
         {

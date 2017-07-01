@@ -16,7 +16,7 @@ namespace GameBehaviour
 		[SerializeField]
 		private GameObject enemy;
         private PlayerAttack playerAttack;
-        [SerializeField]
+		[SerializeField]
         private List<AbstractEnemy> listEnemy;
         [SerializeField, Tooltip("Количество врагов для генерации"), Range(1, 500)]
         private float players;
@@ -42,12 +42,7 @@ namespace GameBehaviour
                 InstantiateOnServer();
                 listEnemy = playerAttack.ReturnList();
                 //listEnemy[k].transform.position = new Vector3(Random.Range(-7, 7), 1.5f, Random.Range(-7, 7));
-                listEnemy[k].transform.position = respawnPoint.transform.position;
-                listEnemy[k].AbsAttack.SetPlayerPoint(0, playerAttack.PlayerPosition(0));
-				listEnemy[k].AbsAttack.SetPlayerPoint(1, playerAttack.PlayerPosition(1));
-				listEnemy[k].AbsAttack.SetPlayerPoint(2, playerAttack.PlayerPosition(2));
-				listEnemy[k].AbsAttack.SetPlayerPoint(3, playerAttack.PlayerPosition(3));
-				listEnemy[k].enAnim = enemy.GetComponent<Animator>();
+               
 				k++;
             }
         }
@@ -60,7 +55,14 @@ namespace GameBehaviour
             GameObject enemyObjNew = Instantiate(enemy);
             playerAttack.AddEnemyToList(enemyObjNew.GetComponent<AbstractEnemy>());
             enemyObjNew.GetComponent<EnemyMove>().RandomRadius = randomRadius;
-        }
+			enemyObjNew.transform.position = respawnPoint.transform.position;
+			AbstractAttack absA = enemyObjNew.GetComponent<AbstractAttack>();
+			absA.SetPlayerPoint(0, playerAttack.PlayerPosition(0));
+			absA.SetPlayerPoint(1, playerAttack.PlayerPosition(1));
+			absA.SetPlayerPoint(2, playerAttack.PlayerPosition(2));
+			absA.SetPlayerPoint(3, playerAttack.PlayerPosition(3));
+			enemyObjNew.GetComponent<AbstractEnemy>().enAnim = enemy.GetComponent<Animator>();
+		}
 
         /// <summary>
         /// Инициализация
@@ -70,6 +72,7 @@ namespace GameBehaviour
             listEnemy = new List<AbstractEnemy>();
             playerAttack = GameObject.FindWithTag("Player").GetComponent<PlayerAttack>();
             Timing.RunCoroutine(CoroutineInstantiate());
-        }
+			
+		}
     }
 }

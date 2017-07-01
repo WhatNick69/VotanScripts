@@ -1,6 +1,7 @@
 ﻿using AbstractBehaviour;
 using System.Collections.Generic;
 using VotanLibraries;
+using UnityEngine;
 using VotanInterfaces;
 
 namespace PlayerBehaviour
@@ -12,13 +13,15 @@ namespace PlayerBehaviour
         : AbstractAttack, IPlayerAttack
     {
         private PlayerFight playerFight;
+		private Transform playerObject;
 
-        /// <summary>
-        /// Инициализация
-        /// </summary>
-        void Start()
+		/// <summary>
+		/// Инициализация
+		/// </summary>
+		void Start()
         {
-            listEnemy = new List<AbstractEnemy>();
+			playerObject = LibraryPlayerPosition.PlayerObjectTransform;
+			listEnemy = new List<AbstractEnemy>();
             attackList = new List<AbstractEnemy>();
             playerFight = GetComponent<PlayerFight>();
         }
@@ -30,13 +33,18 @@ namespace PlayerBehaviour
         {
             for (int i = 0; i < listEnemy.Count; i++)
             {
-                if (listEnemy[i])
-                {
-                    if (AttackRange(transform.position, listEnemy[i].transform.position) < 3)
-                    {
-                        if (!attackList.Contains(listEnemy[i])) attackList.Add(listEnemy[i]);
-                    }
-                }
+				if (listEnemy[i])
+				{
+					if (Vector3.Distance(playerObject.position, listEnemy[i].transform.position) < 3)
+					{
+						if (!attackList.Contains(listEnemy[i])) attackList.Add(listEnemy[i]);
+					}
+				}
+				else
+				{
+					listEnemy.Remove(listEnemy[i]);
+					
+				}
             }
             AttackToEnemy(playerFight.MyWeapon.Damage, playerFight.MyWeapon.AttackType);
 		}
@@ -50,9 +58,15 @@ namespace PlayerBehaviour
         {
             for (int i = 0; i < attackList.Count; i++)
             {
-                if (attackList[i])
+				if (!attackList[i] || Vector3.Distance(playerObject.position, attackList[i].transform.position) > 3 ||
+						(attackList[i].ReturnHealth() <= 0))
+				{
+					attackList.Remove(attackList[i]); continue;
+				}
+				else
                 {
-                    if (Bush(playerStartGunPoint.position,
+					
+					if (Bush(playerStartGunPoint.position,
                         playerFinishGunPoint.position, attackList[i].ReturnPosition(0),
                         attackList[i].ReturnPosition(1)) ||
                         Bush(playerStartGunPoint.position,
@@ -60,12 +74,7 @@ namespace PlayerBehaviour
                         , attackList[i].ReturnPosition(3)))
                     {
                         if (LibraryPlayerPosition.PlayerConditions.IsAlive)
-                            attackList[i].GetDamage(damage, dmgType, playerFight.MyWeapon); // атака
-
-                        if (attackList[i].ReturnHealth() <= 0 || !attackList[i])
-                        {
-                            attackList.RemoveAt(i);
-                        }
+                            attackList[i].GetDamage(damage, dmgType, playerFight.MyWeapon); 
                     }
                 }
             }

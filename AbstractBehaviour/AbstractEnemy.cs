@@ -23,7 +23,8 @@ namespace AbstractBehaviour
         private AbstractObjectConditions absObjCond;
         [SerializeField]
         private AbstractAttack absAttack;
-        private bool isMayGetDamage = true;
+		[SerializeField]
+		private bool isMayGetDamage = true;
 
         public AbstractAttack AbsAttack
         {
