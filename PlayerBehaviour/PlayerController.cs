@@ -2,6 +2,7 @@
 using UnityStandardAssets.CrossPlatformInput;
 using MovementEffects;
 using System.Collections.Generic;
+using GameBehaviour;
 
 namespace PlayerBehaviour
 {
@@ -28,8 +29,9 @@ namespace PlayerBehaviour
         private float rotateSpeed;
         [SerializeField, Tooltip("Величина задержки движения"), Range(1, 3)]
         private float iddleSize;
-        [SerializeField, Tooltip("Частота обновления"), Range(0.001f, 0.05f)]
+        [SerializeField, Tooltip("Частота обновления"), Range(0.001f, 0.1f)]
         private float updateFrequency;
+        private PlayerAnimationsController playerAnimController;
 
         private float currentMagnitude; // текущее значение магнитуды векторов
         //меньше которого используется сглаженное время
@@ -43,6 +45,7 @@ namespace PlayerBehaviour
         private bool isAliveFromConditions;
 
         private bool continueCalculateInCoroutine;
+        private Vector3 triangleVector;
         #endregion
 
         #region Get-Set`s
@@ -140,6 +143,8 @@ namespace PlayerBehaviour
             continueCalculateInCoroutine = true;
             isUpdating = true;
             InitialisationOfCoroutines();
+            playerAnimController = GetComponent<PlayerAnimationsController>();
+            triangleVector = Vector3.zero;
         }
 
         /// <summary>
@@ -170,6 +175,7 @@ namespace PlayerBehaviour
         {
             while (true)
             {
+                UpdateYCoordinate();
                 if (!PlayerFight.IsFighting)
                 {
                     MovePlayerGetNetPosition();
@@ -188,6 +194,10 @@ namespace PlayerBehaviour
         /// </summary>
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.W))
+                playerAnimController.AnimatorOfObject.SetBool("isDamage", true);
+            if (Input.GetKeyUp(KeyCode.W))
+                playerAnimController.AnimatorOfObject.SetBool("isDamage", false);
             if (isAliveFromConditions)
                 UpdateNewTransformPositionAndRotation();
         }
@@ -199,7 +209,7 @@ namespace PlayerBehaviour
         private void UpdateNewTransformPositionAndRotation()
         {
             currentMagnitude = (playerObjectTransform.position - tempVectorTransform).magnitude;
-
+            
             if (!PlayerFight.IsFighting)
             {
                 if (currentMagnitude > iddleSize)
@@ -239,14 +249,26 @@ namespace PlayerBehaviour
             if (moveVector3.magnitude >= 0.1f)
             {
                 isUpdating = true;
-                magnitudeTemp = moveVector3.magnitude*moveSpeed; 
+                magnitudeTemp = moveVector3.magnitude*moveSpeed;
                 //magnitudeTemp = moveSpeed;
+
                 tempVectorTransform = (moveVector3 + playerObjectTransform.position);
             }
             else
             {
                 isUpdating = false;
             }
+        }
+
+        /// <summary>
+        /// Обновляем позицию при заходе на лестницу
+        /// </summary>
+        private void UpdateYCoordinate()
+        {
+            triangleVector.x = playerObjectTransform.position.x;
+            triangleVector.y = TriaglesRender.GetHightOnY();
+            triangleVector.z = playerObjectTransform.position.z;
+            playerObjectTransform.position = triangleVector;
         }
 
         /// <summary>
