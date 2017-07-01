@@ -2,6 +2,7 @@
 using UnityStandardAssets.CrossPlatformInput;
 using MovementEffects;
 using System.Collections.Generic;
+using GameBehaviour;
 
 namespace PlayerBehaviour
 {
@@ -28,7 +29,7 @@ namespace PlayerBehaviour
         private float rotateSpeed;
         [SerializeField, Tooltip("Величина задержки движения"), Range(1, 3)]
         private float iddleSize;
-        [SerializeField, Tooltip("Частота обновления"), Range(0.001f, 0.05f)]
+        [SerializeField, Tooltip("Частота обновления"), Range(0.001f, 0.1f)]
         private float updateFrequency;
         private PlayerAnimationsController playerAnimController;
 
@@ -44,6 +45,7 @@ namespace PlayerBehaviour
         private bool isAliveFromConditions;
 
         private bool continueCalculateInCoroutine;
+        private Vector3 triangleVector;
         #endregion
 
         #region Get-Set`s
@@ -142,6 +144,7 @@ namespace PlayerBehaviour
             isUpdating = true;
             InitialisationOfCoroutines();
             playerAnimController = GetComponent<PlayerAnimationsController>();
+            triangleVector = Vector3.zero;
         }
 
         /// <summary>
@@ -172,6 +175,7 @@ namespace PlayerBehaviour
         {
             while (true)
             {
+                UpdateYCoordinate();
                 if (!PlayerFight.IsFighting)
                 {
                     MovePlayerGetNetPosition();
@@ -212,7 +216,6 @@ namespace PlayerBehaviour
                 {
                     // Если двигаем стик, то плавно разгоняемся
                     // иначе плавно замедляемся
-
                     if (isUpdating)
                         playerObjectTransform.position =
                             Vector3.MoveTowards(playerObjectTransform.position, tempVectorTransform,
@@ -246,14 +249,26 @@ namespace PlayerBehaviour
             if (moveVector3.magnitude >= 0.1f)
             {
                 isUpdating = true;
-                magnitudeTemp = moveVector3.magnitude*moveSpeed; 
+                magnitudeTemp = moveVector3.magnitude*moveSpeed;
                 //magnitudeTemp = moveSpeed;
+
                 tempVectorTransform = (moveVector3 + playerObjectTransform.position);
             }
             else
             {
                 isUpdating = false;
             }
+        }
+
+        /// <summary>
+        /// Обновляем позицию при заходе на лестницу
+        /// </summary>
+        private void UpdateYCoordinate()
+        {
+            triangleVector.x = playerObjectTransform.position.x;
+            triangleVector.y = TriaglesRender.GetHightOnY();
+            triangleVector.z = playerObjectTransform.position.z;
+            playerObjectTransform.position = triangleVector;
         }
 
         /// <summary>
