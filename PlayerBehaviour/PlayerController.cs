@@ -214,7 +214,15 @@ namespace PlayerBehaviour
         /// Обновляем
         /// </summary>
         private void Update()
-        { 
+        {
+            Debug.Log(playerAnimController.AnimatorOfObject.GetBool("isRunning"));
+            if (Input.GetKeyDown(KeyCode.W))
+                playerAnimController.AnimatorOfObject.SetBool("isRunning", true);
+
+            if (Input.GetKeyUp(KeyCode.W))
+                playerAnimController.AnimatorOfObject.SetBool("isRunning", false);
+
+     
             if (isAliveFromConditions)
                 UpdateNewTransformPositionAndRotation();
         }

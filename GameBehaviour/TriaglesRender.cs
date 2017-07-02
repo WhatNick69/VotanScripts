@@ -16,13 +16,15 @@ namespace GameBehaviour
         private Transform A, B, C, A1, B1, C1;
         [SerializeField]
         private Transform stairs;
-        private float AB, AC, BC, AA1;
+		private Transform center;
+		private float AB, AC, BC, AA1;
 
         private float a, b, c, d, e, f;
         private float S;
         private float H;
         private float sootn;
         private static float Y;
+		private bool gravity = true;
 
         /// <summary>
         /// Проверяет принадлежность точки "X" к плосскости заданной точками y,x,w
@@ -51,16 +53,18 @@ namespace GameBehaviour
         /// </summary>
         private void HightOnY()
         {
-            if (InPlane(player.position, B.position, A1.position, A.position) || InPlane(player.position, B1.position, B.position, A1.position))
-            {
-                d = Vector3.Distance(player.position, A.position);
-                e = Vector3.Distance(player.position, A1.position);
-                f = (d + e + AA1) / 2;
-                S = Mathf.Sqrt(f * (f - AA1) * (f - d) * (f - e));
-                H = (2 * S) / AA1;
-                sootn = H / AC;
-                Y = BC * sootn;
-            }
+			if (InPlane(player.position, B.position, A1.position, A.position) || InPlane(player.position, B1.position, B.position, A1.position))
+			{
+				gravity = false;
+				d = Vector3.Distance(player.position, A.position);
+				e = Vector3.Distance(player.position, A1.position);
+				f = (d + e + AA1) / 2;
+				S = Mathf.Sqrt(f * (f - AA1) * (f - d) * (f - e));
+				H = (2 * S) / AA1;
+				sootn = H / AC;
+				Y = BC * sootn;
+			}
+			else gravity = true;
         }
 
         /// <summary>
@@ -81,15 +85,38 @@ namespace GameBehaviour
             AC = Vector3.Distance(A.position, C.position);
             BC = Vector3.Distance(C.position, B.position);
             AA1 = Vector3.Distance(A.position, A1.position);
-        }
+			center = GetComponent<Transform>();
+		}
 
         /// <summary>
         /// Таймовое обновление
         /// </summary>
         private void FixedUpdate()
         {
-            if (Vector3.Distance(stairs.position, player.position) <= 2)
-                HightOnY();
-        }
+			if (Vector3.Distance(stairs.position, player.position) <= 2)
+			{
+				HightOnY();
+			}
+
+			else
+			{
+				if (Vector3.Distance(player.position, center.position) < 11.5f && gravity)
+				{
+					if (Y >= 0f)
+					{
+						if (Y - 0.35f < 0) Y = 0;
+						else Y -= 0.35f;
+					}
+					else
+					{
+						Y = 0;
+					}
+				}
+				else
+				{
+					Y = 1.35f;
+				}
+			}
+		}
     }
 }
