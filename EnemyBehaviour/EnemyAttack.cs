@@ -36,12 +36,11 @@ namespace EnemyBehaviour
         /// <returns></returns>
         public bool AttackToPlayer()
         {
-            if (isMayToDamage && (Bush(enemyStartGunPoint.position, enemyFinishGunPoint.position,
+            if ((Bush(enemyStartGunPoint.position, enemyFinishGunPoint.position,
                  LibraryPlayerPosition.GetPlayerPoint(0), LibraryPlayerPosition.GetPlayerPoint(1)) ||
                  Bush(enemyStartGunPoint.position, enemyFinishGunPoint.position,
                  LibraryPlayerPosition.GetPlayerPoint(2), LibraryPlayerPosition.GetPlayerPoint(3))))
             {
-                Timing.RunCoroutine(CoroutineMayDoDamageForPlayer());
                 return true;
             }
             else

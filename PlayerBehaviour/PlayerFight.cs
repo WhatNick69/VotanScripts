@@ -27,11 +27,12 @@ namespace PlayerBehaviour
         private static bool isRotating;
         private static bool isFighting;
         private static bool isDefensing;
+        private static bool isSpining;
+        private static bool isDamaged;
 
         private PlayerWeapon myWeapon;
         private PlayerCameraSmooth playerCamSmooth;
 
-        private bool isSpining;
         private float tempSpinSpeed;
         private float spiningSpeedInCoroutine;
         #endregion
@@ -86,6 +87,32 @@ namespace PlayerBehaviour
             set
             {
                 isDefensing = value;
+            }
+        }
+
+        public static bool IsSpining
+        {
+            get
+            {
+                return isSpining;
+            }
+
+            set
+            {
+                isSpining = value;
+            }
+        }
+
+        public static bool IsDamaged
+        {
+            get
+            {
+                return isDamaged;
+            }
+
+            set
+            {
+                isDamaged = value;
             }
         }
         #endregion
@@ -178,6 +205,11 @@ namespace PlayerBehaviour
                     // Защита
                     else if (fightVector.z < 0)
                     {
+                        // включаем защиту
+                        playerController.
+                            PlayerAnimController.HighSpeedAnimation();
+                        playerController.
+                            PlayerAnimController.AnimatorOfObject.SetBool("isDefensing", true);
                         isRotating = false;
                         isDefensing = true;
                         isFighting = true;
@@ -194,6 +226,8 @@ namespace PlayerBehaviour
             {
                 if (isDefensing)
                 {
+                    playerController.
+    PlayerAnimController.AnimatorOfObject.SetBool("isDefensing", false);
                     isDefensing = false;
                     isFighting = false;
                 }
@@ -208,6 +242,7 @@ namespace PlayerBehaviour
             isFighting = true;
             playerController.StraightMoving();
             yield return Timing.WaitForSeconds(1);
+            playerController.StopLongAttaack();
             isFighting = false;
         }
     }

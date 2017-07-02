@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using MovementEffects;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace AbstractBehaviour
@@ -40,7 +43,7 @@ namespace AbstractBehaviour
                 else if (healthValue <= 0 && isAlive)
                 {
                     isAlive = false;
-                    DieState();
+                    Timing.RunCoroutine(DieState());
                     healthValue = 0;
                     RefreshHealthCircle();
                 }
@@ -63,9 +66,11 @@ namespace AbstractBehaviour
             }
         }
 
-        public virtual void DieState()
+        public virtual IEnumerator<float> DieState()
         {
             isAlive = false;
+            yield return Timing.WaitForSeconds(0);
+            DestroyObject();
         }
 
         public virtual void DestroyObject()

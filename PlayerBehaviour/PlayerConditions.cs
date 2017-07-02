@@ -27,9 +27,13 @@ namespace PlayerBehaviour
         private GameObject playerObject;
         private PlayerArmory playerArmory;
         private PlayerFight playerFight;
+        [SerializeField]
+        private PlayerAnimationsController playerAnimationsController;
 
         private bool isRageRegen; // можно ли регенерить ярость
         private float initialisatedRageValuePlayer; // начальное значение ярости
+
+        private bool mayToGetDamage = true;
         #endregion
 
         #region Свойства
@@ -153,43 +157,52 @@ namespace PlayerBehaviour
         /// <param name="damageValue"></param>
         public void GetDamage(float damageValue)
         {
-            if (!playerArmory.IsAlive)
+            if (mayToGetDamage)
             {
-                if (PlayerFight.IsDefensing)
-                    HealthValue -= LibraryStaticFunctions.GetPlusMinusVal(damageValue, 0.1f)*LibraryStaticFunctions.GetPlusMinusVal
-                        (playerFight.MyWeapon.DefenceValue,0.1f);
-                else
-                    HealthValue -= LibraryStaticFunctions.GetPlusMinusVal(damageValue, 0.1f);
-            }
-            else
-            {
-                if (PlayerFight.IsDefensing)
+                if (!playerArmory.IsAlive)
                 {
-                    playerArmory.DecreaseArmoryLevel(-
-                    LibraryStaticFunctions.GetPlusMinusVal(damageValue, 0.1f) *
-                    LibraryStaticFunctions.GetPlusMinusVal
-                        (playerFight.MyWeapon.DefenceValue, 0.1f));
+                    if (PlayerFight.IsDefensing)
+                    {
+                        HealthValue -= LibraryStaticFunctions.GetPlusMinusVal(damageValue, 0.1f) * LibraryStaticFunctions.GetPlusMinusVal
+                            (playerFight.MyWeapon.DefenceValue, 0.1f);
+                        CoroutineForIsMayGetDamage();
+                    }
+                    else
+                    {
+                        HealthValue -= LibraryStaticFunctions.GetPlusMinusVal(damageValue, 0.1f);
+                        CoroutineForIsMayGetDamage();
+                    }
                 }
                 else
                 {
-                    playerArmory.DecreaseArmoryLevel(-
-                   LibraryStaticFunctions.GetPlusMinusVal(damageValue, 0.1f));
+                    if (PlayerFight.IsDefensing)
+                    {
+                        playerArmory.DecreaseArmoryLevel(-
+                        LibraryStaticFunctions.GetPlusMinusVal(damageValue, 0.1f) *
+                        LibraryStaticFunctions.GetPlusMinusVal
+                            (playerFight.MyWeapon.DefenceValue, 0.1f));
+                        CoroutineForIsMayGetDamage();
+                    }
+                    else
+                    {
+                        playerArmory.DecreaseArmoryLevel(-
+                       LibraryStaticFunctions.GetPlusMinusVal(damageValue, 0.1f));
+                        CoroutineForIsMayGetDamage();
+                    }
                 }
             }
         }
 
         /// <summary>
-        /// Получаем урон.
-        /// Задаем время, в течении которого следует получать урон
-        /// Задаем промежуток времени, через который мы получаем урон
+        /// Получаем урон. Запускаем корутин, в течении времени которого
+        /// враг не может ударить. В этот момент воспроизводится анимация
         /// </summary>
         /// <param name="damageValue"></param>
         /// <param name="time"></param>
         /// <param name="dmgPerSecond"></param>
-        public void GetDamage(float damageValue, float time, float dmgPerSecond = 0.5f)
+        public void CoroutineForIsMayGetDamage()
         {
-            healthValue -= damageValue;
-            Timing.RunCoroutine(SetDamageForTime(damageValue, time, dmgPerSecond));
+            Timing.RunCoroutine(MayToGetDamage());
         }
 
         /// <summary>
@@ -199,25 +212,38 @@ namespace PlayerBehaviour
         /// <param name="time"></param>
         /// <param name="dmgPerSecond"></param>
         /// <returns></returns>
-        IEnumerator<float> SetDamageForTime(float damageValue,float time, float dmgPerSecond)
+        IEnumerator<float> MayToGetDamage()
         {
-            int i = 0;
-            while (time/dmgPerSecond > i)
-            {
-                healthValue -= damageValue;
-                yield return Timing.WaitForSeconds(dmgPerSecond);
-                i++;
-            }
+            PlayerFight.IsDamaged = true;
+            playerAnimationsController.HighSpeedAnimation();
+            playerAnimationsController.AnimatorOfObject.SetBool("isDamage", true);
+            mayToGetDamage = false;
+            yield return Timing.WaitForSeconds(0.25f);
+            mayToGetDamage = true;
+            PlayerFight.IsDamaged = false;
+            playerAnimationsController.AnimatorOfObject.SetBool("isDamage", false);
         }
 
         /// <summary>
         /// Состояние смерти
         /// </summary>
-        public override void DieState()
+        public override IEnumerator<float> DieState()
         {
-            base.DieState();
-            playerObject.SetActive(false);
+            Debug.Log("HMMM");
+            IsAlive = false;
+            playerAnimationsController.LowSpeedAnimation();
             GetComponent<PlayerController>().IsAliveFromConditions = false;
+            FalseAllStates();
+            yield return Timing.WaitForSeconds(1);
+        }
+
+        private void FalseAllStates()
+        {
+            playerAnimationsController.AnimatorOfObject.SetBool("isRunning", false);
+            playerAnimationsController.AnimatorOfObject.SetBool("isDamage", false);
+            playerAnimationsController.AnimatorOfObject.SetBool("isDefensing", false);
+            playerAnimationsController.AnimatorOfObject.SetBool("isFighting", false);
+            playerAnimationsController.AnimatorOfObject.SetBool("isLongAttack", false);
         }
 
         public override float GetDamageWithResistance(float damage, DamageType dmgType)
