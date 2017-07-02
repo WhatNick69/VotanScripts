@@ -214,6 +214,7 @@ namespace PlayerBehaviour
         /// Обновляем
         /// </summary>
         private void Update()
+<<<<<<< HEAD
 
         {
             Debug.Log(playerAnimController.AnimatorOfObject.GetBool("isRunning"));
@@ -225,6 +226,9 @@ namespace PlayerBehaviour
 
        
 
+=======
+        { 
+>>>>>>> master
             if (isAliveFromConditions)
                 UpdateNewTransformPositionAndRotation();
         }
@@ -255,12 +259,21 @@ namespace PlayerBehaviour
                     else
                         playerObjectTransform.position = Vector3.Lerp(playerObjectTransform.position,
                             tempVectorTransform, moveSpeed * Time.deltaTime);
+<<<<<<< HEAD
                 }
                 else
                 {
                     // Выключаю бег
                     playerAnimController.AnimatorOfObject.SetBool("isRunning", false);
                 }
+=======
+                }
+                else
+                {
+                    // Выключаю бег
+                    playerAnimController.AnimatorOfObject.SetBool("isRunning", false);
+                }
+>>>>>>> master
 
                 if (PlayerFight.IsRotating)
                 {
