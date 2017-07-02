@@ -26,7 +26,5 @@ namespace AbstractBehaviour
             }
         }
         #endregion
-
-
     }
 }

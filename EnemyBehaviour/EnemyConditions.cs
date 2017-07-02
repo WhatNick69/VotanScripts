@@ -93,12 +93,6 @@ namespace EnemyBehaviour
             enemyMove.SetNewSpeedOfNavMeshAgent(enemyMove.AgentSpeed,enemyMove.RotationSpeed);
         }
 
-        public override void DieState()
-        {
-            base.DieState();
-            DestroyObject();
-        }
-
         /// <summary>
         /// Таймовые вычисления
         /// </summary>

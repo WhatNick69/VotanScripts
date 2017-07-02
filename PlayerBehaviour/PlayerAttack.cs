@@ -27,8 +27,6 @@ namespace PlayerBehaviour
             Debug.Log(playerFight);
         }
 
-	
-
 		/// <summary>
 		/// Обновление с заданной частотой
 		/// </summary>

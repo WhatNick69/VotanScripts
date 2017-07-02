@@ -63,12 +63,18 @@ namespace PlayerBehaviour
             Timing.RunCoroutine(CoroutineGetPositionOfPlayer());
         }
 
+        /// <summary>
+        /// Зуммировать персонажа при блоке
+        /// </summary>
         public void CameraZoom()
         {
             standartVectorForCamera =
                 new Vector3(0, 4.5f, -4);
         }
 
+        /// <summary>
+        /// Проверить вектор на нормализацию
+        /// </summary>
         public void CheckVectorForCamera()
         {
             if (standartVectorForCamera.y != 9)
@@ -120,6 +126,24 @@ namespace PlayerBehaviour
 
                 yield return Timing.WaitForSeconds(frequencyUpdate);
             }
+            AfterDead();
+            yield return Timing.WaitForSeconds(3);
+            isUpdating = false;
+        }
+
+        /// <summary>
+        /// Метод, что вызывается после смерти персонажа,
+        /// для возвращения камеры в прежнее состояние
+        /// </summary>
+        private void AfterDead()
+        {
+            isUpdating = true;
+            standartVectorForCamera = new Vector3(0, 9f, -8);
+            targetRotation =
+                Quaternion.LookRotation(playerObjectTransform.position -
+                cameraTransform.position);
+            targetPosition =
+                playerObjectTransform.position + standartVectorForCamera;
         }
     }
 }

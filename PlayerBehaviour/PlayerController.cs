@@ -3,6 +3,7 @@ using UnityStandardAssets.CrossPlatformInput;
 using MovementEffects;
 using System.Collections.Generic;
 using GameBehaviour;
+using System;
 
 namespace PlayerBehaviour
 {
@@ -19,7 +20,7 @@ namespace PlayerBehaviour
         #region Переменные
         [SerializeField, Tooltip("Объект персонажа")]
         private Transform playerObjectTransform;
-        [SerializeField,Tooltip("Модель персонажа")]
+        [SerializeField, Tooltip("Модель персонажа")]
         private Transform playerModelTransform;
         [SerializeField, Tooltip("Позиция для атаки")]
         private Transform attackTransform;
@@ -31,6 +32,7 @@ namespace PlayerBehaviour
         private float iddleSize;
         [SerializeField, Tooltip("Частота обновления"), Range(0.001f, 0.1f)]
         private float updateFrequency;
+        [SerializeField]
         private PlayerAnimationsController playerAnimController;
 
         private float currentMagnitude; // текущее значение магнитуды векторов
@@ -41,6 +43,7 @@ namespace PlayerBehaviour
         private Vector3 tempVectorTransform;
         private bool isUpdating; // надо ли обновлять позицию?
         private float magnitudeTemp;
+        private float magnitudeForSpeed;
         private bool isMovingStraight;
         private bool isAliveFromConditions;
 
@@ -132,6 +135,19 @@ namespace PlayerBehaviour
                 playerObjectTransform = value;
             }
         }
+
+        public PlayerAnimationsController PlayerAnimController
+        {
+            get
+            {
+                return playerAnimController;
+            }
+
+            set
+            {
+                playerAnimController = value;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -143,7 +159,6 @@ namespace PlayerBehaviour
             continueCalculateInCoroutine = true;
             isUpdating = true;
             InitialisationOfCoroutines();
-            playerAnimController = GetComponent<PlayerAnimationsController>();
             triangleVector = Vector3.zero;
         }
 
@@ -160,7 +175,9 @@ namespace PlayerBehaviour
         /// </summary>
         public void StraightMoving()
         {
-            Debug.Log("Рывок");
+            // Включаю рывок
+            playerAnimController.AnimatorOfObject.SetBool("isLongAttack", true);
+
             attackTransform.position = 
                 new Vector3(attackTransform.position.x, 
                 playerObjectTransform.position.y, attackTransform.position.z);
@@ -173,31 +190,31 @@ namespace PlayerBehaviour
         /// <returns></returns>
         private IEnumerator<float> CoroutineForFixedUpdatePositionAndRotation()
         {
-            while (true)
+            while (isAliveFromConditions)
             {
                 UpdateYCoordinate();
                 if (!PlayerFight.IsFighting)
                 {
                     MovePlayerGetNetPosition();
                     RotatePlayeGetNewRotation();
-                    yield return Timing.WaitForSeconds(updateFrequency);
+                    if (!PlayerFight.IsDamaged)
+                        yield return Timing.WaitForSeconds(updateFrequency);
+                    else
+                        yield return Timing.WaitForSeconds(updateFrequency*3);
                 }
                 else
                 {
                     yield return Timing.WaitForSeconds(updateFrequency*3);
                 }
             }
+            playerAnimController.AnimatorOfObject.SetBool("isDead", true);
         }
 
         /// <summary>
         /// Обновляем
         /// </summary>
         private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.W))
-                playerAnimController.AnimatorOfObject.SetBool("isDamage", true);
-            if (Input.GetKeyUp(KeyCode.W))
-                playerAnimController.AnimatorOfObject.SetBool("isDamage", false);
+        { 
             if (isAliveFromConditions)
                 UpdateNewTransformPositionAndRotation();
         }
@@ -209,27 +226,50 @@ namespace PlayerBehaviour
         private void UpdateNewTransformPositionAndRotation()
         {
             currentMagnitude = (playerObjectTransform.position - tempVectorTransform).magnitude;
-            
             if (!PlayerFight.IsFighting)
             {
                 if (currentMagnitude > iddleSize)
                 {
+                    // Включаю бег
+                    playerAnimController.SetSpeedAnimationByRunSpeed(magnitudeForSpeed);
+                    playerAnimController.AnimatorOfObject.SetBool("isRunning", true);
+
                     // Если двигаем стик, то плавно разгоняемся
                     // иначе плавно замедляемся
                     if (isUpdating)
+                    {
                         playerObjectTransform.position =
                             Vector3.MoveTowards(playerObjectTransform.position, tempVectorTransform,
                                 magnitudeTemp * Time.deltaTime);
+                    }
                     else
-                        playerObjectTransform.position = Vector3.Lerp(playerObjectTransform.position, 
-                            tempVectorTransform,moveSpeed * Time.deltaTime);
+                        playerObjectTransform.position = Vector3.Lerp(playerObjectTransform.position,
+                            tempVectorTransform, moveSpeed * Time.deltaTime);
                 }
-                if (PlayerFight.IsRotating)
-                    playerModelTransform.localRotation = Quaternion.Slerp(playerModelTransform.rotation
-                        , Quaternion.Euler(0, angle, 0), rotateSpeed*2f * Time.deltaTime);
                 else
+                {
+                    // Выключаю бег
+                    playerAnimController.AnimatorOfObject.SetBool("isRunning", false);
+                }
+
+                if (PlayerFight.IsRotating)
+                {
+                    playerModelTransform.localRotation = Quaternion.Slerp(playerModelTransform.rotation
+                        , Quaternion.Euler(0, angle, 0), rotateSpeed * 2f * Time.deltaTime);
+
+                    // Включаю атаку
+                    playerAnimController.AnimatorOfObject.SetBool("isFighting", true);
+                    // Выключаю бег
+                    playerAnimController.AnimatorOfObject.SetBool("isRunning", false);
+                }
+                else
+                {
                     playerModelTransform.localRotation = Quaternion.Slerp(playerModelTransform.rotation
                         , Quaternion.Euler(0, angle, 0), rotateSpeed * Time.deltaTime);
+
+                    // выключаем атаку
+                    playerAnimController.AnimatorOfObject.SetBool("isFighting", false);
+                }
             }
             else if (!PlayerFight.IsDefensing)
             {
@@ -238,17 +278,24 @@ namespace PlayerBehaviour
             }
         }
 
+        public void StopLongAttaack()
+        {
+            // выключить рывок
+            playerAnimController.AnimatorOfObject.SetBool("isLongAttack", false);
+        }
+
         /// <summary>
         /// Двигаем персонажа вслед за джойстиком
         /// </summary>
         private void MovePlayerGetNetPosition()
         {
             moveVector3 = new Vector3(CrossPlatformInputManager.GetAxis("Horizontal")
-               , 0, CrossPlatformInputManager.GetAxis("Vertical")) * moveSpeed;
+               , 0, CrossPlatformInputManager.GetAxis("Vertical"))* moveSpeed;
 
             if (moveVector3.magnitude >= 0.1f)
             {
                 isUpdating = true;
+                magnitudeForSpeed = moveVector3.magnitude * 0.5f;
                 magnitudeTemp = moveVector3.magnitude*moveSpeed;
                 //magnitudeTemp = moveSpeed;
 
