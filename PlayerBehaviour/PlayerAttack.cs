@@ -65,8 +65,7 @@ namespace PlayerBehaviour
 					attackList.Remove(attackList[i]); continue;
 				}
 				else
-                {
-					
+                {	
 					if (Bush(playerStartGunPoint.position,
                         playerFinishGunPoint.position, attackList[i].ReturnPosition(0),
                         attackList[i].ReturnPosition(1)) ||

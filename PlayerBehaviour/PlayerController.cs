@@ -3,10 +3,10 @@ using UnityStandardAssets.CrossPlatformInput;
 using MovementEffects;
 using System.Collections.Generic;
 using GameBehaviour;
-using System;
 
 namespace PlayerBehaviour
 {
+
     /// <summary>
     /// Используется для управления персонажем.
     /// Задает движение и поворот.
@@ -33,7 +33,7 @@ namespace PlayerBehaviour
         [SerializeField, Tooltip("Частота обновления"), Range(0.001f, 0.1f)]
         private float updateFrequency;
         [SerializeField]
-        private PlayerAnimationsController playerAnimController;
+        private PlayerAnimationsController playerAnimatorController;
 
         private float currentMagnitude; // текущее значение магнитуды векторов
         //меньше которого используется сглаженное время
@@ -136,16 +136,16 @@ namespace PlayerBehaviour
             }
         }
 
-        public PlayerAnimationsController PlayerAnimController
+        public PlayerAnimationsController PlayerAnimatorController
         {
             get
             {
-                return playerAnimController;
+                return playerAnimatorController;
             }
 
             set
             {
-                playerAnimController = value;
+                playerAnimatorController = value;
             }
         }
         #endregion
@@ -176,8 +176,8 @@ namespace PlayerBehaviour
         public void StraightMoving()
         {
             // Включаю рывок
-            playerAnimController.AnimatorOfObject.SetBool("isLongAttack", true);
-
+            playerAnimatorController.SetState(3, true);
+            playerAnimatorController.HighSpeedAnimation();
             attackTransform.position = 
                 new Vector3(attackTransform.position.x, 
                 playerObjectTransform.position.y, attackTransform.position.z);
@@ -207,7 +207,7 @@ namespace PlayerBehaviour
                     yield return Timing.WaitForSeconds(updateFrequency*3);
                 }
             }
-            playerAnimController.AnimatorOfObject.SetBool("isDead", true);
+            playerAnimatorController.SetState(5, true);
         }
 
         /// <summary>
@@ -215,14 +215,6 @@ namespace PlayerBehaviour
         /// </summary>
         private void Update()
         {
-            Debug.Log(playerAnimController.AnimatorOfObject.GetBool("isRunning"));
-            if (Input.GetKeyDown(KeyCode.W))
-                playerAnimController.AnimatorOfObject.SetBool("isRunning", true);
-
-            if (Input.GetKeyUp(KeyCode.W))
-                playerAnimController.AnimatorOfObject.SetBool("isRunning", false);
-
-     
             if (isAliveFromConditions)
                 UpdateNewTransformPositionAndRotation();
         }
@@ -238,10 +230,11 @@ namespace PlayerBehaviour
             {
                 if (currentMagnitude > iddleSize)
                 {
-                    // Включаю бег
-                    playerAnimController.SetSpeedAnimationByRunSpeed(magnitudeForSpeed);
-                    playerAnimController.AnimatorOfObject.SetBool("isRunning", true);
-
+                    //Включаю бег, если вектор левого стика больше
+                    //указанной величины и если мы не в состоянии атаки
+                    playerAnimatorController.SetSpeedAnimationByRunSpeed(magnitudeForSpeed);
+                    playerAnimatorController.SetState(0, true);
+                    
                     // Если двигаем стик, то плавно разгоняемся
                     // иначе плавно замедляемся
                     if (isUpdating)
@@ -256,8 +249,8 @@ namespace PlayerBehaviour
                 }
                 else
                 {
-                    // Выключаю бег
-                    playerAnimController.AnimatorOfObject.SetBool("isRunning", false);
+                    //PlayerAnimatorController.LowSpeedAnimation();
+                    playerAnimatorController.SetState(0, false);
                 }
 
                 if (PlayerFight.IsRotating)
@@ -266,9 +259,9 @@ namespace PlayerBehaviour
                         , Quaternion.Euler(0, angle, 0), rotateSpeed * 2f * Time.deltaTime);
 
                     // Включаю атаку
-                    playerAnimController.AnimatorOfObject.SetBool("isFighting", true);
+                    playerAnimatorController.SetState(1,true);
                     // Выключаю бег
-                    playerAnimController.AnimatorOfObject.SetBool("isRunning", false);
+                    playerAnimatorController.SetState(0, false);
                 }
                 else
                 {
@@ -276,7 +269,7 @@ namespace PlayerBehaviour
                         , Quaternion.Euler(0, angle, 0), rotateSpeed * Time.deltaTime);
 
                     // выключаем атаку
-                    playerAnimController.AnimatorOfObject.SetBool("isFighting", false);
+                    playerAnimatorController.SetState(1, false);
                 }
             }
             else if (!PlayerFight.IsDefensing)
@@ -286,10 +279,10 @@ namespace PlayerBehaviour
             }
         }
 
-        public void StopLongAttaack()
+        public void StopLongAttack()
         {
             // выключить рывок
-            playerAnimController.AnimatorOfObject.SetBool("isLongAttack", false);
+            playerAnimatorController.SetState(3, false);
         }
 
         /// <summary>
@@ -316,7 +309,7 @@ namespace PlayerBehaviour
         }
 
         /// <summary>
-        /// Обновляем позицию при заходе на лестницу
+        /// Обновляем позицию по "Y" при заходе на лестницу
         /// </summary>
         private void UpdateYCoordinate()
         {

@@ -175,6 +175,11 @@ namespace PlayerBehaviour
             isRotating = false;
         }
 
+        private float SpeedWhileSpiningForAnimator()
+        {
+            return myWeapon.SpinSpeed * 0.01f;
+        }
+
         /// <summary>
         /// Совершает действие, относительно положению правого стика.
         /// Вращение влево, вправо, рывок или защита.
@@ -190,6 +195,9 @@ namespace PlayerBehaviour
                     isSpining = true;
                     PlayerController.Angle += myWeapon.SpinSpeed * fightVector.x;
                     tempSpinSpeed = fightVector.x;
+                    playerController.PlayerAnimatorController.
+                        SetSpeedAnimationByRunSpeed
+                        (SpeedWhileSpiningForAnimator());
                 }
                 // Рывок или защита
                 else
@@ -203,13 +211,15 @@ namespace PlayerBehaviour
                         }
                     }
                     // Защита
-                    else if (fightVector.z < 0)
+                    else if (fightVector.z < -0.25f)
                     {
                         // включаем защиту
+                        if (!isDefensing)
+                            playerController.PlayerAnimatorController.
+                                HighSpeedAnimation();
+
                         playerController.
-                            PlayerAnimController.HighSpeedAnimation();
-                        playerController.
-                            PlayerAnimController.AnimatorOfObject.SetBool("isDefensing", true);
+                             PlayerAnimatorController.SetState(2, true);
                         isRotating = false;
                         isDefensing = true;
                         isFighting = true;
@@ -219,6 +229,8 @@ namespace PlayerBehaviour
             }
             else if (isSpining)
             {
+                playerController.PlayerAnimatorController.
+                       HighSpeedAnimation();
                 isSpining = false;
                 Timing.RunCoroutine(CoroutineSlowMotionFighting(fightVector.x));
             }
@@ -226,8 +238,10 @@ namespace PlayerBehaviour
             {
                 if (isDefensing)
                 {
+                    playerController.PlayerAnimatorController.
+                        HighSpeedAnimation();
                     playerController.
-    PlayerAnimController.AnimatorOfObject.SetBool("isDefensing", false);
+                        PlayerAnimatorController.SetState(2, false);
                     isDefensing = false;
                     isFighting = false;
                 }
@@ -235,6 +249,10 @@ namespace PlayerBehaviour
             }
         }
 
+        /// <summary>
+        /// Корутина для атакующего рывка
+        /// </summary>
+        /// <returns></returns>
         private IEnumerator<float> CoroutineForStraightAttack()
         {
             spiningSpeedInCoroutine = 0;
@@ -242,7 +260,7 @@ namespace PlayerBehaviour
             isFighting = true;
             playerController.StraightMoving();
             yield return Timing.WaitForSeconds(1);
-            playerController.StopLongAttaack();
+            playerController.StopLongAttack();
             isFighting = false;
         }
     }

@@ -216,12 +216,12 @@ namespace PlayerBehaviour
         {
             PlayerFight.IsDamaged = true;
             playerAnimationsController.HighSpeedAnimation();
-            playerAnimationsController.AnimatorOfObject.SetBool("isDamage", true);
+            playerAnimationsController.SetState(4, true);
             mayToGetDamage = false;
-            yield return Timing.WaitForSeconds(0.25f);
+            yield return Timing.WaitForSeconds(0.5f);
             mayToGetDamage = true;
             PlayerFight.IsDamaged = false;
-            playerAnimationsController.AnimatorOfObject.SetBool("isDamage", false);
+            playerAnimationsController.SetState(4, false);
         }
 
         /// <summary>
@@ -229,21 +229,12 @@ namespace PlayerBehaviour
         /// </summary>
         public override IEnumerator<float> DieState()
         {
-            Debug.Log("HMMM");
+            Debug.Log("Dead");
             IsAlive = false;
             playerAnimationsController.LowSpeedAnimation();
             GetComponent<PlayerController>().IsAliveFromConditions = false;
-            FalseAllStates();
+            playerAnimationsController.DisableAllStates();
             yield return Timing.WaitForSeconds(1);
-        }
-
-        private void FalseAllStates()
-        {
-            playerAnimationsController.AnimatorOfObject.SetBool("isRunning", false);
-            playerAnimationsController.AnimatorOfObject.SetBool("isDamage", false);
-            playerAnimationsController.AnimatorOfObject.SetBool("isDefensing", false);
-            playerAnimationsController.AnimatorOfObject.SetBool("isFighting", false);
-            playerAnimationsController.AnimatorOfObject.SetBool("isLongAttack", false);
         }
 
         public override float GetDamageWithResistance(float damage, DamageType dmgType)

@@ -18,12 +18,9 @@ namespace PlayerBehaviour
 		string gripName { get; set; }
 
         void Start();
-        void SetWeapon(float damage, float defenceValue, DamageType attackType, float spinSpeed);
-        void SetWeapon(float damage, DamageType attackType, float spinSpeed);
-		void SetWeapon(float damage, DamageType attackType);
-		void SetWeapon(float damage);
+        void SetWeaponParameters(float damage, float defenceValue, DamageType attackType, float spinSpeed);
         void WhileTime();
-	}
+    }
 
 	/// <summary>
     /// Класс, описывающий поведение оружия
@@ -126,48 +123,14 @@ namespace PlayerBehaviour
         /// <param name="damage"></param>
         /// <param name="attackType"></param>
         /// <param name="spinSpeed"></param>
-        public void SetWeapon(float damage, float defenceValue,DamageType attackType, float spinSpeed)
+        public void SetWeaponParameters(float damage, float defenceValue,DamageType attackType, float spinSpeed)
         {
             this.defenceValue = defenceValue;
             this.damage = damage;
             this.attackType = attackType;
             this.spinSpeed = spinSpeed;
         }
-
-        /// <summary>
-        /// Задать характеристики оружия через урон
-        /// , тип урона и скорость
-        /// </summary>
-        /// <param name="damage"></param>
-        /// <param name="attackType"></param>
-        /// <param name="spinSpeed"></param>
-        public void SetWeapon(float damage, DamageType attackType, float spinSpeed)
-		{
-			this.damage = damage;
-			this.attackType = attackType;
-			this.spinSpeed = spinSpeed;
-		}
-
-		/// <summary>
-        /// Задать характеристики оружия через урон и тип урона
-        /// </summary>
-        /// <param name="damage"></param>
-        /// <param name="attackType"></param>
-        public void SetWeapon(float damage, DamageType attackType)
-		{
-			this.damage = damage;
-			this.attackType = attackType;
-		}
-
-		/// <summary>
-        /// Задать характеристики оружия через урон
-        /// </summary>
-        /// <param name="damage"></param>
-        public void SetWeapon(float damage)
-		{
-			this.damage = damage;
-		}
-
+        
         /// <summary>
         /// Инициализация
         /// </summary>
