@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace GameBehaviour
 {
@@ -19,22 +17,25 @@ namespace GameBehaviour
 		private Transform center;
 		private float AB, AC, BC, AA1;
 
+		private float normalLevel;
         private float a, b, c, d, e, f;
         private float S;
         private float H;
         private float sootn;
         private static float Y;
 		private bool gravity = true;
+		private bool onLevelOne = true;
+		private bool onLevelTwo = false;
 
-        /// <summary>
-        /// Проверяет принадлежность точки "X" к плосскости заданной точками y,x,w
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="z"></param>
-        /// <param name="w"></param>
-        /// <returns></returns>
-        private bool InPlane(Vector3 x, Vector3 y, Vector3 z, Vector3 w)
+		/// <summary>
+		/// Проверяет принадлежность точки "X" к плоскости заданной точками y,x,w
+		/// </summary>
+		/// <param name="x"></param>
+		/// <param name="y"></param>
+		/// <param name="z"></param>
+		/// <param name="w"></param>
+		/// <returns></returns>
+		private bool InPlane(Vector3 x, Vector3 y, Vector3 z, Vector3 w)
         {
             Vector3 playerPoint = x;
             Vector3 PV1 = y;
@@ -50,10 +51,12 @@ namespace GameBehaviour
 
         /// <summary>
         /// Расчитывает нужную высоту позиции персонажа по Y
+		/// с помощью подобия треугольников
         /// </summary>
         private void HightOnY()
         {
-			if (InPlane(player.position, B.position, A1.position, A.position) || InPlane(player.position, B1.position, B.position, A1.position))
+			if (InPlane(player.position, B.position, A1.position, A.position) || 
+				InPlane(player.position, B1.position, B.position, A1.position))
 			{
 				gravity = false;
 				d = Vector3.Distance(player.position, A.position);
@@ -62,10 +65,39 @@ namespace GameBehaviour
 				S = Mathf.Sqrt(f * (f - AA1) * (f - d) * (f - e));
 				H = (2 * S) / AA1;
 				sootn = H / AC;
-				Y = BC * sootn;
+				Y = BC * sootn + 0.77f;
 			}
 			else gravity = true;
         }
+
+		/// <summary>
+		/// Просчет гравитации для персонажа
+		/// </summary>
+		private void GravityScale()
+		{
+			if (Vector3.Distance(player.position, center.position) < 11f && gravity)
+			{
+				if (Y > normalLevel)
+				{
+					if (Y - 0.35f < normalLevel)
+					{
+						Y = normalLevel;
+						onLevelOne = true;
+					}
+					else
+					{
+						Y -= 0.35f;
+						onLevelOne = true;
+					}
+				}
+				else
+				{
+					Y = normalLevel;
+					onLevelOne = true;
+					onLevelTwo = false;
+				}
+			}
+		}
 
         /// <summary>
         /// Возвращает нужную высоту по Y
@@ -86,6 +118,7 @@ namespace GameBehaviour
             BC = Vector3.Distance(C.position, B.position);
             AA1 = Vector3.Distance(A.position, A1.position);
 			center = GetComponent<Transform>();
+			normalLevel = 0.55f;
 		}
 
         /// <summary>
@@ -97,25 +130,9 @@ namespace GameBehaviour
 			{
 				HightOnY();
 			}
-
 			else
 			{
-				if (Vector3.Distance(player.position, center.position) < 11.5f && gravity)
-				{
-					if (Y >= 0f)
-					{
-						if (Y - 0.35f < 0) Y = 0;
-						else Y -= 0.35f;
-					}
-					else
-					{
-						Y = 0;
-					}
-				}
-				else
-				{
-					Y = 1.35f;
-				}
+				GravityScale();
 			}
 		}
     }

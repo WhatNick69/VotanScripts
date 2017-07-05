@@ -1,56 +1,83 @@
-﻿using MovementEffects;
-using PlayerBehaviour;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System;
+using EnemyBehaviour;
 using UnityEngine;
-using VotanLibraries;
+using VotanInterfaces;
 
 namespace AbstractBehaviour
 {
     /// <summary>
     /// Абстрактный класс для реализации любого врага
+    /// 
+    /// Хранит в себе ссылки на все компоненты
     /// </summary>
     public abstract class AbstractEnemy
-      : MonoBehaviour
+      : MonoBehaviour, IEnemyBehaviour
     {
-		[SerializeField]
-		protected Transform rightShoulderPoint, leftShoulderPoint, // точки противника
+        #region Переменные
+        [SerializeField] // точки противника
+        protected Transform rightShoulderPoint, leftShoulderPoint, 
 			facePoint, backPoint;
-        [SerializeField,Tooltip("Аниматор врага")]
-        public Animator enAnim;
-        // ссылка на компонент, реализующий состояние врага
-        [SerializeField]
-        private AbstractObjectConditions absObjCond;
-        [SerializeField]
-        private AbstractAttack absAttack;
-		[SerializeField]
-		private bool isMayGetDamage = true;
 
-        public AbstractAttack AbsAttack
+        private EnemyAnimationsController enemyAnimationsController;
+        private EnemyAttack enemyAttack;
+        private IEnemyConditions enemyConditions;
+        private EnemyOpponentChoiser enemyOpponentChoiser;
+        #endregion
+
+        #region Свойства
+
+        public EnemyAnimationsController EnemyAnimationsController
         {
             get
             {
-                return absAttack;
+                return enemyAnimationsController;
             }
 
             set
             {
-                absAttack = value;
+                enemyAnimationsController = value;
             }
         }
 
-        public AbstractObjectConditions AbsObjCond
+        public EnemyAttack EnemyAttack
         {
             get
             {
-                return absObjCond;
+                return enemyAttack;
             }
 
             set
             {
-                absObjCond = value;
+                enemyAttack = value;
             }
         }
+
+        public IEnemyConditions EnemyConditions
+        {
+            get
+            {
+                return enemyConditions;
+            }
+
+            set
+            {
+                enemyConditions = value;
+            }
+        }
+
+        public EnemyOpponentChoiser EnemyOpponentChoiser
+        {
+            get
+            {
+                return enemyOpponentChoiser;
+            }
+
+            set
+            {
+                enemyOpponentChoiser = value;
+            }
+        }
+        #endregion
 
         /// <summary>
         /// Возвращает положение врага или его точек в сцене
@@ -72,46 +99,11 @@ namespace AbstractBehaviour
                 case 4:
                     return transform.position; // Позиция врага
                 case 5:
-                    return absAttack.PlayerStartGunPoint.position;
+                    return EnemyAttack.PlayerStartGunPoint.position;
                 case 6:
-                    return absAttack.PlayerFinishGunPoint.position;
+                    return EnemyAttack.PlayerFinishGunPoint.position;
             }  
 			return Vector3.zero;
         }
-
-        /// <summary>
-        /// Вернуть здоровье
-        /// </summary>
-        /// <returns></returns>
-        public virtual float ReturnHealth()
-        {
-            return absObjCond.HealthValue;
-        }
-
-        /// <summary>
-        /// Получить урон
-        /// </summary>
-        /// <param name="dmg"></param>
-        public virtual void GetDamage(float dmg,DamageType dmgType,PlayerWeapon weapon)
-        {
-            if (isMayGetDamage)
-            {
-                weapon.WhileTime();
-                Timing.RunCoroutine(CoroutineForGetDamage());
-                dmg = absObjCond.GetDamageWithResistance(dmg, dmgType);
-                absObjCond.HealthValue -= LibraryStaticFunctions.GetPlusMinusVal(dmg, 0.1f);
-            }
-        }
-
-        /// <summary>
-        /// Может ли враг получать урон?
-        /// </summary>
-        /// <returns></returns>
-        protected IEnumerator<float> CoroutineForGetDamage()
-        {
-            isMayGetDamage = false;
-            yield return Timing.WaitForSeconds(0.25f);
-            isMayGetDamage = true;
-        }
-	}
+    }
 }

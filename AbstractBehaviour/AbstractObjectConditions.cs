@@ -1,8 +1,8 @@
 ﻿using MovementEffects;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using VotanInterfaces;
 
 namespace AbstractBehaviour
 {
@@ -11,8 +11,9 @@ namespace AbstractBehaviour
     /// реализовать бар здоровья/брони
     /// </summary>
     public abstract class AbstractObjectConditions
-        : MonoBehaviour
+        : MonoBehaviour,IVotanObjectConditions
     {
+        #region Переменные
         [SerializeField, Tooltip("Здоровье объекта")]
         protected float healthValue;
         [SerializeField, Tooltip("Диаграмма здоровья")]
@@ -21,7 +22,9 @@ namespace AbstractBehaviour
         protected float colorChannelRed;
         protected float colorChannelGreen;
         private bool isAlive; // жив ли игрок
+        #endregion
 
+        #region Свойства
         /// <summary>
         /// Свойство для здоровья персонажа
         /// </summary>
@@ -50,9 +53,6 @@ namespace AbstractBehaviour
             }
         }
 
-        public abstract float GetDamageWithResistance(float damage,
-            DamageType dmgType);
-
         public bool IsAlive
         {
             get
@@ -65,7 +65,12 @@ namespace AbstractBehaviour
                 isAlive = value;
             }
         }
+        #endregion
 
+        /// <summary>
+        /// Состояние смерти
+        /// </summary>
+        /// <returns></returns>
         public virtual IEnumerator<float> DieState()
         {
             isAlive = false;
@@ -73,6 +78,9 @@ namespace AbstractBehaviour
             DestroyObject();
         }
 
+        /// <summary>
+        /// Уничтожить объект
+        /// </summary>
         public virtual void DestroyObject()
         {
             Destroy(gameObject);

@@ -1,8 +1,9 @@
 ﻿using AbstractBehaviour;
 using System.Collections.Generic;
-using VotanLibraries;
 using UnityEngine;
 using VotanInterfaces;
+using MovementEffects;
+using Playerbehaviour;
 
 namespace PlayerBehaviour
 {
@@ -12,31 +13,20 @@ namespace PlayerBehaviour
     public class PlayerAttack
         : AbstractAttack, IPlayerAttack
     {
-        private PlayerFight playerFight;
-		private Transform playerObject;
-
-		/// <summary>
-		/// Инициализация
-		/// </summary>
-		void Start()
-        {
-			playerObject = LibraryPlayerPosition.PlayerObjectTransform;
-			listEnemy = new List<AbstractEnemy>();
-            attackList = new List<AbstractEnemy>();
-            playerFight = GetComponent<PlayerFight>();
-            Debug.Log(playerFight);
-        }
+        [SerializeField, Tooltip("Хранитель компонентов")]
+        private PlayerComponentsControl playerComponentsControl;
 
 		/// <summary>
 		/// Обновление с заданной частотой
 		/// </summary>
-		private void FixedUpdate()
+		public void FixedUpdate()
         {
             for (int i = 0; i < listEnemy.Count; i++)
             {
 				if (listEnemy[i])
 				{
-					if (Vector3.Distance(playerObject.position, listEnemy[i].transform.position) < 3)
+					if (Vector3.Distance(playerComponentsControl.PlayerObject
+                        .position, listEnemy[i].transform.position) < 3)
 					{
 						if (!attackList.Contains(listEnemy[i])) attackList.Add(listEnemy[i]);
 					}
@@ -47,11 +37,11 @@ namespace PlayerBehaviour
 					
 				}
             }
-            AttackToEnemy(playerFight.MyWeapon.Damage, playerFight.MyWeapon.AttackType);
+            AttackToEnemy(playerComponentsControl.PlayerWeapon.Damage, playerComponentsControl.PlayerWeapon.AttackType);
 		}
 
         /// <summary>
-        /// Атака врага
+        /// Атакуем врага
         /// </summary>
         /// <param name="damage"></param>
         /// <param name="dmgType"></param>
@@ -59,8 +49,9 @@ namespace PlayerBehaviour
         {
             for (int i = 0; i < attackList.Count; i++)
             {
-				if (!attackList[i] || Vector3.Distance(playerObject.position, attackList[i].transform.position) > 3 ||
-						(attackList[i].ReturnHealth() <= 0))
+				if (!attackList[i] || Vector3.Distance(playerComponentsControl.PlayerObject
+                    .position, attackList[i].transform.position) > 3 ||
+						(attackList[i].EnemyConditions.ReturnHealth() <= 0))
 				{
 					attackList.Remove(attackList[i]); continue;
 				}
@@ -73,11 +64,43 @@ namespace PlayerBehaviour
                         playerFinishGunPoint.position, attackList[i].ReturnPosition(2)
                         , attackList[i].ReturnPosition(3)))
                     {
-                        if (LibraryPlayerPosition.PlayerConditions.IsAlive)
-                            attackList[i].GetDamage(damage, dmgType, playerFight.MyWeapon); 
+                        if (playerComponentsControl.PlayerConditions.IsAlive)
+                            attackList[i].EnemyConditions.GetDamage(damage, dmgType, playerComponentsControl.PlayerWeapon); 
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Получить точку персонажа
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public Vector3 GetPlayerPoint(int index) // возвращает точки персонажа игрока
+        {
+            switch (index)
+            {
+                case 0:
+                    return playerRightPoint.position;
+                case 1:
+                    return playerLeftPoint.position;
+                case 2:
+                    return playerFacePoint.position;
+                case 3:
+                    return playerBackPoint.position;
+            }
+            return Vector3.zero;
+        }
+
+        /// <summary>
+        /// Корутина на осуществление урона по врагу
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerator<float> CoroutineMayDoDamage()
+        {
+            isMayToDamage = false;
+            yield return Timing.WaitForSeconds(attackLatency);
+            isMayToDamage = true;
         }
     }
 }                                                                      
