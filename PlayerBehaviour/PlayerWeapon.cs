@@ -1,14 +1,16 @@
 ﻿using UnityEngine;
-using AbstractBehaviour;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using MovementEffects;
+using Playerbehaviour;
 
 namespace PlayerBehaviour
 {
     /// <summary>
     /// Интерфейс для описания оружия
+    /// 
+    /// 1) проверка на дистанцию... если меньше указанной - враг попадает в торнадо... нет, скорость врага будет увеличиваться.
+    /// 2) землетрясение и расхождение атакующей волны в определенном радиусе. спиралька ^^
+    /// 
     /// </summary>
     interface IWeapon
 	{
@@ -17,13 +19,33 @@ namespace PlayerBehaviour
 		string weaponName { get; set; }
 		string gripName { get; set; }
 
+        /// <summary>
+        /// Инициализация
+        /// </summary>
         void Start();
-        void SetWeapon(float damage, float defenceValue, DamageType attackType, float spinSpeed);
-        void SetWeapon(float damage, DamageType attackType, float spinSpeed);
-		void SetWeapon(float damage, DamageType attackType);
-		void SetWeapon(float damage);
+
+        /// <summary>
+        /// Задаем урон оружию, величину защиты, тип атаки, 
+        /// скорость вращения и весь оружия.
+        /// Урон оружия влияет на урон, который оно наносит.
+        /// Величина защиты влияет на величину урона, которую
+        /// оружие может поглатить.
+        /// Тип атаки оружия: физика, электричество, огонь или мороз.
+        /// Скорость вращения влияет на скорость вращения оружием.
+        /// Вес оружия влияет на скорость его замедления при ударе врага.
+        /// </summary>
+        /// <param name="damage"></param>
+        /// <param name="defenceValue"></param>
+        /// <param name="attackType"></param>
+        /// <param name="spinSpeed"></param>
+        /// <param name="weight"></param>
+        void SetWeaponParameters(float damage, float defenceValue, DamageType attackType, float spinSpeed,float weight);
+
+        /// <summary>
+        /// Снижаем скорость вращения при попадании по врагу
+        /// </summary>
         void WhileTime();
-	}
+    }
 
 	/// <summary>
     /// Класс, описывающий поведение оружия
@@ -31,6 +53,7 @@ namespace PlayerBehaviour
     public class PlayerWeapon 
         : MonoBehaviour, IWeapon
 	{
+        #region Переменные
         public string typeName1 { get; set; }
 		public string typeName2 { get; set; }
 		public string weaponName { get; set; }
@@ -46,13 +69,16 @@ namespace PlayerBehaviour
         private float spinSpeed;
         private float originalSpinSpeed;
 
-        [SerializeField]
-		public GameObject player { get; set; }
-        [SerializeField,Tooltip("Величина замедления при попадании по врагу"),Range(0.1f,0.5f)]
-        public float stopValue;
+        [SerializeField, Tooltip("Величина замедления при попадании по врагу. Вес оружия"), Range(0.1f, 0.5f)]
+        private float weight;
         [SerializeField, Tooltip("Задержка перед возвращением скорости"),Range(0.5f,3)]
-        public float speedReturnLatency;
 
+        private float speedReturnLatency;
+        [SerializeField, Tooltip("Хранитель компонентов")]
+        private PlayerComponentsControl playerComponentsControl;
+        #endregion
+
+        #region Свойства
         public float Damage
         {
             get
@@ -105,77 +131,62 @@ namespace PlayerBehaviour
             }
         }
 
-		/// <summary>
+        public float Weight
+        {
+            get
+            {
+                return weight;
+            }
+
+            set
+            {
+                weight = value;
+            }
+        }
+        #endregion
+
+        /// <summary>
         /// Конструктор класса
         /// </summary>
         /// <param name="damage"></param>
+        /// <param name="defenceValue"></param>
         /// <param name="attackType"></param>
         /// <param name="spinSpeed"></param>
-        public PlayerWeapon(float damage, float defenceValue, DamageType attackType, float spinSpeed) 
+        /// <param name="weight"></param>
+        public PlayerWeapon(float damage, float defenceValue, DamageType attackType, float spinSpeed,float weight) 
 		{
             this.defenceValue = defenceValue;
 			this.damage = damage;
 			this.attackType = attackType;
 			this.spinSpeed = spinSpeed;
+            this.weight = weight;
 		}
 
         /// <summary>
         /// Задать характеристики оружия через урон, 
-        /// мощность блока, тип урона и скорость
+        /// мощность блока, тип урона, скорость вращения и вес
         /// </summary>
         /// <param name="damage"></param>
+        /// <param name="defenceValue"></param>
         /// <param name="attackType"></param>
         /// <param name="spinSpeed"></param>
-        public void SetWeapon(float damage, float defenceValue,DamageType attackType, float spinSpeed)
+        /// <param name="weight"></param>
+        public void SetWeaponParameters(float damage, float defenceValue,DamageType attackType, float spinSpeed,float weight)
         {
             this.defenceValue = defenceValue;
             this.damage = damage;
             this.attackType = attackType;
             this.spinSpeed = spinSpeed;
+            this.weight = weight;
         }
-
-        /// <summary>
-        /// Задать характеристики оружия через урон
-        /// , тип урона и скорость
-        /// </summary>
-        /// <param name="damage"></param>
-        /// <param name="attackType"></param>
-        /// <param name="spinSpeed"></param>
-        public void SetWeapon(float damage, DamageType attackType, float spinSpeed)
-		{
-			this.damage = damage;
-			this.attackType = attackType;
-			this.spinSpeed = spinSpeed;
-		}
-
-		/// <summary>
-        /// Задать характеристики оружия через урон и тип урона
-        /// </summary>
-        /// <param name="damage"></param>
-        /// <param name="attackType"></param>
-        public void SetWeapon(float damage, DamageType attackType)
-		{
-			this.damage = damage;
-			this.attackType = attackType;
-		}
-
-		/// <summary>
-        /// Задать характеристики оружия через урон
-        /// </summary>
-        /// <param name="damage"></param>
-        public void SetWeapon(float damage)
-		{
-			this.damage = damage;
-		}
-
+        
         /// <summary>
         /// Инициализация
         /// </summary>
         public void Start()
         {
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
-            player.GetComponent<PlayerFight>().MyWeapon = this;
             originalSpinSpeed = spinSpeed;
+            playerComponentsControl.PlayerWeapon = this;
         }
 
         /// <summary>
@@ -193,9 +204,10 @@ namespace PlayerBehaviour
         /// <returns></returns>
         private IEnumerator<float> CoroutineDoSlowMotionSpinSpeed()
         {
-            float spSpeed = spinSpeed* stopValue;
+            float spSpeed = spinSpeed* Weight;
 
             spinSpeed -= spSpeed;
+         
             yield return Timing.WaitForSeconds(speedReturnLatency);
 
             for (int i = 0;i<10;i++)
@@ -208,5 +220,13 @@ namespace PlayerBehaviour
                 yield return Timing.WaitForSeconds(0.1f);
             }
         }
+    }
+
+    /// <summary>
+    /// Типы атаки. Перечисление
+    /// </summary>
+    public enum DamageType
+    {
+        Frozen, Fire, Powerful, Electric
     }
 }

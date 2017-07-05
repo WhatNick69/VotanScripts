@@ -1,5 +1,6 @@
-﻿using GameBehaviour;
+﻿using AbstractBehaviour;
 using MovementEffects;
+using Playerbehaviour;
 using PlayerBehaviour;
 using System;
 using System.Collections.Generic;
@@ -15,16 +16,37 @@ namespace EnemyBehaviour
     public class EnemyMove
         : MonoBehaviour
     {
+        #region Переменные
         private NavMeshAgent agent;
         private Transform playerObjectTransformForFollow;
+        private PlayerConditions playerConditions;
         private bool isAlive;
         [SerializeField, Tooltip("Частота обновления позиции врага"),Range(0.1f,3)]
         private float frequencySearching;
         [SerializeField, Tooltip("Скорость врага"), Range(1, 5)]
         private float agentSpeed;
+        [SerializeField, Tooltip("Враг")]
+        private AbstractEnemy abstractEnemy;
 
         private float randomRadius;
         private float rotationSpeed;
+
+        private bool isStopped;
+        private Quaternion lerpRotationQuar;
+        private float angularSpeedForLerpRotation;
+        #endregion
+
+        #region Свойства
+        /// <summary>
+        /// Возвращает дистанцию остановки до игрока
+        /// </summary>
+        /// <returns></returns>
+        private bool CheckStopped()
+        {
+            isStopped =  Vector3.Distance(transform.position, playerObjectTransformForFollow.position) 
+                <= agent.stoppingDistance ? true : false;
+            return isStopped;
+        }
 
         public float RandomRadius
         {
@@ -65,6 +87,20 @@ namespace EnemyBehaviour
             }
         }
 
+        public bool IsStopped
+        {
+            get
+            {
+                return isStopped;
+            }
+
+            set
+            {
+                isStopped = value;
+            }
+        }
+        #endregion
+
         /// <summary>
         /// Задаем 
         /// </summary>
@@ -81,9 +117,41 @@ namespace EnemyBehaviour
         /// <param name="newValue"></param>
         public void SetNewSpeedOfNavMeshAgent(float newValue,float newRotSpeed=0)
         {
+            if (!isAlive) return;
             agent.speed = newValue;
             if (newRotSpeed != 0)
                 agent.angularSpeed = newRotSpeed;
+        }
+
+        /// <summary>
+        /// Получить игрока и его компонент
+        /// </summary>
+        private bool GetPlayerAndComponent()
+        {
+            playerObjectTransformForFollow = abstractEnemy.EnemyOpponentChoiser.GetRandomTransformOfPlayer();
+
+
+            if (playerObjectTransformForFollow != null)
+            {
+                abstractEnemy.EnemyAttack.PlayerTarget = playerObjectTransformForFollow.GetComponent<PlayerAttack>();
+
+                if (!GetComponent<AbstractAttack>()) return false;
+                AbstractAttack absA = GetComponent<AbstractAttack>();
+                absA.SetPlayerPoint(0, abstractEnemy.EnemyAttack.PlayerTarget.PlayerPosition(0));
+                absA.SetPlayerPoint(1, abstractEnemy.EnemyAttack.PlayerTarget.PlayerPosition(1));
+                absA.SetPlayerPoint(2, abstractEnemy.EnemyAttack.PlayerTarget.PlayerPosition(2));
+                absA.SetPlayerPoint(3, abstractEnemy.EnemyAttack.PlayerTarget.PlayerPosition(3));
+
+                playerConditions = playerObjectTransformForFollow.GetComponent<PlayerConditions>();
+                playerObjectTransformForFollow = playerObjectTransformForFollow.
+                    GetComponent<PlayerComponentsControl>().PlayerModel;
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -92,9 +160,10 @@ namespace EnemyBehaviour
         private void Start()
         {
             agent = GetComponent<NavMeshAgent>();
-            playerObjectTransformForFollow = GameObject.FindWithTag("Player")
-                .GetComponent<PlayerController>().PlayerObjectTransform;
+            GetPlayerAndComponent();
+
             isAlive = true;
+            angularSpeedForLerpRotation = agent.angularSpeed/3000;
             RandomSpeedSet();
             Timing.RunCoroutine(CoroutineForSearchingByPlayerObject());
         }
@@ -105,21 +174,56 @@ namespace EnemyBehaviour
         /// <returns></returns>
         private IEnumerator<float> CoroutineForSearchingByPlayerObject()
         {
+            agent.enabled = true;
             while (isAlive)
             {
-                if (LibraryPlayerPosition.PlayerConditions.IsAlive)
+                if (playerObjectTransformForFollow != null)
                 {
-                    if (agent != null)
-                        agent.SetDestination(playerObjectTransformForFollow.position);
-                    yield return Timing.WaitForSeconds(frequencySearching);
+                    if (playerConditions.IsAlive)
+                    {
+                        if (agent != null)
+                        {
+                            agent.SetDestination
+                                (playerObjectTransformForFollow.position);
+                            if (CheckStopped()) LookAtPlayerObject();
+                        }
+                        yield return Timing.WaitForSeconds(frequencySearching);
+                    }
+                    else
+                    {
+                        if (!GetPlayerAndComponent())
+                        {
+                            SetRandomPosition();
+                            yield return Timing.WaitForSeconds
+                                ((float)LibraryStaticFunctions.rnd.NextDouble()
+                                * 10 + 10);
+                        }
+                        else
+                        {
+                            yield return Timing.WaitForSeconds(frequencySearching);
+                        }
+                    }
                 }
                 else
                 {
                     SetRandomPosition();
                     yield return Timing.WaitForSeconds
-                        ((float)LibraryStaticFunctions.rnd.NextDouble() * 10 + 10);
+                        ((float)LibraryStaticFunctions.rnd.NextDouble()
+                        * 10 + 10);
                 }
             }
+        }
+
+        public void Update()
+        {
+            if (isStopped) transform.rotation =
+                    Quaternion.Lerp(transform.rotation
+                    , lerpRotationQuar, angularSpeedForLerpRotation);
+        }
+
+        public void LookAtPlayerObject()
+        {
+            lerpRotationQuar = Quaternion.LookRotation(playerObjectTransformForFollow.position-transform.position);
         }
 
         /// <summary>

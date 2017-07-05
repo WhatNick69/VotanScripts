@@ -1,21 +1,22 @@
 ﻿using AbstractBehaviour;
+using MovementEffects;
+using PlayerBehaviour;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 using VotanInterfaces;
 using VotanLibraries;
-using MovementEffects;
 
 namespace EnemyBehaviour
 {
     /// <summary>
     /// Компонент-атака для врага
     /// </summary>
-    class EnemyAttack 
+    public class EnemyAttack 
         : AbstractAttack, IEnemyAttack
     {
         [SerializeField, Tooltip("Урон от удара врага")]
         private float dmgEnemy;
+        private PlayerAttack playerTarget;
 
         public float DmgEnemy
         {
@@ -30,17 +31,33 @@ namespace EnemyBehaviour
             }
         }
 
+        public PlayerAttack PlayerTarget
+        {
+            get
+            {
+                return playerTarget;
+            }
+
+            set
+            {
+                playerTarget = value;
+            }
+        }
+
         /// <summary>
         /// Атакуем персонажа
         /// </summary>
         /// <returns></returns>
         public bool AttackToPlayer()
         {
-            if ((Bush(enemyStartGunPoint.position, enemyFinishGunPoint.position,
-                 LibraryPlayerPosition.GetPlayerPoint(0), LibraryPlayerPosition.GetPlayerPoint(1)) ||
+            if (isMayToDamage && (Bush(enemyStartGunPoint.position, enemyFinishGunPoint.position,
+                 playerTarget.GetPlayerPoint(0), 
+                 playerTarget.GetPlayerPoint(1)) ||
                  Bush(enemyStartGunPoint.position, enemyFinishGunPoint.position,
-                 LibraryPlayerPosition.GetPlayerPoint(2), LibraryPlayerPosition.GetPlayerPoint(3))))
+                 playerTarget.GetPlayerPoint(2), 
+                 playerTarget.GetPlayerPoint(3))))
             {
+                Timing.RunCoroutine(CoroutineMayDoDamage());
                 return true;
             }
             else
@@ -50,12 +67,14 @@ namespace EnemyBehaviour
         }
 
         /// <summary>
-        /// Инициализация
+        /// Корутина для нанесения урона по персонажу
         /// </summary>
-        void Start()
+        /// <returns></returns>
+        public IEnumerator<float> CoroutineMayDoDamage()
         {
-            listEnemy = new List<AbstractEnemy>();
-            attackList = new List<AbstractEnemy>();
+            isMayToDamage = false;
+            yield return Timing.WaitForSeconds(attackLatency);
+            isMayToDamage = true;
         }
     }
 }

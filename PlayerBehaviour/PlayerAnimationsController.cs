@@ -1,5 +1,7 @@
 ﻿using AbstractBehaviour;
+using Playerbehaviour;
 using UnityEngine;
+using VotanInterfaces;
 
 namespace PlayerBehaviour
 {
@@ -7,27 +9,53 @@ namespace PlayerBehaviour
     /// Реализует контроль за анимацией персонажа
     /// </summary>
     public class PlayerAnimationsController 
-        : AbstactObjectAnimations
+        : AbstactObjectAnimations, IPlayerAnimations
     {
-        private void Start()
-        {
+        [SerializeField,Tooltip("Хранитель компонентов")]
+        private PlayerComponentsControl playerComponentsControl;
 
+        /// <summary>
+        /// Инициализация
+        /// </summary>
+        public void Start()
+        {
+            StructStatesNames = new StructStatesNames("isRunning",
+                "isFighting","isDefensing","isLongAttack","isDamage",
+                "isDead");
         }
 
-        public void LowSpeedAnimation()
+        /// <summary>
+        /// Задаем значение состоянию анимации персонажа.
+        /// 0 - бег, 1 - кручение, 2 - защита, 
+        /// 3 - рывок, 4 - урон, 5 - смерть
+        /// </summary>
+        /// <param name="state"></param>
+        /// <param name="flag"></param>
+        public override void SetState(byte state,bool flag)
         {
-            AnimatorOfObject.speed = 0.2f;
+            base.SetState(state, flag);
         }
 
-        public void HighSpeedAnimation()
+        /// <summary>
+        /// Установить низкую скорость анимации
+        /// </summary>
+        public override void LowSpeedAnimation()
         {
-            AnimatorOfObject.speed = 1f;
+            if (animatorOfObject.speed == 0.2f) return;
+            else if ((!playerComponentsControl.PlayerFight.IsFighting 
+                || playerComponentsControl.PlayerFight.IsDefensing) && !playerComponentsControl.PlayerFight.IsSpining)
+            {
+                animatorOfObject.speed = 0.2f;
+            }
         }
 
-        public void SetSpeedAnimationByRunSpeed(float speed)
+        /// <summary>
+        /// Установить высокую скорость анимации
+        /// </summary>
+        public override void HighSpeedAnimation()
         {
-            Debug.Log(speed);
-            AnimatorOfObject.speed = speed;
+            if (animatorOfObject.speed == 1) return;
+            animatorOfObject.speed = 1f;
         }
     }
 }
