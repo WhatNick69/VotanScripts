@@ -65,6 +65,7 @@ namespace GameBehaviour
 				S = Mathf.Sqrt(f * (f - AA1) * (f - d) * (f - e));
 				H = (2 * S) / AA1;
 				sootn = H / AC;
+
 				Y = BC * sootn + 0.55f;
 			}
 			else gravity = true;

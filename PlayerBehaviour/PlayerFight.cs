@@ -150,6 +150,7 @@ namespace PlayerBehaviour
         private IEnumerator<float> CoroutineSlowMotionFighting(float x)
         {
             spiningSpeedInCoroutine = playerComponentsControl.PlayerWeapon.SpinSpeed;
+
             while (spiningSpeedInCoroutine > 0)
             {
                 PlayerController.Angle += spiningSpeedInCoroutine * tempSpinSpeed;

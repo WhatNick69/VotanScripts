@@ -93,22 +93,6 @@ namespace AbstractBehaviour
                 enemyFinishGunPoint = value;
             }
         }
-
-		public bool OnLevelOne
-		{
-			get
-			{
-				return onLevelOne;
-			}
-		}
-
-		public bool OnLevelTwo
-		{
-			get
-			{
-				return onLevelTwo;
-			}
-		}
         #endregion
 
         /// <summary>
@@ -118,9 +102,7 @@ namespace AbstractBehaviour
         {
             listEnemy = new List<AbstractEnemy>();
             attackList = new List<AbstractEnemy>();
-			
         }
-
 
         /// <summary>
         /// Установить позицию персонажа

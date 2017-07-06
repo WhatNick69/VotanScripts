@@ -188,7 +188,6 @@ namespace PlayerBehaviour
         {
             originalSpinSpeed = spinSpeed;
             playerComponentsControl.PlayerWeapon = this;
-			
         }
 
         /// <summary>
@@ -207,7 +206,7 @@ namespace PlayerBehaviour
         private IEnumerator<float> CoroutineDoSlowMotionSpinSpeed()
         {
 			float spSpeed = spinSpeed * (1 - (Weight / 100));
-			
+
             spinSpeed -= spSpeed;
          
             yield return Timing.WaitForSeconds(speedReturnLatency);
