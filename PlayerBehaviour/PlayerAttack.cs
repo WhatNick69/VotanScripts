@@ -26,7 +26,7 @@ namespace PlayerBehaviour
 				if (listEnemy[i])
 				{
 					if (Vector3.Distance(playerComponentsControl.PlayerObject
-                        .position, listEnemy[i].transform.position) < 3)
+                        .position, listEnemy[i].transform.position) <= 3f)
 					{
 						if (!attackList.Contains(listEnemy[i])) attackList.Add(listEnemy[i]);
 					}
@@ -38,6 +38,7 @@ namespace PlayerBehaviour
 				}
             }
             AttackToEnemy(playerComponentsControl.PlayerWeapon.Damage, playerComponentsControl.PlayerWeapon.AttackType);
+			oldFinishGunPoint = playerFinishGunPoint.position;
 		}
 
         /// <summary>
@@ -56,20 +57,30 @@ namespace PlayerBehaviour
 					attackList.Remove(attackList[i]); continue;
 				}
 				else
-                {	
-					if (Bush(playerStartGunPoint.position,
-                        playerFinishGunPoint.position, attackList[i].ReturnPosition(0),
-                        attackList[i].ReturnPosition(1)) ||
-                        Bush(playerStartGunPoint.position,
-                        playerFinishGunPoint.position, attackList[i].ReturnPosition(2)
-                        , attackList[i].ReturnPosition(3)))
+                {
+					if (IsAttackEnemy(i))
                     {
-                        if (playerComponentsControl.PlayerConditions.IsAlive)
-                            attackList[i].EnemyConditions.GetDamage(damage, dmgType, playerComponentsControl.PlayerWeapon); 
+						if (playerComponentsControl.PlayerConditions.IsAlive)
+						      attackList[i].EnemyConditions.GetDamage(damage, dmgType, playerComponentsControl.PlayerWeapon); 
                     }
                 }
             }
         }
+
+		/// <summary>
+		/// Проверка на столкновение оружия с противником
+		/// вынес в отдельный метод для удобства 
+		/// </summary>
+		/// <param name="i"></param>
+		/// <returns></returns>
+		private bool IsAttackEnemy(int i)
+		{
+			return ((BushInPlane(attackList[i].ReturnPosition(4), playerPoint.position,
+						playerFinishGunPoint.position, oldFinishGunPoint) ||
+						BushInLine(attackList[i].ReturnPosition(0), attackList[i].ReturnPosition(1),
+							PlayerFinishGunPoint.position, PlayerStartGunPoint.position)) && 
+							Mathf.Abs(playerPoint.position.y - attackList[i].ReturnPosition(0).y) < 1.6f);
+		}
 
         /// <summary>
         /// Получить точку персонажа

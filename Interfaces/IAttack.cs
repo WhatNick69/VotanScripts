@@ -64,7 +64,7 @@ namespace VotanInterfaces
         /// <param name="z"></param>
         /// <param name="w"></param>
         /// <returns></returns>
-        bool Bush(Vector3 x, Vector3 y, Vector3 z, Vector3 w);
+        bool BushInPlane(Vector3 x, Vector3 y, Vector3 z, Vector3 w);
 
         /// <summary>
         /// Точка атаки

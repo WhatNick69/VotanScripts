@@ -33,6 +33,7 @@ namespace EnemyBehaviour
         /// </summary>
         public void Start()
         {
+			IsAlive = true;
             initialisatedHealthValue = healthValue;
             colorChannelRed = 0;
             colorChannelGreen = 1;
@@ -152,14 +153,14 @@ namespace EnemyBehaviour
         /// <param name="dmg"></param>
         public virtual void GetDamage(float dmg, DamageType dmgType, PlayerWeapon weapon)
         {
-            if (isMayGetDamage)
+			if (isMayGetDamage)
             {
-                weapon.WhileTime();
+				weapon.WhileTime();
                 Timing.RunCoroutine(CoroutineForGetDamage());
                 dmg = GetDamageWithResistance(dmg, dmgType);
                 HealthValue -= 
                     LibraryStaticFunctions.GetPlusMinusVal(dmg, 0.1f);
-            }
+			}
         }
 
         /// <summary>
