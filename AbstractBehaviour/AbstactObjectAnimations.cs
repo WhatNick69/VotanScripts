@@ -1,48 +1,76 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using VotanInterfaces;
 
 namespace AbstractBehaviour
 {
     /// <summary>
-    /// Абстрактным образом описывает анимацию для любого игрового объекта.
-    /// Пожалуй, это лучший класс во всем проекте, ибо он красив
+    /// Структура для быстрого доступа к состояниям
     /// </summary>
-    public abstract class AbstactObjectAnimations 
-        : MonoBehaviour
+    public struct StructStatesNames
     {
+        private List<string> states; // состояния
+
         /// <summary>
-        /// Структура для быстрого доступа к состояниям
+        /// Конструктор
         /// </summary>
-        protected struct StructStatesNames
+        /// <param name="parameters"></param>
+        public StructStatesNames(params string[] parameters)
         {
-            private List<string> states;
-
-            /// <summary>
-            /// Конструктор
-            /// </summary>
-            /// <param name="parameters"></param>
-            public StructStatesNames(params string[] parameters)
-            {
-                states = new List<string>();
-                foreach (string parameter in parameters)
-                    states.Add(parameter);
-            }
-
-            /// <summary>
-            /// Получить состояние по его номеру
-            /// </summary>
-            /// <param name="state"></param>
-            /// <returns></returns>
-            public string GetState(byte state)
-            {
-                return states[state];
-            }
+            states = new List<string>();
+            foreach (string parameter in parameters)
+                states.Add(parameter);
         }
 
+        /// <summary>
+        /// Получить состояние по его номеру
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public string GetState(byte state)
+        {
+            return states[state];
+        }
+    }
+
+    /// <summary>
+    /// Абстрактным образом описывает анимацию для любого игрового объекта.
+    /// </summary>
+    public abstract class AbstactObjectAnimations 
+        : MonoBehaviour, IVotanObjectAnimations
+    {
         #region Переменные
         [SerializeField, Tooltip("Аниматор объекта")]
         protected Animator animatorOfObject;
-        protected StructStatesNames structStatesNames;
+        protected StructStatesNames structStatesnames;
+        #endregion
+
+        #region Свойства
+        public Animator AnimatorOfObject
+        {
+            get
+            {
+                return animatorOfObject;
+            }
+
+            set
+            {
+                animatorOfObject = value;
+            }
+        }
+
+        public StructStatesNames StructStatesNames
+        {
+            get
+            {
+                return structStatesnames;
+            }
+
+            set
+            {
+                structStatesnames = value;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -53,7 +81,7 @@ namespace AbstractBehaviour
         public virtual void SetState(byte state, bool flag)
         {
             animatorOfObject.SetBool
-                (structStatesNames.GetState(state), flag);
+                (StructStatesNames.GetState(state), flag);
         }
 
         /// <summary>
@@ -81,8 +109,7 @@ namespace AbstractBehaviour
         /// <param name="value"></param>
         public void SetSpeedAnimationByRunSpeed(float value)
         {
-            Debug.Log(value);
-            animatorOfObject.speed = value;
+			animatorOfObject.speed = value;
         }
 
         /// <summary>
@@ -92,7 +119,7 @@ namespace AbstractBehaviour
         public virtual void DisableAllStates()
         {
             for (byte i = 0; i < 4; i++)
-                animatorOfObject.SetBool(structStatesNames.GetState(i), false);
+                animatorOfObject.SetBool(StructStatesNames.GetState(i), false);
         }
     }
 }

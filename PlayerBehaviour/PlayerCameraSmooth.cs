@@ -1,7 +1,7 @@
 ﻿using MovementEffects;
+using Playerbehaviour;
 using System.Collections.Generic;
 using UnityEngine;
-using VotanLibraries;
 
 namespace PlayerBehaviour
 {
@@ -11,23 +11,25 @@ namespace PlayerBehaviour
     public class PlayerCameraSmooth
         : MonoBehaviour
     {
-        private Vector3 standartVectorForCamera;
-        private Quaternion targetRotation;
-        private Vector3 targetPosition;
 
+        [SerializeField, Tooltip("Хранитель компонентов")]
+        private PlayerComponentsControl playerComponentsControl;
         [SerializeField,Tooltip("Скорость движения камеры вслед за персонажем"),
             Range(0,10)]
         private float followMoveSpeed;
         [SerializeField, Tooltip("Скорость поворота камеры вслед за персонажем"),
             Range(0, 10)]
         private float followRotateSpeed;
-        private PlayerController playerController;
         [SerializeField, Tooltip("Частота обновления позиции слежения"),
             Range(0.01f, 1)]
         private float frequencyUpdate;
         [SerializeField, Tooltip("Дистанция, минимальная для обновления"),
             Range(0.1f,2)]
         private float distanceBetweenDestAndPers;
+
+        private Vector3 standartVectorForCamera;
+        private Quaternion targetRotation;
+        private Vector3 targetPosition;
 
         private Transform cameraTransform;
         private Transform playerObjectTransform;
@@ -53,13 +55,10 @@ namespace PlayerBehaviour
         private void Start()
         {
             standartVectorForCamera = new Vector3(0, 9f, -8);
-            playerObjectTransform = 
-                LibraryPlayerPosition.PlayerObjectTransform;
+            playerObjectTransform =
+                playerComponentsControl.PlayerObject;
             cameraTransform =
-                LibraryPlayerPosition.MainCameraPlayerTransform;
-            Debug.Log(LibraryPlayerPosition.Player);
-            playerController =
-                LibraryPlayerPosition.Player.GetComponent<PlayerController>();
+                playerComponentsControl.PlayerCamera.transform;
             Timing.RunCoroutine(CoroutineGetPositionOfPlayer());
         }
 
@@ -105,7 +104,8 @@ namespace PlayerBehaviour
         private IEnumerator<float> CoroutineGetPositionOfPlayer()
         {
             yield return Timing.WaitForSeconds(frequencyUpdate);
-            while (playerController.IsAliveFromConditions)
+            while (playerComponentsControl.PlayerController.
+                IsAliveFromConditions)
             {
                 if (!isNormalized)
                 {

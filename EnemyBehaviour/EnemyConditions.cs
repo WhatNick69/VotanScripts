@@ -1,16 +1,15 @@
 ﻿using AbstractBehaviour;
 using MovementEffects;
-using System;
+using PlayerBehaviour;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
+using VotanInterfaces;
 using VotanLibraries;
 
 namespace EnemyBehaviour
 {
-    class EnemyConditions 
-        : AbstractObjectConditions
+    public class EnemyConditions 
+        : AbstractObjectConditions,IEnemyConditions
     {
         [SerializeField, Tooltip("Бар для здоровья")]
         private GameObject healthBar;
@@ -23,18 +22,42 @@ namespace EnemyBehaviour
         private float electricResistance;
         [SerializeField, Tooltip("Защита от ударов"), Range(0, 0.9f)]
         private float physicResistance;
+        private Transform cameraTransform;
 
         private EnemyMove enemyMove;
 
-        private void Start()
+        private bool isMayGetDamage = true;
+
+        /// <summary>
+        /// Инициализация
+        /// </summary>
+        public void Start()
         {
+			IsAlive = true;
             initialisatedHealthValue = healthValue;
             colorChannelRed = 0;
             colorChannelGreen = 1;
             enemyMove = GetComponent<EnemyMove>();
+
+            FindCameraInScene();
         }
 
-        public override float GetDamageWithResistance(float dmg,DamageType typeOfDamage)
+        public void FindCameraInScene()
+        {
+            // Будет откомментированно при сетевой разработке
+            // if (isClient) {
+            cameraTransform = GameObject.
+                FindGameObjectWithTag("MainCamera").transform;
+            // }
+        }
+
+        /// <summary>
+        /// Получить урон с сопротивлением
+        /// </summary>
+        /// <param name="dmg"></param>
+        /// <param name="typeOfDamage"></param>
+        /// <returns></returns>
+        public float GetDamageWithResistance(float dmg,DamageType typeOfDamage)
         {
             switch (typeOfDamage)
             {
@@ -55,12 +78,12 @@ namespace EnemyBehaviour
 
         // 3 секунды +- 0.5 секунды - для заморозки
         // для огня 4 секунды +-1 секунда - для огня
-        private void RunCoroutineForGetFireDamage(float damage)
+        public void RunCoroutineForGetFireDamage(float damage)
         {
             Timing.RunCoroutine(CoroutineForFireDamage(damage));
         }
 
-        private void RunCoroutineForFrozenDamage()
+        public void RunCoroutineForFrozenDamage()
         {
             Timing.RunCoroutine(CoroutineForFrozenDamage());
         }
@@ -70,7 +93,7 @@ namespace EnemyBehaviour
         /// </summary>
         /// <param name="damage"></param>
         /// <returns></returns>
-        private IEnumerator<float> CoroutineForFireDamage(float damage)
+        public IEnumerator<float> CoroutineForFireDamage(float damage)
         {
             float timeWhileDamage = LibraryStaticFunctions.GetPlusMinusVal(3,0.25f);
             float time = 0;
@@ -86,17 +109,20 @@ namespace EnemyBehaviour
         /// Замедление врага от холода
         /// </summary>
         /// <returns></returns>
-        private IEnumerator<float> CoroutineForFrozenDamage()
+        public IEnumerator<float> CoroutineForFrozenDamage()
         {
-            enemyMove.SetNewSpeedOfNavMeshAgent(enemyMove.AgentSpeed/3,enemyMove.RotationSpeed/3);
-            yield return Timing.WaitForSeconds(LibraryStaticFunctions.GetPlusMinusVal(4, 0.25f));
-            enemyMove.SetNewSpeedOfNavMeshAgent(enemyMove.AgentSpeed,enemyMove.RotationSpeed);
+                enemyMove.SetNewSpeedOfNavMeshAgent(enemyMove.AgentSpeed / 3, enemyMove.RotationSpeed / 3);
+                yield return Timing.WaitForSeconds(LibraryStaticFunctions.GetPlusMinusVal(4, 0.25f));
+            if (IsAlive)
+            {
+                enemyMove.SetNewSpeedOfNavMeshAgent(enemyMove.AgentSpeed, enemyMove.RotationSpeed);
+            }
         }
 
         /// <summary>
         /// Таймовые вычисления
         /// </summary>
-        private void FixedUpdate()
+        public void FixedUpdate()
         {
             BarBillboard();
         }
@@ -106,7 +132,46 @@ namespace EnemyBehaviour
         /// </summary>
         public void BarBillboard()
         {
-            healthBar.transform.LookAt(LibraryPlayerPosition.MainCameraPlayerTransform);
+            if (cameraTransform != null)
+                healthBar.transform.LookAt(cameraTransform);
+            else
+                FindCameraInScene();
+        }
+
+        /// <summary>
+        /// Вернуть здоровье
+        /// </summary>
+        /// <returns></returns>
+        public virtual float ReturnHealth()
+        {
+            return HealthValue;
+        }
+
+        /// <summary>
+        /// Получить урон
+        /// </summary>
+        /// <param name="dmg"></param>
+        public virtual void GetDamage(float dmg, DamageType dmgType, PlayerWeapon weapon)
+        {
+			if (isMayGetDamage)
+            {
+				weapon.WhileTime();
+                Timing.RunCoroutine(CoroutineForGetDamage());
+                dmg = GetDamageWithResistance(dmg, dmgType);
+                HealthValue -= 
+                    LibraryStaticFunctions.GetPlusMinusVal(dmg, 0.1f);
+			}
+        }
+
+        /// <summary>
+        /// Может ли враг получать урон?
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerator<float> CoroutineForGetDamage()
+        {
+            isMayGetDamage = false;
+            yield return Timing.WaitForSeconds(0.25f);
+            isMayGetDamage = true;
         }
     }
 }

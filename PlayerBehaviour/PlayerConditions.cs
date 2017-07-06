@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using VotanLibraries;
-using System;
+using VotanInterfaces;
+using Playerbehaviour;
+using GameBehaviour;
 
 namespace PlayerBehaviour
 {
@@ -12,7 +14,7 @@ namespace PlayerBehaviour
     /// Описывает рингбар здоровья, ману, броню, ярость
     /// </summary>
     public class PlayerConditions
-        : AbstractObjectConditions
+        : AbstractObjectConditions,IPlayerConditions
     {
         #region Переменные
         [SerializeField, Tooltip("Мана персонажа")]
@@ -24,11 +26,8 @@ namespace PlayerBehaviour
         private Animation ringRageUIAnimation;
         [SerializeField,Tooltip("Размер регена ярости")]
         private float rageRegenSize;
-        private GameObject playerObject;
-        private PlayerArmory playerArmory;
-        private PlayerFight playerFight;
-        [SerializeField]
-        private PlayerAnimationsController playerAnimationsController;
+        [SerializeField,Tooltip("Хранитель компонентов")]
+        private PlayerComponentsControl playerComponentsControl;
 
         private bool isRageRegen; // можно ли регенерить ярость
         private float initialisatedRageValuePlayer; // начальное значение ярости
@@ -37,7 +36,6 @@ namespace PlayerBehaviour
         #endregion
 
         #region Свойства
-
         /// <summary>
         /// Свойство для маны персонажа
         /// </summary>
@@ -85,18 +83,14 @@ namespace PlayerBehaviour
         /// <summary>
         /// Инициализация
         /// </summary>
-        private void Start()
+        public void Start()
         {
-            playerArmory = GetComponent<PlayerArmory>();
-            playerFight = GetComponent<PlayerFight>();
-
             IsAlive = true;
             isRageRegen = true;
             ringRageUIAnimation = ringRageUI.GetComponent<Animation>();
             initialisatedHealthValue = healthValue;
             initialisatedRageValuePlayer = rageValuePlayer;
             rageValuePlayer = 1;
-            playerObject = LibraryPlayerPosition.PlayerObjectTransform.gameObject;
 
             colorChannelRed = 0;
             colorChannelGreen = 1;
@@ -108,7 +102,7 @@ namespace PlayerBehaviour
         /// <summary>
         /// Обновить состояние кольца ярости
         /// </summary>
-        private void RefreshRingRage()
+        public void RefreshRingRage()
         {
             ringRageUI.fillAmount = rageValuePlayer / initialisatedRageValuePlayer;
         }
@@ -116,7 +110,7 @@ namespace PlayerBehaviour
         /// <summary>
         /// Запустить корутин регена ярости
         /// </summary>
-        private void StartRageCoroutineRegen()
+        public void StartRageCoroutineRegen()
         {
             Timing.RunCoroutine(CoroutineForRage());
         }
@@ -124,7 +118,7 @@ namespace PlayerBehaviour
         /// <summary>
         /// Старт анимации
         /// </summary>
-        private void StartRingbarAnimation()
+        public void StartRingbarAnimation()
         {
             ringRageUIAnimation["PlayerRingbarRotationAnimation"].speed = 0.2f;
             ringRageUIAnimation.Play();
@@ -134,7 +128,7 @@ namespace PlayerBehaviour
         /// Корутин на реген ярости
         /// </summary>
         /// <returns></returns>
-        IEnumerator<float> CoroutineForRage()
+        public IEnumerator<float> CoroutineForRage()
         {
             while (isRageRegen)
             {
@@ -159,12 +153,13 @@ namespace PlayerBehaviour
         {
             if (mayToGetDamage)
             {
-                if (!playerArmory.IsAlive)
+                if (!playerComponentsControl.PlayerArmory.IsAlive)
                 {
-                    if (PlayerFight.IsDefensing)
+                    if (playerComponentsControl.PlayerFight.IsDefensing)
                     {
                         HealthValue -= LibraryStaticFunctions.GetPlusMinusVal(damageValue, 0.1f) * LibraryStaticFunctions.GetPlusMinusVal
-                            (playerFight.MyWeapon.DefenceValue, 0.1f);
+                            (playerComponentsControl.PlayerWeapon
+                            .DefenceValue, 0.1f);
                         CoroutineForIsMayGetDamage();
                     }
                     else
@@ -175,17 +170,20 @@ namespace PlayerBehaviour
                 }
                 else
                 {
-                    if (PlayerFight.IsDefensing)
+                    if (playerComponentsControl.PlayerFight.IsDefensing)
                     {
-                        playerArmory.DecreaseArmoryLevel(-
+                        playerComponentsControl.PlayerArmory
+                            .DecreaseArmoryLevel(-
                         LibraryStaticFunctions.GetPlusMinusVal(damageValue, 0.1f) *
                         LibraryStaticFunctions.GetPlusMinusVal
-                            (playerFight.MyWeapon.DefenceValue, 0.1f));
+                            (playerComponentsControl.PlayerWeapon
+                            .DefenceValue, 0.1f));
                         CoroutineForIsMayGetDamage();
                     }
                     else
                     {
-                        playerArmory.DecreaseArmoryLevel(-
+                        playerComponentsControl.PlayerArmory
+                            .DecreaseArmoryLevel(-
                        LibraryStaticFunctions.GetPlusMinusVal(damageValue, 0.1f));
                         CoroutineForIsMayGetDamage();
                     }
@@ -212,16 +210,19 @@ namespace PlayerBehaviour
         /// <param name="time"></param>
         /// <param name="dmgPerSecond"></param>
         /// <returns></returns>
-        IEnumerator<float> MayToGetDamage()
+        public IEnumerator<float> MayToGetDamage()
         {
-            PlayerFight.IsDamaged = true;
-            playerAnimationsController.HighSpeedAnimation();
-            playerAnimationsController.SetState(4, true);
+            playerComponentsControl.PlayerFight.IsDamaged = true;
+            playerComponentsControl.PlayerAnimationsController
+                .HighSpeedAnimation();
+            playerComponentsControl.PlayerAnimationsController
+                .SetState(4, true);
             mayToGetDamage = false;
             yield return Timing.WaitForSeconds(0.5f);
             mayToGetDamage = true;
-            PlayerFight.IsDamaged = false;
-            playerAnimationsController.SetState(4, false);
+            playerComponentsControl.PlayerFight.IsDamaged = false;
+            playerComponentsControl.PlayerAnimationsController
+                .SetState(4, false);
         }
 
         /// <summary>
@@ -229,19 +230,16 @@ namespace PlayerBehaviour
         /// </summary>
         public override IEnumerator<float> DieState()
         {
-            Debug.Log("Dead");
+            Debug.Log(gameObject.name +  " is dead!");
             IsAlive = false;
-            playerAnimationsController.LowSpeedAnimation();
+            AllPlayerManager.CheckList();
+            playerComponentsControl.PlayerAnimationsController
+                .LowSpeedAnimation();
             GetComponent<PlayerController>().IsAliveFromConditions = false;
-            playerAnimationsController.DisableAllStates();
+            playerComponentsControl.PlayerAnimationsController
+                .DisableAllStates();
+            playerComponentsControl.PlayerCollision.DisableRigidbody();
             yield return Timing.WaitForSeconds(1);
-        }
-
-        public override float GetDamageWithResistance(float damage, DamageType dmgType)
-        {
-            // на тот случай, если будем вводить в игру 
-            // повреждения по стихиям для игрока
-            return 0;
         }
     }
 }

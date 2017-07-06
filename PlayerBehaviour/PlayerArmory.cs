@@ -34,8 +34,8 @@ namespace PlayerBehaviour
         {
             IsAlive = true;
             colorChannelGreen = 1;
-            colorChannelRed = 1;
-            circleHealthUI.color = new Color(0,colorChannelRed, colorChannelGreen);
+            colorChannelRed = 0.5f;
+            circleHealthUI.color = new Color(colorChannelRed, 0,colorChannelGreen);
             initialisatedHealthValue = healthValue;
 
             kirasaPartArmory = 0.4f / kirasaParts.Count;
@@ -143,13 +143,6 @@ namespace PlayerBehaviour
                     }
                 }
             }
-        }
-
-        public override float GetDamageWithResistance(float damage, DamageType dmgType)
-        {
-            // на тот случай, если будем вводить в игру 
-            // повреждения по стихиям для игрока
-            return 0;
         }
     }
 }
