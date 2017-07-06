@@ -59,27 +59,27 @@ namespace PlayerBehaviour
 		public string weaponName { get; set; }
 		public string gripName { get; set; }
 
-        [SerializeField, Tooltip("Урон от оружия")]
-        private float damage;
-        [SerializeField, Tooltip("Защита"), Range(0, 0.9f)]
-        private float defenceValue;
-        [SerializeField]
-        private DamageType attackType;
-        [SerializeField, Tooltip("Скорость вращения"), Range(40, 100)]
-        private float spinSpeed;
-        private float originalSpinSpeed;
+		[SerializeField, Tooltip("Урон от оружия"), Range(0, 200f)]
+		private float damage;
+		[SerializeField, Tooltip("Защита"), Range(0, 50f)]
+		private float defenceValue;
+		[SerializeField]
+		private DamageType attackType;
+		[SerializeField, Tooltip("Скорость вращения"), Range(40, 100)]
+		private float spinSpeed;
+		private float originalSpinSpeed;
 
-        [SerializeField, Tooltip("Величина замедления при попадании по врагу. Вес оружия"), Range(0.1f, 0.5f)]
-        private float weight;
-        [SerializeField, Tooltip("Задержка перед возвращением скорости"),Range(0.5f,3)]
+		[SerializeField, Tooltip("Величина замедления при попадании по врагу. Вес оружия"), Range(1f, 150f)]
+		private float weight;
+		[SerializeField, Tooltip("Задержка перед возвращением скорости"), Range(0.5f, 3)]
 
-        private float speedReturnLatency;
-        [SerializeField, Tooltip("Хранитель компонентов")]
-        private PlayerComponentsControl playerComponentsControl;
-        #endregion
+		private float speedReturnLatency;
+		[SerializeField, Tooltip("Хранитель компонентов")]
+		private PlayerComponentsControl playerComponentsControl;
+		#endregion
 
-        #region Свойства
-        public float Damage
+		#region Свойства
+		public float Damage
         {
             get
             {
@@ -178,6 +178,7 @@ namespace PlayerBehaviour
             this.attackType = attackType;
             this.spinSpeed = spinSpeed;
             this.weight = weight;
+			originalSpinSpeed = spinSpeed;
         }
         
         /// <summary>
@@ -204,7 +205,7 @@ namespace PlayerBehaviour
         /// <returns></returns>
         private IEnumerator<float> CoroutineDoSlowMotionSpinSpeed()
         {
-            float spSpeed = spinSpeed* Weight;
+			float spSpeed = spinSpeed * (1 - (Weight / 100));
 
             spinSpeed -= spSpeed;
          
@@ -216,7 +217,7 @@ namespace PlayerBehaviour
                 if (spinSpeed > originalSpinSpeed)
                 {
                     spinSpeed = originalSpinSpeed;
-                }
+				}
                 yield return Timing.WaitForSeconds(0.1f);
             }
         }

@@ -154,7 +154,7 @@ namespace PlayerBehaviour
             while (spiningSpeedInCoroutine > 0)
             {
                 PlayerController.Angle += spiningSpeedInCoroutine * tempSpinSpeed;
-                yield return Timing.WaitForSeconds(0.1f);
+				yield return Timing.WaitForSeconds(0.1f);
                 spiningSpeedInCoroutine -= 10;
                 playerComponentsControl.PlayerAnimationsController.
                        SetSpeedAnimationByRunSpeed
@@ -183,7 +183,7 @@ namespace PlayerBehaviour
         /// </summary>
         /// <returns></returns>
         private float SpeedWhileSpiningForAnimator()
-        {
+		{ 
             return Math.Abs(tempSpinSpeed / 2)
                     + spiningSpeedInCoroutine * 0.01f / 2;
         }

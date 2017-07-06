@@ -50,15 +50,15 @@ namespace EnemyBehaviour
         /// <returns></returns>
         public bool AttackToPlayer()
         {
-            if (isMayToDamage && (Bush(enemyStartGunPoint.position, enemyFinishGunPoint.position,
+            if (isMayToDamage && (BushInPlane(enemyStartGunPoint.position, enemyFinishGunPoint.position,
                  playerTarget.GetPlayerPoint(0), 
                  playerTarget.GetPlayerPoint(1)) ||
-                 Bush(enemyStartGunPoint.position, enemyFinishGunPoint.position,
+                 BushInPlane(enemyStartGunPoint.position, enemyFinishGunPoint.position,
                  playerTarget.GetPlayerPoint(2), 
                  playerTarget.GetPlayerPoint(3))))
             {
                 Timing.RunCoroutine(CoroutineMayDoDamage());
-                return true;
+				return true;
             }
             else
             {

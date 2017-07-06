@@ -290,7 +290,6 @@ namespace PlayerBehaviour
                 isUpdating = true;
                 magnitudeForSpeed = moveVector3.magnitude * 0.5f;
                 magnitudeTemp = moveVector3.magnitude*moveSpeed;
-                //magnitudeTemp = moveSpeed;
 
                 tempVectorTransform = (moveVector3 + playerComponentsControl.PlayerObject.position);
             }

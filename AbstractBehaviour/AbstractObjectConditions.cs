@@ -21,7 +21,7 @@ namespace AbstractBehaviour
         protected float initialisatedHealthValue;
         protected float colorChannelRed;
         protected float colorChannelGreen;
-        private bool isAlive; // жив ли игрок
+        private bool isAlive = true; // жив ли игрок
         #endregion
 
         #region Свойства
@@ -40,7 +40,6 @@ namespace AbstractBehaviour
                 healthValue = value;
                 if (healthValue > 0)
                 {
-                    isAlive = true;
                     RefreshHealthCircle();
                 }
                 else if (healthValue <= 0 && isAlive)

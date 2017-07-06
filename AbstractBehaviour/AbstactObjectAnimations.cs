@@ -109,7 +109,7 @@ namespace AbstractBehaviour
         /// <param name="value"></param>
         public void SetSpeedAnimationByRunSpeed(float value)
         {
-            animatorOfObject.speed = value;
+			animatorOfObject.speed = value;
         }
 
         /// <summary>
