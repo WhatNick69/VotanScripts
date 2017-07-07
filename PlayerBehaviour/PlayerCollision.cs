@@ -12,8 +12,7 @@ namespace PlayerBehaviour
     public class PlayerCollision
         : MonoBehaviour
     {
-        private static List<GameObject> collisionList;
-        [SerializeField, Tooltip("Частота обновления листа столкновенй"), Range(0.01f, 0.9f)]
+        [SerializeField, Tooltip("Частота обновления"), Range(0.01f, 0.9f)]
         private float frequencyUpdate;
         [SerializeField]
         private PlayerComponentsControl playerComponentControl;
@@ -24,75 +23,19 @@ namespace PlayerBehaviour
 
         private Ray ray;
         private RaycastHit rayCastHit;
+        private static string tagNameObstacle = "Obstacle";
+        private static string tagNameEnemy = "Enemy";
 
         /// <summary>
-        /// Добавить в лист коллизий
+        /// Отключить либо включить просчет физики персонажа
         /// </summary>
-        /// <param name="GamObj"></param>
-        public static void AddToListColl(GameObject GamObj)
+        public void RigidbodyState(bool flag)
         {
-            collisionList.Add(GamObj);
+            playerRGB.detectCollisions = flag;
         }
 
         /// <summary>
-        /// Вернуть лист с коллизиями
-        /// </summary>
-        /// <returns></returns>
-        public static List<GameObject> ReturnListColl()
-        {
-            return collisionList;
-        }
-
-        /// <summary>
-        /// Включать физику, если есть объект
-        /// </summary>
-        /// <returns></returns>
-        public bool IsPhysicsOn()
-        {
-            return playerRGB.detectCollisions;
-        }
-
-        /// <summary>
-        /// Отключить просчет физики
-        /// </summary>
-        public void DisableRigidbody()
-        {
-            playerRGB.detectCollisions = false;
-        }
-
-        /// <summary>
-        /// Удалить из листа с коллизиями
-        /// </summary>
-        /// <param name="GamOb"></param>
-        public static void RemoveFromListCollision(GameObject GamOb)
-        {
-            collisionList.Remove(GamOb);
-        }
-
-        /// <summary>
-        /// Проверять коллизии
-        /// </summary>
-        private void CollisionListUpdate()
-        {
-            for (int i = 0; i < collisionList.Count; i++)
-            {
-                if (!collisionList[i])
-                {
-                    collisionList.Remove(collisionList[i]);
-                    continue;
-                }
-
-                if (Vector3.Distance(collisionList[i].transform.position, playerObject.position) < 5f)
-                {
-                    playerRGB.detectCollisions = true;
-                    return;
-                }
-            }
-            playerRGB.detectCollisions = false;
-        }
-
-        /// <summary>
-        /// Проверять лист в корутине
+        /// Пускать луч в корутине
         /// </summary>
         /// <returns></returns>
         private IEnumerator<float> UpList()
@@ -101,14 +44,9 @@ namespace PlayerBehaviour
                 PlayerConditions.IsAlive)
             {
                 if (CheckForRay())
-                {
                     playerComponentControl.PlayerController
-                        .SetStopPositionFromCollision() ;
-                }
-                else
-                {
-                    CollisionListUpdate();
-                }
+                        .SetStopPositionFromCollision();
+
                 yield return Timing.WaitForSeconds(frequencyUpdate);
             }
         }
@@ -124,8 +62,11 @@ namespace PlayerBehaviour
 
             if (Physics.Raycast(ray, out rayCastHit, 1))
             {
-                return true;
+                if (rayCastHit.collider.tag.Equals(tagNameObstacle)
+                    || rayCastHit.collider.tag.Equals(tagNameEnemy))
+                    return true;
             }
+            
             return false;
         }
 
@@ -135,8 +76,6 @@ namespace PlayerBehaviour
         private void Start()
         {
             playerObject = transform;
-            collisionList = new List<GameObject>();
-            collisionList.AddRange(GameObject.FindGameObjectsWithTag("Obstacle"));
             playerRGB = playerObject.GetComponent<Rigidbody>();
             playerModel = playerComponentControl.PlayerModel;
             Timing.RunCoroutine(UpList());

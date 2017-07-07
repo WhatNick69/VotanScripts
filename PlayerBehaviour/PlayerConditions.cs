@@ -238,7 +238,7 @@ namespace PlayerBehaviour
             GetComponent<PlayerController>().IsAliveFromConditions = false;
             playerComponentsControl.PlayerAnimationsController
                 .DisableAllStates();
-            playerComponentsControl.PlayerCollision.DisableRigidbody();
+            playerComponentsControl.PlayerCollision.RigidbodyState(false);
             yield return Timing.WaitForSeconds(1);
         }
     }

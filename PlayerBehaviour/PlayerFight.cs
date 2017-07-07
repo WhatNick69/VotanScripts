@@ -153,7 +153,8 @@ namespace PlayerBehaviour
 
             while (spiningSpeedInCoroutine > 0)
             {
-                PlayerController.Angle += spiningSpeedInCoroutine * tempSpinSpeed;
+                playerComponentsControl.PlayerController.Angle 
+                    += spiningSpeedInCoroutine * tempSpinSpeed;
 				yield return Timing.WaitForSeconds(0.1f);
                 spiningSpeedInCoroutine -= 10;
                 playerComponentsControl.PlayerAnimationsController.
@@ -201,7 +202,8 @@ namespace PlayerBehaviour
                 {
                     isRotating = true;
                     isSpining = true;
-                    PlayerController.Angle += playerComponentsControl.PlayerWeapon
+                    playerComponentsControl.PlayerController.Angle 
+                        += playerComponentsControl.PlayerWeapon
                         .SpinSpeed * fightVector.x;
                     tempSpinSpeed = fightVector.x;
                     playerComponentsControl.PlayerAnimationsController.
@@ -210,7 +212,8 @@ namespace PlayerBehaviour
                 }
                 else if (isRotating)
                 {
-                    PlayerController.Angle += playerComponentsControl.PlayerWeapon.SpinSpeed * 0.1f;
+                    playerComponentsControl.PlayerController.Angle 
+                        += playerComponentsControl.PlayerWeapon.SpinSpeed * 0.1f;
                     playerComponentsControl.PlayerAnimationsController.
                         SetSpeedAnimationByRunSpeed(SpeedWhileSpiningForAnimator(false));
                 }

@@ -31,10 +31,11 @@ namespace PlayerBehaviour
         private float updateFrequency;
         [SerializeField, Tooltip("Хранитель компонентов")]
         private PlayerComponentsControl playerComponentsControl;
+        private Transform playerObjectTransform;
 
         private float currentMagnitude; // текущее значение магнитуды векторов
         //меньше которого используется сглаженное время
-        private static float angle; // угол для поворота
+        private float angle; // угол для поворота
 
         private Vector3 moveVector3;
         private Vector3 tempVectorTransform;
@@ -81,7 +82,7 @@ namespace PlayerBehaviour
             }
         }
 
-        public static float Angle
+        public float Angle
         {
             get
             {
@@ -131,6 +132,7 @@ namespace PlayerBehaviour
             isUpdating = true;
             InitialisationOfCoroutines();
             triangleVector = Vector3.zero;
+            playerObjectTransform = playerComponentsControl.PlayerObject;
         }
 
         /// <summary>
@@ -152,7 +154,7 @@ namespace PlayerBehaviour
                 .HighSpeedAnimation();
             attackTransform.position = 
                 new Vector3(attackTransform.position.x,
-                playerComponentsControl.PlayerObject.position.y, attackTransform.position.z);
+                playerObjectTransform.position.y, attackTransform.position.z);
             tempVectorTransform = attackTransform.position;
         }
 
@@ -164,7 +166,7 @@ namespace PlayerBehaviour
         {
             while (isAliveFromConditions)
             {
-                UpdateYCoordinate();
+                //UpdateYCoordinate();
                 if (!playerComponentsControl.PlayerFight.IsFighting)
                 {
                     MovePlayerGetNetPosition();
@@ -196,7 +198,7 @@ namespace PlayerBehaviour
 
         public void SetStopPositionFromCollision()
         {
-            tempVectorTransform = playerComponentsControl.PlayerObject.position;
+            tempVectorTransform = playerObjectTransform.position;
         }
 
         /// <summary>
@@ -205,8 +207,9 @@ namespace PlayerBehaviour
         /// </summary>
         private void UpdateNewTransformPositionAndRotation()
         {
-            currentMagnitude = (playerComponentsControl.PlayerObject
+            currentMagnitude = (playerObjectTransform
                 .position - tempVectorTransform).magnitude;
+
             if (!playerComponentsControl.PlayerFight.IsFighting)
             {
                 if (IsMagnitudeMoreThanValue())
@@ -221,8 +224,8 @@ namespace PlayerBehaviour
                         playerComponentsControl.PlayerAnimationsController
                             .SetState(0, true);
 
-                        playerComponentsControl.PlayerObject.position =
-                            Vector3.MoveTowards(playerComponentsControl.PlayerObject
+                        playerObjectTransform.position =
+                            Vector3.MoveTowards(playerObjectTransform
                             .position, tempVectorTransform,
                                 magnitudeTemp * Time.deltaTime);
                     }
@@ -230,8 +233,9 @@ namespace PlayerBehaviour
                     {
                         playerComponentsControl.PlayerAnimationsController
                             .SetState(0, false);
-                        playerComponentsControl.PlayerObject
-                            .position = Vector3.Lerp(playerComponentsControl.PlayerObject.position,
+                        tempVectorTransform.y = playerObjectTransform.position.y;
+                        playerObjectTransform
+                            .position = Vector3.Lerp(playerObjectTransform.position,
                             tempVectorTransform, moveSpeed * Time.deltaTime);
                     }
                 }
@@ -243,8 +247,10 @@ namespace PlayerBehaviour
 
                 if (playerComponentsControl.PlayerFight.IsRotating)
                 {
-                    playerComponentsControl.PlayerModel.localRotation = Quaternion.Slerp(playerComponentsControl.PlayerModel
-                        .rotation, Quaternion.Euler(0, angle, 0), rotateSpeed * 2f * Time.deltaTime);
+                    playerComponentsControl.PlayerModel.localRotation 
+                        = Quaternion.Slerp(playerComponentsControl.PlayerModel
+                        .rotation, Quaternion.Euler(0, angle, 0)
+                        , rotateSpeed * 2f * Time.deltaTime);
 
                     // Включаю атаку
                     playerComponentsControl.PlayerAnimationsController
@@ -255,8 +261,10 @@ namespace PlayerBehaviour
                 }
                 else
                 {
-                    playerComponentsControl.PlayerModel.localRotation = Quaternion.Slerp(playerComponentsControl.PlayerModel
-                        .rotation, Quaternion.Euler(0, angle, 0), rotateSpeed * Time.deltaTime);
+                    playerComponentsControl.PlayerModel.localRotation 
+                        = Quaternion.Slerp(playerComponentsControl.PlayerModel
+                        .rotation, Quaternion.Euler(0, angle, 0)
+                        , rotateSpeed * Time.deltaTime);
 
                     // выключаем атаку
                     playerComponentsControl.PlayerAnimationsController
@@ -265,8 +273,9 @@ namespace PlayerBehaviour
             }
             else if (!playerComponentsControl.PlayerFight.IsDefensing)
             {
-                playerComponentsControl.PlayerObject.position = Vector3.Lerp(playerComponentsControl.PlayerObject.position,
-                           tempVectorTransform, moveSpeed * Time.deltaTime);
+                playerObjectTransform.position 
+                    = Vector3.Lerp(playerObjectTransform.position,
+                    tempVectorTransform, moveSpeed * Time.deltaTime);
             }
         }
 
@@ -291,7 +300,7 @@ namespace PlayerBehaviour
                 magnitudeForSpeed = moveVector3.magnitude * 0.5f;
                 magnitudeTemp = moveVector3.magnitude*moveSpeed;
 
-                tempVectorTransform = (moveVector3 + playerComponentsControl.PlayerObject.position);
+                tempVectorTransform = (moveVector3 + playerObjectTransform.position);
             }
             else
             {
@@ -304,10 +313,10 @@ namespace PlayerBehaviour
         /// </summary>
         private void UpdateYCoordinate()
         {
-            triangleVector.x = playerComponentsControl.PlayerObject.position.x;
+            triangleVector.x = playerObjectTransform.position.x;
             triangleVector.y = TriaglesRender.GetHightOnY();
-            triangleVector.z = playerComponentsControl.PlayerObject.position.z;
-            playerComponentsControl.PlayerObject.position = triangleVector;
+            triangleVector.z = playerObjectTransform.position.z;
+            playerObjectTransform.position = triangleVector;
         }
 
         /// <summary>
