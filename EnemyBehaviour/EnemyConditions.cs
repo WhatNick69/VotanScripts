@@ -11,6 +11,7 @@ namespace EnemyBehaviour
     public class EnemyConditions 
         : AbstractObjectConditions,IEnemyConditions
     {
+        #region Переменные
         [SerializeField, Tooltip("Бар для здоровья")]
         private GameObject healthBar;
 
@@ -25,8 +26,24 @@ namespace EnemyBehaviour
         private Transform cameraTransform;
 
         private EnemyMove enemyMove;
+        private IEnemyBehaviour enemyAbstract;
 
         private bool isMayGetDamage = true;
+        private bool isFrozen;
+
+        public bool IsFrozen
+        {
+            get
+            {
+                return isFrozen;
+            }
+
+            set
+            {
+                isFrozen = value;
+            }
+        }
+        #endregion
 
         /// <summary>
         /// Инициализация
@@ -37,11 +54,16 @@ namespace EnemyBehaviour
             initialisatedHealthValue = healthValue;
             colorChannelRed = 0;
             colorChannelGreen = 1;
-            enemyMove = GetComponent<EnemyMove>();
+
+            enemyAbstract = GetComponent<IEnemyBehaviour>();
+            enemyMove = enemyAbstract.EnemyMove;    
 
             FindCameraInScene();
         }
 
+        /// <summary>
+        /// Найти камеру на сцене
+        /// </summary>
         public void FindCameraInScene()
         {
             // Будет откомментированно при сетевой разработке
@@ -49,6 +71,18 @@ namespace EnemyBehaviour
             cameraTransform = GameObject.
                 FindGameObjectWithTag("MainCamera").transform;
             // }
+        }
+
+        public override IEnumerator<float> DieState()
+        {
+            IsAlive = false;
+            //enemyAbstract.EnemyAnimationsController.DisableAllStates();
+            enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
+            enemyAbstract.EnemyAnimationsController.SetState(3, true);
+            enemyAbstract.EnemyAnimationsController.PlayDeadNormalizeCoroutine();
+
+            yield return Timing.WaitForSeconds(5);
+            DestroyObject();
         }
 
         /// <summary>
@@ -97,12 +131,14 @@ namespace EnemyBehaviour
         {
             float timeWhileDamage = LibraryStaticFunctions.GetPlusMinusVal(3,0.25f);
             float time = 0;
+            enemyAbstract.EnemyAnimationsController.SetState(2, true);
             while (time <= timeWhileDamage)
             {
                 HealthValue -= LibraryStaticFunctions.GetPlusMinusVal(damage/10, 0.25f);
                 time += 0.25f;
                 yield return Timing.WaitForSeconds(0.25f);
             }
+            enemyAbstract.EnemyAnimationsController.SetState(2, false);
         }
 
         /// <summary>
@@ -111,12 +147,19 @@ namespace EnemyBehaviour
         /// <returns></returns>
         public IEnumerator<float> CoroutineForFrozenDamage()
         {
-                enemyMove.SetNewSpeedOfNavMeshAgent(enemyMove.AgentSpeed / 3, enemyMove.RotationSpeed / 3);
-                yield return Timing.WaitForSeconds(LibraryStaticFunctions.GetPlusMinusVal(4, 0.25f));
+            IsFrozen = true;
+            enemyAbstract.EnemyAnimationsController.SetState(2, true);
+            enemyMove.SetNewSpeedOfNavMeshAgent(0,0);
+            enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0);
+
+            yield return Timing.WaitForSeconds(LibraryStaticFunctions.GetPlusMinusVal(4, 0.25f));
             if (IsAlive)
             {
                 enemyMove.SetNewSpeedOfNavMeshAgent(enemyMove.AgentSpeed, enemyMove.RotationSpeed);
+                enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
             }
+            IsFrozen = false;
+            enemyAbstract.EnemyAnimationsController.SetState(2, false);
         }
 
         /// <summary>
@@ -170,7 +213,10 @@ namespace EnemyBehaviour
         public IEnumerator<float> CoroutineForGetDamage()
         {
             isMayGetDamage = false;
-            yield return Timing.WaitForSeconds(0.25f);
+            Debug.Log("DMG");
+            enemyAbstract.EnemyAnimationsController.SetState(2, true);
+            yield return Timing.WaitForSeconds(0.5f);
+            enemyAbstract.EnemyAnimationsController.SetState(2, false);
             isMayGetDamage = true;
         }
     }

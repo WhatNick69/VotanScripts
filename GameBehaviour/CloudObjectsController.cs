@@ -28,7 +28,7 @@ namespace GameBehaviour
         {
             foreach (GameObject cloud in clouds)
                 cloud.GetComponent<Animation>()["CloudAnimation"].speed
-                    = LibraryStaticFunctions.GetPlusMinusVal(0.005f, 0.25f);
+                    = LibraryStaticFunctions.GetPlusMinusVal(0.0075f, 0.25f);
         }
     }
 }

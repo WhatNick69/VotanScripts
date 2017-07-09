@@ -28,6 +28,8 @@ namespace PlayerBehaviour
         private float rageRegenSize;
         [SerializeField,Tooltip("Хранитель компонентов")]
         private PlayerComponentsControl playerComponentsControl;
+        [SerializeField]
+        private RectTransform mainBarCanvas;
 
         private bool isRageRegen; // можно ли регенерить ярость
         private float initialisatedRageValuePlayer; // начальное значение ярости
@@ -203,6 +205,16 @@ namespace PlayerBehaviour
             Timing.RunCoroutine(MayToGetDamage());
         }
 
+        public void RotateConditionBar(bool flag=false,float angle=0)
+        {
+            if (flag)
+                mainBarCanvas.localRotation = 
+                    Quaternion.Euler(angle, -90, -90);        
+            else
+                mainBarCanvas.localRotation = 
+                    Quaternion.Euler(90, -90, -90);
+        }
+
         /// <summary>
         /// Корутин для продолжительного получения урона
         /// </summary>
@@ -233,12 +245,16 @@ namespace PlayerBehaviour
             Debug.Log(gameObject.name +  " is dead!");
             IsAlive = false;
             AllPlayerManager.CheckList();
-            playerComponentsControl.PlayerAnimationsController
-                .LowSpeedAnimation();
+           //playerComponentsControl.PlayerAnimationsController
+           //    .LowSpeedAnimation();
             GetComponent<PlayerController>().IsAliveFromConditions = false;
             playerComponentsControl.PlayerAnimationsController
                 .DisableAllStates();
             playerComponentsControl.PlayerCollision.RigidbodyState(false);
+            playerComponentsControl.PlayerCollision.RigidbodyDead();
+            playerComponentsControl.PlayerAnimationsController
+                .PlayDeadNormalizeCoroutine();
+            mainBarCanvas.gameObject.SetActive(false);
             yield return Timing.WaitForSeconds(1);
         }
     }

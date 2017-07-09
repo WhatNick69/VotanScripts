@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using MovementEffects;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using VotanInterfaces;
 
@@ -10,6 +12,14 @@ namespace AbstractBehaviour
     public struct StructStatesNames
     {
         private List<string> states; // состояния
+
+        public float structureCount
+        {
+            get
+            {
+                return states.Count;
+            }
+        }
 
         /// <summary>
         /// Конструктор
@@ -43,6 +53,8 @@ namespace AbstractBehaviour
         [SerializeField, Tooltip("Аниматор объекта")]
         protected Animator animatorOfObject;
         protected StructStatesNames structStatesnames;
+        [SerializeField]
+        protected Transform transformForDeadYNormalizing;
         #endregion
 
         #region Свойства
@@ -85,6 +97,17 @@ namespace AbstractBehaviour
         }
 
         /// <summary>
+        /// Плучить булево значение состояния
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public bool GetBoolFromState(byte state)
+        {
+            return animatorOfObject.
+                GetBool(structStatesnames.GetState(state));
+        }
+
+        /// <summary>
         /// Низкая скорость анимации
         /// </summary>
         public abstract void LowSpeedAnimation();
@@ -93,6 +116,18 @@ namespace AbstractBehaviour
         /// Высокая скорость анимации
         /// </summary>
         public abstract void HighSpeedAnimation();
+
+        /// <summary>
+        /// Все ли состояния выключены?
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool IsFalseAllStates()
+        {
+            for (byte i = 0; i < structStatesnames.structureCount; i++)
+                if (GetBoolFromState(i)) return false;
+
+            return true;
+        }
 
         /// <summary>
         /// Получить скорость аниматора
@@ -107,7 +142,7 @@ namespace AbstractBehaviour
         /// Своя скорость анимации
         /// </summary>
         /// <param name="value"></param>
-        public void SetSpeedAnimationByRunSpeed(float value)
+        public virtual void SetSpeedAnimationByRunSpeed(float value)
         {
 			animatorOfObject.speed = value;
         }
@@ -118,8 +153,12 @@ namespace AbstractBehaviour
         /// </summary>
         public virtual void DisableAllStates()
         {
-            for (byte i = 0; i < 4; i++)
+            for (byte i = 0; i < structStatesnames.structureCount-1; i++)
                 animatorOfObject.SetBool(StructStatesNames.GetState(i), false);
         }
+
+        public abstract void PlayDeadNormalizeCoroutine();
+            
+        public abstract IEnumerator<float> CoroutineDeadYNormalized();
     }
 }

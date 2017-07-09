@@ -18,10 +18,11 @@ namespace AbstractBehaviour
         protected Transform rightShoulderPoint, leftShoulderPoint, 
 			facePoint, backPoint;
 
-        private EnemyAnimationsController enemyAnimationsController;
-        private EnemyAttack enemyAttack;
-        private IEnemyConditions enemyConditions;
-        private EnemyOpponentChoiser enemyOpponentChoiser;
+        protected EnemyAnimationsController enemyAnimationsController;
+        protected EnemyAttack enemyAttack;
+        protected EnemyConditions enemyConditions;
+        protected EnemyOpponentChoiser enemyOpponentChoiser;
+        protected EnemyMove enemyMove;
         #endregion
 
         #region Свойства
@@ -52,7 +53,7 @@ namespace AbstractBehaviour
             }
         }
 
-        public IEnemyConditions EnemyConditions
+        public EnemyConditions EnemyConditions
         {
             get
             {
@@ -64,6 +65,8 @@ namespace AbstractBehaviour
                 enemyConditions = value;
             }
         }
+
+        public abstract EnemyMove EnemyMove { get; set; }
 
         public EnemyOpponentChoiser EnemyOpponentChoiser
         {

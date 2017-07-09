@@ -4,6 +4,7 @@ using UnityEngine;
 using VotanInterfaces;
 using MovementEffects;
 using Playerbehaviour;
+using VotanLibraries;
 
 namespace PlayerBehaviour
 {
@@ -37,7 +38,11 @@ namespace PlayerBehaviour
 					
 				}
             }
-            AttackToEnemy(playerComponentsControl.PlayerWeapon.Damage, playerComponentsControl.PlayerWeapon.AttackType);
+            if (playerComponentsControl.PlayerFight.IsFighting 
+                || playerComponentsControl.PlayerFight.IsRotating)
+                    AttackToEnemy(playerComponentsControl.PlayerWeapon.Damage, 
+                    playerComponentsControl.PlayerWeapon.AttackType);
+
 			oldFinishGunPoint = playerFinishGunPoint.position;
 		}
 
@@ -75,9 +80,9 @@ namespace PlayerBehaviour
 		/// <returns></returns>
 		private bool IsAttackEnemy(int i)
 		{
-			return ((BushInPlane(attackList[i].ReturnPosition(4), playerPoint.position,
+			return ((LibraryPhysics.BushInPlane(attackList[i].ReturnPosition(4), playerPoint.position,
 						playerFinishGunPoint.position, oldFinishGunPoint) ||
-						BushInLine(attackList[i].ReturnPosition(0), attackList[i].ReturnPosition(1),
+                        LibraryPhysics.BushInLine(attackList[i].ReturnPosition(0), attackList[i].ReturnPosition(1),
 							PlayerFinishGunPoint.position, PlayerStartGunPoint.position)) && 
 							Mathf.Abs(playerPoint.position.y - attackList[i].ReturnPosition(0).y) < 1.6f);
 		}

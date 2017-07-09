@@ -38,7 +38,7 @@ namespace AbstractBehaviour
 		private float c;
 		private float ta;
 		private float tb;
-        protected bool isMayToDamage = true;
+        public bool isMayToDamage = true;
         #endregion
 
         #region Свойства
@@ -186,56 +186,6 @@ namespace AbstractBehaviour
         public float AttackRange(Vector3 Player, Vector3 Enemy) 
 		{
 			return Vector3.Distance(Player, Enemy);
-		}
-
-		/// <summary>
-        /// Просчет столкновений при помощи площади
-		/// пройденной оружием за 1 кадр
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="z"></param>
-        /// <param name="w"></param>
-        /// <returns></returns>
-        public bool BushInPlane(Vector3 x, Vector3 y, Vector3 z, Vector3 w)
-		{
-			Vector3 enemyPoint = x;
-			Vector3 PV1 = y;
-			Vector3 PV2 = z;
-			Vector3 PV3 = w;
-
-			a = (PV1.x - enemyPoint.x) * (PV2.z - PV1.z) - (PV2.x - PV1.x) * (PV1.z - enemyPoint.z);
-			b = (PV2.x - enemyPoint.x) * (PV3.z - PV2.z) - (PV3.x - PV2.x) * (PV2.z - enemyPoint.z);
-			c = (PV3.x - enemyPoint.x) * (PV1.z - PV3.z) - (PV1.x - PV3.x) * (PV3.z - enemyPoint.z);
-
-			return ((a >= 0 && b >= 0 && c >= 0) || (a <= 0 && b <= 0 && c <= 0));
-
-		}
-
-		/// <summary>
-		/// Просчет столкновений при помощи пересечения векторов
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <param name="z"></param>
-		/// <param name="w"></param>
-		/// <returns></returns>
-		public bool BushInLine(Vector3 x, Vector3 y, Vector3 z, Vector3 w)
-		{
-			
-			Vector3 PV1 = x;
-			Vector3 PV2 = y;
-			Vector3 EV3 = z;
-			Vector3 EV4 = w;
-
-			a = (PV1.x - PV2.x) * (EV4.z - EV3.z) - (PV1.z - PV2.z) * (EV4.x - EV3.x);
-			b = (PV1.x - EV3.x) * (EV4.z - EV3.z) - (PV1.z - EV3.z) * (EV4.x - EV3.x);
-			c = (PV1.x - PV2.x) * (PV1.z - EV3.z) - (PV1.z - PV2.z) * (PV1.x - EV3.x);
-
-			ta = b / a;
-			tb = c / a;
-			
-			return (ta >= 0 && ta <= 1.6 && tb >= 0 && tb <= 1.6);
 		}
 
 		/// <summary>

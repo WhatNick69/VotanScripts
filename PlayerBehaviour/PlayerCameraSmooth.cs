@@ -11,7 +11,7 @@ namespace PlayerBehaviour
     public class PlayerCameraSmooth
         : MonoBehaviour
     {
-
+        #region Переменные
         [SerializeField, Tooltip("Хранитель компонентов")]
         private PlayerComponentsControl playerComponentsControl;
         [SerializeField,Tooltip("Скорость движения камеры вслед за персонажем"),
@@ -35,7 +35,9 @@ namespace PlayerBehaviour
         private Transform playerObjectTransform;
         private bool isUpdating;
         private bool isNormalized;
+        #endregion
 
+        #region Свойства
         public bool IsNormalized
         {
             get
@@ -48,6 +50,7 @@ namespace PlayerBehaviour
                 isNormalized = value;
             }
         }
+        #endregion
 
         /// <summary>
         /// Инициализация

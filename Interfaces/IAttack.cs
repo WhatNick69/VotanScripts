@@ -57,16 +57,6 @@ namespace VotanInterfaces
         float AttackRange(Vector3 Player, Vector3 Enemy);
 
         /// <summary>
-        /// Просчет столкновений
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="z"></param>
-        /// <param name="w"></param>
-        /// <returns></returns>
-        bool BushInPlane(Vector3 x, Vector3 y, Vector3 z, Vector3 w);
-
-        /// <summary>
         /// Точка атаки
         /// </summary>
         /// <param name="X"></param>

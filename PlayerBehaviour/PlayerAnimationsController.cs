@@ -1,7 +1,10 @@
-﻿using AbstractBehaviour;
+﻿using System;
+using System.Collections.Generic;
+using AbstractBehaviour;
 using Playerbehaviour;
 using UnityEngine;
 using VotanInterfaces;
+using MovementEffects;
 
 namespace PlayerBehaviour
 {
@@ -43,7 +46,8 @@ namespace PlayerBehaviour
         {
             if (animatorOfObject.speed == 0.2f) return;
             else if ((!playerComponentsControl.PlayerFight.IsFighting 
-                || playerComponentsControl.PlayerFight.IsDefensing) && !playerComponentsControl.PlayerFight.IsSpining)
+                || playerComponentsControl.PlayerFight.IsDefensing) && !playerComponentsControl.PlayerFight.IsSpining
+                && playerComponentsControl.PlayerConditions.IsAlive)
             {
                 animatorOfObject.speed = 0.2f;
             }
@@ -55,7 +59,34 @@ namespace PlayerBehaviour
         public override void HighSpeedAnimation()
         {
             if (animatorOfObject.speed == 1) return;
+
             animatorOfObject.speed = 1f;
+        }
+
+        public override void PlayDeadNormalizeCoroutine()
+        {
+            Timing.RunCoroutine(CoroutineDeadYNormalized());
+        }
+
+        public override IEnumerator<float> CoroutineDeadYNormalized()
+        {
+            int i = 0;
+            yield return Timing.WaitForSeconds(1f);
+
+            Vector3 newPosition =
+            new Vector3(transformForDeadYNormalizing.position.x,
+                transformForDeadYNormalizing.position.y - 0.2f,
+                transformForDeadYNormalizing.position.z);
+
+            while (i < 10)
+            {
+                i++;
+                transformForDeadYNormalizing.position =
+                    Vector3.Lerp(transformForDeadYNormalizing.position,
+                    newPosition, 1);
+                yield return Timing.WaitForSeconds(0.01f);
+            }
+            yield return Timing.WaitForSeconds(0.01f);
         }
     }
 }

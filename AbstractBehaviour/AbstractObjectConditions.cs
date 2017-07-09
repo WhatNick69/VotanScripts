@@ -40,10 +40,12 @@ namespace AbstractBehaviour
                 healthValue = value;
                 if (healthValue > 0)
                 {
+                    Debug.Log("Попали");
                     RefreshHealthCircle();
                 }
                 else if (healthValue <= 0 && isAlive)
                 {
+  
                     isAlive = false;
                     Timing.RunCoroutine(DieState());
                     healthValue = 0;

@@ -46,7 +46,7 @@ namespace PlayerBehaviour
         private bool isAliveFromConditions;
 
         private bool continueCalculateInCoroutine;
-        private Vector3 triangleVector;
+        private Vector3 normalYVector;
         #endregion
 
         #region Get-Set`s
@@ -131,8 +131,8 @@ namespace PlayerBehaviour
             continueCalculateInCoroutine = true;
             isUpdating = true;
             InitialisationOfCoroutines();
-            triangleVector = Vector3.zero;
             playerObjectTransform = playerComponentsControl.PlayerObject;
+            normalYVector.y = 0.55f;
         }
 
         /// <summary>
@@ -188,7 +188,10 @@ namespace PlayerBehaviour
         private void Update()
         {
             if (isAliveFromConditions)
+            {
                 UpdateNewTransformPositionAndRotation();
+                UpdateYCoordinate();
+            }
         }
         
         public bool IsMagnitudeMoreThanValue()
@@ -313,10 +316,12 @@ namespace PlayerBehaviour
         /// </summary>
         private void UpdateYCoordinate()
         {
-            triangleVector.x = playerObjectTransform.position.x;
-            triangleVector.y = TriaglesRender.GetHightOnY();
-            triangleVector.z = playerObjectTransform.position.z;
-            playerObjectTransform.position = triangleVector;
+            if (playerObjectTransform.position.y < 0.55f)
+            {
+                normalYVector.x = playerObjectTransform.position.x;
+                normalYVector.z = playerObjectTransform.position.z;
+                playerObjectTransform.position = normalYVector;
+            }           
         }
 
         /// <summary>

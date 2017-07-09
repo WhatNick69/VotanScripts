@@ -1,9 +1,12 @@
-﻿using AbstractBehaviour;
+﻿using System;
+using AbstractBehaviour;
 using PlayerBehaviour;
 using UnityEngine;
 using UnityEngine.AI;
 using VotanInterfaces;
 using VotanLibraries;
+using MovementEffects;
+using System.Collections.Generic;
 
 namespace EnemyBehaviour
 {
@@ -14,9 +17,7 @@ namespace EnemyBehaviour
     class KnightEnemy
         : AbstractEnemy
     {
-        private EnemyMove enemyMove; // игрок может двигаться
-
-        public EnemyMove EnemyMove
+        public override EnemyMove EnemyMove
         {
             get
             {
@@ -28,6 +29,9 @@ namespace EnemyBehaviour
                 enemyMove = value;
             }
         }
+        [SerializeField,Tooltip("Частота обновления состояний для атаки"),Range(0.01f,0.5f)]
+        private float refreshLatency;
+        private float movingSpeed;
 
         /// <summary>
         /// Инициализация
@@ -44,31 +48,51 @@ namespace EnemyBehaviour
                 GetComponent<EnemyConditions>();
             EnemyMove = 
                 GetComponent<EnemyMove>();
+            Timing.RunCoroutine(UpdateAttackState());
         }
 
-		/// <summary>
-        /// Таймовое обновление
-        /// 
-        /// 
+        public void Start()
+        {
+            movingSpeed = EnemyMove.AgentSpeed / 5;
+        }
+
+        /// <summary>
+        /// Обновление
         /// </summary>
-        private void FixedUpdate()
-		{
-            if (EnemyMove.IsStopped)
+        /// <returns></returns>
+        private IEnumerator<float> UpdateAttackState()
+        {
+            yield return Timing.WaitForSeconds(1);
+            while (EnemyConditions.IsAlive)
             {
-                if (EnemyAttack.AttackToPlayer())
+                if (EnemyMove.IsStopped)
                 {
-                    EnemyOpponentChoiser.PlayerConditionsTarget.GetDamage(EnemyAttack.DmgEnemy);
-                    EnemyAnimationsController.SetState(0, false);
-                    EnemyAnimationsController.SetState(1, true);
-                    EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
+                    if (EnemyMove.PlayerObjectTransformForFollow)
+                    {
+                        EnemyAttack.EventStartAttackAnimation();
+
+                        if (EnemyAttack.AttackToPlayer())
+                        {
+                            EnemyOpponentChoiser.PlayerConditionsTarget.GetDamage(EnemyAttack.DmgEnemy);
+                            EnemyAnimationsController.SetState(0, false);
+                            //EnemyAnimationsController.SetState(1, true);
+                            EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
+                        }
+                    }
+                    else
+                    {
+                        EnemyAnimationsController.SetState(0, false);
+                    }
                 }
+                else
+                {
+                    EnemyAnimationsController.SetState(0, true);
+                    EnemyAnimationsController.SetState(1, false);
+                    if (!EnemyConditions.IsFrozen)
+                        EnemyAnimationsController.SetSpeedAnimationByRunSpeed(movingSpeed);
+                }
+                yield return Timing.WaitForSeconds(refreshLatency);
             }
-            else
-            {
-                EnemyAnimationsController.SetState(0, true);
-                EnemyAnimationsController.SetState(1, false);
-                EnemyAnimationsController.HighSpeedAnimation();
-            }
-		}
+        }
     }
 }

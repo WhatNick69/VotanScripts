@@ -7,7 +7,6 @@ namespace VotanUI
     public class WeaponCraft 
         : MonoBehaviour
     {
-
         [SerializeField]
         private int gripType = 0;
         private int headType = 0;
@@ -77,10 +76,25 @@ namespace VotanUI
         private void Start()
         {
             DontDestroyOnLoad(this);
-            loadGemList = new string[] { "Prefabs/Weapon/Gem/000_FrostGem", "Prefabs/Weapon/Gem/001_FireGem", "Prefabs/Weapon/Gem/002_PowerfulGem", "Prefabs/Weapon/Gem/003_ElectricGem" };
-            loadHeadList = new string[] { "Prefabs/Weapon/Head/000_Axe", "Prefabs/Weapon/Head/001_Hammer", "Prefabs/Weapon/Head/002_Halberd" };
-            loadGripList = new string[] { "Prefabs/Weapon/Grip/000_ShortGrip", "Prefabs/Weapon/Grip/001_MidleGrip", "Prefabs/Weapon/Grip/002_LondGrip" };
-
+            loadGemList = new string[] 
+            {
+                "Prefabs/Weapon/Gem/000_FrostGem",
+                "Prefabs/Weapon/Gem/001_FireGem",
+                "Prefabs/Weapon/Gem/002_PowerfulGem",
+                "Prefabs/Weapon/Gem/003_ElectricGem"
+            };
+            loadHeadList = new string[] 
+            {
+                "Prefabs/Weapon/Head/000_Axe",
+                "Prefabs/Weapon/Head/001_Hammer",
+                "Prefabs/Weapon/Head/002_Halberd"
+            };
+            loadGripList = new string[] 
+            {
+                "Prefabs/Weapon/Grip/000_ShortGrip",
+                "Prefabs/Weapon/Grip/001_MidleGrip",
+                "Prefabs/Weapon/Grip/002_LondGrip"
+            };
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VotanLibraries;
 using System;
+using GameBehaviour;
 
 namespace PlayerBehaviour
 {
@@ -53,7 +54,8 @@ namespace PlayerBehaviour
                 healthValue += value;
                 RefreshHealthCircle();
             }
-            else if (healthValue <= 0)
+
+            if (healthValue <= 0)
             {
                 IsAlive = false;
                 healthValue = 0;
@@ -84,7 +86,8 @@ namespace PlayerBehaviour
                 if (tempArmory >= 0.2f)
                 {
                     isHelmetDeactive = true;
-                    helmet.SetActive(false);
+                    helmet.GetComponent<PartArmoryRigidbodyControl>().FireEvent();
+                    //helmet.SetActive(false);
                     tempArmory -= 0.2f;
                 }
                 else
@@ -111,7 +114,8 @@ namespace PlayerBehaviour
                             isShieldDeactive = true;
                             break;
                         }
-                        shieldParts[a].SetActive(false);
+
+                        shieldParts[a].GetComponent<PartArmoryRigidbodyControl>().FireEvent();
                         shieldParts.RemoveAt(a);
                         tempArmory -= shieldPartArmory;
                     }
@@ -137,7 +141,7 @@ namespace PlayerBehaviour
                             break;
                         }
 
-                        kirasaParts[a].SetActive(false);
+                        kirasaParts[a].GetComponent<PartArmoryRigidbodyControl>().FireEvent();
                         kirasaParts.RemoveAt(a);
                         tempArmory -= kirasaPartArmory;
                     }

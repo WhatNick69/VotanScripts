@@ -86,6 +86,11 @@ namespace VotanInterfaces
     public interface IEnemyConditions
     {
         /// <summary>
+        /// Жив ли объект
+        /// </summary>
+        bool IsAlive { get; set; }
+
+        /// <summary>
         /// Получить урон от персонажа по стихии
         /// </summary>
         /// <param name="dmg"></param>
