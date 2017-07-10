@@ -1,5 +1,6 @@
 ﻿using PlayerBehaviour;
 using System.Collections.Generic;
+using UnityEngine;
 
 /*
  * Интерфейсы данного скрипта реализуют логику контроля над
@@ -28,6 +29,11 @@ namespace VotanInterfaces
         /// Обновить бар здоровья объекта
         /// </summary>
         void RefreshHealthCircle();
+
+        /// <summary>
+        /// Реалтайм-игровой интерфейс объекта
+        /// </summary>
+        RectTransform MainBarCanvas { get; set; }
     }
 
     /// <summary>
@@ -89,6 +95,11 @@ namespace VotanInterfaces
         /// Жив ли объект
         /// </summary>
         bool IsAlive { get; set; }
+
+        /// <summary>
+        /// Заморожен ли игрок
+        /// </summary>
+        bool IsFrozen { get; set; }
 
         /// <summary>
         /// Получить урон от персонажа по стихии

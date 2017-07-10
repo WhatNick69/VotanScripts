@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using AbstractBehaviour;
 using Playerbehaviour;
 using UnityEngine;
-using VotanInterfaces;
 using MovementEffects;
 
 namespace PlayerBehaviour
@@ -12,15 +10,15 @@ namespace PlayerBehaviour
     /// Реализует контроль за анимацией персонажа
     /// </summary>
     public class PlayerAnimationsController 
-        : AbstactObjectAnimations, IPlayerAnimations
+        : AbstactObjectAnimations
     {
         [SerializeField,Tooltip("Хранитель компонентов")]
         private PlayerComponentsControl playerComponentsControl;
 
         /// <summary>
-        /// Инициализация
+        /// Конструктор
         /// </summary>
-        public void Start()
+        PlayerAnimationsController()
         {
             StructStatesNames = new StructStatesNames("isRunning",
                 "isFighting","isDefensing","isLongAttack","isDamage",

@@ -29,12 +29,17 @@ namespace PlayerBehaviour
         private bool onTheFloor = true;
         private float angle;
 
+        public override string ToString()
+        {
+            return base.ToString();
+        }
         /// <summary>
         /// Отключить либо включить просчет физики персонажа
         /// </summary>
         public void RigidbodyState(bool flag)
         {
             playerRGB.detectCollisions = flag;
+            
         }
 
         /// <summary>
@@ -94,13 +99,11 @@ namespace PlayerBehaviour
                 if (rayCastHit.collider.tag.Equals(tagNameObstacle)
                     || rayCastHit.collider.tag.Equals(tagNameEnemy))
                 {
-                    Debug.Log(true);
                     onTheFloor = true;
                     return true;
                 }
                 else if (rayCastHit.collider.tag.Equals(tagStairs))
                 {
-                    Debug.Log(false);
                     angle = rayCastHit.collider.GetComponent<Transform>().localEulerAngles.z;
                     onTheFloor = false;
                 }
@@ -109,6 +112,7 @@ namespace PlayerBehaviour
             {
                 onTheFloor = true;
             }
+
             return false;
         }
 
@@ -129,9 +133,9 @@ namespace PlayerBehaviour
                 }
                 else if (!onTheFloor)
                 {
-                    Debug.Log("ЛЕстница внизу");
+                    //Debug.Log("ЛЕстница внизу");
                     //angle = rayCastHit.collider.GetComponent<Transform>().localEulerAngles.z;
-                    Debug.Log(angle);
+                    //Debug.Log(angle);
                     return true; ;
                 }
             }

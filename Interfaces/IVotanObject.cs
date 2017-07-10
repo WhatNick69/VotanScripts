@@ -60,6 +60,21 @@ namespace VotanInterfaces
         EnemyMove EnemyMove { get; set; }
 
         /// <summary>
+        /// Ледяной эффект
+        /// </summary>
+        IEffect IceEffect { get; set; }
+
+        /// <summary>
+        /// Огненный эффект
+        /// </summary>
+        IEffect FireEffect { get; set; }
+
+        /// <summary>
+        /// Эектрический эффект
+        /// </summary>
+        IEffect ElectricEffect { get; set; }
+
+        /// <summary>
         /// Вернуть позицию
         /// </summary>
         /// <param name="child"></param>

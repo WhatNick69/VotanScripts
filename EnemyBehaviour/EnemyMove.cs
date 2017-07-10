@@ -110,6 +110,19 @@ namespace EnemyBehaviour
                 }
             }
         }
+
+        public NavMeshAgent Agent
+        {
+            get
+            {
+                return agent;
+            }
+
+            set
+            {
+                agent = value;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -117,7 +130,7 @@ namespace EnemyBehaviour
         /// </summary>
         private void RandomSpeedSet()
         {
-            agent.speed = LibraryStaticFunctions.GetPlusMinusVal(agentSpeed, 0.25f);
+            agent.speed = LibraryStaticFunctions.GetRangeValue(agentSpeed, 0.25f);
             agentSpeed = agent.speed;
             rotationSpeed = agent.angularSpeed;
         }
@@ -218,7 +231,7 @@ namespace EnemyBehaviour
                 {
                     if (playerConditions.IsAlive)
                     {
-                        if (agent != null)
+                        if (agent != null && agent.enabled)
                         {
                             agent.SetDestination
                                 (playerObjectTransformForFollow.position);
@@ -281,7 +294,8 @@ namespace EnemyBehaviour
         /// </summary>
         public void LookAtPlayerObject()
         {
-            lerpRotationQuar = 
+            if (!abstractEnemy.EnemyConditions.IsFrozen)
+                lerpRotationQuar = 
                 Quaternion.LookRotation
                 (playerObjectTransformForFollow.position-transform.position);
         }

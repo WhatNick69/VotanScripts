@@ -2,6 +2,7 @@
 using EnemyBehaviour;
 using UnityEngine;
 using VotanInterfaces;
+using GameBehaviour;
 
 namespace AbstractBehaviour
 {
@@ -23,6 +24,10 @@ namespace AbstractBehaviour
         protected EnemyConditions enemyConditions;
         protected EnemyOpponentChoiser enemyOpponentChoiser;
         protected EnemyMove enemyMove;
+
+        protected IEffect iceEffectManager;
+        protected IEffect fireEffectManager;
+        protected IEffect electricEffectManager;
         #endregion
 
         #region Свойства
@@ -78,6 +83,45 @@ namespace AbstractBehaviour
             set
             {
                 enemyOpponentChoiser = value;
+            }
+        }
+
+        public IEffect IceEffect
+        {
+            get
+            {
+                return iceEffectManager;
+            }
+
+            set
+            {
+                iceEffectManager = value;
+            }
+        }
+
+        public IEffect FireEffect
+        {
+            get
+            {
+                return fireEffectManager;
+            }
+
+            set
+            {
+                fireEffectManager = value;
+            }
+        }
+
+        public IEffect ElectricEffect
+        {
+            get
+            {
+                return electricEffectManager;
+            }
+
+            set
+            {
+                electricEffectManager = value;
             }
         }
         #endregion

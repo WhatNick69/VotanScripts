@@ -48,6 +48,8 @@ namespace EnemyBehaviour
                 GetComponent<EnemyConditions>();
             EnemyMove = 
                 GetComponent<EnemyMove>();
+            IceEffect =
+                transform.GetChild(1).GetChild(0).GetComponent<IEffect>();
             Timing.RunCoroutine(UpdateAttackState());
         }
 

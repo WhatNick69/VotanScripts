@@ -80,8 +80,12 @@ namespace EnemyBehaviour
             enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
             enemyAbstract.EnemyAnimationsController.SetState(3, true);
             enemyAbstract.EnemyAnimationsController.PlayDeadNormalizeCoroutine();
+            MainBarCanvas.gameObject.SetActive(false);
 
-            yield return Timing.WaitForSeconds(5);
+            if (isFrozen)
+                yield return Timing.WaitForSeconds(6.5f);
+            else
+                yield return Timing.WaitForSeconds(5);
             DestroyObject();
         }
 
@@ -102,7 +106,8 @@ namespace EnemyBehaviour
                     RunCoroutineForGetFireDamage(damage);
                     return damage;
                 case DamageType.Frozen:
-                    RunCoroutineForFrozenDamage();
+                    if (!isFrozen)
+                        RunCoroutineForFrozenDamage();
                     return dmg * (1 - frostResistance);
                 case DamageType.Powerful:
                     return dmg * (1 - physicResistance);
@@ -129,12 +134,12 @@ namespace EnemyBehaviour
         /// <returns></returns>
         public IEnumerator<float> CoroutineForFireDamage(float damage)
         {
-            float timeWhileDamage = LibraryStaticFunctions.GetPlusMinusVal(3,0.25f);
+            float timeWhileDamage = LibraryStaticFunctions.GetRangeValue(3,0.25f);
             float time = 0;
             enemyAbstract.EnemyAnimationsController.SetState(2, true);
             while (time <= timeWhileDamage)
             {
-                HealthValue -= LibraryStaticFunctions.GetPlusMinusVal(damage/10, 0.25f);
+                HealthValue -= LibraryStaticFunctions.GetRangeValue(damage/10, 0.25f);
                 time += 0.25f;
                 yield return Timing.WaitForSeconds(0.25f);
             }
@@ -147,19 +152,33 @@ namespace EnemyBehaviour
         /// <returns></returns>
         public IEnumerator<float> CoroutineForFrozenDamage()
         {
-            IsFrozen = true;
+
+            Debug.Log("ICE");
             enemyAbstract.EnemyAnimationsController.SetState(2, true);
             enemyMove.SetNewSpeedOfNavMeshAgent(0,0);
             enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0);
+            float time = LibraryStaticFunctions.GetRangeValue(4, 0.25f);
+            enemyAbstract.IceEffect.FireEventEffect(time);
+            enemyAbstract.EnemyMove.Agent.enabled = false;
 
-            yield return Timing.WaitForSeconds(LibraryStaticFunctions.GetPlusMinusVal(4, 0.25f));
+            IsFrozen = true;
+            yield return Timing.WaitForSeconds(LibraryStaticFunctions.GetRangeValue(time));
+            IsFrozen = false;
+
             if (IsAlive)
             {
                 enemyMove.SetNewSpeedOfNavMeshAgent(enemyMove.AgentSpeed, enemyMove.RotationSpeed);
                 enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
+                enemyAbstract.EnemyMove.Agent.enabled = true;
+                enemyAbstract.EnemyAnimationsController.SetState(2, false);
             }
-            IsFrozen = false;
-            enemyAbstract.EnemyAnimationsController.SetState(2, false);
+            else
+            {
+                enemyAbstract.EnemyAnimationsController.DisableAllStates();
+                enemyAbstract.EnemyAnimationsController.SetState(3, true);
+                enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
+                enemyAbstract.EnemyAnimationsController.PlayDeadNormalizeCoroutine();
+            }
         }
 
         /// <summary>
@@ -202,7 +221,7 @@ namespace EnemyBehaviour
                 Timing.RunCoroutine(CoroutineForGetDamage());
                 dmg = GetDamageWithResistance(dmg, dmgType);
                 HealthValue -= 
-                    LibraryStaticFunctions.GetPlusMinusVal(dmg, 0.1f);
+                    LibraryStaticFunctions.GetRangeValue(dmg, 0.1f);
 			}
         }
 

@@ -79,10 +79,7 @@ namespace VotanInterfaces
     /// </summary>
     public interface IPlayerAnimations
     {
-        /// <summary>
-        /// Инициализация
-        /// </summary>
-        void Start();
+
     }
 
     /// <summary>
@@ -91,9 +88,6 @@ namespace VotanInterfaces
     /// </summary>
     public interface IEnemyAnimations
     {
-        /// <summary>
-        /// Инициализация
-        /// </summary>
-        void Start();
+
     }
 }

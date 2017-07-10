@@ -28,8 +28,6 @@ namespace PlayerBehaviour
         private float rageRegenSize;
         [SerializeField,Tooltip("Хранитель компонентов")]
         private PlayerComponentsControl playerComponentsControl;
-        [SerializeField]
-        private RectTransform mainBarCanvas;
 
         private bool isRageRegen; // можно ли регенерить ярость
         private float initialisatedRageValuePlayer; // начальное значение ярости
@@ -159,14 +157,15 @@ namespace PlayerBehaviour
                 {
                     if (playerComponentsControl.PlayerFight.IsDefensing)
                     {
-                        HealthValue -= LibraryStaticFunctions.GetPlusMinusVal(damageValue, 0.1f) * LibraryStaticFunctions.GetPlusMinusVal
+                        HealthValue -= LibraryStaticFunctions.GetRangeValue(damageValue, 0.1f) 
+                            * LibraryStaticFunctions.GetRangeValue
                             (playerComponentsControl.PlayerWeapon
                             .DefenceValue, 0.1f);
                         CoroutineForIsMayGetDamage();
                     }
                     else
                     {
-                        HealthValue -= LibraryStaticFunctions.GetPlusMinusVal(damageValue, 0.1f);
+                        HealthValue -= LibraryStaticFunctions.GetRangeValue(damageValue, 0.1f);
                         CoroutineForIsMayGetDamage();
                     }
                 }
@@ -176,8 +175,8 @@ namespace PlayerBehaviour
                     {
                         playerComponentsControl.PlayerArmory
                             .DecreaseArmoryLevel(-
-                        LibraryStaticFunctions.GetPlusMinusVal(damageValue, 0.1f) *
-                        LibraryStaticFunctions.GetPlusMinusVal
+                        LibraryStaticFunctions.GetRangeValue(damageValue, 0.1f) *
+                        LibraryStaticFunctions.GetRangeValue
                             (playerComponentsControl.PlayerWeapon
                             .DefenceValue, 0.1f));
                         CoroutineForIsMayGetDamage();
@@ -186,7 +185,7 @@ namespace PlayerBehaviour
                     {
                         playerComponentsControl.PlayerArmory
                             .DecreaseArmoryLevel(-
-                       LibraryStaticFunctions.GetPlusMinusVal(damageValue, 0.1f));
+                       LibraryStaticFunctions.GetRangeValue(damageValue, 0.1f));
                         CoroutineForIsMayGetDamage();
                     }
                 }
@@ -208,10 +207,10 @@ namespace PlayerBehaviour
         public void RotateConditionBar(bool flag=false,float angle=0)
         {
             if (flag)
-                mainBarCanvas.localRotation = 
+                MainBarCanvas.localRotation = 
                     Quaternion.Euler(angle, -90, -90);        
             else
-                mainBarCanvas.localRotation = 
+                MainBarCanvas.localRotation = 
                     Quaternion.Euler(90, -90, -90);
         }
 
@@ -254,7 +253,7 @@ namespace PlayerBehaviour
             playerComponentsControl.PlayerCollision.RigidbodyDead();
             playerComponentsControl.PlayerAnimationsController
                 .PlayDeadNormalizeCoroutine();
-            mainBarCanvas.gameObject.SetActive(false);
+            MainBarCanvas.gameObject.SetActive(false);
             yield return Timing.WaitForSeconds(1);
         }
     }

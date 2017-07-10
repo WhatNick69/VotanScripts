@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using AbstractBehaviour;
-using VotanInterfaces;
 using MovementEffects;
 using UnityEngine;
+using VotanInterfaces;
 
 namespace EnemyBehaviour
 {
@@ -11,15 +11,24 @@ namespace EnemyBehaviour
     /// Осуществляет контроль за анимациями врага
     /// </summary>
     public class EnemyAnimationsController
-        : AbstactObjectAnimations, IEnemyAnimations
+        : AbstactObjectAnimations
     {
+        private IEnemyConditions enemyConditions;
+        private IEnemyBehaviour enemyBehaviour;
+
         /// <summary>
-        /// Инициализация
+        /// Конструктор
         /// </summary>
-        public void Start()
+        EnemyAnimationsController()
         {
             StructStatesNames = new StructStatesNames("isRunning", "isFighting"
-                , "isDamage", "isDead");
+                , "isDamage", "isDead");      
+        }
+
+        private void Start()
+        {
+            enemyBehaviour = GetComponent<IEnemyBehaviour>();
+            enemyConditions = enemyBehaviour.EnemyConditions;
         }
 
         /// <summary>
@@ -29,6 +38,12 @@ namespace EnemyBehaviour
         {
             if (animatorOfObject.speed == 1) return;
             animatorOfObject.speed = 1f;
+        }
+
+        public override void SetSpeedAnimationByRunSpeed(float value)
+        {
+            if (!enemyConditions.IsFrozen)
+                animatorOfObject.speed = value;
         }
 
         /// <summary>
@@ -59,23 +74,28 @@ namespace EnemyBehaviour
 
         public override IEnumerator<float> CoroutineDeadYNormalized()
         {
-            int i = 0;
+            if (enemyConditions.IsFrozen) yield break;
+
+            int i = 0;       
             yield return Timing.WaitForSeconds(0.5f);
+            if (this == null) yield break;
 
             Vector3 newPosition =
-            new Vector3(transformForDeadYNormalizing.position.x, 
+                new Vector3(transformForDeadYNormalizing.position.x, 
                 transformForDeadYNormalizing.position.y - 0.8f,
                 transformForDeadYNormalizing.position.z);
 
             while (i < 10)
             {
                 i++;
+                if (this == null) yield break;
+
                 transformForDeadYNormalizing.position =
-                    Vector3.Lerp(transformForDeadYNormalizing.position,
-                    newPosition, Time.deltaTime*2);
+                Vector3.Lerp(transformForDeadYNormalizing.position,
+                newPosition, Time.deltaTime*2);
+
                 yield return Timing.WaitForSeconds(0.01f);
             }
-            yield return Timing.WaitForSeconds(0.01f);
         }
     }
 }

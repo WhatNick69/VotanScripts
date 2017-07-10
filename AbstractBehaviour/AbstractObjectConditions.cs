@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using VotanInterfaces;
+using System;
 
 namespace AbstractBehaviour
 {
@@ -22,6 +23,8 @@ namespace AbstractBehaviour
         protected float colorChannelRed;
         protected float colorChannelGreen;
         private bool isAlive = true; // жив ли игрок
+        [SerializeField]
+        private RectTransform mainBarCanvas;
         #endregion
 
         #region Свойства
@@ -40,7 +43,6 @@ namespace AbstractBehaviour
                 healthValue = value;
                 if (healthValue > 0)
                 {
-                    Debug.Log("Попали");
                     RefreshHealthCircle();
                 }
                 else if (healthValue <= 0 && isAlive)
@@ -64,6 +66,19 @@ namespace AbstractBehaviour
             set
             {
                 isAlive = value;
+            }
+        }
+
+        public RectTransform MainBarCanvas
+        {
+            get
+            {
+                return mainBarCanvas;
+            }
+
+            set
+            {
+                mainBarCanvas = value;
             }
         }
         #endregion
