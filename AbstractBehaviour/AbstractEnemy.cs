@@ -25,13 +25,12 @@ namespace AbstractBehaviour
         protected EnemyOpponentChoiser enemyOpponentChoiser;
         protected EnemyMove enemyMove;
 
-        protected IEffect iceEffectManager;
-        protected IEffect fireEffectManager;
-        protected IEffect electricEffectManager;
+        protected IIceEffect iceEffectManager;
+        protected IFireEffect fireEffectManager;
+        protected IElectricEffect electricEffectManager;
         #endregion
 
         #region Свойства
-
         public EnemyAnimationsController EnemyAnimationsController
         {
             get
@@ -71,8 +70,6 @@ namespace AbstractBehaviour
             }
         }
 
-        public abstract EnemyMove EnemyMove { get; set; }
-
         public EnemyOpponentChoiser EnemyOpponentChoiser
         {
             get
@@ -86,7 +83,7 @@ namespace AbstractBehaviour
             }
         }
 
-        public IEffect IceEffect
+        public IIceEffect IceEffect
         {
             get
             {
@@ -99,7 +96,7 @@ namespace AbstractBehaviour
             }
         }
 
-        public IEffect FireEffect
+        public IFireEffect FireEffect
         {
             get
             {
@@ -112,7 +109,7 @@ namespace AbstractBehaviour
             }
         }
 
-        public IEffect ElectricEffect
+        public IElectricEffect ElectricEffect
         {
             get
             {
@@ -122,6 +119,19 @@ namespace AbstractBehaviour
             set
             {
                 electricEffectManager = value;
+            }
+        }
+
+        public EnemyMove EnemyMove
+        {
+            get
+            {
+                return enemyMove;
+            }
+
+            set
+            {
+                enemyMove = value;
             }
         }
         #endregion

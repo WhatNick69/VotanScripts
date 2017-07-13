@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using VotanInterfaces;
 using MovementEffects;
-using Playerbehaviour;
 using VotanLibraries;
+using GameBehaviour;
 
 namespace PlayerBehaviour
 {
@@ -22,27 +22,43 @@ namespace PlayerBehaviour
 		/// </summary>
 		public void FixedUpdate()
         {
-            for (int i = 0; i < listEnemy.Count; i++)
+            for (int i = 0; i < StaticStorageWithEnemies.GetCountListOfEnemies(); i++)
             {
-				if (listEnemy[i])
+				if (StaticStorageWithEnemies.IsNonNullElement(i))
 				{
-					if (Vector3.Distance(playerComponentsControl.PlayerObject
-                        .position, listEnemy[i].transform.position) <= 3f)
+					if (StaticStorageWithEnemies.DistanceBetweenPlayerAndEnemy(playerComponentsControl.PlayerObject
+                        .position, i) <= 3f)
 					{
-						if (!attackList.Contains(listEnemy[i])) attackList.Add(listEnemy[i]);
+						if (!attackList.Contains(StaticStorageWithEnemies.
+                            GetFromListByIndex(i))) attackList.Add
+                                (StaticStorageWithEnemies.GetFromListByIndex(i));
 					}
 				}
 				else
 				{
-					listEnemy.Remove(listEnemy[i]);
-					
+                    StaticStorageWithEnemies.RemoveFromListByIndex(i);			
 				}
             }
-            if (playerComponentsControl.PlayerFight.IsFighting 
-                || playerComponentsControl.PlayerFight.IsRotating)
-                    AttackToEnemy(playerComponentsControl.PlayerWeapon.Damage, 
-                    playerComponentsControl.PlayerWeapon.AttackType);
 
+            if (!playerComponentsControl.PlayerFight.IsDefensing)
+            {
+                if (playerComponentsControl.PlayerFight.IsRotating)
+                {
+                    AttackToEnemy(LibraryStaticFunctions.AttackToEnemyDamage
+                        (playerComponentsControl.PlayerWeapon.Damage,
+                        playerComponentsControl.PlayerWeapon.SpinSpeed,
+                        playerComponentsControl.PlayerWeapon.OriginalSpinSpeed),
+                    playerComponentsControl.PlayerWeapon.AttackType);
+                }
+                else if (playerComponentsControl.PlayerFight.IsFighting)
+                {
+                    AttackToEnemy(LibraryStaticFunctions.AttackToEnemyDamage
+                       (playerComponentsControl.PlayerWeapon.Damage,
+                       playerComponentsControl.PlayerWeapon.SpinSpeed,
+                       playerComponentsControl.PlayerWeapon.OriginalSpinSpeed,true),
+                   playerComponentsControl.PlayerWeapon.AttackType);
+                }
+            }
 			oldFinishGunPoint = playerFinishGunPoint.position;
 		}
 
@@ -66,7 +82,9 @@ namespace PlayerBehaviour
 					if (IsAttackEnemy(i))
                     {
 						if (playerComponentsControl.PlayerConditions.IsAlive)
-						      attackList[i].EnemyConditions.GetDamage(damage, dmgType, playerComponentsControl.PlayerWeapon); 
+						      attackList[i].EnemyConditions.GetDamage
+                                (damage, playerComponentsControl.PlayerWeapon.GemPower
+                                ,dmgType, playerComponentsControl.PlayerWeapon); 
                     }
                 }
             }
@@ -80,11 +98,14 @@ namespace PlayerBehaviour
 		/// <returns></returns>
 		private bool IsAttackEnemy(int i)
 		{
-			return ((LibraryPhysics.BushInPlane(attackList[i].ReturnPosition(4), playerPoint.position,
+			return ((LibraryPhysics.BushInPlane(attackList[i].
+                ReturnPosition(4), playerPoint.position,
 						playerFinishGunPoint.position, oldFinishGunPoint) ||
-                        LibraryPhysics.BushInLine(attackList[i].ReturnPosition(0), attackList[i].ReturnPosition(1),
+                        LibraryPhysics.BushInLine(attackList[i].ReturnPosition(0), 
+                        attackList[i].ReturnPosition(1),
 							PlayerFinishGunPoint.position, PlayerStartGunPoint.position)) && 
-							Mathf.Abs(playerPoint.position.y - attackList[i].ReturnPosition(0).y) < 1.6f);
+							Mathf.Abs(playerPoint.position.y 
+                            - attackList[i].ReturnPosition(0).y) < 1.6f);
 		}
 
         /// <summary>

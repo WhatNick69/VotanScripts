@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using MovementEffects;
-using Playerbehaviour;
+using VotanInterfaces;
+using System;
 
 namespace PlayerBehaviour
 {
@@ -12,12 +13,21 @@ namespace PlayerBehaviour
     /// 2) землетрясение и расхождение атакующей волны в определенном радиусе. спиралька ^^
     /// 
     /// </summary>
-    interface IWeapon
+    public interface IWeapon
 	{
         string typeName1 { get; set; }
 		string typeName2 { get; set; }
 		string weaponName { get; set; }
 		string gripName { get; set; }
+        IPlayerBehaviour GetPlayer { get; }
+
+        float DefenceValue { get; set; }
+        float Damage { get; set; }
+        DamageType AttackType { get; set; }
+        float SpinSpeed { get; set; }
+        float GemPower { get; set; }
+        float Weight { get; set; }
+        float OriginalSpinSpeed { get; set; }
 
         /// <summary>
         /// Инициализация
@@ -39,12 +49,16 @@ namespace PlayerBehaviour
         /// <param name="attackType"></param>
         /// <param name="spinSpeed"></param>
         /// <param name="weight"></param>
-        void SetWeaponParameters(float damage, float defenceValue, DamageType attackType, float spinSpeed,float weight);
+        /// <param name="gemPower"></param>
+        void SetWeaponParameters(float damage, float defenceValue, DamageType attackType, 
+            float spinSpeed,float weight,float gemPower);
 
         /// <summary>
         /// Снижаем скорость вращения при попадании по врагу
         /// </summary>
         void WhileTime();
+
+        IEnumerator<float> CoroutineDoSlowMotionSpinSpeed();
     }
 
 	/// <summary>
@@ -59,21 +73,25 @@ namespace PlayerBehaviour
 		public string weaponName { get; set; }
 		public string gripName { get; set; }
 
-		[SerializeField, Tooltip("Урон от оружия"), Range(0, 200f)]
+		[SerializeField, Tooltip("Урон от оружия"), Range(1, 2200f)]
 		private float damage;
-		[SerializeField, Tooltip("Защита"), Range(0, 50f)]
+		[SerializeField, Tooltip("Защита"), Range(0, 99f)]
 		private float defenceValue;
 		[SerializeField]
 		private DamageType attackType;
-		[SerializeField, Tooltip("Скорость вращения"), Range(40, 100)]
+		[SerializeField, Tooltip("Скорость вращения"), Range(10, 100f)]
 		private float spinSpeed;
-		private float originalSpinSpeed;
+        [SerializeField, Tooltip("Сила камня"), Range(1, 100f)]
+        private float gemPower;
+        private float originalSpinSpeed;
 
-		[SerializeField, Tooltip("Величина замедления при попадании по врагу. Вес оружия"), Range(1f, 150f)]
+		[SerializeField, 
+            Tooltip("Вес оружия. Чем больше - тем меньше замедление при попадании по противнику")
+                , Range(1f, 100f)]
 		private float weight;
-		[SerializeField, Tooltip("Задержка перед возвращением скорости"), Range(0.5f, 3)]
-
+		[SerializeField, Tooltip("Задержка перед возвращением скорости"), Range(0.1f, 3)]
 		private float speedReturnLatency;
+
 		[SerializeField, Tooltip("Хранитель компонентов")]
 		private PlayerComponentsControl playerComponentsControl;
 		#endregion
@@ -101,6 +119,8 @@ namespace PlayerBehaviour
 
             set
             {
+                if (value >= 100)
+                    value = 99;
                 defenceValue = value;
             }
         }
@@ -143,24 +163,41 @@ namespace PlayerBehaviour
                 weight = value;
             }
         }
-        #endregion
 
-        /// <summary>
-        /// Конструктор класса
-        /// </summary>
-        /// <param name="damage"></param>
-        /// <param name="defenceValue"></param>
-        /// <param name="attackType"></param>
-        /// <param name="spinSpeed"></param>
-        /// <param name="weight"></param>
-        public PlayerWeapon(float damage, float defenceValue, DamageType attackType, float spinSpeed,float weight) 
-		{
-            this.defenceValue = defenceValue;
-			this.damage = damage;
-			this.attackType = attackType;
-			this.spinSpeed = spinSpeed;
-            this.weight = weight;
-		}
+        public float GemPower
+        {
+            get
+            {
+                return gemPower;
+            }
+
+            set
+            {
+                gemPower = value;
+            }
+        }
+
+        public float OriginalSpinSpeed
+        {
+            get
+            {
+                return originalSpinSpeed;
+            }
+
+            set
+            {
+                originalSpinSpeed = value;
+            }
+        }
+
+        public IPlayerBehaviour GetPlayer
+        {
+            get
+            {
+                return playerComponentsControl;
+            }
+        }
+        #endregion
 
         /// <summary>
         /// Задать характеристики оружия через урон, 
@@ -171,13 +208,16 @@ namespace PlayerBehaviour
         /// <param name="attackType"></param>
         /// <param name="spinSpeed"></param>
         /// <param name="weight"></param>
-        public void SetWeaponParameters(float damage, float defenceValue,DamageType attackType, float spinSpeed,float weight)
+        public void SetWeaponParameters(float damage, float defenceValue,
+            DamageType attackType, float spinSpeed,float weight,float gemPower)
         {
-            this.defenceValue = defenceValue;
+            DefenceValue = defenceValue;
             this.damage = damage;
             this.attackType = attackType;
             this.spinSpeed = spinSpeed;
             this.weight = weight;
+            this.gemPower = gemPower;
+
 			originalSpinSpeed = spinSpeed;
         }
         
@@ -203,7 +243,7 @@ namespace PlayerBehaviour
         /// Корутин на замедление вращения
         /// </summary>
         /// <returns></returns>
-        private IEnumerator<float> CoroutineDoSlowMotionSpinSpeed()
+        public IEnumerator<float> CoroutineDoSlowMotionSpinSpeed()
         {
 			float spSpeed = spinSpeed * (1 - (Weight / 100));
 

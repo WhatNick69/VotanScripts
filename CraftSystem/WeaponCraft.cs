@@ -2,29 +2,35 @@
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace VotanUI
+namespace CraftSystem
 {
+    /// <summary>
+    /// Система крафта оружия
+    /// </summary>
     public class WeaponCraft 
         : MonoBehaviour
     {
+        #region Переменные
         [SerializeField]
         private int gripType = 0;
         private int headType = 0;
         private int gemType = 0;
         [SerializeField]
-        Text gripTextNumber;
+        private Text gripTextNumber;
         [SerializeField]
-        Text headTextNumber;
+        private Text headTextNumber;
         [SerializeField]
-        Text gemTextNumber;
+        private Text gemTextNumber;
 
-        static GameObject grip;
-        static GameObject head;
-        static GameObject gem;
+        private static GameObject grip;
+        private static GameObject head;
+        private static GameObject gem;
         private string[] loadGripList;
         private string[] loadHeadList;
         private string[] loadGemList;
+        #endregion
 
+        #region Свойства
         public GameObject GetGripPrafab()
         {
             return grip;
@@ -39,6 +45,7 @@ namespace VotanUI
         {
             return gem;
         }
+        #endregion
 
         public void PlayArena()
         {

@@ -62,17 +62,17 @@ namespace VotanInterfaces
         /// <summary>
         /// Ледяной эффект
         /// </summary>
-        IEffect IceEffect { get; set; }
+        IIceEffect IceEffect { get; set; }
 
         /// <summary>
         /// Огненный эффект
         /// </summary>
-        IEffect FireEffect { get; set; }
+        IFireEffect FireEffect { get; set; }
 
         /// <summary>
         /// Эектрический эффект
         /// </summary>
-        IEffect ElectricEffect { get; set; }
+        IElectricEffect ElectricEffect { get; set; }
 
         /// <summary>
         /// Вернуть позицию

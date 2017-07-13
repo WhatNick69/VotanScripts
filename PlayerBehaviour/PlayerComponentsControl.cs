@@ -1,15 +1,15 @@
 ﻿using GameBehaviour;
-using PlayerBehaviour;
 using UnityEngine;
+using VotanInterfaces;
 
-namespace Playerbehaviour
+namespace PlayerBehaviour
 {
     /// <summary>
     /// Хранитель компонентов.
     /// Содержит в себе ссылки и доступы на все компоненты игрока
     /// </summary>
     public class PlayerComponentsControl
-        : MonoBehaviour
+        : MonoBehaviour, IPlayerBehaviour
     {
         #region Ссылки на компоненты
         [SerializeField, Tooltip("Управление игроком")]

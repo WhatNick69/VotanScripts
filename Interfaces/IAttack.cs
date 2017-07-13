@@ -37,18 +37,6 @@ namespace VotanInterfaces
         Transform PlayerPosition(int index);
 
         /// <summary>
-        /// Добавить врага в лист
-        /// </summary>
-        /// <param name="x"></param>
-        void AddEnemyToList(AbstractEnemy x);
-
-        /// <summary>
-        ///  Вернуть лист врагов
-        /// </summary>
-        /// <returns></returns>
-        List<AbstractEnemy> ReturnList();
-
-        /// <summary>
         /// Радиус атаки
         /// Расстояние между персонажем игрока и врагом</summary>
         /// <param name="Player"></param>

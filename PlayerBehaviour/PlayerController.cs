@@ -2,8 +2,6 @@
 using UnityStandardAssets.CrossPlatformInput;
 using MovementEffects;
 using System.Collections.Generic;
-using GameBehaviour;
-using Playerbehaviour;
 
 namespace PlayerBehaviour
 {
@@ -47,6 +45,10 @@ namespace PlayerBehaviour
 
         private bool continueCalculateInCoroutine;
         private Vector3 normalYVector;
+        public bool backForward = true;
+        public bool forward = true;
+        public bool right = true;
+        public bool left = true;
         #endregion
 
         #region Get-Set`s
@@ -158,6 +160,11 @@ namespace PlayerBehaviour
             tempVectorTransform = attackTransform.position;
         }
 
+        public void SetStopPositionFromCollision()
+        {
+            tempVectorTransform = playerObjectTransform.position;
+        }
+
         /// <summary>
         /// Корутин на обновление позиции и поворота
         /// </summary>
@@ -199,9 +206,54 @@ namespace PlayerBehaviour
             return currentMagnitude > iddleSize ? true : false;
         }
 
-        public void SetStopPositionFromCollision()
+        public void SetCorrectDirections(bool forward, bool backForward, bool right, bool left)
         {
-            tempVectorTransform = playerObjectTransform.position;
+            // передаем були
+            this.forward = forward;
+            this.backForward = backForward;
+            this.right = right;
+            this.left = left;
+        }
+
+        /// <summary>
+        /// Проверить направление движения на возможность
+        /// </summary>
+        public void CheckDirection()
+        {
+            if (Mathf.Abs(tempVectorTransform.x) > Mathf.Abs(playerObjectTransform.position.x))
+            {
+                if (!right)
+                {
+                    tempVectorTransform.x = playerObjectTransform.position.x;
+                    //tempVectorTransform.z -= playerObjectTransform.position.z;
+                }
+            }
+            else if (Mathf.Abs(tempVectorTransform.x) 
+                < Mathf.Abs(playerObjectTransform.position.x))
+            {
+                if (!left)
+                {
+                    tempVectorTransform.x = playerObjectTransform.position.x;
+                    //tempVectorTransform.z -= playerObjectTransform.position.z;
+                }
+            }
+            if (Mathf.Abs(tempVectorTransform.z) > Mathf.Abs(playerObjectTransform.position.z))
+            {
+                if (!forward)
+                {
+                    //tempVectorTransform.x -= playerObjectTransform.position.x;
+                    tempVectorTransform.z = playerObjectTransform.position.z;
+                }
+            }
+            else if (Mathf.Abs(tempVectorTransform.z) 
+                < Mathf.Abs(playerObjectTransform.position.z))
+            {
+                if (!backForward)
+                {
+                    //tempVectorTransform.x -= playerObjectTransform.position.x;
+                    tempVectorTransform.z = playerObjectTransform.position.z;
+                }
+            }
         }
 
         /// <summary>
@@ -210,6 +262,7 @@ namespace PlayerBehaviour
         /// </summary>
         private void UpdateNewTransformPositionAndRotation()
         {
+            //CheckDirection();
             currentMagnitude = (playerObjectTransform
                 .position - tempVectorTransform).magnitude;
 

@@ -1,6 +1,5 @@
 ﻿using AbstractBehaviour;
 using MovementEffects;
-using Playerbehaviour;
 using PlayerBehaviour;
 using System;
 using System.Collections.Generic;
@@ -24,7 +23,7 @@ namespace EnemyBehaviour
         private PlayerConditions playerConditions;
         [SerializeField, Tooltip("Частота обновления позиции врага"),Range(0.1f,3)]
         private float frequencySearching;
-        [SerializeField, Tooltip("Частота интерполяции и отдыха"), Range(0.1f, 3)]
+        [SerializeField, Tooltip("Частота интерполяции и отдыха"), Range(0.01f, 3)]
         private float frequencyResting;
         [SerializeField, Tooltip("Скорость врага"), Range(1, 5)]
         private float agentSpeed;
@@ -36,7 +35,7 @@ namespace EnemyBehaviour
 
         private bool isStopped;
         private Quaternion lerpRotationQuar;
-        private float angularSpeedForLerpRotation;
+        private float angularLookSpeed;
         #endregion
 
         #region Свойства
@@ -149,7 +148,8 @@ namespace EnemyBehaviour
             }
             else
             {
-                isStopped = Vector3.Distance(transform.position, playerObjectTransformForFollow.position)
+                isStopped = Vector3.Distance
+                    (transform.position, playerObjectTransformForFollow.position)
                     <= agent.stoppingDistance ? true : false;
                 if (!isStopped && PlayerObjectTransformForFollow)
                     abstractEnemy.EnemyAttack.IsMayToPlayAttackAnimation = true;
@@ -174,22 +174,29 @@ namespace EnemyBehaviour
         /// </summary>
         private bool GetPlayerAndComponent()
         {
-            playerObjectTransformForFollow = abstractEnemy.EnemyOpponentChoiser.GetRandomTransformOfPlayer();
+            playerObjectTransformForFollow = 
+                abstractEnemy.EnemyOpponentChoiser.GetRandomTransformOfPlayer();
 
             if (playerObjectTransformForFollow != null)
             {
                 abstractEnemy.EnemyAttack.InFightMode = true;
 
-                abstractEnemy.EnemyAttack.PlayerTarget = playerObjectTransformForFollow.GetComponent<PlayerAttack>();
+                abstractEnemy.EnemyAttack.PlayerTarget = 
+                    playerObjectTransformForFollow.GetComponent<PlayerAttack>();
 
                 if (!GetComponent<AbstractAttack>()) return false;
                 AbstractAttack absA = GetComponent<AbstractAttack>();
-                absA.SetPlayerPoint(0, abstractEnemy.EnemyAttack.PlayerTarget.PlayerPosition(0));
-                absA.SetPlayerPoint(1, abstractEnemy.EnemyAttack.PlayerTarget.PlayerPosition(1));
-                absA.SetPlayerPoint(2, abstractEnemy.EnemyAttack.PlayerTarget.PlayerPosition(2));
-                absA.SetPlayerPoint(3, abstractEnemy.EnemyAttack.PlayerTarget.PlayerPosition(3));
+                absA.SetPlayerPoint(0, abstractEnemy.
+                    EnemyAttack.PlayerTarget.PlayerPosition(0));
+                absA.SetPlayerPoint(1, abstractEnemy.
+                    EnemyAttack.PlayerTarget.PlayerPosition(1));
+                absA.SetPlayerPoint(2, abstractEnemy.
+                    EnemyAttack.PlayerTarget.PlayerPosition(2));
+                absA.SetPlayerPoint(3, abstractEnemy.
+                    EnemyAttack.PlayerTarget.PlayerPosition(3));
 
-                playerConditions = playerObjectTransformForFollow.GetComponent<PlayerConditions>();
+                playerConditions = playerObjectTransformForFollow.
+                    GetComponent<PlayerConditions>();
                 playerObjectTransformForFollow = playerObjectTransformForFollow.
                     GetComponent<PlayerComponentsControl>().PlayerModel;
 
@@ -210,8 +217,8 @@ namespace EnemyBehaviour
             agent = GetComponent<NavMeshAgent>();
             GetPlayerAndComponent();
 
+            angularLookSpeed = Time.deltaTime * 8;
             abstractEnemy.EnemyConditions.IsAlive = true;
-            angularSpeedForLerpRotation = agent.angularSpeed/1000;
             randomPosition.y = 3;
             RandomSpeedSet();
             Timing.RunCoroutine(CoroutineForSearchingByPlayerObject());
@@ -279,7 +286,7 @@ namespace EnemyBehaviour
                     if (isStopped)
                         transform.rotation =
                         Quaternion.Lerp(transform.rotation
-                            , lerpRotationQuar, angularSpeedForLerpRotation);
+                            , lerpRotationQuar, angularLookSpeed);
                 }
                 else
                 {
@@ -295,9 +302,12 @@ namespace EnemyBehaviour
         public void LookAtPlayerObject()
         {
             if (!abstractEnemy.EnemyConditions.IsFrozen)
-                lerpRotationQuar = 
-                Quaternion.LookRotation
-                (playerObjectTransformForFollow.position-transform.position);
+            {
+                lerpRotationQuar = Quaternion.LookRotation
+                (playerObjectTransformForFollow.position - transform.position);
+                lerpRotationQuar.z = 0;
+                lerpRotationQuar.x = 0;
+            }
         }
 
         /// <summary>
@@ -305,13 +315,15 @@ namespace EnemyBehaviour
         /// </summary>
         private void SetRandomPosition()
         {
-            if (agent != null)
+            if (agent != null && agent.enabled)
             {
                 abstractEnemy.EnemyAnimationsController.DisableAllStates();
                 abstractEnemy.EnemyAnimationsController.SetState(0, true);
                 abstractEnemy.EnemyAttack.IsMayToPlayAttackAnimation = false;
-                abstractEnemy.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(abstractEnemy.EnemyMove.AgentSpeed);
-                randomPosition.x = LibraryStaticFunctions.GetRandomAxisOfEnemyRest(randomRadius);
+                abstractEnemy.EnemyAnimationsController.
+                    SetSpeedAnimationByRunSpeed(AgentSpeed);
+                randomPosition.x = LibraryStaticFunctions.
+                    GetRandomAxisOfEnemyRest(randomRadius);
                 randomPosition.z = LibraryStaticFunctions.GetRandomAxisOfEnemyRest
                     (randomRadius - Math.Abs(randomPosition.x));
                 agent.SetDestination(randomPosition);

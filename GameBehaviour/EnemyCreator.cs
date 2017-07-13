@@ -4,6 +4,7 @@ using MovementEffects;
 using PlayerBehaviour;
 using System.Collections.Generic;
 using UnityEngine;
+using VotanLibraries;
 
 namespace GameBehaviour
 {
@@ -36,7 +37,7 @@ namespace GameBehaviour
             {
                 yield return Timing.WaitForSeconds(timeToInstantiate);
 
-                InstantiateOnServer();
+                InstantiateOnServer(k);
 				k++;
             }
         }
@@ -44,13 +45,14 @@ namespace GameBehaviour
         /// <summary>
         /// Инстанцирование врага на сцене
         /// </summary>
-        private void InstantiateOnServer()
+        private void InstantiateOnServer(int k)
         {
             GameObject enemyObjNew = Instantiate(enemy);
             enemyObjNew.GetComponent<EnemyMove>().RandomRadius = randomRadius;
 			enemyObjNew.transform.position = respawnPoint.transform.position;
-
-            AllPlayerManager.CmdAddEnemyToList(enemyObjNew);
+            enemyObjNew.name = "Enemy" + k;
+            StaticStorageWithEnemies.AddToList
+                (enemyObjNew.GetComponent<AbstractEnemy>());
         }
 
         /// <summary>

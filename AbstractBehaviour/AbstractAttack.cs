@@ -14,11 +14,7 @@ namespace AbstractBehaviour
 		: MonoBehaviour, IVotanObjectAttack
     {
         #region Переменные
-        // Лист врагов
         [SerializeField]
-		protected List<AbstractEnemy> listEnemy;
-		// Лист атаки
-		[SerializeField]
 		protected List<AbstractEnemy> attackList;
 		[SerializeField] // точки персонажа
         protected Transform playerPoint, playerRightPoint,
@@ -99,8 +95,7 @@ namespace AbstractBehaviour
         /// Инициализация
         /// </summary>
         public virtual void Start()
-        {
-            listEnemy = new List<AbstractEnemy>();
+        {      
             attackList = new List<AbstractEnemy>();
         }
 
@@ -132,7 +127,7 @@ namespace AbstractBehaviour
 		/// Задать новую длинну оружия 
 		/// </summary>
 		/// <param name="newPoint"></param>
-		public void SetPlayerGanLocalPoint(Vector3 newPoint)
+		public void SetPlayerGunLocalPoint(Vector3 newPoint)
 		{
 			playerFinishGunPoint.localPosition = newPoint;
 		}
@@ -156,24 +151,6 @@ namespace AbstractBehaviour
                     return playerBackPoint;
             }
 			return playerPoint;
-		}
-
-		/// <summary>
-        /// Добавить врага в лист
-        /// </summary>
-        /// <param name="x"></param>
-        public void AddEnemyToList(AbstractEnemy x)
-		{
-			listEnemy.Add(x);
-		}
-
-		/// <summary>
-        /// Вернуть лист врагов
-        /// </summary>
-        /// <returns></returns>
-        public List<AbstractEnemy> ReturnList()
-		{
-			return listEnemy;
 		}
 
         /// <summary>

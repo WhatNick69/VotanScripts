@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using VotanLibraries;
 using VotanInterfaces;
-using Playerbehaviour;
 using GameBehaviour;
 
 namespace PlayerBehaviour
@@ -157,10 +156,10 @@ namespace PlayerBehaviour
                 {
                     if (playerComponentsControl.PlayerFight.IsDefensing)
                     {
-                        HealthValue -= LibraryStaticFunctions.GetRangeValue(damageValue, 0.1f) 
-                            * LibraryStaticFunctions.GetRangeValue
+                        HealthValue -= LibraryStaticFunctions.GetRangeValue(damageValue, 0.1f) *
+                        (1 - LibraryStaticFunctions.GetRangeValue
                             (playerComponentsControl.PlayerWeapon
-                            .DefenceValue, 0.1f);
+                            .DefenceValue, 0.1f) / 100);
                         CoroutineForIsMayGetDamage();
                     }
                     else
@@ -176,9 +175,9 @@ namespace PlayerBehaviour
                         playerComponentsControl.PlayerArmory
                             .DecreaseArmoryLevel(-
                         LibraryStaticFunctions.GetRangeValue(damageValue, 0.1f) *
-                        LibraryStaticFunctions.GetRangeValue
+                        (1-LibraryStaticFunctions.GetRangeValue
                             (playerComponentsControl.PlayerWeapon
-                            .DefenceValue, 0.1f));
+                            .DefenceValue, 0.1f)/100));
                         CoroutineForIsMayGetDamage();
                     }
                     else
@@ -223,6 +222,7 @@ namespace PlayerBehaviour
         /// <returns></returns>
         public IEnumerator<float> MayToGetDamage()
         {
+            Debug.Log("Мы получили урон!");
             playerComponentsControl.PlayerFight.IsDamaged = true;
             playerComponentsControl.PlayerAnimationsController
                 .HighSpeedAnimation();

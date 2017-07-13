@@ -41,11 +41,7 @@ namespace GameBehaviour
         //[ClientRpc]
         private static void RpcAddEnemyToList(GameObject enemy)
         {
-            foreach (GameObject player in playerList)
-            {
-                player.GetComponent<PlayerAttack>().AddEnemyToList
-                    (enemy.GetComponent<AbstractEnemy>());
-            }
+            StaticStorageWithEnemies.AddToList(enemy.GetComponent<AbstractEnemy>());
         }
 
         public static void CheckList()

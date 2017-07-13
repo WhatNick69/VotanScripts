@@ -9,7 +9,7 @@ using VotanLibraries;
 namespace EnemyBehaviour
 {
     public class EnemyConditions 
-        : AbstractObjectConditions,IEnemyConditions
+        : AbstractObjectConditions, IEnemyConditions
     {
         #region Переменные
         [SerializeField, Tooltip("Бар для здоровья")]
@@ -29,8 +29,12 @@ namespace EnemyBehaviour
         private IEnemyBehaviour enemyAbstract;
 
         private bool isMayGetDamage = true;
-        private bool isFrozen;
+        private bool isFrozen; // заморожен ли
+        private bool isShocked; // шокирован электричеством ли
+        private bool isBurned; // жарится ли
+        #endregion
 
+        #region Свойства
         public bool IsFrozen
         {
             get
@@ -41,6 +45,32 @@ namespace EnemyBehaviour
             set
             {
                 isFrozen = value;
+            }
+        }
+
+        public bool IsBurned
+        {
+            get
+            {
+                return isBurned;
+            }
+
+            set
+            {
+                isBurned = value;
+            }
+        }
+
+        public bool IsShocked
+        {
+            get
+            {
+                return isShocked;
+            }
+
+            set
+            {
+                isShocked = value;
             }
         }
         #endregion
@@ -73,6 +103,10 @@ namespace EnemyBehaviour
             // }
         }
 
+        /// <summary>
+        /// Состояние  смерти
+        /// </summary>
+        /// <returns></returns>
         public override IEnumerator<float> DieState()
         {
             IsAlive = false;
@@ -81,6 +115,7 @@ namespace EnemyBehaviour
             enemyAbstract.EnemyAnimationsController.SetState(3, true);
             enemyAbstract.EnemyAnimationsController.PlayDeadNormalizeCoroutine();
             MainBarCanvas.gameObject.SetActive(false);
+            enemyAbstract.EnemyMove.Agent.enabled = false;
 
             if (isFrozen)
                 yield return Timing.WaitForSeconds(6.5f);
@@ -95,19 +130,26 @@ namespace EnemyBehaviour
         /// <param name="dmg"></param>
         /// <param name="typeOfDamage"></param>
         /// <returns></returns>
-        public float GetDamageWithResistance(float dmg,DamageType typeOfDamage)
+        public float GetDamageWithResistance(float dmg, float gemPower, 
+            DamageType dmgType, IWeapon weapon)
         {
-            switch (typeOfDamage)
+            float damage = 0;
+            switch (dmgType)
             {
                 case DamageType.Electric:
-                    return dmg * (1 - electricResistance);
+                    RunCoroutineForGetElectricDamage(dmg, gemPower, weapon);
+                    damage = dmg * (1 - electricResistance);
+                    return damage;
                 case DamageType.Fire:
-                    float damage = dmg * (1 - fireResistance);
+                    damage = dmg * (1 - fireResistance);
                     RunCoroutineForGetFireDamage(damage);
                     return damage;
                 case DamageType.Frozen:
                     if (!isFrozen)
-                        RunCoroutineForFrozenDamage();
+                    {
+                        if (LibraryStaticFunctions.MayableToBeFreezy(gemPower))
+                            RunCoroutineForFrozenDamage();
+                    }
                     return dmg * (1 - frostResistance);
                 case DamageType.Powerful:
                     return dmg * (1 - physicResistance);
@@ -122,6 +164,9 @@ namespace EnemyBehaviour
             Timing.RunCoroutine(CoroutineForFireDamage(damage));
         }
 
+        /// <summary>
+        /// Запустить корутины для замораживающего эффекта
+        /// </summary>
         public void RunCoroutineForFrozenDamage()
         {
             Timing.RunCoroutine(CoroutineForFrozenDamage());
@@ -152,13 +197,12 @@ namespace EnemyBehaviour
         /// <returns></returns>
         public IEnumerator<float> CoroutineForFrozenDamage()
         {
-
             Debug.Log("ICE");
             enemyAbstract.EnemyAnimationsController.SetState(2, true);
             enemyMove.SetNewSpeedOfNavMeshAgent(0,0);
             enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0);
             float time = LibraryStaticFunctions.GetRangeValue(4, 0.25f);
-            enemyAbstract.IceEffect.FireEventEffect(time);
+            enemyAbstract.IceEffect.EventEffect(time);
             enemyAbstract.EnemyMove.Agent.enabled = false;
 
             IsFrozen = true;
@@ -167,7 +211,8 @@ namespace EnemyBehaviour
 
             if (IsAlive)
             {
-                enemyMove.SetNewSpeedOfNavMeshAgent(enemyMove.AgentSpeed, enemyMove.RotationSpeed);
+                enemyMove.SetNewSpeedOfNavMeshAgent(enemyMove.AgentSpeed, 
+                    enemyMove.RotationSpeed);
                 enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
                 enemyAbstract.EnemyMove.Agent.enabled = true;
                 enemyAbstract.EnemyAnimationsController.SetState(2, false);
@@ -210,33 +255,82 @@ namespace EnemyBehaviour
         }
 
         /// <summary>
-        /// Получить урон
+        /// Получить урон в рукопашном бою
         /// </summary>
         /// <param name="dmg"></param>
-        public virtual void GetDamage(float dmg, DamageType dmgType, PlayerWeapon weapon)
+        public virtual void GetDamage(float dmg, float gemPower
+            ,DamageType dmgType, IWeapon weapon)
         {
 			if (isMayGetDamage)
             {
 				weapon.WhileTime();
                 Timing.RunCoroutine(CoroutineForGetDamage());
-                dmg = GetDamageWithResistance(dmg, dmgType);
+                dmg = GetDamageWithResistance(dmg, gemPower,dmgType,weapon);
+                Debug.Log("Ближняя атака");
                 HealthValue -= 
                     LibraryStaticFunctions.GetRangeValue(dmg, 0.1f);
 			}
         }
 
         /// <summary>
+        /// Получить урон от молнии, либо от огня
+        /// </summary>
+        /// <param name="dmg"></param>
+        /// <param name="gemPower"></param>
+        /// <param name="dmgType"></param>
+        /// <param name="weapon"></param>
+        public void GetDamageLongDistance(float dmg, float gemPower
+            , DamageType dmgType, IWeapon weapon)
+        {
+            Timing.RunCoroutine(CoroutineForGetDamage(true));
+            dmg = GetDamageWithResistance(dmg, gemPower, dmgType, weapon);
+            Debug.Log("Дальняя атака");
+            HealthValue -=
+                LibraryStaticFunctions.GetRangeValue(dmg, 0.1f);
+        }
+
+        /// <summary>
         /// Может ли враг получать урон?
         /// </summary>
         /// <returns></returns>
-        public IEnumerator<float> CoroutineForGetDamage()
+        public IEnumerator<float> CoroutineForGetDamage(bool isLongAttack=false)
         {
-            isMayGetDamage = false;
-            Debug.Log("DMG");
+            if (!isLongAttack)
+                isMayGetDamage = false;
+
             enemyAbstract.EnemyAnimationsController.SetState(2, true);
             yield return Timing.WaitForSeconds(0.5f);
             enemyAbstract.EnemyAnimationsController.SetState(2, false);
-            isMayGetDamage = true;
+
+            if (!isLongAttack)
+                isMayGetDamage = true;
+        }
+
+        /// <summary>
+        /// Корутина на получение электрического удара
+        /// </summary>
+        /// <param name="damage"></param>
+        /// <param name="gemPower"></param>
+        /// <param name="weapon"></param>
+        public void RunCoroutineForGetElectricDamage(float damage, 
+            float gemPower, IWeapon weapon)
+        {
+            Timing.RunCoroutine(CoroutineForElectricDamage
+                (damage, gemPower, weapon));
+        }
+
+        /// <summary>
+        /// Корутина, свидетельствующая о том, что враг шокирован электричеством.
+        /// Шок действует ровно на 1 секунду. Пока что так. Так легче.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerator<float> CoroutineForElectricDamage(float damage, 
+            float gemPower, IWeapon weapon)
+        {
+            IsShocked = true;
+            enemyAbstract.ElectricEffect.EventEffect(damage, gemPower, weapon);
+            yield return Timing.WaitForSeconds(1);
+            isShocked = false;
         }
     }
 }

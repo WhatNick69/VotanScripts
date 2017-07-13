@@ -42,7 +42,7 @@ namespace EnemyBehaviour
 
         public override void SetSpeedAnimationByRunSpeed(float value)
         {
-            if (!enemyConditions.IsFrozen)
+            if (enemyConditions != null && !enemyConditions.IsFrozen)
                 animatorOfObject.speed = value;
         }
 
@@ -74,6 +74,7 @@ namespace EnemyBehaviour
 
         public override IEnumerator<float> CoroutineDeadYNormalized()
         {
+
             if (enemyConditions.IsFrozen) yield break;
 
             int i = 0;       
@@ -85,7 +86,7 @@ namespace EnemyBehaviour
                 transformForDeadYNormalizing.position.y - 0.8f,
                 transformForDeadYNormalizing.position.z);
 
-            while (i < 10)
+            while (i < 15)
             {
                 i++;
                 if (this == null) yield break;
@@ -93,7 +94,6 @@ namespace EnemyBehaviour
                 transformForDeadYNormalizing.position =
                 Vector3.Lerp(transformForDeadYNormalizing.position,
                 newPosition, Time.deltaTime*2);
-
                 yield return Timing.WaitForSeconds(0.01f);
             }
         }

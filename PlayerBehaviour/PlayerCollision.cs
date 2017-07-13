@@ -1,5 +1,4 @@
 ﻿using MovementEffects;
-using Playerbehaviour;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,6 +11,7 @@ namespace PlayerBehaviour
     public class PlayerCollision
         : MonoBehaviour
     {
+        #region Переменные
         [SerializeField, Tooltip("Частота обновления"), Range(0.01f, 0.9f)]
         private float frequencyUpdate;
         [SerializeField]
@@ -28,11 +28,12 @@ namespace PlayerBehaviour
         private static string tagStairs = "Stairs";
         private bool onTheFloor = true;
         private float angle;
+        private bool forward;
+        private bool backForward;
+        private bool right;
+        private bool left;
+        #endregion
 
-        public override string ToString()
-        {
-            return base.ToString();
-        }
         /// <summary>
         /// Отключить либо включить просчет физики персонажа
         /// </summary>
@@ -65,12 +66,15 @@ namespace PlayerBehaviour
             {
                 flag1 = false;
                 flag2 = false;
+
                 if (CheckForRayForward())
                 {
                     playerComponentControl.PlayerController
                         .SetStopPositionFromCollision();
                     flag1 = true;
                 }
+
+                //CheckDirections();
 
                 if (CheckForRayUp())
                 {
@@ -85,11 +89,6 @@ namespace PlayerBehaviour
             }
         }
 
-        /// <summary>
-        /// Пустить луч вперед и проверить, есть ли поблизости препятствие.
-        /// Пускаем луч вниз и проверяем, лестница ли под нами.
-        /// </summary>
-        /// <returns></returns>
         public bool CheckForRayForward()
         {
             ray = new Ray(playerModel.position
@@ -112,8 +111,74 @@ namespace PlayerBehaviour
             {
                 onTheFloor = true;
             }
-
             return false;
+        }
+
+        /// <summary>
+        /// Пускаем луч в 4 стороны и проверяем на наличие препятствий
+        /// </summary>
+        /// <returns></returns>
+        public void CheckDirections()
+        {
+            forward = true;
+            backForward = true;
+            right = true;
+            left = true;
+           // Debug.DrawRay(playerModel.position, playerModel.forward, Color.green, 0.1f);
+           // Debug.DrawRay(playerModel.position, -playerModel.forward, Color.green, 0.1f);
+           // Debug.DrawRay(playerModel.position, playerModel.right, Color.green, 0.1f);
+           // Debug.DrawRay(playerModel.position, -playerModel.right, Color.green, 0.1f);
+
+            ray = new Ray(playerModel.position
+                , playerModel.forward);
+            if (Physics.Raycast(ray, out rayCastHit, 1))
+            {
+                if (rayCastHit.collider.tag.Equals(tagNameObstacle)
+                    || rayCastHit.collider.tag.Equals(tagNameEnemy))
+                {
+                    Debug.DrawRay(playerModel.position, playerModel.forward, Color.red, 0.2f);
+                    forward = false;
+                }
+            }
+
+            ray = new Ray(playerModel.position
+                , -playerModel.forward);
+            if (Physics.Raycast(ray, out rayCastHit, 1))
+            {
+                if (rayCastHit.collider.tag.Equals(tagNameObstacle)
+                || rayCastHit.collider.tag.Equals(tagNameEnemy))
+                {
+                    Debug.DrawRay(playerModel.position, -playerModel.forward, Color.red, 0.2f);
+                    backForward = false;
+                }
+            }
+
+            ray = new Ray(playerModel.position
+                , playerModel.right);
+            if (Physics.Raycast(ray, out rayCastHit, 1))
+            {
+                if (rayCastHit.collider.tag.Equals(tagNameObstacle)
+                || rayCastHit.collider.tag.Equals(tagNameEnemy))
+                {
+                    Debug.DrawRay(playerModel.position, playerModel.right, Color.red, 0.2f);
+                    right = false;
+                }
+            }
+
+            ray = new Ray(playerModel.position
+                , -playerModel.right);
+            if (Physics.Raycast(ray, out rayCastHit, 1))
+            {
+                if (rayCastHit.collider.tag.Equals(tagNameObstacle)
+                || rayCastHit.collider.tag.Equals(tagNameEnemy))
+                {
+                    Debug.DrawRay(playerModel.position, -playerModel.right, Color.red, 0.2f);
+                    left = false;
+                }
+            }
+
+            playerComponentControl.PlayerController.SetCorrectDirections
+                (forward, backForward, right, left);
         }
 
         /// <summary>
@@ -136,7 +201,7 @@ namespace PlayerBehaviour
                     //Debug.Log("ЛЕстница внизу");
                     //angle = rayCastHit.collider.GetComponent<Transform>().localEulerAngles.z;
                     //Debug.Log(angle);
-                    return true; ;
+                    return true; 
                 }
             }
             return false;

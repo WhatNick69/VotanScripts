@@ -89,23 +89,35 @@ namespace EnemyBehaviour
 
         private void DrawerLiner()
         {
-            Debug.DrawLine(enemyFinishGunPoint.position, playerTarget.GetPlayerPoint(0),Color.red,1);
-            Debug.DrawLine(enemyFinishGunPoint.position, playerTarget.GetPlayerPoint(1), Color.red, 1);
-            Debug.DrawLine(enemyFinishGunPoint.position, playerTarget.GetPlayerPoint(2), Color.red, 1);
-            Debug.DrawLine(enemyFinishGunPoint.position, playerTarget.GetPlayerPoint(3), Color.red, 1);
-            Debug.Log("0: " + Vector3.Distance(enemyFinishGunPoint.position, playerTarget.GetPlayerPoint(0))+
-                "___1: " + Vector3.Distance(enemyFinishGunPoint.position, playerTarget.GetPlayerPoint(1))+
-                "___2: " + Vector3.Distance(enemyFinishGunPoint.position, playerTarget.GetPlayerPoint(2))+
-                "___3: " + Vector3.Distance(enemyFinishGunPoint.position, playerTarget.GetPlayerPoint(3)));
+            Debug.DrawLine(enemyFinishGunPoint.position, 
+                playerTarget.GetPlayerPoint(0),Color.red,1);
+            Debug.DrawLine(enemyFinishGunPoint.position, 
+                playerTarget.GetPlayerPoint(1), Color.red, 1);
+            Debug.DrawLine(enemyFinishGunPoint.position, 
+                playerTarget.GetPlayerPoint(2), Color.red, 1);
+            Debug.DrawLine(enemyFinishGunPoint.position, 
+                playerTarget.GetPlayerPoint(3), Color.red, 1);
+            Debug.Log("0: " + Vector3.Distance
+                (enemyFinishGunPoint.position, playerTarget.GetPlayerPoint(0))+
+                "___1: " + Vector3.Distance
+                (enemyFinishGunPoint.position, playerTarget.GetPlayerPoint(1))+
+                "___2: " + Vector3.Distance
+                (enemyFinishGunPoint.position, playerTarget.GetPlayerPoint(2))+
+                "___3: " + Vector3.Distance
+                (enemyFinishGunPoint.position, playerTarget.GetPlayerPoint(3)));
         }
 
         public bool IsHited()
         {
             i++;
-            if (Vector3.Distance(enemyFinishGunPoint.position, playerTarget.GetPlayerPoint(0)) < 1
-                || Vector3.Distance(enemyFinishGunPoint.position, playerTarget.GetPlayerPoint(1)) < 1
-                || Vector3.Distance(enemyFinishGunPoint.position, playerTarget.GetPlayerPoint(2)) < 1
-                || Vector3.Distance(enemyFinishGunPoint.position, playerTarget.GetPlayerPoint(3)) < 1)
+            if (Vector3.Distance(enemyFinishGunPoint.position, 
+                playerTarget.GetPlayerPoint(0)) < 1
+                || Vector3.Distance(enemyFinishGunPoint.position, 
+                playerTarget.GetPlayerPoint(1)) < 1
+                || Vector3.Distance(enemyFinishGunPoint.position, 
+                playerTarget.GetPlayerPoint(2)) < 1
+                || Vector3.Distance(enemyFinishGunPoint.position, 
+                playerTarget.GetPlayerPoint(3)) < 1)
             {
                 return true;
             }
@@ -123,10 +135,12 @@ namespace EnemyBehaviour
         {
             //if (isMayToDamage) DrawerLiner();
 
-            if (isMayToDamage && (LibraryPhysics.BushInLine(enemyStartGunPoint.position, enemyFinishGunPoint.position,
+            if (isMayToDamage && (LibraryPhysics.BushInLine
+                (enemyStartGunPoint.position, enemyFinishGunPoint.position,
                  playerTarget.GetPlayerPoint(0),
                  playerTarget.GetPlayerPoint(1)) ||
-                 LibraryPhysics.BushInLine(enemyStartGunPoint.position, enemyFinishGunPoint.position,
+                 LibraryPhysics.BushInLine
+                    (enemyStartGunPoint.position, enemyFinishGunPoint.position,
                  playerTarget.GetPlayerPoint(2),
                  playerTarget.GetPlayerPoint(3))))
             {

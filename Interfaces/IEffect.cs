@@ -1,14 +1,41 @@
-﻿namespace VotanInterfaces
+﻿using PlayerBehaviour;
+using UnityEngine;
+
+namespace VotanInterfaces
 {
     /// <summary>
-    /// Интерфейс для реализации эффекта
+    /// Интерфейс для реализации ледяного эффекта
     /// </summary>
-    public interface IEffect
+    public interface IIceEffect
     {
         /// <summary>
-        /// Зажечь эффект
+        /// Зажечь ледяной эффект
         /// </summary>
         /// <param name="time"></param>
-        void FireEventEffect(float time);
+        void EventEffect(float time);
+    }
+
+    /// <summary>
+    /// Интерфейс для реализации электрического эффекта
+    /// </summary>
+    public interface IElectricEffect
+    {
+        /// <summary>
+        /// Зажечь электрический эффект
+        /// </summary>
+        /// <param name="time"></param>
+        void EventEffect(float damage, float gemPower, IWeapon weapon);
+    }
+
+    /// <summary>
+    /// Интерфейс для реализации огненного эффекта
+    /// </summary>
+    public interface IFireEffect
+    {
+        /// <summary>
+        /// Зажечь огненный эффект
+        /// </summary>
+        /// <param name="time"></param>
+        void EventEffect(float time, Transform position);
     }
 }

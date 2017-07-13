@@ -10,7 +10,7 @@ namespace GameBehaviour
     /// Менеджер ледяного эффекта
     /// </summary>
     public class IceEffectManager
-        : MonoBehaviour, IEffect
+        : MonoBehaviour, IIceEffect
     {
         #region Переменные
         [SerializeField, Tooltip("Лист ледяных мешей")]
@@ -34,7 +34,7 @@ namespace GameBehaviour
         /// трэилов. Затем, по истечению определенного времени, эти ледяные глыбы
         /// вместе с трэилами исчезают, посредством сведения к нулю их альфа-канала.
         /// </summary>
-        public void FireEventEffect(float timeToDisable=0)
+        public void EventEffect(float timeToDisable)
         {
             isOneCoroutine = false;
             this.timeToDisable = timeToDisable-0.5f;
@@ -49,25 +49,6 @@ namespace GameBehaviour
             Timing.RunCoroutine(CoroutineForFireDisableIceObjects());
             Timing.RunCoroutine(CoroutineForMoveIceObjects());
             Timing.RunCoroutine(CoroutineSetRandomPositionForTrailIce());
-        }
-
-        private IEnumerator<float> CorutineDebug(float value)
-        {
-            while (true)
-            {
-                this.timeToDisable = value;
-                SetActiveForIceObjects(true);
-                listPositionIceObjects = new List<Vector3>();
-                listPositionTrailObjects = new List<Vector3>();
-                isRandomTrailPosition = true;
-
-                RandomSetScaleAndPosition();
-                Timing.RunCoroutine(CoroutineForFireDisableIceObjects());
-                Timing.RunCoroutine(CoroutineForMoveIceObjects());
-                Timing.RunCoroutine(CoroutineSetRandomPositionForTrailIce());
-
-                yield return Timing.WaitForSeconds(10);
-            }
         }
 
         /// <summary>
@@ -85,6 +66,10 @@ namespace GameBehaviour
             }
         }
 
+        /// <summary>
+        /// Активировать трэилы
+        /// </summary>
+        /// <param name="flag"></param>
         private void SetActiveForTrailObjects(bool flag)
         {
             foreach (Transform trailObject in listTrailObjects)
@@ -199,7 +184,8 @@ namespace GameBehaviour
                 listPositionIceObjects[j] -= tempVector;
 
             int i = 0;
-            while (i < 25)
+            Vector3 localScaleTemp = new Vector3(0.5f,0.5f,0.5f);
+            while (i < 10)
             {
                 for (int j = 0; j < listIceObjects.Count; j++)
                 {
@@ -208,8 +194,8 @@ namespace GameBehaviour
                     listIceObjects[j].position = 
                         Vector3.Lerp(listIceObjects[j].position,
                         listPositionIceObjects[j], 0.3f);
-                    listIceObjects[j].localScale = 
-                        Vector3.Lerp(listIceObjects[j].localScale, Vector3.zero, 0.3f);
+                   listIceObjects[j].localScale = 
+                       Vector3.Lerp(listIceObjects[j].localScale, localScaleTemp, 0.15f);
                 }
                 yield return Timing.WaitForSeconds(0.05f);
                 i++;

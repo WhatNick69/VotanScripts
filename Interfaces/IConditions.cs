@@ -97,9 +97,19 @@ namespace VotanInterfaces
         bool IsAlive { get; set; }
 
         /// <summary>
-        /// Заморожен ли игрок
+        /// Заморожен ли враг
         /// </summary>
         bool IsFrozen { get; set; }
+
+        /// <summary>
+        /// Шокирован ли электричеством враг
+        /// </summary>
+        bool IsShocked { get; set; }
+
+        /// <summary>
+        /// Жарится ли от огня враг
+        /// </summary>
+        bool IsBurned { get; set; }
 
         /// <summary>
         /// Получить урон от персонажа по стихии
@@ -107,7 +117,8 @@ namespace VotanInterfaces
         /// <param name="dmg"></param>
         /// <param name="typeOfDamage"></param>
         /// <returns></returns>
-        float GetDamageWithResistance(float dmg, DamageType typeOfDamage);
+        float GetDamageWithResistance(float dmg, float gemPower, 
+            DamageType dmgType, IWeapon weapon);
 
         /// <summary>
         /// Получать огненный урон в течении некоторого времени
@@ -155,17 +166,34 @@ namespace VotanInterfaces
         /// <param name="dmg"></param>
         /// <param name="dmgType"></param>
         /// <param name="weapon"></param>
-        void GetDamage(float dmg, DamageType dmgType, PlayerWeapon weapon);
+        void GetDamage(float dmg, float gemPower, DamageType dmgType, IWeapon weapon);
+
 
         /// <summary>
-        /// Корутина на полечение урона от персонажа
+        /// Корутина на получение урона от персонажа.
+        /// Работает как для ближнего, так и для дальнего боя
         /// </summary>
+        /// <param name="isLongAttack"></param>
         /// <returns></returns>
-        IEnumerator<float> CoroutineForGetDamage();
+        IEnumerator<float> CoroutineForGetDamage(bool isLongAttack=false);
 
         /// <summary>
         /// Найти камеру вотчера
         /// </summary>
         void FindCameraInScene();
+
+        /// <summary>
+        /// Корутина электрического удара по врагу
+        /// </summary>
+        IEnumerator<float> CoroutineForElectricDamage(float damage, 
+            float gemPower, IWeapon weapon);
+
+        /// <summary>
+        /// Запуск корутины для шокирования и самого эффекта следующему врагу
+        /// </summary>
+        /// <param name="damage"></param>
+        /// <param name="gemPower"></param>
+        /// <param name="weapon"></param>
+        void RunCoroutineForGetElectricDamage(float damage, float gemPower, IWeapon weapon);
     }
 }

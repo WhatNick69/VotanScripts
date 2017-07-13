@@ -1,12 +1,10 @@
-﻿using System;
-using AbstractBehaviour;
-using PlayerBehaviour;
+﻿using AbstractBehaviour;
 using UnityEngine;
 using UnityEngine.AI;
 using VotanInterfaces;
-using VotanLibraries;
 using MovementEffects;
 using System.Collections.Generic;
+using System;
 
 namespace EnemyBehaviour
 {
@@ -14,21 +12,9 @@ namespace EnemyBehaviour
     /// Класс противника "Рыцарь"
     /// </summary>
     [RequireComponent(typeof(NavMeshAgent))]
-    class KnightEnemy
+    public class KnightEnemy
         : AbstractEnemy
     {
-        public override EnemyMove EnemyMove
-        {
-            get
-            {
-                return enemyMove;
-            }
-
-            set
-            {
-                enemyMove = value;
-            }
-        }
         [SerializeField,Tooltip("Частота обновления состояний для атаки"),Range(0.01f,0.5f)]
         private float refreshLatency;
         private float movingSpeed;
@@ -49,7 +35,9 @@ namespace EnemyBehaviour
             EnemyMove = 
                 GetComponent<EnemyMove>();
             IceEffect =
-                transform.GetChild(1).GetChild(0).GetComponent<IEffect>();
+                transform.GetChild(1).GetChild(0).GetComponent<IIceEffect>();
+            ElectricEffect =
+                transform.GetChild(1).GetChild(1).GetComponent<IElectricEffect>();
             Timing.RunCoroutine(UpdateAttackState());
         }
 
