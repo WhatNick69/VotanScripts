@@ -87,6 +87,9 @@ namespace EnemyBehaviour
             isMayToDamage = false;
         }
 
+        /// <summary>
+        /// Рисуем линии атаки по персонажу
+        /// </summary>
         private void DrawerLiner()
         {
             Debug.DrawLine(enemyFinishGunPoint.position, 
@@ -107,26 +110,6 @@ namespace EnemyBehaviour
                 (enemyFinishGunPoint.position, playerTarget.GetPlayerPoint(3)));
         }
 
-        public bool IsHited()
-        {
-            i++;
-            if (Vector3.Distance(enemyFinishGunPoint.position, 
-                playerTarget.GetPlayerPoint(0)) < 1
-                || Vector3.Distance(enemyFinishGunPoint.position, 
-                playerTarget.GetPlayerPoint(1)) < 1
-                || Vector3.Distance(enemyFinishGunPoint.position, 
-                playerTarget.GetPlayerPoint(2)) < 1
-                || Vector3.Distance(enemyFinishGunPoint.position, 
-                playerTarget.GetPlayerPoint(3)) < 1)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         /// <summary>
         /// Атакуем персонажа
         /// </summary>
@@ -134,7 +117,6 @@ namespace EnemyBehaviour
         public bool AttackToPlayer()
         {
             //if (isMayToDamage) DrawerLiner();
-
             if (isMayToDamage && (LibraryPhysics.BushInLine
                 (enemyStartGunPoint.position, enemyFinishGunPoint.position,
                  playerTarget.GetPlayerPoint(0),
@@ -160,7 +142,6 @@ namespace EnemyBehaviour
         public void EventStartAttackAnimation()
         {
             if (!isMayToPlayAttackAnimation) return;
-
             isMayToPlayAttackAnimation = false;
 
             enemyAbstract.EnemyAnimationsController.SetState(0, false);

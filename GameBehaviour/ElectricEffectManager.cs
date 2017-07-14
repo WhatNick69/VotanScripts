@@ -24,7 +24,17 @@ namespace GameBehaviour
         private IWeapon weapon;
         private int childrenCount;
         private AbstractEnemy abstractEnemyTarget; // цель для атаки
+        private static System.Random rnd;
         #endregion
+
+        /// <summary>
+        /// Инициализация ссылки на рэндом
+        /// </summary>
+        private void Start()
+        {
+            if (rnd == null)
+                rnd = LibraryStaticFunctions.rnd;
+        }
 
         /// <summary>
         /// Получить допустимое количество детей.
@@ -36,9 +46,7 @@ namespace GameBehaviour
             else childrenCount = count;
 
             for (int i = 0; i < childrenCount; i++)
-            {
                 listTrailObjects.Add(transform.GetChild(i));
-            }
         }
 
         /// <summary>
@@ -49,9 +57,15 @@ namespace GameBehaviour
         private void VisibleOfElements(bool flag)
         {
             if (this == null) return;
+            float value = 0;
             for (int i = 0; i < childrenCount; i++)
             {
                 listTrailObjects[i].gameObject.SetActive(flag);
+                value = LibraryStaticFunctions.GetRangeValue(0.075f, 0.25f);
+                listTrailObjects[i].GetComponent<TrailRenderer>().startWidth
+                    = value;
+                listTrailObjects[i].GetComponent<TrailRenderer>().endWidth
+                    = LibraryStaticFunctions.GetRangeValue(value, 0.1f);
             }
         }
 
@@ -69,7 +83,6 @@ namespace GameBehaviour
             //Debug.Log("Запускаем, со значениями DMG: " + damage + ", GP: " + gemPower);
             listTrailObjects.Clear();
             GetAllChild(1 + (int)(gemPower / 20)); // находим объекты
-
 
             // запустить корутину, найдя ближайшего врага, как точку назначения для молний
             ContinueElectricDamage(transform.position);
@@ -99,23 +112,25 @@ namespace GameBehaviour
                 if (abstractEnemyTarget == null) return;
 
                 VisibleOfElements(true); // включаем объекты
-                Vector3 destination = abstractEnemyTarget.ReturnPosition(2);
-                Timing.RunCoroutine(CoroutineForMoveTrails(destination));
+                Timing.RunCoroutine(CoroutineForMoveTrails
+                    (abstractEnemyTarget.ReturnPosition(2)));
             }
         }
 
         /// <summary>
         /// Корутина для зажигания электрического эффекта
+        /// Безопасный цикл с ограничением в 100 итераций
         /// </summary>
         /// <returns></returns>
         private IEnumerator<float> CoroutineForMoveTrails(Vector3 destination)
         {
+            int iterations = 0;
             bool flag = false;
             int needNumber = -1;
             List<Transform> tempListTrailobjects = new List<Transform>(listTrailObjects);
             bool[] isLookAtDestinationList = new bool[tempListTrailobjects.Count];
 
-            while (true)
+            while (iterations < 100)
             {
                 if (tempListTrailobjects.Count == 0) break;
                 for (int i = 0;i< tempListTrailobjects.Count;i++)
@@ -124,16 +139,15 @@ namespace GameBehaviour
                     if (isLookAtDestinationList[i])
                     {
                         tempListTrailobjects[i].LookAt(destination);
-                        tempListTrailobjects[i].Translate
-                            (tempListTrailobjects[i].forward * 2, Space.World);
+                        tempListTrailobjects[i].Translate(tempListTrailobjects[i].forward 
+                            * (float)(0.5f+rnd.NextDouble()), Space.World);
                     }
                     else
                     {
                         tempListTrailobjects[i].rotation = Quaternion.Euler
-                            (LibraryStaticFunctions.rnd.Next(0, 360),
-                            LibraryStaticFunctions.rnd.Next(0, 360),
-                            LibraryStaticFunctions.rnd.Next(0, 360));
-                        tempListTrailobjects[i].Translate(tempListTrailobjects[i].forward * 2);
+                            (rnd.Next(0, 360),rnd.Next(0, 360),rnd.Next(0, 360));
+                        tempListTrailobjects[i].Translate(tempListTrailobjects[i].forward 
+                            * (float)(0.5f + rnd.NextDouble()));
                     }
 
                     if (Vector3.Distance(tempListTrailobjects[i].
@@ -148,7 +162,8 @@ namespace GameBehaviour
                             {
                                 ChangeValues();
                                 abstractEnemyTarget.EnemyConditions.
-                                GetDamageLongDistance(damage*0.75f, gemPower, DamageType.Electric, weapon);
+                                GetDamageLongDistance(damage*0.75f, gemPower,   
+                                DamageType.Electric, weapon);
                             }
                         }
                         tempListTrailobjects[i].gameObject.SetActive(false);
@@ -159,7 +174,9 @@ namespace GameBehaviour
                     isLookAtDestinationList[i] = RandomBoolValue(i);
                 }
                 yield return Timing.WaitForSeconds(0.01f);
+                iterations++;
             }
+            Debug.Log(iterations);
             NullPositions();
         }
 
@@ -180,8 +197,7 @@ namespace GameBehaviour
         /// <param name="i"></param>
         private bool RandomBoolValue(int i)
         {
-            return LibraryStaticFunctions.rnd.Next(0, 2) == 1 
-                ? true : false;
+            return rnd.Next(0, 2) == 1 ? true : false;
         }
     }
 }

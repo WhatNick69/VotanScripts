@@ -5,11 +5,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using VotanInterfaces;
 using VotanLibraries;
+using System;
 
 namespace EnemyBehaviour
 {
+    /// <summary>
+    /// Описывает состояние врага
+    /// </summary>
+    [RequireComponent(typeof(IEnemyBehaviour))]
     public class EnemyConditions 
-        : AbstractObjectConditions, IEnemyConditions
+        : AbstractObjectConditions, IEnemyConditions, IObjectFitBat
     {
         #region Переменные
         [SerializeField, Tooltip("Бар для здоровья")]
@@ -23,15 +28,21 @@ namespace EnemyBehaviour
         private float electricResistance;
         [SerializeField, Tooltip("Защита от ударов"), Range(0, 0.9f)]
         private float physicResistance;
+        [SerializeField, Tooltip("Тень")]
+        private Transform blobShadow;
         private Transform cameraTransform;
 
-        private EnemyMove enemyMove;
+        private IAIMoving enemyMove;
         private IEnemyBehaviour enemyAbstract;
 
         private bool isMayGetDamage = true;
         private bool isFrozen; // заморожен ли
         private bool isShocked; // шокирован электричеством ли
         private bool isBurned; // жарится ли
+
+        private Vector3 normalShadowSize;
+        private Vector3 littleShadowSize;
+        private bool isDownInterfaceTransformHasBeenChanged;
         #endregion
 
         #region Свойства
@@ -73,6 +84,19 @@ namespace EnemyBehaviour
                 isShocked = value;
             }
         }
+
+        public bool IsDownInterfaceTransformHasBeenChanged
+        {
+            get
+            {
+                return isDownInterfaceTransformHasBeenChanged;
+            }
+
+            set
+            {
+                isDownInterfaceTransformHasBeenChanged = value;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -86,7 +110,9 @@ namespace EnemyBehaviour
             colorChannelGreen = 1;
 
             enemyAbstract = GetComponent<IEnemyBehaviour>();
-            enemyMove = enemyAbstract.EnemyMove;    
+            enemyMove = enemyAbstract.EnemyMove;
+            normalShadowSize = new Vector3(1.25f, 1.25f, 1.25f);
+            littleShadowSize = new Vector3(0.6f, 0.6f, 0.6f);
 
             FindCameraInScene();
         }
@@ -116,6 +142,7 @@ namespace EnemyBehaviour
             enemyAbstract.EnemyAnimationsController.PlayDeadNormalizeCoroutine();
             MainBarCanvas.gameObject.SetActive(false);
             enemyAbstract.EnemyMove.Agent.enabled = false;
+            GetComponent<BoxCollider>().enabled = false;
 
             if (isFrozen)
                 yield return Timing.WaitForSeconds(6.5f);
@@ -266,7 +293,7 @@ namespace EnemyBehaviour
 				weapon.WhileTime();
                 Timing.RunCoroutine(CoroutineForGetDamage());
                 dmg = GetDamageWithResistance(dmg, gemPower,dmgType,weapon);
-                Debug.Log("Ближняя атака");
+                //Debug.Log("Ближняя атака");
                 HealthValue -= 
                     LibraryStaticFunctions.GetRangeValue(dmg, 0.1f);
 			}
@@ -284,7 +311,7 @@ namespace EnemyBehaviour
         {
             Timing.RunCoroutine(CoroutineForGetDamage(true));
             dmg = GetDamageWithResistance(dmg, gemPower, dmgType, weapon);
-            Debug.Log("Дальняя атака");
+            //Debug.Log("Дальняя атака");
             HealthValue -=
                 LibraryStaticFunctions.GetRangeValue(dmg, 0.1f);
         }
@@ -331,6 +358,33 @@ namespace EnemyBehaviour
             enemyAbstract.ElectricEffect.EventEffect(damage, gemPower, weapon);
             yield return Timing.WaitForSeconds(1);
             isShocked = false;
+        }
+
+        /// <summary>
+        /// Поворачивать тень под врагом
+        /// </summary>
+        /// <param name="flag"></param>
+        /// <param name="angle"></param>
+        public void RotateConditionBar(bool flag, float angle)
+        {
+            if (flag && !IsDownInterfaceTransformHasBeenChanged)
+            {
+                blobShadow.localScale = littleShadowSize;
+                IsDownInterfaceTransformHasBeenChanged = true;
+            }
+            else if (!flag && IsDownInterfaceTransformHasBeenChanged)
+            {
+                blobShadow.localScale = normalShadowSize;
+                IsDownInterfaceTransformHasBeenChanged = false;
+            }
+        }
+
+        /// <summary>
+        /// Отключить тень
+        /// </summary>
+        public void DisableDownInterface()
+        {
+            blobShadow.gameObject.SetActive(false);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace EnemyBehaviour
     /// По земле.
     /// </summary>
     public class EnemyMove
-        : MonoBehaviour
+        : MonoBehaviour, IAIMoving
     {
         #region Переменные
         private NavMeshAgent agent;
@@ -27,6 +27,8 @@ namespace EnemyBehaviour
         private float frequencyResting;
         [SerializeField, Tooltip("Скорость врага"), Range(1, 5)]
         private float agentSpeed;
+        [SerializeField, Tooltip("Коэффициент анимации при движении"), Range(0.5f,5)]
+        private float speedCoefficient;
         [SerializeField, Tooltip("Враг")]
         private AbstractEnemy abstractEnemy;
 
@@ -36,6 +38,9 @@ namespace EnemyBehaviour
         private bool isStopped;
         private Quaternion lerpRotationQuar;
         private float angularLookSpeed;
+
+        private Vector3 currentVector;
+        private Vector3 tempVector;
         #endregion
 
         #region Свойства
@@ -125,7 +130,7 @@ namespace EnemyBehaviour
         #endregion
 
         /// <summary>
-        /// Задаем 
+        /// Задаем скорость
         /// </summary>
         private void RandomSpeedSet()
         {
@@ -135,10 +140,26 @@ namespace EnemyBehaviour
         }
 
         /// <summary>
+        /// Зависимость скорости воспроизведения 
+        /// анимации врага от скорости его движения
+        /// </summary>
+        public void DependenceAnimatorSpeedOfVelocity()
+        {
+            if (!isStopped)
+            {
+               currentVector = transform.position;
+               abstractEnemy.EnemyAnimationsController
+                   .SetSpeedAnimationByRunSpeed(Vector3.Distance
+                   (currentVector,tempVector)* speedCoefficient);
+               tempVector = currentVector;
+            }
+        }
+
+        /// <summary>
         /// Проверить, достиг ли враг точки прибытия
         /// </summary>
         /// <returns></returns>
-        private bool CheckStopped(bool isRandom = false)
+        public bool CheckStopped(bool isRandom = false)
         {
             if (isRandom)
             {
@@ -172,7 +193,7 @@ namespace EnemyBehaviour
         /// <summary>
         /// Получить игрока и его компонент
         /// </summary>
-        private bool GetPlayerAndComponent()
+        public bool GetPlayerAndComponent()
         {
             playerObjectTransformForFollow = 
                 abstractEnemy.EnemyOpponentChoiser.GetRandomTransformOfPlayer();
@@ -212,7 +233,7 @@ namespace EnemyBehaviour
         /// <summary>
         /// Инициализация
         /// </summary>
-        private void Start()
+        public void Start()
         {
             agent = GetComponent<NavMeshAgent>();
             GetPlayerAndComponent();
@@ -221,6 +242,7 @@ namespace EnemyBehaviour
             abstractEnemy.EnemyConditions.IsAlive = true;
             randomPosition.y = 3;
             RandomSpeedSet();
+            tempVector = transform.position;
             Timing.RunCoroutine(CoroutineForSearchingByPlayerObject());
             Timing.RunCoroutine(CoroutineForRotating());
         }
@@ -229,7 +251,7 @@ namespace EnemyBehaviour
         /// Движение противника. Корутина.
         /// </summary>
         /// <returns></returns>
-        protected virtual IEnumerator<float> CoroutineForSearchingByPlayerObject()
+        public virtual IEnumerator<float> CoroutineForSearchingByPlayerObject()
         {
             agent.enabled = true;
             while (abstractEnemy.EnemyConditions.IsAlive)
@@ -275,9 +297,9 @@ namespace EnemyBehaviour
         }
 
         /// <summary>
-        /// Инициализация
+        /// Поворот
         /// </summary>
-        protected virtual IEnumerator<float> CoroutineForRotating()
+        public virtual IEnumerator<float> CoroutineForRotating()
         {
             while (abstractEnemy.EnemyConditions.IsAlive)
             {
@@ -313,7 +335,7 @@ namespace EnemyBehaviour
         /// <summary>
         /// Установить случайную позицию для врага во время отдыха
         /// </summary>
-        private void SetRandomPosition()
+        public void SetRandomPosition()
         {
             if (agent != null && agent.enabled)
             {
@@ -321,7 +343,7 @@ namespace EnemyBehaviour
                 abstractEnemy.EnemyAnimationsController.SetState(0, true);
                 abstractEnemy.EnemyAttack.IsMayToPlayAttackAnimation = false;
                 abstractEnemy.EnemyAnimationsController.
-                    SetSpeedAnimationByRunSpeed(AgentSpeed);
+                    SetSpeedAnimationByRunSpeed(AgentSpeed/3);
                 randomPosition.x = LibraryStaticFunctions.
                     GetRandomAxisOfEnemyRest(randomRadius);
                 randomPosition.z = LibraryStaticFunctions.GetRandomAxisOfEnemyRest

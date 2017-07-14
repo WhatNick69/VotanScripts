@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using VotanLibraries;
 using VotanInterfaces;
 using GameBehaviour;
+using System;
 
 namespace PlayerBehaviour
 {
@@ -13,7 +14,7 @@ namespace PlayerBehaviour
     /// Описывает рингбар здоровья, ману, броню, ярость
     /// </summary>
     public class PlayerConditions
-        : AbstractObjectConditions,IPlayerConditions
+        : AbstractObjectConditions, IPlayerConditions, IObjectFitBat
     {
         #region Переменные
         [SerializeField, Tooltip("Мана персонажа")]
@@ -32,6 +33,7 @@ namespace PlayerBehaviour
         private float initialisatedRageValuePlayer; // начальное значение ярости
 
         private bool mayToGetDamage = true;
+        private bool isDownInterfaceTransformHasBeenChanged;
         #endregion
 
         #region Свойства
@@ -75,6 +77,19 @@ namespace PlayerBehaviour
                     rageValuePlayer = initialisatedRageValuePlayer;
                     RefreshRingRage();
                 }
+            }
+        }
+
+        public bool IsDownInterfaceTransformHasBeenChanged
+        {
+            get
+            {
+                return isDownInterfaceTransformHasBeenChanged;
+            }
+
+            set
+            {
+                isDownInterfaceTransformHasBeenChanged = value;
             }
         }
         #endregion
@@ -203,14 +218,25 @@ namespace PlayerBehaviour
             Timing.RunCoroutine(MayToGetDamage());
         }
 
-        public void RotateConditionBar(bool flag=false,float angle=0)
+        /// <summary>
+        /// Поворачивать нижний интерфейс объекта
+        /// </summary>
+        /// <param name="flag"></param>
+        /// <param name="angle"></param>
+        public void RotateConditionBar(bool flag,float angle)
         {
-            if (flag)
-                MainBarCanvas.localRotation = 
-                    Quaternion.Euler(angle, -90, -90);        
-            else
-                MainBarCanvas.localRotation = 
-                    Quaternion.Euler(90, -90, -90);
+            if (flag && !IsDownInterfaceTransformHasBeenChanged)
+            {
+                MainBarCanvas.localRotation =
+                    Quaternion.Euler(angle, -90, 0);
+                IsDownInterfaceTransformHasBeenChanged = true;
+            }
+            else if (!flag && IsDownInterfaceTransformHasBeenChanged)
+            {
+                MainBarCanvas.localRotation =
+                    Quaternion.Euler(angle, 0, 0);
+                IsDownInterfaceTransformHasBeenChanged = false;
+            }
         }
 
         /// <summary>
@@ -244,8 +270,7 @@ namespace PlayerBehaviour
             Debug.Log(gameObject.name +  " is dead!");
             IsAlive = false;
             AllPlayerManager.CheckList();
-           //playerComponentsControl.PlayerAnimationsController
-           //    .LowSpeedAnimation();
+
             GetComponent<PlayerController>().IsAliveFromConditions = false;
             playerComponentsControl.PlayerAnimationsController
                 .DisableAllStates();
@@ -253,8 +278,15 @@ namespace PlayerBehaviour
             playerComponentsControl.PlayerCollision.RigidbodyDead();
             playerComponentsControl.PlayerAnimationsController
                 .PlayDeadNormalizeCoroutine();
-            MainBarCanvas.gameObject.SetActive(false);
             yield return Timing.WaitForSeconds(1);
+        }
+
+        /// <summary>
+        /// Отключить интерфейс под игроком
+        /// </summary>
+        public void DisableDownInterface()
+        {
+            MainBarCanvas.gameObject.SetActive(false);
         }
     }
 }

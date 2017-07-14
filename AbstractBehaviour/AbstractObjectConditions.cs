@@ -22,7 +22,7 @@ namespace AbstractBehaviour
         protected float initialisatedHealthValue;
         protected float colorChannelRed;
         protected float colorChannelGreen;
-        private bool isAlive = true; // жив ли игрок
+        private bool isAlive = true; // жив ли объект
         [SerializeField]
         private RectTransform mainBarCanvas;
         #endregion

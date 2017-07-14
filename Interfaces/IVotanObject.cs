@@ -57,7 +57,7 @@ namespace VotanInterfaces
         /// <summary>
         /// Свойство для компоненты "Движение врага"
         /// </summary>
-        EnemyMove EnemyMove { get; set; }
+        IAIMoving EnemyMove { get; set; }
 
         /// <summary>
         /// Ледяной эффект

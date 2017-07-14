@@ -79,7 +79,7 @@ namespace EnemyBehaviour
                     EnemyAnimationsController.SetState(0, true);
                     EnemyAnimationsController.SetState(1, false);
                     if (!EnemyConditions.IsFrozen)
-                        EnemyAnimationsController.SetSpeedAnimationByRunSpeed(movingSpeed);
+                        EnemyMove.DependenceAnimatorSpeedOfVelocity();
                 }
                 yield return Timing.WaitForSeconds(refreshLatency);
             }

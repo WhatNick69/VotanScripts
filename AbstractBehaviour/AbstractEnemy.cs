@@ -1,8 +1,6 @@
-﻿using System;
-using EnemyBehaviour;
+﻿using EnemyBehaviour;
 using UnityEngine;
 using VotanInterfaces;
-using GameBehaviour;
 
 namespace AbstractBehaviour
 {
@@ -23,7 +21,7 @@ namespace AbstractBehaviour
         protected EnemyAttack enemyAttack;
         protected EnemyConditions enemyConditions;
         protected EnemyOpponentChoiser enemyOpponentChoiser;
-        protected EnemyMove enemyMove;
+        protected IAIMoving enemyMove;
 
         protected IIceEffect iceEffectManager;
         protected IFireEffect fireEffectManager;
@@ -122,7 +120,7 @@ namespace AbstractBehaviour
             }
         }
 
-        public EnemyMove EnemyMove
+        public IAIMoving EnemyMove
         {
             get
             {

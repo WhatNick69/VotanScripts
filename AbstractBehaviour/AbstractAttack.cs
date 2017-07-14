@@ -14,7 +14,6 @@ namespace AbstractBehaviour
 		: MonoBehaviour, IVotanObjectAttack
     {
         #region Переменные
-        [SerializeField]
 		protected List<AbstractEnemy> attackList;
 		[SerializeField] // точки персонажа
         protected Transform playerPoint, playerRightPoint,

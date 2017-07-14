@@ -48,6 +48,7 @@ namespace GameBehaviour
         private void InstantiateOnServer(int k)
         {
             GameObject enemyObjNew = Instantiate(enemy);
+            enemyObjNew.transform.parent = respawnPoint;
             enemyObjNew.GetComponent<EnemyMove>().RandomRadius = randomRadius;
 			enemyObjNew.transform.position = respawnPoint.transform.position;
             enemyObjNew.name = "Enemy" + k;

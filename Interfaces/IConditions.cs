@@ -15,6 +15,11 @@ namespace VotanInterfaces
     public interface IVotanObjectConditions
     {
         /// <summary>
+        /// Жив ли объект
+        /// </summary>
+        bool IsAlive { get; set; }
+
+        /// <summary>
         /// Состояние смерти объекта
         /// </summary>
         /// <returns></returns>
@@ -87,15 +92,35 @@ namespace VotanInterfaces
     }
 
     /// <summary>
+    /// Данный интерфейс позволяет поворачивать 
+    /// нижний интерфейс объекты, когда тот поднимается по лестнице
+    /// </summary>
+    public interface IObjectFitBat
+    {
+        /// <summary>
+        /// Булева переменная, что отвечает за изменение 
+        /// трансформа нижнего интерфейса объекта
+        /// </summary>
+        bool IsDownInterfaceTransformHasBeenChanged { get; set; }
+
+        /// <summary>
+        /// Поворачивает нижний интерфейс врага
+        /// </summary>
+        /// <param name="flag"></param>
+        /// <param name="angle"></param>
+        void RotateConditionBar(bool flag, float angle=0);
+
+        /// <summary>
+        /// Отключить объект-интерфейс под объектом
+        /// </summary>
+        void DisableDownInterface();
+    }
+
+    /// <summary>
     /// Интерфейс для реализации контроля над состояниями врага
     /// </summary>
     public interface IEnemyConditions
     {
-        /// <summary>
-        /// Жив ли объект
-        /// </summary>
-        bool IsAlive { get; set; }
-
         /// <summary>
         /// Заморожен ли враг
         /// </summary>
@@ -167,7 +192,6 @@ namespace VotanInterfaces
         /// <param name="dmgType"></param>
         /// <param name="weapon"></param>
         void GetDamage(float dmg, float gemPower, DamageType dmgType, IWeapon weapon);
-
 
         /// <summary>
         /// Корутина на получение урона от персонажа.

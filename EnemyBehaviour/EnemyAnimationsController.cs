@@ -25,6 +25,9 @@ namespace EnemyBehaviour
                 , "isDamage", "isDead");      
         }
 
+        /// <summary>
+        /// Инициализация
+        /// </summary>
         private void Start()
         {
             enemyBehaviour = GetComponent<IEnemyBehaviour>();
@@ -40,6 +43,10 @@ namespace EnemyBehaviour
             animatorOfObject.speed = 1f;
         }
 
+        /// <summary>
+        /// Задать скорость аниматору
+        /// </summary>
+        /// <param name="value"></param>
         public override void SetSpeedAnimationByRunSpeed(float value)
         {
             if (enemyConditions != null && !enemyConditions.IsFrozen)
@@ -67,14 +74,20 @@ namespace EnemyBehaviour
             base.SetState(state, flag);
         }
 
+        /// <summary>
+        /// Проиграть корутину номрализации у врага после его смерти
+        /// </summary>
         public override void PlayDeadNormalizeCoroutine()
         {
             Timing.RunCoroutine(CoroutineDeadYNormalized());
         }
 
+        /// <summary>
+        /// Нормализация координаты Y у врага после смерти
+        /// </summary>
+        /// <returns></returns>
         public override IEnumerator<float> CoroutineDeadYNormalized()
         {
-
             if (enemyConditions.IsFrozen) yield break;
 
             int i = 0;       
