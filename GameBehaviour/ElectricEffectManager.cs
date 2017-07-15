@@ -47,8 +47,6 @@ namespace GameBehaviour
             for (int i = 0; i < childrenCount*2; i++)
             {
                 listTrailObjects.Add(transform.GetChild(i));
-                listTrailObjects[i].GetComponent<TrailRenderer>().endColor =
-                    weapon.TrailRenderer.endColor;
                 listTrailObjects[i].GetComponent<TrailRenderer>().startColor =
                     weapon.TrailRenderer.startColor;
             }
