@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MovementEffects;
 using VotanInterfaces;
 using System;
+using VotanLibraries;
 
 namespace PlayerBehaviour
 {
@@ -15,19 +16,72 @@ namespace PlayerBehaviour
     /// </summary>
     public interface IWeapon
 	{
-        string typeName1 { get; set; }
-		string typeName2 { get; set; }
-		string weaponName { get; set; }
-		string gripName { get; set; }
+        #region Переменные
+        /// <summary>
+        /// Тип оружия 1
+        /// </summary>
+        string TypeName1 { get; set; }
+
+		/// <summary>
+        /// Тип оружия 2
+        /// </summary>
+        string TypeName2 { get; set; }
+
+		/// <summary>
+        /// Название оружия
+        /// </summary>
+        string WeaponName { get; set; }
+
+		/// <summary>
+        /// Название рукояти
+        /// </summary>
+        string GripName { get; set; }
+
+        /// <summary>
+        /// Получить игрока
+        /// </summary>
         IPlayerBehaviour GetPlayer { get; }
 
+        /// <summary>
+        /// Значения защиты
+        /// </summary>
         float DefenceValue { get; set; }
+
+        /// <summary>
+        /// Значения урона оружием
+        /// </summary>
         float Damage { get; set; }
+
+        /// <summary>
+        /// Тип атаки
+        /// </summary>
         DamageType AttackType { get; set; }
+
+        /// <summary>
+        /// Скорость вращения оружием
+        /// </summary>
         float SpinSpeed { get; set; }
+
+        /// <summary>
+        /// Сила камня
+        /// </summary>
         float GemPower { get; set; }
+
+        /// <summary>
+        /// Вес оружия
+        /// </summary>
         float Weight { get; set; }
+
+        /// <summary>
+        /// Оригинальная скорость оружия
+        /// </summary>
         float OriginalSpinSpeed { get; set; }
+
+        /// <summary>
+        /// Трэил-лента оружия
+        /// </summary>
+        TrailRenderer TrailRenderer { get; set; }
+        #endregion
 
         /// <summary>
         /// Инициализация
@@ -50,15 +104,24 @@ namespace PlayerBehaviour
         /// <param name="spinSpeed"></param>
         /// <param name="weight"></param>
         /// <param name="gemPower"></param>
-        void SetWeaponParameters(float damage, float defenceValue, DamageType attackType, 
-            float spinSpeed,float weight,float gemPower);
+        void SetWeaponParameters(float damage, float defenceValue, DamageType attackType,
+            TrailRenderer trailRenderer, float spinSpeed,float weight,float gemPower);
 
         /// <summary>
         /// Снижаем скорость вращения при попадании по врагу
         /// </summary>
         void WhileTime();
 
+        /// <summary>
+        /// Корутина, для осуществления замедления оружия игрока
+        /// </summary>
+        /// <returns></returns>
         IEnumerator<float> CoroutineDoSlowMotionSpinSpeed();
+
+        /// <summary>
+        /// Установить цвет трэил-ленты оружия
+        /// </summary>
+        void SetColorTrailWeapon();
     }
 
 	/// <summary>
@@ -68,17 +131,22 @@ namespace PlayerBehaviour
         : MonoBehaviour, IWeapon
 	{
         #region Переменные
-        public string typeName1 { get; set; }
-		public string typeName2 { get; set; }
-		public string weaponName { get; set; }
-		public string gripName { get; set; }
+        [SerializeField, Tooltip("Название оружия 1")]
+        private string typeName1;
+        [SerializeField, Tooltip("Название оружия 1")]
+        private string typeName2;
+        [SerializeField, Tooltip("Название оружия")]
+        private string weaponName;
+        [SerializeField, Tooltip("Название рукояти")]
+        private string gripName;
+        private TrailRenderer trailRenderer;
 
-		[SerializeField, Tooltip("Урон от оружия"), Range(1, 2200f)]
+        [SerializeField, Tooltip("Урон от оружия"), Range(1, 2200f)]
 		private float damage;
 		[SerializeField, Tooltip("Защита"), Range(0, 99f)]
 		private float defenceValue;
 		[SerializeField]
-		private DamageType attackType;
+		private DamageType damageType;
 		[SerializeField, Tooltip("Скорость вращения"), Range(10, 100f)]
 		private float spinSpeed;
         [SerializeField, Tooltip("Сила камня"), Range(1, 100f)]
@@ -94,10 +162,10 @@ namespace PlayerBehaviour
 
 		[SerializeField, Tooltip("Хранитель компонентов")]
 		private PlayerComponentsControl playerComponentsControl;
-		#endregion
+        #endregion
 
-		#region Свойства
-		public float Damage
+        #region Свойства
+        public float Damage
         {
             get
             {
@@ -129,12 +197,12 @@ namespace PlayerBehaviour
         {
             get
             {
-                return attackType;
+                return damageType;
             }
 
             set
             {
-                attackType = value;
+                damageType = value;
             }
         }
 
@@ -197,28 +265,97 @@ namespace PlayerBehaviour
                 return playerComponentsControl;
             }
         }
+
+        public string TypeName1
+        {
+            get
+            {
+                return typeName1;
+            }
+
+            set
+            {
+                typeName1 = value;
+            }
+        }
+
+        public string TypeName2
+        {
+            get
+            {
+                return typeName2;
+            }
+
+            set
+            {
+                typeName2 = value;
+            }
+        }
+
+        public string WeaponName
+        {
+            get
+            {
+                return weaponName;
+            }
+
+            set
+            {
+                weaponName = value;
+            }
+        }
+
+        public string GripName
+        {
+            get
+            {
+                return gripName;
+            }
+
+            set
+            {
+                gripName = value;
+            }
+        }
+
+        public TrailRenderer TrailRenderer
+        {
+            get
+            {
+                return trailRenderer;
+            }
+
+            set
+            {
+                trailRenderer = value;
+            }
+        }
         #endregion
 
         /// <summary>
         /// Задать характеристики оружия через урон, 
-        /// мощность блока, тип урона, скорость вращения и вес
+        /// мощность блока, тип урона, скорость вращения и вес   
         /// </summary>
-        /// <param name="damage"></param>
-        /// <param name="defenceValue"></param>
-        /// <param name="attackType"></param>
-        /// <param name="spinSpeed"></param>
-        /// <param name="weight"></param>
+        /// <param name="damage">Величина урона от оружия.</param>
+        /// <param name="defenceValue">Величина защита от оружия.</param>
+        /// <param name="attackType">Тип атаки оружия от камня</param>
+        /// <param name="trailRenderer">Трэил-лента оружия</param>
+        /// <param name="spinSpeed">Скорость вращения оружием</param>
+        /// <param name="weight">Вес оружия</param>
+        /// <param name="gemPower">Сила камня</param>
         public void SetWeaponParameters(float damage, float defenceValue,
-            DamageType attackType, float spinSpeed,float weight,float gemPower)
+            DamageType damageType, TrailRenderer trailRenderer ,float spinSpeed,float weight,float gemPower)
         {
             DefenceValue = defenceValue;
             this.damage = damage;
-            this.attackType = attackType;
+            this.damageType = damageType;
             this.spinSpeed = spinSpeed;
             this.weight = weight;
             this.gemPower = gemPower;
+            this.trailRenderer = trailRenderer;
 
-			originalSpinSpeed = spinSpeed;
+            SetColorTrailWeapon();
+            originalSpinSpeed = spinSpeed;
         }
         
         /// <summary>
@@ -226,7 +363,6 @@ namespace PlayerBehaviour
         /// </summary>
         public void Start()
         {
-            originalSpinSpeed = spinSpeed;
             playerComponentsControl.PlayerWeapon = this;
         }
 
@@ -261,13 +397,57 @@ namespace PlayerBehaviour
                 yield return Timing.WaitForSeconds(0.1f);
             }
         }
+
+        /// <summary>
+        /// Установить цвет трэил-ленты,
+        /// время жизни трэила (1 - 2 секунды)
+        /// и ширину ленты (0.2 - 0.3),
+        /// в зависимости от силы камня
+        /// </summary>
+        public void SetColorTrailWeapon()
+        {
+            Color color = LibraryStaticFunctions.GetColorFromGemPower(GemPower, damageType);
+            if (color == Color.black)
+            {
+                TrailRenderer.enabled = false;
+                return;
+            }
+            TrailRenderer.time = 1 + GemPower / 100;
+            TrailRenderer.startWidth = 0.2f + GemPower / 1000;
+            TrailRenderer.startColor = color;
+            TrailRenderer.endColor = color;
+        }
     }
 
     /// <summary>
     /// Типы атаки. Перечисление
+    /// 
+    /// Frozen - замораживающая атака
+    /// Fire - огненная атака
+    /// Powerful - физическая атака
+    /// Electric - электрическая атака
     /// </summary>
     public enum DamageType
     {
         Frozen, Fire, Powerful, Electric
+    }
+
+    /// <summary>
+    /// Тип оружия. Перечисление.
+    /// 
+    /// Crushing - дробящее оружие.
+    /// Cutting - режущее оружие
+    /// </summary>
+    public enum WeaponType
+    {
+        Crushing, Cutting
+    }
+
+    /// <summary>
+    /// Длина рукояти. Перечисление
+    /// </summary>
+    public enum LenghtGrip
+    {
+        Longest, Long, Middle, Short
     }
 }

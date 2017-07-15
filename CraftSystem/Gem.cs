@@ -10,12 +10,12 @@ namespace CraftSystem
         : MonoBehaviour
     {
         #region Переменные
-        [SerializeField]
+        [SerializeField,Tooltip("Тип атаки камня")]
         private DamageType damageTypeGem;
-        [SerializeField, Range(1, 100f)]
+        [SerializeField, Range(1, 100f),Tooltip("Сила камня")]
         private float gemPower;
-        [SerializeField]
-        private string weaponName;
+        [SerializeField,Tooltip("Имя камня")]
+        private string gemName;
         #endregion
 
         #region Свойства
@@ -45,16 +45,16 @@ namespace CraftSystem
             }
         }
 
-        public string WeaponName
+        public string GemName
         {
             get
             {
-                return weaponName;
+                return gemName;
             }
 
             set
             {
-                weaponName = value;
+                gemName = value;
             }
         }
         #endregion

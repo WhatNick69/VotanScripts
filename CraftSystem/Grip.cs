@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using PlayerBehaviour;
+using UnityEngine;
 
 namespace CraftSystem
 {
@@ -16,28 +17,28 @@ namespace CraftSystem
         [SerializeField, Range(0, 75f), Tooltip("Бонус к скорости вращения за счет ручки")]
         private float bonusSpinSpeedFromGrip;
 
-        [SerializeField, Range(0, 3)]
-        private int gripType;
-        [SerializeField]
-        private string weaponName;
+        [SerializeField, Tooltip("Тип рукояти")]
+        private LenghtGrip gripType;
+        [SerializeField,Tooltip("Название рукояти")]
+        private string gripName;
 
         #endregion
 
         #region Свойства 
-        public string WeaponName
+        public string GripName
         {
             get
             {
-                return weaponName;
+                return gripName;
             }
 
             set
             {
-                weaponName = value;
+                gripName = value;
             }
         }
 
-        public int GripType
+        public LenghtGrip GripType
         {
             get
             {

@@ -56,28 +56,28 @@ namespace CraftSystem
 		{
 			switch (gripClass.GripType)
 			{
-				case 0:
+				case LenghtGrip.Short:
 					gripPoint = shortGripPosition;
 					headPosition = new Vector3(); //
 					attackPoint = new Vector3(-0.6f, 10.5f, 50);
 					break;
-				case 1:
+				case LenghtGrip.Middle:
 					gripPoint = midleGripPosition;
 					headPosition = new Vector3(-60, 0, 0);
 					attackPoint = new Vector3(-60, 0, 0);
 					break;
-				case 2:
+				case LenghtGrip.Long:
 					gripPoint = longGripPosition;
-					headPosition = new Vector3(); //
-					
+					headPosition = new Vector3(); //			
 					break;
-				case 3:
+				case LenghtGrip.Longest:
 					gripPoint = verilongGripPosition;
 					headPosition = new Vector3(); //
 					
 					break;
 				default:
-					gripPoint = Vector3.zero; break;
+					gripPoint = Vector3.zero;
+                    break;
 			}
 		}
 
@@ -103,7 +103,7 @@ namespace CraftSystem
 			weaponDamType = gemClass.DamageTypeGem;
 
 			plComponents.PlayerWeapon.SetWeaponParameters(weaponDamage, weaponDefence, 
-                weaponDamType, weaponSpinSpeed, weaponWeight, gemClass.GemPower);
+                weaponDamType, headClass.TrailRenderer,weaponSpinSpeed, weaponWeight, gemClass.GemPower);
 		}
 
 		/// <summary>

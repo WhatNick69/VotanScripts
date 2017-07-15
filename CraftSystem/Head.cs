@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using PlayerBehaviour;
+using UnityEngine;
 
 namespace CraftSystem
 {
@@ -16,27 +17,29 @@ namespace CraftSystem
         [SerializeField, Range(0, 25f), Tooltip("Бонус к скорости вращения за счет головной части")]
         private float bonusSpinSpeedFromHead;
 
-        [SerializeField, Range(0, 1)] // 0 рубящая, 1 дробящая
-        private int headType;
-        [SerializeField]
-        private string weaponName;
+        [SerializeField, Tooltip("Тип оружия")] 
+        private WeaponType headType;
+        [SerializeField,Tooltip("Название головы")]
+        private string headName;
+        [SerializeField, Tooltip("Трэил-лента оружия")]
+        private TrailRenderer trailRenderer;
         #endregion
 
         #region Свойства
-        public string WeaponName
+        public string HeadName
         {
             get
             {
-                return weaponName;
+                return headName;
             }
 
             set
             {
-                weaponName = value;
+                headName = value;
             }
         }
 
-        public int HeadType
+        public WeaponType HeadType
         {
             get
             {
@@ -85,6 +88,19 @@ namespace CraftSystem
             set
             {
                 damageBase = value;
+            }
+        }
+
+        public TrailRenderer TrailRenderer
+        {
+            get
+            {
+                return trailRenderer;
+            }
+
+            set
+            {
+                trailRenderer = value;
             }
         }
         #endregion

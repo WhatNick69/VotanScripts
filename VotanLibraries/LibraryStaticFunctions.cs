@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using PlayerBehaviour;
+using UnityEngine;
 
 namespace VotanLibraries
 {
@@ -52,7 +53,20 @@ namespace VotanLibraries
         /// <returns></returns>
         public static bool MayableToBeFreezy(float gemPower)
         {
-            return rnd.NextDouble() <= gemPower / 150 ? true : false;
+            return rnd.NextDouble() <= (gemPower / 220)+0.05f ? true : false;
+        }
+
+        /// <summary>
+        /// Время заморозки.
+        /// 
+        /// Текущая реализация: 1 + (СИЛА_ГЕМА/100)*3
+        /// 0.9 - 4.4 секунды
+        /// </summary>
+        /// <param name="gemPower"></param>
+        /// <returns></returns>
+        public static float TimeToFreezy(float gemPower)
+        {
+            return GetRangeValue(1 + (gemPower / 100) * 3, 0.1f);
         }
 
         /// <summary>
@@ -111,6 +125,33 @@ namespace VotanLibraries
             float spinSpeed,float spinSpeedoriginal,bool isSuperAttack=false)
         {
             return isSuperAttack ? damage*2 : damage * (0.5f + (spinSpeed / spinSpeedoriginal));
+        }
+
+        /// <summary>
+        /// Получить цвет трэил-ленты, на основе силы камня
+        /// </summary>
+        /// <param name="gemPower"></param>
+        /// <param name="weaponType"></param>
+        /// <returns></returns>
+        public static Color GetColorFromGemPower(float gemPower, DamageType damageType)
+        {
+            switch (damageType)
+            {
+                case DamageType.Electric:
+                    return new Color((gemPower * 2.55f) * 0.003921f, 0, 1);
+                case DamageType.Fire:
+                    float g = gemPower /100;
+                    return g >= 0.647f ?
+                        new Color(1 - ((gemPower / 100) - 0.647f), 0, 0) :
+                        new Color(1, 0.647f - g, 0);
+                case DamageType.Frozen:
+                    return new Color(1 - (0.21569f + (gemPower * 2) * 0.0039f), 1, 1);
+                case DamageType.Powerful:
+                    return new Color(0.803f - gemPower*0.002f, 
+                        0.5215f+gemPower*0.0028f, 0.247f-gemPower*0.0005f);
+                default:
+                    return Color.black;
+            }
         }
     }
 }

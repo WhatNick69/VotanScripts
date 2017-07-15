@@ -1,4 +1,5 @@
 ﻿using MovementEffects;
+using PlayerBehaviour;
 using System.Collections.Generic;
 using UnityEngine;
 using VotanInterfaces;
@@ -17,6 +18,9 @@ namespace GameBehaviour
         private List<Transform> listIceObjects; 
         [SerializeField, Tooltip("Лист трэилов")]
         private List<Transform> listTrailObjects;
+        [SerializeField, Tooltip("Материал ледяных глыб")]
+        private Material iceObjectMaterial;
+        private IWeapon weapon;
 
         private List<Vector3> listPositionIceObjects;
         private List<Vector3> listPositionTrailObjects;
@@ -34,23 +38,52 @@ namespace GameBehaviour
         /// трэилов. Затем, по истечению определенного времени, эти ледяные глыбы
         /// вместе с трэилами исчезают, посредством сведения к нулю их альфа-канала.
         /// </summary>
-        public void EventEffect(float timeToDisable)
+        public void EventEffect(float timeToDisable, IWeapon weapon)
         {
+            this.weapon = weapon;
+            SetColorOfMaterial();
+
             isOneCoroutine = false;
             this.timeToDisable = timeToDisable-0.5f;
+
             SetActiveForTrailObjects(true);
             SetActiveForIceObjects(true);
+            InitialisationVatiables();
+            RandomSetScaleAndPosition();
+            RunAllCoroutines();
+        }
 
+        /// <summary>
+        /// Инициализация переменных
+        /// </summary>
+        private void InitialisationVatiables()
+        {
             listPositionIceObjects = new List<Vector3>();
             listPositionTrailObjects = new List<Vector3>();
             isRandomTrailPosition = true;
+        }
 
-            RandomSetScaleAndPosition();
+        /// <summary>
+        /// Запуск всех корутин
+        /// </summary>
+        private void RunAllCoroutines()
+        {
             Timing.RunCoroutine(CoroutineForFireDisableIceObjects());
             Timing.RunCoroutine(CoroutineForMoveIceObjects());
             Timing.RunCoroutine(CoroutineSetRandomPositionForTrailIce());
         }
 
+        /// <summary>
+        /// Установить цвет материала льда, исходя из силы гема
+        /// </summary>
+        /// <param name="weapon"></param>
+        private void SetColorOfMaterial()
+        {
+            Color color = weapon.TrailRenderer.endColor;
+            color.a = 0.45f;
+            iceObjectMaterial.color = color;
+        }
+    
         /// <summary>
         /// Сбросить изменения трансформа
         /// </summary>
@@ -95,7 +128,7 @@ namespace GameBehaviour
                         LibraryStaticFunctions.GetPlusMinusValue(0.5f));
 
                 // Размер
-                scale = LibraryStaticFunctions.GetRangeValue(1,0.2f);
+                scale = LibraryStaticFunctions.GetRangeValue(1+(weapon.GemPower/200),0.2f);
                 listIceObjects[i].localScale = new Vector3(scale,scale, scale);
 
                 // Поворот
@@ -185,7 +218,7 @@ namespace GameBehaviour
 
             int i = 0;
             Vector3 localScaleTemp = new Vector3(0.5f,0.5f,0.5f);
-            while (i < 10)
+            while (i < 15)
             {
                 for (int j = 0; j < listIceObjects.Count; j++)
                 {
@@ -195,7 +228,7 @@ namespace GameBehaviour
                         Vector3.Lerp(listIceObjects[j].position,
                         listPositionIceObjects[j], 0.3f);
                    listIceObjects[j].localScale = 
-                       Vector3.Lerp(listIceObjects[j].localScale, localScaleTemp, 0.15f);
+                       Vector3.Lerp(listIceObjects[j].localScale, localScaleTemp, 0.1f);
                 }
                 yield return Timing.WaitForSeconds(0.05f);
                 i++;

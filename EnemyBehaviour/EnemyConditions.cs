@@ -175,7 +175,7 @@ namespace EnemyBehaviour
                     if (!isFrozen)
                     {
                         if (LibraryStaticFunctions.MayableToBeFreezy(gemPower))
-                            RunCoroutineForFrozenDamage();
+                            RunCoroutineForFrozenDamage(weapon);
                     }
                     return dmg * (1 - frostResistance);
                 case DamageType.Powerful:
@@ -194,9 +194,9 @@ namespace EnemyBehaviour
         /// <summary>
         /// Запустить корутины для замораживающего эффекта
         /// </summary>
-        public void RunCoroutineForFrozenDamage()
+        public void RunCoroutineForFrozenDamage(IWeapon weapon)
         {
-            Timing.RunCoroutine(CoroutineForFrozenDamage());
+            Timing.RunCoroutine(CoroutineForFrozenDamage(weapon));
         }
 
         /// <summary>
@@ -222,14 +222,14 @@ namespace EnemyBehaviour
         /// Замедление врага от холода
         /// </summary>
         /// <returns></returns>
-        public IEnumerator<float> CoroutineForFrozenDamage()
+        public IEnumerator<float> CoroutineForFrozenDamage(IWeapon weapon)
         {
             Debug.Log("ICE");
             enemyAbstract.EnemyAnimationsController.SetState(2, true);
             enemyMove.SetNewSpeedOfNavMeshAgent(0,0);
             enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0);
-            float time = LibraryStaticFunctions.GetRangeValue(4, 0.25f);
-            enemyAbstract.IceEffect.EventEffect(time);
+            float time = LibraryStaticFunctions.TimeToFreezy(weapon.GemPower);
+            enemyAbstract.IceEffect.EventEffect(time,weapon);
             enemyAbstract.EnemyMove.Agent.enabled = false;
 
             IsFrozen = true;

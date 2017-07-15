@@ -154,7 +154,7 @@ namespace VotanInterfaces
         /// <summary>
         /// Получить ледяной удар и стать медленнее
         /// </summary>
-        void RunCoroutineForFrozenDamage();
+        void RunCoroutineForFrozenDamage(IWeapon weapon);
 
         /// <summary>
         /// Корутина на огненный удар
@@ -167,7 +167,7 @@ namespace VotanInterfaces
         /// Корутина на ледяной удар
         /// </summary>
         /// <returns></returns>
-        IEnumerator<float> CoroutineForFrozenDamage();
+        IEnumerator<float> CoroutineForFrozenDamage(IWeapon weapon);
 
         /// <summary>
         /// Частотное обновление

@@ -12,7 +12,7 @@ namespace VotanInterfaces
         /// Зажечь ледяной эффект
         /// </summary>
         /// <param name="time"></param>
-        void EventEffect(float time);
+        void EventEffect(float time, IWeapon weapon);
     }
 
     /// <summary>
