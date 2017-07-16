@@ -44,7 +44,7 @@ namespace GameBehaviour
             else if (count <= 0) childrenCount = 1;
             else childrenCount = count;
 
-            for (int i = 0; i < childrenCount*2; i++)
+            for (int i = 0; i < childrenCount; i++)
             {
                 listTrailObjects.Add(transform.GetChild(i));
                 listTrailObjects[i].GetComponent<TrailRenderer>().startColor =
@@ -61,10 +61,10 @@ namespace GameBehaviour
         {
             if (this == null) return;
             float value = 0;
-            for (int i = 0; i < childrenCount*2; i++)
+            for (int i = 0; i < childrenCount; i++)
             {
                 listTrailObjects[i].gameObject.SetActive(flag);
-                value = LibraryStaticFunctions.GetRangeValue(0.075f, 0.25f);
+                value = LibraryStaticFunctions.GetRangeValue(0.05f, 0.1f);
                 listTrailObjects[i].GetComponent<TrailRenderer>().startWidth
                     = value;
                 listTrailObjects[i].GetComponent<TrailRenderer>().endWidth

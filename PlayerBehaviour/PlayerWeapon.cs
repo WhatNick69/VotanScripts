@@ -412,8 +412,8 @@ namespace PlayerBehaviour
                 TrailRenderer.enabled = false;
                 return;
             }
-            TrailRenderer.time = 1 + GemPower / 100;
-            TrailRenderer.startWidth = 0.2f + GemPower / 1000;
+            //TrailRenderer.time = 1 + GemPower / 300; // время жизни молнии. от 1 до 1.33 секунды
+            TrailRenderer.startWidth = 0.2f + GemPower / 2000; // размер молнии. от 0.2 до 0.25
             TrailRenderer.startColor = color;
             TrailRenderer.endColor = color;
         }

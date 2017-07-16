@@ -144,7 +144,17 @@ namespace VotanLibraries
         public static float AttackToEnemyDamage(float damage, 
             float spinSpeed,float spinSpeedoriginal,bool isSuperAttack=false)
         {
-            return isSuperAttack ? damage*2 : damage * (0.5f + (spinSpeed / spinSpeedoriginal));
+            return isSuperAttack ? damage*1.5f : damage * (spinSpeed / spinSpeedoriginal);
+        }
+
+        /// <summary>
+        /// Хватаит ли мощности оружия, чтобы сгенерить эффект молний?
+        /// </summary>
+        /// <param name="weapon"></param>
+        /// <returns></returns>
+        public static bool MayableToBeElectricity(IWeapon weapon)
+        {
+            return weapon.SpinSpeed / weapon.OriginalSpinSpeed >= 0.25f ? true : false;
         }
 
         /// <summary>
