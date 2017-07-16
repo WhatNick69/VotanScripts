@@ -331,7 +331,13 @@ namespace PlayerBehaviour
                 normalYVector.x = playerObjectTransform.position.x;
                 normalYVector.z = playerObjectTransform.position.z;
                 playerObjectTransform.position = normalYVector;
-            }          
+            }
+            if (!playerComponentsControl.PlayerFight.IsFighting &&
+                (playerModel.localPosition.y < 0 
+                || playerModel.localPosition.y > 0))
+            {
+                playerModel.localPosition = Vector3.zero;
+            }
         }
 
         /// <summary>
