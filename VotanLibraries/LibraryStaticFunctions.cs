@@ -84,6 +84,26 @@ namespace VotanLibraries
         }
 
         /// <summary>
+        /// Зависимость скорости передвижения персонажа от веса оружия
+        /// </summary>
+        /// <param name="weight"></param>
+        /// <returns></returns>
+        public static float DependenceMoveSpeedAndWeaponWeight(float weight)
+        {
+            return 1.5f + (0.7f-(weight *0.007f));
+        }
+
+        /// <summary>
+        /// Зависимость скорости поворота персонажа от веса оружия
+        /// </summary>
+        /// <param name="weight"></param>
+        /// <returns></returns>
+        public static float DependenceRotateSpeedAndWeaponWeight(float weight)
+        {
+            return 3.5f + (2.5f-(weight * 0.025f));
+        }
+
+        /// <summary>
         /// Получаем общую скорость вращения оружием
         /// Текущая реализация: 20 + (40-(WEIGHT)/2.5) + (A+B)/2.5
         /// 
@@ -152,6 +172,21 @@ namespace VotanLibraries
                 default:
                     return Color.black;
             }
+        }
+
+        /// <summary>
+        /// Функция, вычисляющая угол, между двумя векторами. 
+        /// Используется в классе PlayerController, когда необходимо вычислять
+        /// угол, между игроком и точкой назначения, а затем блокировать эту точку,
+        /// в случае, если она приведет к коллизии.
+        /// </summary>
+        /// <param name="to">Пункт назначения</param>
+        /// <param name="from">Точка отсчета</param>
+        /// <returns></returns>
+        public static float CalculateAngleBetweenPointAndVector(Vector3 to, Vector3 from)
+        {
+            return Quaternion.FromToRotation(Vector3.forward,
+                to - from).eulerAngles.y;
         }
     }
 }

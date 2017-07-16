@@ -2,6 +2,7 @@
 using UnityStandardAssets.CrossPlatformInput;
 using MovementEffects;
 using System.Collections.Generic;
+using VotanLibraries;
 
 namespace PlayerBehaviour
 {
@@ -30,6 +31,7 @@ namespace PlayerBehaviour
         [SerializeField, Tooltip("Хранитель компонентов")]
         private PlayerComponentsControl playerComponentsControl;
         private Transform playerObjectTransform;
+        private Transform playerModel;
 
         private float currentMagnitude; // текущее значение магнитуды векторов
         //меньше которого используется сглаженное время
@@ -43,34 +45,12 @@ namespace PlayerBehaviour
         private bool isMovingStraight;
         private bool isAliveFromConditions;
 
-        private bool continueCalculateInCoroutine;
         private Vector3 normalYVector;
-        public bool backForward = true;
-        public bool forward = true;
-        public bool right = true;
-        public bool left = true;
+        private const string horizontalAxis = "Horizontal";
+        private const string verticalAxis = "Vertical";
         #endregion
 
-        #region Get-Set`s
-        /// <summary>
-        /// Read-Write состояния движения игрока
-        /// Если true - корутин работает.
-        /// Иначе - он ждет в 3 раза больший промежуток 
-        /// времени и не выполняет тело метода
-        /// </summary>
-        public bool ContinueCalculateInCoroutine
-        {
-            get
-            {
-                return continueCalculateInCoroutine;
-            }
-
-            set
-            {
-                continueCalculateInCoroutine = value;
-            }
-        }
-
+        #region Свойства
         public float MoveSpeed
         {
             get
@@ -122,6 +102,19 @@ namespace PlayerBehaviour
                 isUpdating = value;
             }
         }
+
+        public float RotateSpeed
+        {
+            get
+            {
+                return rotateSpeed;
+            }
+
+            set
+            {
+                rotateSpeed = value;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -130,11 +123,15 @@ namespace PlayerBehaviour
         private void Start()
         {
             isAliveFromConditions = true;
-            continueCalculateInCoroutine = true;
             isUpdating = true;
-            InitialisationOfCoroutines();
             playerObjectTransform = playerComponentsControl.PlayerObject;
+            playerModel = playerComponentsControl.PlayerModel;
             normalYVector.y = 0.55f;
+            MoveSpeed = LibraryStaticFunctions.DependenceMoveSpeedAndWeaponWeight
+                (playerComponentsControl.PlayerWeapon.Weight);
+            RotateSpeed = LibraryStaticFunctions.DependenceRotateSpeedAndWeaponWeight
+                (playerComponentsControl.PlayerWeapon.Weight);
+            InitialisationOfCoroutines();
         }
 
         /// <summary>
@@ -158,11 +155,13 @@ namespace PlayerBehaviour
                 new Vector3(attackTransform.position.x,
                 playerObjectTransform.position.y, attackTransform.position.z);
             tempVectorTransform = attackTransform.position;
-        }
-
-        public void SetStopPositionFromCollision()
-        {
-            tempVectorTransform = playerObjectTransform.position;
+            if (!playerComponentsControl.PlayerCollision.
+                CheckDirection(LibraryStaticFunctions.
+                CalculateAngleBetweenPointAndVector(tempVectorTransform,
+                playerObjectTransform.position)))
+            {
+                tempVectorTransform = playerObjectTransform.position;
+            }
         }
 
         /// <summary>
@@ -171,20 +170,23 @@ namespace PlayerBehaviour
         /// <returns></returns>
         private IEnumerator<float> CoroutineForFixedUpdatePositionAndRotation()
         {
+            yield return Timing.WaitForSeconds(1);
             while (isAliveFromConditions)
             {
-                //UpdateYCoordinate();
                 if (!playerComponentsControl.PlayerFight.IsFighting)
                 {
                     MovePlayerGetNetPosition();
-                    RotatePlayeGetNewRotation();
-
-                    yield return Timing.WaitForSeconds(updateFrequency);
+                    RotatePlayeGetNewRotation();   
                 }
-                else
+                if (!playerComponentsControl.PlayerCollision.
+                    CheckDirection(LibraryStaticFunctions.
+                    CalculateAngleBetweenPointAndVector(tempVectorTransform,
+                    playerObjectTransform.position)))
                 {
-                    yield return Timing.WaitForSeconds(updateFrequency*3);
+                    tempVectorTransform = playerObjectTransform.position;
                 }
+                UpdateYCoordinate();
+                yield return Timing.WaitForSeconds(updateFrequency);
             }
             playerComponentsControl.PlayerAnimationsController.SetState(5, true);
         }
@@ -197,63 +199,16 @@ namespace PlayerBehaviour
             if (isAliveFromConditions)
             {
                 UpdateNewTransformPositionAndRotation();
-                UpdateYCoordinate();
             }
         }
         
+        /// <summary>
+        /// Проверить величину магнитуды движения
+        /// </summary>
+        /// <returns></returns>
         public bool IsMagnitudeMoreThanValue()
         {
             return currentMagnitude > iddleSize ? true : false;
-        }
-
-        public void SetCorrectDirections(bool forward, bool backForward, bool right, bool left)
-        {
-            // передаем були
-            this.forward = forward;
-            this.backForward = backForward;
-            this.right = right;
-            this.left = left;
-        }
-
-        /// <summary>
-        /// Проверить направление движения на возможность
-        /// </summary>
-        public void CheckDirection()
-        {
-            if (Mathf.Abs(tempVectorTransform.x) > Mathf.Abs(playerObjectTransform.position.x))
-            {
-                if (!right)
-                {
-                    tempVectorTransform.x = playerObjectTransform.position.x;
-                    //tempVectorTransform.z -= playerObjectTransform.position.z;
-                }
-            }
-            else if (Mathf.Abs(tempVectorTransform.x) 
-                < Mathf.Abs(playerObjectTransform.position.x))
-            {
-                if (!left)
-                {
-                    tempVectorTransform.x = playerObjectTransform.position.x;
-                    //tempVectorTransform.z -= playerObjectTransform.position.z;
-                }
-            }
-            if (Mathf.Abs(tempVectorTransform.z) > Mathf.Abs(playerObjectTransform.position.z))
-            {
-                if (!forward)
-                {
-                    //tempVectorTransform.x -= playerObjectTransform.position.x;
-                    tempVectorTransform.z = playerObjectTransform.position.z;
-                }
-            }
-            else if (Mathf.Abs(tempVectorTransform.z) 
-                < Mathf.Abs(playerObjectTransform.position.z))
-            {
-                if (!backForward)
-                {
-                    //tempVectorTransform.x -= playerObjectTransform.position.x;
-                    tempVectorTransform.z = playerObjectTransform.position.z;
-                }
-            }
         }
 
         /// <summary>
@@ -262,7 +217,6 @@ namespace PlayerBehaviour
         /// </summary>
         private void UpdateNewTransformPositionAndRotation()
         {
-            //CheckDirection();
             currentMagnitude = (playerObjectTransform
                 .position - tempVectorTransform).magnitude;
 
@@ -335,6 +289,9 @@ namespace PlayerBehaviour
             }
         }
 
+        /// <summary>
+        /// Остановить длинную атаку
+        /// </summary>
         public void StopLongAttack()
         {
             // выключить рывок
@@ -347,8 +304,8 @@ namespace PlayerBehaviour
         /// </summary>
         private void MovePlayerGetNetPosition()
         {
-            moveVector3 = new Vector3(CrossPlatformInputManager.GetAxis("Horizontal")
-               , 0, CrossPlatformInputManager.GetAxis("Vertical"))* moveSpeed;
+            moveVector3 = new Vector3(CrossPlatformInputManager.GetAxis(horizontalAxis)
+               , 0, CrossPlatformInputManager.GetAxis(verticalAxis))* moveSpeed;
 
             if (moveVector3.magnitude >= 0.1f)
             {
@@ -374,7 +331,7 @@ namespace PlayerBehaviour
                 normalYVector.x = playerObjectTransform.position.x;
                 normalYVector.z = playerObjectTransform.position.z;
                 playerObjectTransform.position = normalYVector;
-            }           
+            }          
         }
 
         /// <summary>

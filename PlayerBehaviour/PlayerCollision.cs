@@ -6,7 +6,8 @@ using UnityEngine;
 namespace PlayerBehaviour
 {
     /// <summary>
-    /// Подъем по лестницам
+    /// Столкновения с мобами, со стенами, с препятствиями.
+    /// Подъем по лестницам, падения с лестниц.
     /// </summary>
     [RequireComponent(typeof(Rigidbody))]
     public class PlayerCollision
@@ -15,31 +16,58 @@ namespace PlayerBehaviour
         #region Переменные
         [SerializeField, Tooltip("Частота обновления"), Range(0.01f, 0.9f)]
         private float frequencyUpdate;
-        [SerializeField]
+        [SerializeField,Tooltip("Хранитель компонентов")]
         private PlayerComponentsControl playerComponentControl;
-        [SerializeField]
-        private Transform playerObject;
-        private Transform playerModel;
-        private Rigidbody playerRGB;
+        [SerializeField, Tooltip("Количество лучей для просчета")]
+        private int raysCount;
+        [SerializeField, Tooltip("Радиус просчета")]
+        private float searchingRadius;
+        [SerializeField, Tooltip("Ротатор лучей")]
+        private Transform rotaterRaycaster;
+        public bool[] boolsList;
+        private float angle;
 
+        private Rigidbody playerRGB;
         private Ray ray;
         private RaycastHit rayCastHit;
         private static string tagNameObstacle = "Obstacle";
         private static string tagNameEnemy = "Enemy";
-        private float angle;
-        private bool forward;
-        private bool backForward;
-        private bool right;
-        private bool left;
-        private TriaglesRender triangleRender;
         #endregion
+
+        #region Свойства
+        public Rigidbody PlayerRGB
+        {
+            get
+            {
+                return playerRGB;
+            }
+
+            set
+            {
+                playerRGB = value;
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Инициализация
+        /// </summary>
+        private void Start()
+        {
+            boolsList = new bool[raysCount]; // инициализируем размер массива булей
+            PlayerRGB = GetComponent<Rigidbody>();
+            angle = 360 / raysCount;
+
+            Timing.RunCoroutine(CoroutineRaycastSearching());
+            Timing.RunCoroutine(CoroutineForErrorControlling());
+        }
 
         /// <summary>
         /// Отключить либо включить просчет физики персонажа
         /// </summary>
         public void RigidbodyState(bool flag)
         {
-            playerRGB.detectCollisions = flag;         
+            PlayerRGB.detectCollisions = flag;         
         }
 
         /// <summary>
@@ -47,125 +75,84 @@ namespace PlayerBehaviour
         /// </summary>
         public void RigidbodyDead()
         {
-            playerRGB.detectCollisions = false;
-            playerRGB.useGravity = false;
+            PlayerRGB.detectCollisions = false;
+            PlayerRGB.useGravity = false;
         }
 
         /// <summary>
-        /// Пускать луч в корутине
+        /// Поиск столкновений
         /// </summary>
-        /// <returns></returns>
-        private IEnumerator<float> UpList()
+        private void RaycastSearchIteration()
         {
-            while (playerComponentControl.
-                PlayerConditions.IsAlive)
+            rotaterRaycaster.rotation = Quaternion.Euler(0, 0, 0);
+            for (int i = 0; i < raysCount; i++)
             {
-                if (CheckForRayForward())
+                ray = new Ray(rotaterRaycaster.position
+                    , rotaterRaycaster.forward);
+                if (Physics.Raycast(ray, out rayCastHit, searchingRadius))
                 {
-                    playerComponentControl.PlayerController
-                        .SetStopPositionFromCollision();
-                }
-
-               yield return Timing.WaitForSeconds(frequencyUpdate);
-            }
-        }
-
-        /// <summary>
-        /// Проверить препятствие на своем пути. Простейшая реализация
-        /// </summary>
-        /// <returns></returns>
-        public bool CheckForRayForward()
-        {
-            ray = new Ray(playerModel.position
-                , playerModel.forward);
-            if (Physics.Raycast(ray, out rayCastHit, 1))
-            {
-                if (rayCastHit.collider.tag.Equals(tagNameObstacle)
+                    if (rayCastHit.collider.tag.Equals(tagNameObstacle)
                     || rayCastHit.collider.tag.Equals(tagNameEnemy))
-                {
-                    return true;
+                    {
+                        //Debug.DrawRay(rotaterRaycaster.position, rotaterRaycaster.forward, Color.red, 0.05f);
+                        boolsList[i] = false;
+                    }                 
                 }
+                else
+                {
+                    //Debug.DrawRay(rotaterRaycaster.position, rotaterRaycaster.forward, Color.green, 0.05f);
+                    boolsList[i] = true;
+                }
+                rotaterRaycaster.rotation = Quaternion.Euler(0, rotaterRaycaster.localEulerAngles.y+angle, 0);
             }
+        }
+
+        /// <summary>
+        /// Проверять направление
+        /// </summary>
+        /// <param name="angle"></param>
+        /// <returns></returns>
+        public bool CheckDirection(float angle)
+        {
+            for (int i = 0;i< raysCount; i++)
+                if (this.angle*(i+1) >= angle)
+                    if (i == raysCount - 1)
+                        if (boolsList[0] && boolsList[i])
+                            return true;
+                        else
+                            return false;
+                    else
+                        if (boolsList[i] && boolsList[i+1])
+                            return true;
+                        else
+                            return false;
             return false;
         }
 
         /// <summary>
-        /// Пускаем луч в 4 стороны и проверяем на наличие препятствий.
-        /// Сложная реализация. Не работает.
+        /// Пускать лучи в корутине и искать коллизии
         /// </summary>
         /// <returns></returns>
-        public void CheckDirections()
+        private IEnumerator<float> CoroutineRaycastSearching()
         {
-            forward = true;
-            backForward = true;
-            right = true;
-            left = true;
-           // Debug.DrawRay(playerModel.position, playerModel.forward, Color.green, 0.1f);
-           // Debug.DrawRay(playerModel.position, -playerModel.forward, Color.green, 0.1f);
-           // Debug.DrawRay(playerModel.position, playerModel.right, Color.green, 0.1f);
-           // Debug.DrawRay(playerModel.position, -playerModel.right, Color.green, 0.1f);
-
-            ray = new Ray(playerModel.position
-                , playerModel.forward);
-            if (Physics.Raycast(ray, out rayCastHit, 1))
+            while (playerComponentControl.
+                PlayerConditions.IsAlive)
             {
-                if (rayCastHit.collider.tag.Equals(tagNameObstacle)
-                    || rayCastHit.collider.tag.Equals(tagNameEnemy))
-                {
-                    Debug.DrawRay(playerModel.position, playerModel.forward, Color.red, 0.2f);
-                    forward = false;
-                }
-            }
+                RaycastSearchIteration();
 
-            ray = new Ray(playerModel.position
-                , -playerModel.forward);
-            if (Physics.Raycast(ray, out rayCastHit, 1))
-            {
-                if (rayCastHit.collider.tag.Equals(tagNameObstacle)
-                || rayCastHit.collider.tag.Equals(tagNameEnemy))
-                {
-                    Debug.DrawRay(playerModel.position, -playerModel.forward, Color.red, 0.2f);
-                    backForward = false;
-                }
+                yield return Timing.WaitForSeconds(frequencyUpdate);
             }
-
-            ray = new Ray(playerModel.position
-                , playerModel.right);
-            if (Physics.Raycast(ray, out rayCastHit, 1))
-            {
-                if (rayCastHit.collider.tag.Equals(tagNameObstacle)
-                || rayCastHit.collider.tag.Equals(tagNameEnemy))
-                {
-                    Debug.DrawRay(playerModel.position, playerModel.right, Color.red, 0.2f);
-                    right = false;
-                }
-            }
-
-            ray = new Ray(playerModel.position
-                , -playerModel.right);
-            if (Physics.Raycast(ray, out rayCastHit, 1))
-            {
-                if (rayCastHit.collider.tag.Equals(tagNameObstacle)
-                || rayCastHit.collider.tag.Equals(tagNameEnemy))
-                {
-                    Debug.DrawRay(playerModel.position, -playerModel.right, Color.red, 0.2f);
-                    left = false;
-                }
-            }
-
-            playerComponentControl.PlayerController.SetCorrectDirections
-                (forward, backForward, right, left);
         }
 
-        /// <summary>
-        /// Инициализация
-        /// </summary>
-        private void Start()
+        private IEnumerator<float> CoroutineForErrorControlling()
         {
-            playerObject = transform;
-            playerRGB = playerObject.GetComponent<Rigidbody>();
-            playerModel = playerComponentControl.PlayerModel;
-            Timing.RunCoroutine(UpList());
+            while (true)
+            {
+                if (Vector3.Distance(Vector3.zero, playerComponentControl.PlayerObject.position) >= 18)
+                    playerComponentControl.PlayerObject.position = new Vector3(0, 1, 0);
+
+                yield return Timing.WaitForSeconds(0.5f);
+            }
         }
     }
 }
