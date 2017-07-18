@@ -23,10 +23,19 @@ namespace CraftSystem
         private string headName;
         [SerializeField, Tooltip("Трэил-лента оружия")]
         private TrailRenderer trailRenderer;
-        #endregion
+		private string prefabName;
+		private string linkPrefab = "Prefabs/Weapon/Grip/";
+		#endregion
 
-        #region Свойства
-        public string HeadName
+		#region Свойства
+		public string PrefabName
+		{
+			get
+			{
+				return prefabName + linkPrefab;
+			}
+		}
+		public string HeadName
         {
             get
             {

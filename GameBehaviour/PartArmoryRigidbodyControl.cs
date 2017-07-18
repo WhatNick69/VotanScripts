@@ -30,19 +30,19 @@ namespace GameBehaviour
 
         private void AddForceToObject()
         {
-            this.GetComponent<BoxCollider>().enabled = true;
             rigFromObj.useGravity = true;
             rigFromObj.detectCollisions = true;
             rigFromObj.isKinematic = false;
             rigFromObj.constraints = RigidbodyConstraints.None;
-            rigFromObj.AddForce(new Vector3(LibraryStaticFunctions.rnd.Next(0, 50),
-                LibraryStaticFunctions.rnd.Next(0, 50),
-                LibraryStaticFunctions.rnd.Next(0, 50)));
+            rigFromObj.AddForce(new Vector3(LibraryStaticFunctions.GetPlusMinusValue(75),
+                LibraryStaticFunctions.rnd.Next(40, 100),
+                LibraryStaticFunctions.GetPlusMinusValue(75)));
         }
 
         private IEnumerator<float> CoroutineForDisableObject()
         {
-
+            yield return Timing.WaitForSeconds(0.3f);
+            GetComponent<BoxCollider>().enabled = true;
             yield return Timing.WaitForSeconds(LibraryStaticFunctions.rnd.Next(5, 10));
             gameObject.SetActive(false);
         }

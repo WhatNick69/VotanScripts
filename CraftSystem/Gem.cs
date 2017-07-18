@@ -16,10 +16,19 @@ namespace CraftSystem
         private float gemPower;
         [SerializeField,Tooltip("Имя камня")]
         private string gemName;
-        #endregion
+		private string prefabName;
+		private string linkPrefab = "Prefabs/Weapon/Grip/";
+		#endregion
 
-        #region Свойства
-        public DamageType DamageTypeGem
+		#region Свойства
+		public string PrefabName
+		{
+			get
+			{
+				return prefabName + linkPrefab;
+			}
+		}
+		public DamageType DamageTypeGem
         {
             get
             {

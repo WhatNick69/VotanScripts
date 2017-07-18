@@ -448,6 +448,6 @@ namespace PlayerBehaviour
     /// </summary>
     public enum LenghtGrip
     {
-        Longest, Long, Middle, Short
+        Long, Middle, Short
     }
 }

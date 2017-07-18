@@ -3,28 +3,41 @@ using UnityEngine;
 
 namespace CraftSystem
 {
-    /// <summary>
-    /// Ручка оружия
-    /// </summary>
-    public class Grip 
-        : MonoBehaviour
-    {
-        #region Переменные
-        [SerializeField, Range(1, 25f),Tooltip("Вес ручки")]
-        private float gripWeight;
-        [SerializeField, Range(1, 100f), Tooltip("Защита")]
-        private float gripDefence;
-        [SerializeField, Range(0, 75f), Tooltip("Бонус к скорости вращения за счет ручки")]
-        private float bonusSpinSpeedFromGrip;
+	/// <summary>
+	/// Ручка оружия
+	/// </summary>
+	public class Grip
+		: MonoBehaviour
+	{
+		#region Переменные
+		[SerializeField, Range(1, 25f), Tooltip("Вес ручки")]
+		private float gripWeight;
+		[SerializeField, Range(1, 100f), Tooltip("Защита")]
+		private float gripDefence;
+		[SerializeField, Range(0, 75f), Tooltip("Бонус к скорости вращения за счет ручки")]
+		private float bonusSpinSpeedFromGrip;
 
-        [SerializeField, Tooltip("Тип рукояти")]
-        private LenghtGrip gripType;
-        [SerializeField,Tooltip("Название рукояти")]
-        private string gripName;
+		[SerializeField, Tooltip("Тип рукояти")]
+		private LenghtGrip gripType;
+		[SerializeField, Tooltip("Название рукояти")]
+		private string gripName;
+		[SerializeField]
+		private string prefabName; // Задать ,только, имя префаба
 
-        #endregion
+		private string linkPrefab = "Prefabs/Weapon/Grip/";
+		#endregion
 
-        #region Свойства 
+		#region Свойства 
+		/// <summary>
+		/// Возвращает ссылку на префаб обьекта
+		/// </summary>
+		public string PrefabName
+		{
+			get
+			{
+				return linkPrefab + prefabName;
+			}
+		}
         public string GripName
         {
             get

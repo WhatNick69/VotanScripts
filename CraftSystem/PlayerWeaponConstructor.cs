@@ -34,17 +34,14 @@ namespace CraftSystem
 		private Vector3 headRotate = new Vector3(35, 0, 0);
 		private Vector3 gripPoint;
 
-		private Vector3 shortGripPosition = Vector3.zero;
-        private Vector3 shortGripRotate = new Vector3(35, 0, 0);
+		private Vector3 shortGripPosition = new Vector3(0, 0, 0);
+		private Vector3 shortGripRotate = new Vector3(0, 0, 0);
 
-		private Vector3 midleGripPosition = new Vector3(-30, 0, 0);
-		private Vector3 midleGripRotate = new Vector3(35, 0, 0);
+		private Vector3 midleGripPosition = new Vector3(2, 0, 0);
+		private Vector3 midleGripRotate = new Vector3(0, 0, 0);
 
-        private Vector3 longGripPosition = Vector3.zero;
-		private Vector3 longGripRotate = new Vector3(35, 0, 0);
-
-		private Vector3 verilongGripPosition = Vector3.zero;
-        private Vector3 verilongGripRotate = new Vector3(35, 0, 0);
+		private Vector3 longGripPosition = new Vector3(4, 0, 0);
+		private Vector3 longGripRotate = new Vector3(0, 0, 0);
 
 		private int gripType;
         #endregion
@@ -58,22 +55,19 @@ namespace CraftSystem
 			{
 				case LenghtGrip.Short:
 					gripPoint = shortGripPosition;
-					headPosition = new Vector3(); //
-					attackPoint = new Vector3(-0.6f, 10.5f, 50);
+					headPosition = new Vector3(-62,0,0); //
+					attackPoint = new Vector3(-65, 0, 0);
 					break;
 				case LenghtGrip.Middle:
 					gripPoint = midleGripPosition;
-					headPosition = new Vector3(-60, 0, 0);
-					attackPoint = new Vector3(-60, 0, 0);
+					headPosition = new Vector3(-67, 0, 0);
+					attackPoint = new Vector3(-70, 0, 0);
 					break;
 				case LenghtGrip.Long:
 					gripPoint = longGripPosition;
-					headPosition = new Vector3(); //			
-					break;
-				case LenghtGrip.Longest:
-					gripPoint = verilongGripPosition;
-					headPosition = new Vector3(); //
-					
+					headPosition = new Vector3(-72,0,0); //	
+                    Debug.Log("AZAZA");
+					attackPoint = new Vector3(-75, 0, 0);
 					break;
 				default:
 					gripPoint = Vector3.zero;
@@ -112,9 +106,9 @@ namespace CraftSystem
         private void Awake()
 		{
 			plComponents = GameObject.FindWithTag("Player").GetComponent<PlayerComponentsControl>();
-			grip = Instantiate(GameObject.Find("GetWeaponPrefabs").GetComponent<WeaponCraft>().GetGripPrafab());
-			head = Instantiate(GameObject.Find("GetWeaponPrefabs").GetComponent<WeaponCraft>().GetHeadPrafab());
-			gem = Instantiate(GameObject.Find("GetWeaponPrefabs").GetComponent<WeaponCraft>().GetGemPrafab());
+			grip = Instantiate(GameObject.Find("GetWeaponPrefabs").GetComponent<WeaponPrefabs>().Grip);
+			head = Instantiate(GameObject.Find("GetWeaponPrefabs").GetComponent<WeaponPrefabs>().Head);
+			gem = Instantiate(GameObject.Find("GetWeaponPrefabs").GetComponent<WeaponPrefabs>().Gem);
 
 			gripClass = grip.GetComponent<Grip>();
 			headClass = head.GetComponent<Head>();
@@ -135,7 +129,7 @@ namespace CraftSystem
 		    gem.transform.parent = weapon.transform;
 		    gem.transform.localPosition = headPosition;
 			gem.transform.localEulerAngles = headRotate;
-		    gem.transform.localScale = new Vector3(1, 1, 1);
+	        gem.transform.localScale = new Vector3(1, 1, 1);
 
 			plComponents.PlayerAttack.SetPlayerGunLocalPoint(attackPoint);
 			SetWeaponStats();
