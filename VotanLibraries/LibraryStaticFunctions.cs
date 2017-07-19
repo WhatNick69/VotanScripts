@@ -1,4 +1,5 @@
 ﻿using PlayerBehaviour;
+using System;
 using UnityEngine;
 
 namespace VotanLibraries
@@ -12,7 +13,10 @@ namespace VotanLibraries
         public static System.Random rnd = new System.Random();
 
         /// <summary>
-        /// В указанном диапазоне возвращает значение
+        /// В указанном диапазоне возвращает значение.
+        /// 
+        /// Текущая реализация: если dmg=10, а range=0.1, то
+        /// 0.9 - 1.1
         /// </summary>
         /// <param name="dmg"></param>
         /// <param name="range"></param>
@@ -27,7 +31,10 @@ namespace VotanLibraries
         }
 
         /// <summary>
-        /// Вернуть значение + либо -
+        /// Вернуть значение +valueMax либо -valueMax.
+        /// 
+        /// Текущая реализация: если valueMax=10, то
+        /// -10.0 - +10.0
         /// </summary>
         /// <param name="valueMax"></param>
         /// <returns></returns>
@@ -37,23 +44,49 @@ namespace VotanLibraries
         }
 
         /// <summary>
-        /// Случайная позиция врага во время отдыха
-        /// </summary>
-        /// <param name="radius"></param>
-        /// <returns></returns>
-        public static float GetRandomAxisOfEnemyRest(float radius)
-        {
-            return (float)(rnd.NextDouble()* (radius*2))-radius;
-        }
-
-        /// <summary>
         /// Вычисляет вероятность возникновения эффекта заморозки 
-        /// и возвращает true в случае успеха
+        /// и возвращает true в случае успеха.
+        /// 
+        /// Текущая реализация: если gemPower=25, то
+        /// зерно МЕНЬШЕ ИЛИ РАВНо 0.16
         /// </summary>
         /// <returns></returns>
         public static bool MayableToBeFreezy(float gemPower)
         {
             return rnd.NextDouble() <= (gemPower / 220)+0.05f ? true : false;
+        }
+
+        /// <summary>
+        /// Время горения.
+        /// 
+        /// Текущая реализация: 1 + (СИЛАГ_ГЕМА/20) +- 10%
+        /// 0.945 - 6.6 секунды
+        /// </summary>
+        /// <param name="weapon"></param>
+        /// <returns></returns>
+        public static float TimeToBurning(IWeapon weapon)
+        {
+            return GetRangeValue(1 + (weapon.GemPower / 20), 0.1f);
+        }
+
+        /// <summary>
+        /// Получить урон от огненного оружия
+        /// 
+        /// Текущая реализация: УРОН/10 * (1+СИЛА_ГЕМА/200)
+        /// </summary>
+        /// <param name="damage"></param>
+        /// <param name="weapon"></param>
+        /// <returns></returns>
+        public static float FireDamagePerPeriod(float damage, IWeapon weapon)
+        {
+            return (damage / 10) * (1 + (weapon.GemPower / 200));
+        }
+
+        public static int GetCountOfParticleSystemElements(float damage)
+        {
+            if (damage > 50)
+                damage = 50;
+            return 5 + Convert.ToInt32(damage / 1.666f);
         }
 
         /// <summary>
@@ -71,7 +104,7 @@ namespace VotanLibraries
 
         /// <summary>
         /// Получаем вес двух предметов. 
-        /// Текущая реализация: сложение
+        /// Текущая реализация: сложение.
         /// 
         /// Диапазон значений: 0 - 100 
         /// </summary>
@@ -84,17 +117,17 @@ namespace VotanLibraries
         }
 
         /// <summary>
-        /// Зависимость скорости передвижения персонажа от веса оружия
+        /// Зависимость скорости передвижения персонажа от веса оружия.
         /// </summary>
         /// <param name="weight"></param>
         /// <returns></returns>
         public static float DependenceMoveSpeedAndWeaponWeight(float weight)
         {
-            return 1.5f + (0.7f-(weight *0.007f));
+            return 1.5f + (0.5f-(weight *0.005f));
         }
 
         /// <summary>
-        /// Зависимость скорости поворота персонажа от веса оружия
+        /// Зависимость скорости поворота персонажа от веса оружия.
         /// </summary>
         /// <param name="weight"></param>
         /// <returns></returns>
@@ -104,8 +137,8 @@ namespace VotanLibraries
         }
 
         /// <summary>
-        /// Получаем общую скорость вращения оружием
-        /// Текущая реализация: 20 + (40-(WEIGHT)/2.5) + (A+B)/2.5
+        /// Получаем общую скорость вращения оружием.
+        /// Текущая реализация: 20 + (40-(WEIGHT)/2.5) + (A+B)/2.5.
         /// 
         /// Диапазон значений: 20 - 100 
         /// </summary>
@@ -120,7 +153,7 @@ namespace VotanLibraries
 
         /// <summary>
         /// Получаем урон оружием.
-        /// Текущая реализация: УРОН * (1+(ВЕС/10))
+        /// Текущая реализация: УРОН * (1+(ВЕС/10)).
         /// 
         /// Диапазон значений: 1.2 - 1100
         /// </summary>
@@ -133,9 +166,9 @@ namespace VotanLibraries
         }
 
         /// <summary>
-        /// Рассчет урона при атаке по врагу
+        /// Рассчет урона при атаке по врагу.
         /// 
-        /// Если это кручение: умножить урон на 0.5*(СКОРОСТЬ/ОБЩАЯСКОРОСТЬ)
+        /// Если это кручение: умножить урон на 0.5*(СКОРОСТЬ/ОБЩАЯСКОРОСТЬ).
         /// Если это рывок: умножить атаку на 2
         /// </summary>
         /// <param name="damage"></param>

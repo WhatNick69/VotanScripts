@@ -381,7 +381,7 @@ namespace PlayerBehaviour
         /// <returns></returns>
         public IEnumerator<float> CoroutineDoSlowMotionSpinSpeed()
         {
-			float spSpeed = spinSpeed * (1 - (Weight / 100));
+			float spSpeed = spinSpeed * (0.5f + Weight / 200);
 
             spinSpeed -= spSpeed;
          

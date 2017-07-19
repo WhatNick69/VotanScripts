@@ -9,7 +9,7 @@ using VotanLibraries;
 namespace GameBehaviour
 {
     /// <summary>
-    /// Зажечь электрический эффект
+    /// Менеджер электрического эффекта
     /// </summary>
     class ElectricEffectManager
         : MonoBehaviour, IElectricEffect
@@ -185,7 +185,7 @@ namespace GameBehaviour
                                 ChangeValues();
                                 if (abstractEnemyTarget != null)
                                     abstractEnemyTarget.EnemyConditions.
-                                    GetDamageLongDistance(damage * 0.75f, gemPower,
+                                    GetDamageElectricity(damage * 0.75f, gemPower,
                                     DamageType.Electric, weapon);
                             }
                         }

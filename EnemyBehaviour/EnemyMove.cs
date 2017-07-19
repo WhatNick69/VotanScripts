@@ -345,8 +345,8 @@ namespace EnemyBehaviour
                 abstractEnemy.EnemyAnimationsController.
                     SetSpeedAnimationByRunSpeed(AgentSpeed/3);
                 randomPosition.x = LibraryStaticFunctions.
-                    GetRandomAxisOfEnemyRest(randomRadius);
-                randomPosition.z = LibraryStaticFunctions.GetRandomAxisOfEnemyRest
+                    GetPlusMinusValue(randomRadius);
+                randomPosition.z = LibraryStaticFunctions.GetPlusMinusValue
                     (randomRadius - Math.Abs(randomPosition.x));
                 agent.SetDestination(randomPosition);
             }

@@ -146,22 +146,9 @@ namespace VotanInterfaces
             DamageType dmgType, IWeapon weapon);
 
         /// <summary>
-        /// Получать огненный урон в течении некоторого времени
-        /// </summary>
-        /// <param name="damage"></param>
-        void RunCoroutineForGetFireDamage(float damage);
-
-        /// <summary>
         /// Получить ледяной удар и стать медленнее
         /// </summary>
         void RunCoroutineForFrozenDamage(IWeapon weapon);
-
-        /// <summary>
-        /// Корутина на огненный удар
-        /// </summary>
-        /// <param name="damage"></param>
-        /// <returns></returns>
-        IEnumerator<float> CoroutineForFireDamage(float damage);
 
         /// <summary>
         /// Корутина на ледяной удар
@@ -219,5 +206,12 @@ namespace VotanInterfaces
         /// <param name="gemPower"></param>
         /// <param name="weapon"></param>
         void RunCoroutineForGetElectricDamage(float damage, float gemPower, IWeapon weapon);
+
+        /// <summary>
+        /// Запустить огненный эффект
+        /// </summary>
+        /// <param name="damage"></param>
+        /// <param name="weapon"></param>
+        void RunFireDamage(float damage, IWeapon weapon);
     }
 }

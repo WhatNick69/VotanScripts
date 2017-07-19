@@ -36,6 +36,6 @@ namespace VotanInterfaces
         /// Зажечь огненный эффект
         /// </summary>
         /// <param name="time"></param>
-        void EventEffect(float time, Transform position);
+        void EventEffect(float damage,IWeapon weapon);
     }
 }
