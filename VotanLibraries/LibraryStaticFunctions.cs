@@ -191,6 +191,22 @@ namespace VotanLibraries
         }
 
         /// <summary>
+        /// Возвращает значение, которое лежит в границах от и до.
+        /// 
+        /// Текущая реализация: ЛЕВ + ((ПРАВ-ЛЕВ)*ЧАСТНОЕ).
+        /// Если: a=1, b=3, frequent=0.5.
+        /// Тогда: return 2
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="frequent"></param>
+        /// <returns></returns>
+        public static float GetValueByFrequent(float a, float b, float frequent)
+        {
+            return a + ((b - a) * frequent);
+        }
+
+        /// <summary>
         /// Получить цвет трэил-ленты, на основе силы камня
         /// </summary>
         /// <param name="gemPower"></param>

@@ -381,7 +381,11 @@ namespace PlayerBehaviour
         /// <returns></returns>
         public IEnumerator<float> CoroutineDoSlowMotionSpinSpeed()
         {
+
 			float spSpeed = spinSpeed * (0.5f + Weight / 200);
+
+            if (spinSpeed / originalSpinSpeed >= 0.25f)
+                playerComponentsControl.PlayerCameraSmooth.DoNoize(spinSpeed / originalSpinSpeed);
 
             spinSpeed -= spSpeed;
          

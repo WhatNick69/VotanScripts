@@ -62,7 +62,6 @@ namespace GameBehaviour
             {
                 damagePerTime = 150;
             }
-            Debug.Log(damagePerTime);
             particleSystem.emissionRate = 
                 LibraryStaticFunctions.GetCountOfParticleSystemElements(damagePerTime);
         }
@@ -87,7 +86,8 @@ namespace GameBehaviour
                 yield return Timing.WaitForSeconds(0.25f);
                 i++;
             }
-            particleSystem.Stop();
+            if (particleSystem)
+                particleSystem.Stop();
 
             damagePerTime = 0;
             isBurning = false;

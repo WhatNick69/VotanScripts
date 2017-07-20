@@ -1,6 +1,7 @@
 ﻿using MovementEffects;
 using System.Collections.Generic;
 using UnityEngine;
+using VotanLibraries;
 
 namespace PlayerBehaviour
 {
@@ -34,6 +35,13 @@ namespace PlayerBehaviour
         private Transform playerObjectTransform;
         private bool isUpdating;
         private bool isNormalized;
+
+        private float noiseMoveUpdateSpeed;
+        private bool isNoising;
+        private float noiseRotateUpdateSpeed;
+
+        [SerializeField]
+        private float multiplierNoise;
         #endregion
 
         #region Свойства
@@ -61,7 +69,74 @@ namespace PlayerBehaviour
                 playerComponentsControl.PlayerObject;
             cameraTransform =
                 playerComponentsControl.PlayerCamera.transform;
+            followMoveSpeed *= Time.deltaTime;
+            followRotateSpeed *= Time.deltaTime;
+
+            noiseMoveUpdateSpeed = followMoveSpeed * multiplierNoise;
+            noiseRotateUpdateSpeed = followRotateSpeed * multiplierNoise;
             Timing.RunCoroutine(CoroutineGetPositionOfPlayer());
+        }
+
+        public void DoNoize(float coeff)
+        {
+            Timing.RunCoroutine(CoroutineForNoizeCamera(coeff));
+        }
+
+        public void GetNoizeGamage(float coeff)
+        {
+            Timing.RunCoroutine(CoroutineForDamageNoize(coeff));
+        }
+
+        private IEnumerator<float> CoroutineForDamageNoize(float coeff)
+        {
+            if (!isNoising)
+            {
+                Debug.Log("NOIZE_DAMAGE");
+                noiseMoveUpdateSpeed = followMoveSpeed * multiplierNoise;
+                noiseRotateUpdateSpeed = followRotateSpeed * multiplierNoise;
+
+                isNoising = true;
+                float temp = followMoveSpeed;
+                float temp2 = followRotateSpeed;
+                followMoveSpeed = noiseMoveUpdateSpeed;
+                followRotateSpeed = noiseRotateUpdateSpeed;
+                float y = 1 + coeff;
+
+                standartVectorForCamera
+                    = new Vector3(LibraryStaticFunctions.GetPlusMinusValue(2) * y, 9 * y, -8 *y);
+                yield return Timing.WaitForSeconds(0.25f);
+
+                standartVectorForCamera = new Vector3(0, 9, -8);
+                yield return Timing.WaitForSeconds(0.25f);
+                followMoveSpeed = temp;
+                followRotateSpeed = temp2;
+                isNoising = false;
+            }
+        }
+
+        private IEnumerator<float> CoroutineForNoizeCamera(float coeff)
+        {
+            if (!isNoising)
+            {
+                noiseMoveUpdateSpeed = followMoveSpeed * multiplierNoise;
+                noiseRotateUpdateSpeed = followRotateSpeed * multiplierNoise;
+
+                isNoising = true;
+                float temp = followMoveSpeed;
+                float temp2 = followRotateSpeed;
+                followMoveSpeed = noiseMoveUpdateSpeed;
+                followRotateSpeed = noiseRotateUpdateSpeed;
+                float y = 1-((coeff - 0.25f)/2);
+
+                standartVectorForCamera
+                    = new Vector3(LibraryStaticFunctions.GetPlusMinusValue(2)*y, 9*(1+(y/3)),-8*(1+(y/3)));
+                yield return Timing.WaitForSeconds(1);
+
+                standartVectorForCamera = new Vector3(0, 9, -8);
+                followMoveSpeed = temp;
+                followRotateSpeed = temp2;
+                isNoising = false;
+            }
         }
 
         /// <summary>
@@ -79,7 +154,10 @@ namespace PlayerBehaviour
         public void CheckVectorForCamera()
         {
             if (standartVectorForCamera.y != 9)
+            {
+                Debug.Log("Нормализация");
                 isNormalized = false;
+            }
         }
 
         /// <summary>
@@ -91,11 +169,11 @@ namespace PlayerBehaviour
             {
                 cameraTransform.rotation =
                     Quaternion.Slerp(cameraTransform.rotation
-                    , targetRotation, followRotateSpeed* Time.deltaTime);
+                    , targetRotation, followRotateSpeed);
 
                 cameraTransform.position =
                     Vector3.Lerp(cameraTransform.position,
-                    targetPosition, followMoveSpeed * Time.deltaTime);
+                    targetPosition, followMoveSpeed);
             }
         }
 

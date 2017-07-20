@@ -166,8 +166,12 @@ namespace PlayerBehaviour
         {
             if (mayToGetDamage)
             {
+                playerComponentsControl.PlayerCameraSmooth.GetNoizeGamage(damageValue / initialisatedHealthValue);
                 if (!playerComponentsControl.PlayerArmory.IsAlive)
                 {
+                    playerComponentsControl.PlayerBloodInterfaceEffect.
+                        EventBloodEyesEffect(healthValue/ initialisatedHealthValue);
+                    Debug.Log("HIT");
                     if (playerComponentsControl.PlayerFight.IsDefensing)
                     {
                         HealthValue -= LibraryStaticFunctions.GetRangeValue(damageValue, 0.1f) *
@@ -247,7 +251,6 @@ namespace PlayerBehaviour
         /// <returns></returns>
         public IEnumerator<float> MayToGetDamage()
         {
-            Debug.Log("Мы получили урон!");
             playerComponentsControl.PlayerFight.IsDamaged = true;
             playerComponentsControl.PlayerAnimationsController
                 .HighSpeedAnimation();

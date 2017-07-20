@@ -30,6 +30,8 @@ namespace PlayerBehaviour
         private PlayerWeapon playerWeapon;
         [SerializeField, Tooltip("Плавный поворот камеры")]
         private PlayerCameraSmooth playerCameraSmooth;
+        [SerializeField, Tooltip("Контроллер эффекта кровавого затемнения")]
+        private PlayerBloodInterfaceEffect playerBloodInterfaceEffect;
         [SerializeField, Tooltip("Аниматор игрока")]
         private PlayerAnimationsController playerAnimationsController;
         [SerializeField, Tooltip("Родитель игрока")]
@@ -207,6 +209,19 @@ namespace PlayerBehaviour
             set
             {
                 playerCollision = value;
+            }
+        }
+
+        public PlayerBloodInterfaceEffect PlayerBloodInterfaceEffect
+        {
+            get
+            {
+                return playerBloodInterfaceEffect;
+            }
+
+            set
+            {
+                playerBloodInterfaceEffect = value;
             }
         }
         #endregion

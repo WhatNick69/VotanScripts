@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using VotanLibraries;
-using System;
 using GameBehaviour;
 
 namespace PlayerBehaviour
@@ -13,12 +12,16 @@ namespace PlayerBehaviour
     public class PlayerArmory 
         : AbstractObjectConditions
     {
+        #region Переменные
         [SerializeField,Tooltip("Шлем")]
-        private GameObject helmet;
+        private PartArmoryManager helmet;
         [SerializeField, Tooltip("Части кирасы. Первый элемент - главный")]
-        private List<GameObject> kirasaParts;
+        private List<PartArmoryManager> kirasaParts;
         [SerializeField, Tooltip("Части щита. Первый элемент - главный")]
-        private List<GameObject> shieldParts;
+        private List<PartArmoryManager> shieldParts;
+
+        [SerializeField, Tooltip("Позиции")]
+        private List<Transform> armoryPosition;
 
         private bool isHelmetDeactive;
         private bool isKirasaDeactive;
@@ -27,11 +30,53 @@ namespace PlayerBehaviour
         private float shieldPartArmory;
 
         private float tempArmory;
+        #endregion
+
+        #region Свойства и доступы
+        public PartArmoryManager Helmet
+        {
+            get
+            {
+                return helmet;
+            }
+
+            set
+            {
+                helmet = value;
+            }
+        }
+
+        public List<PartArmoryManager> KirasaParts
+        {
+            get
+            {
+                return kirasaParts;
+            }
+
+            set
+            {
+                kirasaParts = value;
+            }
+        }
+
+        public List<PartArmoryManager> ShieldParts
+        {
+            get
+            {
+                return shieldParts;
+            }
+
+            set
+            {
+                shieldParts = value;
+            }
+        }
+        #endregion
 
         /// <summary>
         /// Инициализация
         /// </summary>
-        private void Start()
+        private void Start() // --------------главный метод--------------------
         {
             IsAlive = true;
             colorChannelGreen = 1;
@@ -41,6 +86,33 @@ namespace PlayerBehaviour
 
             kirasaPartArmory = 0.4f / kirasaParts.Count;
             shieldPartArmory = 0.4f / shieldParts.Count;
+
+            SwitchPositionInCuirassList();
+        }
+
+        public Transform GetMyParent(int i)
+        {
+            return armoryPosition[i];
+        }
+
+        /// <summary>
+        /// Ставит на нулевую позицию наплечник
+        /// </summary>
+        private void SwitchPositionInCuirassList()
+        {
+            int tempNumber = 0;
+            PartArmoryManager tempGameObject = KirasaParts[0] ;
+            for (int i = 0;i<kirasaParts.Count;i++)
+            {
+                if (kirasaParts[i].IsMainPartInArray)
+                {
+                    tempNumber = i;
+                    break;
+                }
+
+            }
+            kirasaParts[0] = kirasaParts[tempNumber];
+            kirasaParts[tempNumber] = tempGameObject;
         }
 
         /// <summary>
@@ -86,8 +158,7 @@ namespace PlayerBehaviour
                 if (tempArmory >= 0.2f)
                 {
                     isHelmetDeactive = true;
-                    helmet.GetComponent<PartArmoryRigidbodyControl>().FireEvent();
-                    //helmet.SetActive(false);
+                    helmet.FireEvent();
                     tempArmory -= 0.2f;
                 }
                 else
@@ -115,7 +186,7 @@ namespace PlayerBehaviour
                             break;
                         }
 
-                        shieldParts[a].GetComponent<PartArmoryRigidbodyControl>().FireEvent();
+                        shieldParts[a].FireEvent();
                         shieldParts.RemoveAt(a);
                         tempArmory -= shieldPartArmory;
                     }
@@ -141,12 +212,21 @@ namespace PlayerBehaviour
                             break;
                         }
 
-                        kirasaParts[a].GetComponent<PartArmoryRigidbodyControl>().FireEvent();
+                        kirasaParts[a].FireEvent();
                         kirasaParts.RemoveAt(a);
                         tempArmory -= kirasaPartArmory;
                     }
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Тип брони. Перечислитель.
+    /// Шлем, кираса или щит.
+    /// </summary>
+    public enum ArmoryType
+    {
+        Helmet, Cuirass,Shield
     }
 }

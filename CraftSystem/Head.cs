@@ -13,7 +13,7 @@ namespace CraftSystem
         [SerializeField, Range(1, 75f),Tooltip("Вес головной части")]
         private float headWeight;
         [SerializeField,Range(1,100f),Tooltip("Базовое значение урона оружием")]
-        private int damageBase;
+        private float damageBase;
         [SerializeField, Range(0, 25f), Tooltip("Бонус к скорости вращения за счет головной части")]
         private float bonusSpinSpeedFromHead;
 
@@ -87,7 +87,7 @@ namespace CraftSystem
             }
         }
 
-        public int DamageBase
+        public float DamageBase
         {
             get
             {
