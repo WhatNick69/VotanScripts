@@ -81,8 +81,14 @@ namespace GameBehaviour
 
             while (i < maxI)
             {
+                if (abstractEnemy.EnemyConditions.HealthValue <= 0) yield break;
                 abstractEnemy.EnemyConditions.HealthValue -= 
                     LibraryStaticFunctions.GetRangeValue(damagePerTime, 0.05f);
+                if (abstractEnemy.EnemyConditions.HealthValue <= 0)
+                {
+                    abstractEnemy.ScoreAddingEffect.EventEffect(weapon);
+                    yield break;
+                }
                 yield return Timing.WaitForSeconds(0.25f);
                 i++;
             }

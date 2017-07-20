@@ -252,6 +252,7 @@ namespace EnemyBehaviour
                 Timing.RunCoroutine(CoroutineForGetDamage());
                 dmg = GetDamageWithResistance(dmg, gemPower, weapon);
                 //Debug.Log("Ближняя атака");
+                if (HealthValue <= 0) return;
                 HealthValue -=
                     LibraryStaticFunctions.GetRangeValue(dmg, 0.1f);
                 if (HealthValue <= 0)
@@ -274,6 +275,7 @@ namespace EnemyBehaviour
             Timing.RunCoroutine(CoroutineForGetDamage(true));
             dmg = GetDamageWithResistance(dmg, gemPower, weapon);
             //Debug.Log("Дальняя атака");
+            if (HealthValue <= 0) return;
             HealthValue -=
                 LibraryStaticFunctions.GetRangeValue(dmg, 0.1f);
             if (HealthValue <= 0)
