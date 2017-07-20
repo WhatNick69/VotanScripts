@@ -1,4 +1,5 @@
-﻿using EnemyBehaviour;
+﻿using System;
+using EnemyBehaviour;
 using UnityEngine;
 using VotanInterfaces;
 
@@ -26,6 +27,7 @@ namespace AbstractBehaviour
         protected IIceEffect iceEffectManager;
         protected IFireEffect fireEffectManager;
         protected IElectricEffect electricEffectManager;
+        protected IScoreAddingEffect scoreAddingEffect;
         #endregion
 
         #region Свойства
@@ -130,6 +132,19 @@ namespace AbstractBehaviour
             set
             {
                 enemyMove = value;
+            }
+        }
+
+        public IScoreAddingEffect ScoreAddingEffect
+        {
+            get
+            {
+                return scoreAddingEffect;
+            }
+
+            set
+            {
+                scoreAddingEffect = value;
             }
         }
         #endregion

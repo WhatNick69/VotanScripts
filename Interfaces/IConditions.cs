@@ -143,7 +143,7 @@ namespace VotanInterfaces
         /// <param name="typeOfDamage"></param>
         /// <returns></returns>
         float GetDamageWithResistance(float dmg, float gemPower, 
-            DamageType dmgType, IWeapon weapon);
+            IWeapon weapon);
 
         /// <summary>
         /// Получить ледяной удар и стать медленнее
@@ -178,7 +178,7 @@ namespace VotanInterfaces
         /// <param name="dmg"></param>
         /// <param name="dmgType"></param>
         /// <param name="weapon"></param>
-        void GetDamage(float dmg, float gemPower, DamageType dmgType, IWeapon weapon);
+        void GetDamage(float dmg, float gemPower, IWeapon weapon);
 
         /// <summary>
         /// Корутина на получение урона от персонажа.

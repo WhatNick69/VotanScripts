@@ -22,6 +22,8 @@ namespace GameBehaviour
         private float timeToInstantiate;
         [SerializeField, Tooltip("Random радиус"), Range(3, 25)]
         private float randomRadius;
+        [SerializeField, Tooltip("Количество одновременных противников"), Range(5, 50)]
+        private float oneTimeEnemies;
 
         [SerializeField]
         private Transform respawnPoint;
@@ -35,10 +37,17 @@ namespace GameBehaviour
             int k = 0;
             while (k < players)
             {
-                yield return Timing.WaitForSeconds(timeToInstantiate);
+                if (StaticStorageWithEnemies.GetCountListOfEnemies() <= oneTimeEnemies)
+                {
+                    yield return Timing.WaitForSeconds(timeToInstantiate);
 
-                InstantiateOnServer(k);
-				k++;
+                    InstantiateOnServer(k);
+                    k++;
+                }
+                else
+                {
+                    yield return Timing.WaitForSeconds(timeToInstantiate);
+                }
             }
         }
 

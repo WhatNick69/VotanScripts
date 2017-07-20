@@ -94,19 +94,23 @@ namespace EnemyBehaviour
             yield return Timing.WaitForSeconds(0.5f);
             if (this == null) yield break;
 
-            Vector3 newPosition =
-                new Vector3(transformForDeadYNormalizing.position.x, 
-                transformForDeadYNormalizing.position.y - 0.8f,
-                transformForDeadYNormalizing.position.z);
-
-            while (i < 15)
+            while (i < 17)
             {
                 i++;
                 if (this == null) yield break;
 
-                transformForDeadYNormalizing.position =
-                Vector3.Lerp(transformForDeadYNormalizing.position,
-                newPosition, Time.deltaTime*2);
+                transformForDeadYNormalizing.Translate(0, -0.035f, 0);
+                yield return Timing.WaitForSeconds(0.01f);
+            }
+            yield return Timing.WaitForSeconds(3);
+
+            i = 0;
+            while (i < 20)
+            {
+                i++;
+                if (this == null) yield break;
+
+                transformForDeadYNormalizing.Translate(0, -0.05f, 0);
                 yield return Timing.WaitForSeconds(0.01f);
             }
         }

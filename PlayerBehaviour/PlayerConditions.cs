@@ -188,6 +188,7 @@ namespace PlayerBehaviour
                 }
                 else
                 {
+                    Debug.Log("HIT");
                     if (playerComponentsControl.PlayerFight.IsDefensing)
                     {
                         playerComponentsControl.PlayerArmory

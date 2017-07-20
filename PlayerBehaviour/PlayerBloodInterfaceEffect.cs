@@ -66,7 +66,7 @@ namespace PlayerBehaviour
                 image.color = Color.LerpUnclamped(image.color, whiteColor, Time.deltaTime*10);
                 if (image.color.a >= 0.95f)
                 {
-                    Debug.Log("MAX_HIT");
+                    //Debug.Log("MAX_HIT");
                     isMaximum = true;
                 }
             }

@@ -212,10 +212,10 @@ namespace EnemyBehaviour
         /// <param name="typeOfDamage"></param>
         /// <returns></returns>
         public float GetDamageWithResistance(float dmg, float gemPower,
-            DamageType dmgType, IWeapon weapon)
+            IWeapon weapon)
         {
             float damage = 0;
-            switch (dmgType)
+            switch (weapon.AttackType)
             {
                 case DamageType.Electric:
                     RunCoroutineForGetElectricDamage(dmg, gemPower, weapon);
@@ -244,16 +244,20 @@ namespace EnemyBehaviour
         /// </summary>
         /// <param name="dmg"></param>
         public virtual void GetDamage(float dmg, float gemPower
-            , DamageType dmgType, IWeapon weapon)
+            , IWeapon weapon)
         {
             if (isMayGetDamage)
             {
                 weapon.WhileTime();
                 Timing.RunCoroutine(CoroutineForGetDamage());
-                dmg = GetDamageWithResistance(dmg, gemPower, dmgType, weapon);
+                dmg = GetDamageWithResistance(dmg, gemPower, weapon);
                 //Debug.Log("Ближняя атака");
                 HealthValue -=
                     LibraryStaticFunctions.GetRangeValue(dmg, 0.1f);
+                if (HealthValue <= 0)
+                {
+                    enemyAbstract.ScoreAddingEffect.EventEffect(weapon);
+                }
             }
         }
 
@@ -265,13 +269,17 @@ namespace EnemyBehaviour
         /// <param name="dmgType"></param>
         /// <param name="weapon"></param>
         public void GetDamageElectricity(float dmg, float gemPower
-            , DamageType dmgType, IWeapon weapon)
+            , IWeapon weapon)
         {
             Timing.RunCoroutine(CoroutineForGetDamage(true));
-            dmg = GetDamageWithResistance(dmg, gemPower, dmgType, weapon);
+            dmg = GetDamageWithResistance(dmg, gemPower, weapon);
             //Debug.Log("Дальняя атака");
             HealthValue -=
                 LibraryStaticFunctions.GetRangeValue(dmg, 0.1f);
+            if (HealthValue <= 0)
+            {
+                enemyAbstract.ScoreAddingEffect.EventEffect(weapon);
+            }
         }
 
         /// <summary>

@@ -84,7 +84,7 @@ namespace PlayerBehaviour
 						if (playerComponentsControl.PlayerConditions.IsAlive)
 						      attackList[i].EnemyConditions.GetDamage
                                 (damage, playerComponentsControl.PlayerWeapon.GemPower
-                                ,dmgType, playerComponentsControl.PlayerWeapon); 
+                                ,playerComponentsControl.PlayerWeapon); 
                     }
                 }
             }

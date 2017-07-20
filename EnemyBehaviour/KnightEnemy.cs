@@ -40,6 +40,8 @@ namespace EnemyBehaviour
                 transform.GetChild(1).GetChild(1).GetComponent<IElectricEffect>();
             FireEffect =
                 transform.GetChild(1).GetChild(2).GetComponent<IFireEffect>();
+            ScoreAddingEffect =
+                transform.GetChild(1).GetChild(3).GetComponent<IScoreAddingEffect>();
             Timing.RunCoroutine(UpdateAttackState());
         }
 

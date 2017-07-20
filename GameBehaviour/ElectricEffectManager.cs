@@ -185,8 +185,7 @@ namespace GameBehaviour
                                 ChangeValues();
                                 if (abstractEnemyTarget != null)
                                     abstractEnemyTarget.EnemyConditions.
-                                    GetDamageElectricity(damage * 0.75f, gemPower,
-                                    DamageType.Electric, weapon);
+                                    GetDamageElectricity(damage * 0.75f, gemPower,weapon);
                             }
                         }
                         tempListTrailobjects[i].gameObject.SetActive(false);

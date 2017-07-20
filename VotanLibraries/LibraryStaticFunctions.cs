@@ -31,6 +31,18 @@ namespace VotanLibraries
         }
 
         /// <summary>
+        /// Получить коэффициент тряски при получении урона от врага
+        /// </summary>
+        /// <param name="coefficient"></param>
+        /// <returns></returns>
+        public static float GetCoefficientForGetDamageNoize(float coefficient)
+        {
+            if (coefficient > 1) coefficient = 1;
+            else if (coefficient < 0.25f) coefficient = 0.25f;
+            return coefficient /= 2;
+        }
+
+        /// <summary>
         /// Вернуть значение +valueMax либо -valueMax.
         /// 
         /// Текущая реализация: если valueMax=10, то
@@ -82,6 +94,11 @@ namespace VotanLibraries
             return (damage / 10) * (1 + (weapon.GemPower / 200));
         }
 
+        /// <summary>
+        /// Получить число партиклов для эффекта горения
+        /// </summary>
+        /// <param name="damage"></param>
+        /// <returns></returns>
         public static int GetCountOfParticleSystemElements(float damage)
         {
             if (damage > 50)

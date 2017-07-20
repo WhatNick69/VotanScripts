@@ -15,14 +15,15 @@ namespace PlayerBehaviour
         [SerializeField, Tooltip("Хранитель компонентов")]
         private PlayerComponentsControl playerComponentsControl;
         [SerializeField,Tooltip("Скорость движения камеры вслед за персонажем"),
-            Range(0,10)]
+           Range(0.01f, 0.1f)]
         private float followMoveSpeed;
         [SerializeField, Tooltip("Скорость поворота камеры вслед за персонажем"),
-            Range(0, 10)]
+           Range(0.01f, 0.1f)]
         private float followRotateSpeed;
         [SerializeField, Tooltip("Частота обновления позиции слежения"),
-            Range(0.01f, 1)]
+            Range(0.01f, 0.5f)]
         private float frequencyUpdate;
+        private float tempFrequencyUpdate;
         [SerializeField, Tooltip("Дистанция, минимальная для обновления"),
             Range(0.1f,2)]
         private float distanceBetweenDestAndPers;
@@ -37,8 +38,8 @@ namespace PlayerBehaviour
         private bool isNormalized;
 
         private float noiseMoveUpdateSpeed;
-        private bool isNoising;
         private float noiseRotateUpdateSpeed;
+        private bool isNoising;
 
         [SerializeField]
         private float multiplierNoise;
@@ -69,74 +70,112 @@ namespace PlayerBehaviour
                 playerComponentsControl.PlayerObject;
             cameraTransform =
                 playerComponentsControl.PlayerCamera.transform;
-            followMoveSpeed *= Time.deltaTime;
-            followRotateSpeed *= Time.deltaTime;
+            tempFrequencyUpdate = frequencyUpdate;
 
-            noiseMoveUpdateSpeed = followMoveSpeed * multiplierNoise;
-            noiseRotateUpdateSpeed = followRotateSpeed * multiplierNoise;
             Timing.RunCoroutine(CoroutineGetPositionOfPlayer());
         }
 
+        /// <summary>
+        /// Трясти камеру
+        /// </summary>
+        /// <param name="coeff"></param>
         public void DoNoize(float coeff)
         {
-            Timing.RunCoroutine(CoroutineForNoizeCamera(coeff));
+            if (!isNoising)
+            {
+                isNoising = true;
+                Timing.RunCoroutine(CoroutineForNoizeDoDamage(coeff));
+            }
         }
 
+        /// <summary>
+        /// Получить урон
+        /// </summary>
+        /// <param name="coeff"></param>
         public void GetNoizeGamage(float coeff)
         {
-            Timing.RunCoroutine(CoroutineForDamageNoize(coeff));
-        }
-
-        private IEnumerator<float> CoroutineForDamageNoize(float coeff)
-        {
             if (!isNoising)
             {
-                Debug.Log("NOIZE_DAMAGE");
-                noiseMoveUpdateSpeed = followMoveSpeed * multiplierNoise;
-                noiseRotateUpdateSpeed = followRotateSpeed * multiplierNoise;
-
                 isNoising = true;
-                float temp = followMoveSpeed;
-                float temp2 = followRotateSpeed;
-                followMoveSpeed = noiseMoveUpdateSpeed;
-                followRotateSpeed = noiseRotateUpdateSpeed;
-                float y = 1 + coeff;
-
-                standartVectorForCamera
-                    = new Vector3(LibraryStaticFunctions.GetPlusMinusValue(2) * y, 9 * y, -8 *y);
-                yield return Timing.WaitForSeconds(0.25f);
-
-                standartVectorForCamera = new Vector3(0, 9, -8);
-                yield return Timing.WaitForSeconds(0.25f);
-                followMoveSpeed = temp;
-                followRotateSpeed = temp2;
-                isNoising = false;
+                Timing.RunCoroutine(CoroutineForNoizeGetDamage(coeff));
             }
         }
 
-        private IEnumerator<float> CoroutineForNoizeCamera(float coeff)
+        /// <summary>
+        /// Тряска камеры при нанесении урона
+        /// </summary>
+        /// <param name="coeff"></param>
+        /// <returns></returns>
+        private IEnumerator<float> CoroutineForNoizeDoDamage(float coeff)
         {
-            if (!isNoising)
+            frequencyUpdate = 0.05f;
+
+            noiseMoveUpdateSpeed = followMoveSpeed;
+            noiseRotateUpdateSpeed = followRotateSpeed;
+
+            followMoveSpeed = followMoveSpeed * multiplierNoise;
+            followRotateSpeed = followRotateSpeed * multiplierNoise;
+            coeff -= 0.25f;
+
+            int i = 0;
+            while (i < 10)
             {
-                noiseMoveUpdateSpeed = followMoveSpeed * multiplierNoise;
-                noiseRotateUpdateSpeed = followRotateSpeed * multiplierNoise;
-
-                isNoising = true;
-                float temp = followMoveSpeed;
-                float temp2 = followRotateSpeed;
-                followMoveSpeed = noiseMoveUpdateSpeed;
-                followRotateSpeed = noiseRotateUpdateSpeed;
-                float y = 1-((coeff - 0.25f)/2);
-
-                standartVectorForCamera
-                    = new Vector3(LibraryStaticFunctions.GetPlusMinusValue(2)*y, 9*(1+(y/3)),-8*(1+(y/3)));
-                yield return Timing.WaitForSeconds(1);
-
-                standartVectorForCamera = new Vector3(0, 9, -8);
-                followMoveSpeed = temp;
-                followRotateSpeed = temp2;
-                isNoising = false;
+            standartVectorForCamera
+                = new Vector3(LibraryStaticFunctions.GetPlusMinusValue(1 * coeff), 
+                LibraryStaticFunctions.GetRangeValue(9, 0.1f* coeff),
+                LibraryStaticFunctions.GetRangeValue(-8, 0.1f*coeff));
+                yield return Timing.WaitForSeconds(0.05f);
+                i++;
             }
+            standartVectorForCamera = new Vector3(0, 9, -8);
+            followMoveSpeed = noiseMoveUpdateSpeed;
+            followRotateSpeed = noiseRotateUpdateSpeed;
+
+            frequencyUpdate = tempFrequencyUpdate;
+            isNoising = false;
+        }
+
+        /// <summary>
+        /// Тряска камеры при плучении урона
+        /// </summary>
+        /// <param name="coeff"></param>
+        /// <returns></returns>
+        private IEnumerator<float> CoroutineForNoizeGetDamage(float coeff)
+        {
+            frequencyUpdate = 0.05f;
+            noiseMoveUpdateSpeed = followMoveSpeed;
+            noiseRotateUpdateSpeed = followRotateSpeed;
+
+            followMoveSpeed = followMoveSpeed * multiplierNoise;
+            followRotateSpeed = followRotateSpeed * multiplierNoise;
+
+            coeff = LibraryStaticFunctions.GetCoefficientForGetDamageNoize(coeff);
+
+            int i = 0;
+            while (i < 5)
+            {
+                if (isNormalized)
+                {
+                    standartVectorForCamera
+                        = new Vector3(LibraryStaticFunctions.GetPlusMinusValue(5 * coeff),
+                        LibraryStaticFunctions.GetRangeValue(9, coeff),
+                        LibraryStaticFunctions.GetRangeValue(-8, coeff));
+                }
+                else
+                {
+                    standartVectorForCamera
+                        = new Vector3(LibraryStaticFunctions.GetPlusMinusValue(5 * coeff),
+                        LibraryStaticFunctions.GetRangeValue(4.5f, coeff),
+                        LibraryStaticFunctions.GetRangeValue(-4, coeff));
+                }
+                yield return Timing.WaitForSeconds(0.05f);
+                i++;
+            }
+            followMoveSpeed = noiseMoveUpdateSpeed;
+            followRotateSpeed = noiseRotateUpdateSpeed;
+            standartVectorForCamera = new Vector3(0, 9, -8);
+            frequencyUpdate = tempFrequencyUpdate;
+            isNoising = false;
         }
 
         /// <summary>
@@ -155,7 +194,7 @@ namespace PlayerBehaviour
         {
             if (standartVectorForCamera.y != 9)
             {
-                Debug.Log("Нормализация");
+                //Debug.Log("Нормализация");
                 isNormalized = false;
             }
         }

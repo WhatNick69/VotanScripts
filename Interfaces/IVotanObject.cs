@@ -1,4 +1,5 @@
 ﻿using EnemyBehaviour;
+using PlayerBehaviour;
 using UnityEngine;
 
 /*
@@ -25,7 +26,35 @@ namespace VotanInterfaces
     /// </summary>
     public interface IPlayerBehaviour
     {
+         PlayerController PlayerController { get; set; }
 
+        PlayerConditions PlayerConditions { get; set; }
+
+        PlayerFight PlayerFight { get; set; }
+
+        PlayerAttack PlayerAttack { get; set; }
+
+        PlayerCollision PlayerCollision { get; set; }
+
+        GameObject PlayerCamera { get; set; }
+
+        PlayerArmory PlayerArmory { get; set; }
+
+        PlayerWeapon PlayerWeapon { get; set; }
+
+        PlayerCameraSmooth PlayerCameraSmooth { get; set; }
+
+        PlayerBloodInterfaceEffect PlayerBloodInterfaceEffect { get; set; }
+
+        PlayerScore PlayerScore { get; set; }
+
+        PlayerAnimationsController PlayerAnimationsController { get; set; }
+
+        Transform PlayerParent { get; set; }
+
+        Transform PlayerObject { get; set; }
+
+        Transform PlayerModel { get; set; }
     }
 
     /// <summary>
@@ -73,6 +102,11 @@ namespace VotanInterfaces
         /// Эектрический эффект
         /// </summary>
         IElectricEffect ElectricEffect { get; set; }
+
+        /// <summary>
+        /// Эффект начисления бонуса за убийство игроку
+        /// </summary>
+        IScoreAddingEffect ScoreAddingEffect { get; set; }
 
         /// <summary>
         /// Вернуть позицию

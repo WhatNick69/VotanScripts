@@ -32,6 +32,8 @@ namespace PlayerBehaviour
         private PlayerCameraSmooth playerCameraSmooth;
         [SerializeField, Tooltip("Контроллер эффекта кровавого затемнения")]
         private PlayerBloodInterfaceEffect playerBloodInterfaceEffect;
+        [SerializeField, Tooltip("Менеджер очков игрока")]
+        private PlayerScore playerScore;
         [SerializeField, Tooltip("Аниматор игрока")]
         private PlayerAnimationsController playerAnimationsController;
         [SerializeField, Tooltip("Родитель игрока")]
@@ -222,6 +224,19 @@ namespace PlayerBehaviour
             set
             {
                 playerBloodInterfaceEffect = value;
+            }
+        }
+
+        public PlayerScore PlayerScore
+        {
+            get
+            {
+                return playerScore;
+            }
+
+            set
+            {
+                playerScore = value;
             }
         }
         #endregion

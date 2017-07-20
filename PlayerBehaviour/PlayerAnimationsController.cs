@@ -60,27 +60,28 @@ namespace PlayerBehaviour
             animatorOfObject.speed = 1f;
         }
 
+        /// <summary>
+        /// Проиграть корутину-нормализатор позиции по Y
+        /// </summary>
         public override void PlayDeadNormalizeCoroutine()
         {
             Timing.RunCoroutine(CoroutineDeadYNormalized());
         }
 
+        /// <summary>
+        /// Нормализация позиции по Y после смерти.
+        /// Ненавижу Саню.
+        /// </summary>
+        /// <returns></returns>
         public override IEnumerator<float> CoroutineDeadYNormalized()
         {
             int i = 0;
-            yield return Timing.WaitForSeconds(1f);
-
-            Vector3 newPosition =
-            new Vector3(transformForDeadYNormalizing.position.x,
-                transformForDeadYNormalizing.position.y - 0.2f,
-                transformForDeadYNormalizing.position.z);
+            yield return Timing.WaitForSeconds(0.5f);
 
             while (i < 10)
             {
                 i++;
-                transformForDeadYNormalizing.position =
-                    Vector3.Lerp(transformForDeadYNormalizing.position,
-                    newPosition, 1);
+                transformForDeadYNormalizing.Translate(0, -0.02f, 0);// =
                 yield return Timing.WaitForSeconds(0.01f);
             }
             yield return Timing.WaitForSeconds(0.01f);
