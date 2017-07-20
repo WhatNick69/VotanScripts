@@ -17,9 +17,8 @@ namespace GameBehaviour
         private float armoryValue;
         [SerializeField, Tooltip("Тип брони")]
         private ArmoryType armoryType;
-        [SerializeField, Tooltip("Эта часть является главной? Если да - "
-            +"то она не будет уничтожаться при дестркукции брони")]
-        private bool isMainPartInArray;
+        [SerializeField, Tooltip("Эта часть будет уничтожаться?")]
+        private bool isActivePart;
         [SerializeField, Tooltip("Номер позиции"),Range(0,8)]
         private int numberPosition;
 
@@ -29,16 +28,16 @@ namespace GameBehaviour
         #endregion
 
         #region Свойства
-        public bool IsMainPartInArray
+        public bool IsActivePart
         {
             get
             {
-                return isMainPartInArray;
+                return isActivePart;
             }
 
             set
             {
-                isMainPartInArray = value;
+                isActivePart = value;
             }
         }
         #endregion
@@ -65,7 +64,7 @@ namespace GameBehaviour
             IncremenentToPlayerArmory();
             InitToPlayerArmory();
 
-            if (isMainPartInArray) return;
+            if (!isActivePart) return;
             rigFromObj = transform.GetComponentInChildren<Rigidbody>();
             boxCollider = transform.GetComponentInChildren<BoxCollider>();
             rigFromObj.detectCollisions = false;
@@ -97,7 +96,7 @@ namespace GameBehaviour
         /// </summary>
         public void FireEvent()
         {
-            if (IsMainPartInArray) return;
+            if (!isActivePart) return;
 
             DetachFromParent();
             AddForceToObject();

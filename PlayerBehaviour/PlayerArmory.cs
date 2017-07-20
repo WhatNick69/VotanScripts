@@ -88,6 +88,7 @@ namespace PlayerBehaviour
             shieldPartArmory = 0.4f / shieldParts.Count;
 
             SwitchPositionInCuirassList();
+            SwitchPositionInShieldList();
         }
 
         public Transform GetMyParent(int i)
@@ -104,7 +105,7 @@ namespace PlayerBehaviour
             PartArmoryManager tempGameObject = KirasaParts[0] ;
             for (int i = 0;i<kirasaParts.Count;i++)
             {
-                if (kirasaParts[i].IsMainPartInArray)
+                if (!kirasaParts[i].IsActivePart)
                 {
                     tempNumber = i;
                     break;
@@ -113,6 +114,26 @@ namespace PlayerBehaviour
             }
             kirasaParts[0] = kirasaParts[tempNumber];
             kirasaParts[tempNumber] = tempGameObject;
+        }
+
+        /// <summary>
+        /// Ставит на нулевую позицию наплечник
+        /// </summary>
+        private void SwitchPositionInShieldList()
+        {
+            int tempNumber = 0;
+            PartArmoryManager tempGameObject = ShieldParts[0];
+            for (int i = 0; i < ShieldParts.Count; i++)
+            {
+                if (!ShieldParts[i].IsActivePart)
+                {
+                    tempNumber = i;
+                    break;
+                }
+
+            }
+            ShieldParts[0] = ShieldParts[tempNumber];
+            ShieldParts[tempNumber] = tempGameObject;
         }
 
         /// <summary>
