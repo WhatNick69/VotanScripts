@@ -53,12 +53,7 @@ namespace PlayerBehaviour
             Debug.Log(addScoreValue);
             while (tempScore > 0)
             {
-                if (tempScore / 100 >= 1)
-                {
-                    tempScore -= 100;
-                    scoreValue += 100;
-                }
-                else if (tempScore / 10 >= 1)
+                if (tempScore / 10 >= 1)
                 {
                     tempScore -= 10;
                     scoreValue += 10;
