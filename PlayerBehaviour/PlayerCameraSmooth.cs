@@ -116,7 +116,8 @@ namespace PlayerBehaviour
 
             followMoveSpeed = followMoveSpeed * multiplierNoise;
             followRotateSpeed = followRotateSpeed * multiplierNoise;
-            coeff -= 0.75f;
+            coeff -= 0.5f;
+            if (coeff > 1) coeff = 1;
 
             int i = 0;
             while (i < 10)
@@ -128,7 +129,7 @@ namespace PlayerBehaviour
                 yield return Timing.WaitForSeconds(0.05f);
                 i++;
             }
-            standartVectorForCamera = new Vector3(0, 9, -8);
+            //standartVectorForCamera = new Vector3(0, 9, -8);
             followMoveSpeed = noiseMoveUpdateSpeed;
             followRotateSpeed = noiseRotateUpdateSpeed;
 
@@ -155,7 +156,7 @@ namespace PlayerBehaviour
             int i = 0;
             while (i < 5)
             {
-                if (isNormalized)
+                if (!playerComponentsControl.PlayerFight.IsDefensing)
                 {
                     standartVectorForCamera
                         = new Vector3(LibraryStaticFunctions.GetPlusMinusValue(5 * coeff),
@@ -175,7 +176,8 @@ namespace PlayerBehaviour
 
             followMoveSpeed = noiseMoveUpdateSpeed;
             followRotateSpeed = noiseRotateUpdateSpeed;
-            standartVectorForCamera = new Vector3(0, 9, -8);
+
+
             frequencyUpdate = tempFrequencyUpdate;
             isNoising = false;
         }

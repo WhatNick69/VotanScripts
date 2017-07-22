@@ -37,7 +37,7 @@ namespace GameBehaviour
                 !isStillTrailMoving)
             {
                 weapon.GetPlayer.PlayerCameraSmooth.
-                    DoNoize((weapon.SpinSpeed / weapon.OriginalSpinSpeed) + 0.75f);
+                    DoNoize((weapon.SpinSpeed / weapon.OriginalSpinSpeed)+0.5f);
                 isStillTrailMoving = true;
                 weapon.IsMayToGetPhysicDefence = true;
                 this.weapon = weapon;
@@ -68,7 +68,7 @@ namespace GameBehaviour
                 enemy.transform.position = Vector3.Lerp(enemy.transform.position, 
                     nockBackPosition, Time.deltaTime);
                 i++;
-                if (i > 30) yield break;
+                if (i > 30 || !enemy.EnemyConditions.IsAlive) yield break;
                 yield return Timing.WaitForOneFrame;
             }
         }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using PlayerBehaviour;
 
 namespace CraftSystem
 {
@@ -109,6 +110,7 @@ namespace CraftSystem
 					ArmorButton button = item.GetComponent<ArmorButton>();
 					button.SetArmorCraft(AC);
 					button.SetNumber(i);
+					button.SetArmorClass(ArmoryClass.Shield);
 					button.SetName(shieldList[i].ArmoryName);
 					button.SetArmor(shieldList[i].ArmoryValue.ToString());
 					item.transform.SetParent(shieldRepository.transform, false);
@@ -130,6 +132,7 @@ namespace CraftSystem
 					ArmorButton button = item.GetComponent<ArmorButton>();
 					button.SetArmorCraft(AC);
 					button.SetNumber(i);
+					button.SetArmorClass(ArmoryClass.Cuirass);
 					button.SetName(cuirassList[i].ArmoryName);
 					button.SetArmor(cuirassList[i].ArmoryValue.ToString());
 					item.transform.SetParent(cuirassRepository.transform, false);
@@ -151,6 +154,7 @@ namespace CraftSystem
 					ArmorButton button = item.GetComponent<ArmorButton>();
 					button.SetArmorCraft(AC);
 					button.SetNumber(i);
+					button.SetArmorClass(ArmoryClass.Helmet);
 					button.SetName(helmetList[i].ArmoryName);
 					button.SetArmor(helmetList[i].ArmoryValue.ToString());
 					item.transform.SetParent(helmetRepository.transform, false);

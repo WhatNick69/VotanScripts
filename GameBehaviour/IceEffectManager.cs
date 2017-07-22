@@ -48,7 +48,7 @@ namespace GameBehaviour
             this.weapon = weapon;
             this.damage = LibraryStaticFunctions.IceDamagePerPeriod(damage, weapon);
             weapon.GetPlayer.PlayerCameraSmooth.
-                DoNoize((weapon.SpinSpeed / weapon.OriginalSpinSpeed)+0.75f);
+                DoNoize((weapon.SpinSpeed / weapon.OriginalSpinSpeed)+0.5f);
 
             SetColorOfMaterial();
 
