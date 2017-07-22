@@ -50,13 +50,12 @@ namespace PlayerBehaviour
         private IEnumerator<float> CoroutineForSlowmotionAddingScore(int addScoreValue)
         {
             int tempScore = addScoreValue;
-            Debug.Log(addScoreValue);
             while (tempScore > 0)
             {
-                if (tempScore / 10 >= 1)
+                if (tempScore / 5 >= 1)
                 {
-                    tempScore -= 10;
-                    scoreValue += 10;
+                    tempScore -= 5;
+                    scoreValue += 5;
                 }
                 else
                 {

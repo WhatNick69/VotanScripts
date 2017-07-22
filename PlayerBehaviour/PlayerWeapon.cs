@@ -18,16 +18,25 @@ namespace PlayerBehaviour
 	{
         #region Переменные
         /// <summary>
-        /// Тип оружия 1
+        /// Величина временной брони
         /// </summary>
-        string TypeName1 { get; set; }
+        float TempPhysicDefence { get;}
 
-		/// <summary>
-        /// Тип оружия 2
+        /// <summary>
+        /// Добавить временную защиту в результате
+        /// попадания по врагу земельным ударом
         /// </summary>
-        string TypeName2 { get; set; }
+        /// <param name="value"></param>
+        void AddTempPhysicDefence(float value);
 
-		/// <summary>
+        /// <summary>
+        /// Булева переменная, которая показывает
+        /// можно ли вновь получить защиту в результате
+        /// попадания по врагу земляной атакой
+        /// </summary>
+        bool IsMayToGetPhysicDefence { get; set; }
+
+        /// <summary>
         /// Название оружия
         /// </summary>
         string WeaponName { get; set; }
@@ -131,10 +140,6 @@ namespace PlayerBehaviour
         : MonoBehaviour, IWeapon
 	{
         #region Переменные
-        [SerializeField, Tooltip("Название оружия 1")]
-        private string typeName1;
-        [SerializeField, Tooltip("Название оружия 1")]
-        private string typeName2;
         [SerializeField, Tooltip("Название оружия")]
         private string weaponName;
         [SerializeField, Tooltip("Название рукояти")]
@@ -151,6 +156,9 @@ namespace PlayerBehaviour
 		private float spinSpeed;
         [SerializeField, Tooltip("Сила камня"), Range(1, 100f)]
         private float gemPower;
+        [SerializeField, Tooltip("Временная защита")]
+        private float tempDefence;
+        private bool isMayToGetPhysicDefence;
         private float originalSpinSpeed;
 
 		[SerializeField, 
@@ -215,6 +223,10 @@ namespace PlayerBehaviour
 
             set
             {
+                if (value > 100)
+                    value = 100;
+                else if (value < 1)
+                    value = 1;
                 spinSpeed = value;
             }
         }
@@ -228,6 +240,10 @@ namespace PlayerBehaviour
 
             set
             {
+                if (value > 100)
+                    value = 100;
+                else if (value < 1)
+                    value = 1;
                 weight = value;
             }
         }
@@ -241,6 +257,10 @@ namespace PlayerBehaviour
 
             set
             {
+                if (value > 100)
+                    value = 100;
+                else if (value < 1)
+                    value = 1;
                 gemPower = value;
             }
         }
@@ -254,6 +274,10 @@ namespace PlayerBehaviour
 
             set
             {
+                if (value > 100)
+                    value = 100;
+                else if (value < 1)
+                    value = 1;
                 originalSpinSpeed = value;
             }
         }
@@ -263,32 +287,6 @@ namespace PlayerBehaviour
             get
             {
                 return playerComponentsControl;
-            }
-        }
-
-        public string TypeName1
-        {
-            get
-            {
-                return typeName1;
-            }
-
-            set
-            {
-                typeName1 = value;
-            }
-        }
-
-        public string TypeName2
-        {
-            get
-            {
-                return typeName2;
-            }
-
-            set
-            {
-                typeName2 = value;
             }
         }
 
@@ -330,6 +328,29 @@ namespace PlayerBehaviour
                 trailRenderer = value;
             }
         }
+
+        public float TempPhysicDefence
+        {
+            get
+            {
+                return tempDefence;
+            }
+        }
+
+        public bool IsMayToGetPhysicDefence
+        {
+            get
+            {
+                return isMayToGetPhysicDefence;
+            }
+
+            set
+            {
+                if (value)
+                    Timing.RunCoroutine(CoroutineForMayTempPhysicDefence());
+                isMayToGetPhysicDefence = value;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -355,7 +376,7 @@ namespace PlayerBehaviour
             this.trailRenderer = trailRenderer;
 
             SetColorTrailWeapon();
-            originalSpinSpeed = spinSpeed;
+            originalSpinSpeed = this.spinSpeed;
         }
         
         /// <summary>
@@ -364,6 +385,7 @@ namespace PlayerBehaviour
         public void Start()
         {
             playerComponentsControl.PlayerWeapon = this;
+            isMayToGetPhysicDefence = true;
         }
 
         /// <summary>
@@ -381,10 +403,9 @@ namespace PlayerBehaviour
         /// <returns></returns>
         public IEnumerator<float> CoroutineDoSlowMotionSpinSpeed()
         {
-
 			float spSpeed = spinSpeed * (0.5f + Weight / 200);
 
-            if (spinSpeed / originalSpinSpeed >= 0.25f)
+            if (spinSpeed / originalSpinSpeed >= 0.75f)
                 playerComponentsControl.PlayerCameraSmooth.DoNoize(spinSpeed / originalSpinSpeed);
 
             spinSpeed -= spSpeed;
@@ -420,6 +441,50 @@ namespace PlayerBehaviour
             TrailRenderer.startWidth = 0.2f + GemPower / 2000; // размер молнии. от 0.2 до 0.25
             TrailRenderer.startColor = color;
             TrailRenderer.endColor = color;
+        }
+
+        /// <summary>
+        /// Добавить временную защиту
+        /// </summary>
+        /// <param name="value"></param>
+        public void AddTempPhysicDefence(float value)
+        {
+            Timing.RunCoroutine(CoroutineForDisableTempDefence(value));
+        }
+
+        /// <summary>
+        /// Корутина для отключения временной защиты
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private IEnumerator<float> CoroutineForDisableTempDefence(float value)
+        {
+            tempDefence += value;
+            if (tempDefence > 100) tempDefence = 100;
+            yield return Timing.WaitForSeconds(1);
+            for (int i = 0; i < 10; i++)
+            {
+                tempDefence -= value / 10;
+                if (tempDefence < 0.01f)
+                {
+                    tempDefence = 0;
+                    yield break;
+                }
+                yield return Timing.WaitForSeconds(0.05f);
+            }
+        }
+
+        /// <summary>
+        /// Ждать окончания промежутка времени, между получением следующей
+        /// земельной защиты
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator<float> CoroutineForMayTempPhysicDefence()
+        {
+            isMayToGetPhysicDefence = false;
+            yield return Timing.WaitForSeconds
+                (LibraryStaticFunctions.HowMuchWaitForPhysicAttack(GemPower));
+            isMayToGetPhysicDefence = true;
         }
     }
 

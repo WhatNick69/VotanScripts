@@ -27,6 +27,7 @@ namespace AbstractBehaviour
         protected IIceEffect iceEffectManager;
         protected IFireEffect fireEffectManager;
         protected IElectricEffect electricEffectManager;
+        protected IPhysicEffect physicEffect;
         protected IScoreAddingEffect scoreAddingEffect;
         #endregion
 
@@ -145,6 +146,19 @@ namespace AbstractBehaviour
             set
             {
                 scoreAddingEffect = value;
+            }
+        }
+
+        public IPhysicEffect Physicffect
+        {
+            get
+            {
+                return physicEffect;
+            }
+
+            set
+            {
+                physicEffect = value;
             }
         }
         #endregion

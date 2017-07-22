@@ -1,5 +1,6 @@
 ﻿using PlayerBehaviour;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace CraftSystem
 {
@@ -9,8 +10,10 @@ namespace CraftSystem
 	public class Grip
 		: MonoBehaviour
 	{
-		#region Переменные
-		[SerializeField, Range(1, 25f), Tooltip("Вес ручки")]
+        #region Переменные
+        [SerializeField, Tooltip("Изображение части брони")]
+        private Image imageArmory;
+        [SerializeField, Range(1, 25f), Tooltip("Вес ручки")]
 		private float gripWeight;
 		[SerializeField, Range(1, 100f), Tooltip("Защита")]
 		private float gripDefence;

@@ -98,7 +98,6 @@ namespace CraftSystem
             WP.Grip = (GameObject)Resources.Load(gripPrefix + gripItemNumber + gripPostfix);
 			WP.Head = (GameObject)Resources.Load(headPrefix + headItemNumber + headPostfix);
 			WP.Gem = (GameObject)Resources.Load(gemPrefix + gemItemNumber + gemPostfix);
-			SceneManager.LoadScene(1);
         }
 
 		public void LoadPrefab()

@@ -1,4 +1,5 @@
 ﻿using AbstractBehaviour;
+using GameBehaviour;
 using MovementEffects;
 using PlayerBehaviour;
 using System.Collections.Generic;
@@ -229,12 +230,14 @@ namespace EnemyBehaviour
                     if (!isFrozen)
                     {
                         if (LibraryStaticFunctions.MayableToBeFreezy(gemPower))
-                            RunCoroutineForFrozenDamage(weapon);
+                            RunCoroutineForFrozenDamage(dmg,weapon);
                     }
                     return dmg * (1 - frostResistance);
                 case DamageType.Powerful:
+                    RunCoroutineForPhysicDamage(weapon);
                     return dmg * (1 - physicResistance);
             }
+
             return dmg;
         }
 
@@ -329,25 +332,47 @@ namespace EnemyBehaviour
         }
 
         /// <summary>
+        /// Корутина на получение электрического удара
+        /// </summary>
+        /// <param name="damage"></param>
+        /// <param name="gemPower"></param>
+        /// <param name="weapon"></param>
+        public void RunCoroutineForPhysicDamage(IWeapon weapon)
+        {
+            Timing.RunCoroutine(CoroutineForPhysicDamage(weapon));
+        }
+
+        /// <summary>
+        /// Корутина, свидетельствующая о том, что враг шокирован электричеством.
+        /// Шок действует ровно на 1 секунду. Пока что так. Так легче.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerator<float> CoroutineForPhysicDamage(IWeapon weapon)
+        {
+            enemyAbstract.Physicffect.EventEffect(weapon);
+            yield return Timing.WaitForSeconds(1);
+        }
+
+        /// <summary>
         /// Запустить корутины для замораживающего эффекта
         /// </summary>
-        public void RunCoroutineForFrozenDamage(IWeapon weapon)
+        public void RunCoroutineForFrozenDamage(float damage,IWeapon weapon)
         {
-            Timing.RunCoroutine(CoroutineForFrozenDamage(weapon));
+            Timing.RunCoroutine(CoroutineForFrozenDamage(damage,weapon));
         }
 
         /// <summary>
         /// Замедление врага от холода
         /// </summary>
         /// <returns></returns>
-        public IEnumerator<float> CoroutineForFrozenDamage(IWeapon weapon)
+        public IEnumerator<float> CoroutineForFrozenDamage(float damage,IWeapon weapon)
         {
             Debug.Log("ICE");
             enemyAbstract.EnemyAnimationsController.SetState(2, true);
             enemyMove.SetNewSpeedOfNavMeshAgent(0, 0);
             enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0);
             float time = LibraryStaticFunctions.TimeToFreezy(weapon.GemPower);
-            enemyAbstract.IceEffect.EventEffect(time, weapon);
+            enemyAbstract.IceEffect.EventEffect(damage,time, weapon);
             enemyAbstract.EnemyMove.Agent.enabled = false;
 
             IsFrozen = true;

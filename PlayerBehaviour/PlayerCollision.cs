@@ -24,7 +24,7 @@ namespace PlayerBehaviour
         private float searchingRadius;
         [SerializeField, Tooltip("Ротатор лучей")]
         private Transform rotaterRaycaster;
-        public bool[] boolsList;
+        private bool[] boolsList;
         private float angle;
 
         private Rigidbody playerRGB;
@@ -59,7 +59,7 @@ namespace PlayerBehaviour
             angle = 360 / raysCount;
 
             Timing.RunCoroutine(CoroutineRaycastSearching());
-            Timing.RunCoroutine(CoroutineForErrorControlling());
+            //Timing.RunCoroutine(CoroutineForErrorControlling());
         }
 
         /// <summary>

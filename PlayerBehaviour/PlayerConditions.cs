@@ -166,12 +166,14 @@ namespace PlayerBehaviour
         {
             if (mayToGetDamage)
             {
+                damageValue = LibraryStaticFunctions.
+                    DamageFromTempPhysicDefence(damageValue,playerComponentsControl.PlayerWeapon);
+
                 playerComponentsControl.PlayerCameraSmooth.GetNoizeGamage(damageValue / initialisatedHealthValue);
                 if (!playerComponentsControl.PlayerArmory.IsAlive)
                 {
                     playerComponentsControl.PlayerBloodInterfaceEffect.
                         EventBloodEyesEffect(healthValue/ initialisatedHealthValue);
-                    Debug.Log("HIT");
                     if (playerComponentsControl.PlayerFight.IsDefensing)
                     {
                         HealthValue -= LibraryStaticFunctions.GetRangeValue(damageValue, 0.1f) *
@@ -188,7 +190,6 @@ namespace PlayerBehaviour
                 }
                 else
                 {
-                    Debug.Log("HIT");
                     if (playerComponentsControl.PlayerFight.IsDefensing)
                     {
                         playerComponentsControl.PlayerArmory

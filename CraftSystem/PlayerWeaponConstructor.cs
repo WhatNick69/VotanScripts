@@ -66,7 +66,6 @@ namespace CraftSystem
 				case LenghtGrip.Long:
 					gripPoint = longGripPosition;
 					headPosition = new Vector3(-72,0,0); //	
-                    Debug.Log("AZAZA");
 					attackPoint = new Vector3(-75, 0, 0);
 					break;
 				default:

@@ -1,9 +1,11 @@
-﻿using MovementEffects;
+﻿using AbstractBehaviour;
+using MovementEffects;
 using PlayerBehaviour;
 using System.Collections.Generic;
 using UnityEngine;
 using VotanInterfaces;
 using VotanLibraries;
+using System;
 
 namespace GameBehaviour
 {
@@ -14,6 +16,8 @@ namespace GameBehaviour
         : MonoBehaviour, IIceEffect
     {
         #region Переменные
+        [SerializeField]
+        private AbstractEnemy abstractEnemy;
         [SerializeField, Tooltip("Лист ледяных мешей")]
         private List<Transform> listIceObjects; 
         [SerializeField, Tooltip("Лист трэилов")]
@@ -29,6 +33,7 @@ namespace GameBehaviour
         private float timeToDisable;
 
         private bool isOneCoroutine;
+        private float damage;
         #endregion
 
         /// <summary>
@@ -38,9 +43,13 @@ namespace GameBehaviour
         /// трэилов. Затем, по истечению определенного времени, эти ледяные глыбы
         /// вместе с трэилами исчезают, посредством сведения к нулю их альфа-канала.
         /// </summary>
-        public void EventEffect(float timeToDisable, IWeapon weapon)
+        public void EventEffect(float damage,float timeToDisable, IWeapon weapon)
         {
             this.weapon = weapon;
+            this.damage = LibraryStaticFunctions.IceDamagePerPeriod(damage, weapon);
+            weapon.GetPlayer.PlayerCameraSmooth.
+                DoNoize((weapon.SpinSpeed / weapon.OriginalSpinSpeed)+0.75f);
+
             SetColorOfMaterial();
 
             isOneCoroutine = false;
@@ -68,9 +77,30 @@ namespace GameBehaviour
         /// </summary>
         private void RunAllCoroutines()
         {
+            Timing.RunCoroutine(CoroutineForGetDamagePerPeriod());
             Timing.RunCoroutine(CoroutineForFireDisableIceObjects());
             Timing.RunCoroutine(CoroutineForMoveIceObjects());
             Timing.RunCoroutine(CoroutineSetRandomPositionForTrailIce());
+        }
+
+        private IEnumerator<float> CoroutineForGetDamagePerPeriod()
+        {
+            int i = 0;
+            int maxI = Convert.ToInt32(timeToDisable / 0.25f);
+
+            while (i < maxI)
+            {
+                if (abstractEnemy.EnemyConditions.HealthValue <= 0) yield break;
+                abstractEnemy.EnemyConditions.HealthValue -=
+                    LibraryStaticFunctions.GetRangeValue(damage, 0.05f);
+                if (abstractEnemy.EnemyConditions.HealthValue <= 0)
+                {
+                    abstractEnemy.ScoreAddingEffect.EventEffect(weapon);
+                    yield break;
+                }
+                yield return Timing.WaitForSeconds(0.25f);
+                i++;
+            }
         }
 
         /// <summary>

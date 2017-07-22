@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VotanLibraries;
 using GameBehaviour;
+using VotanInterfaces;
 
 namespace PlayerBehaviour
 {
@@ -29,7 +30,7 @@ namespace PlayerBehaviour
         private float kirasaPartArmory;
         private float shieldPartArmory;
 
-        private float tempArmory;
+        public float tempArmory;
         #endregion
 
         #region Свойства и доступы
@@ -85,9 +86,9 @@ namespace PlayerBehaviour
             initialisatedHealthValue = healthValue;
 
             kirasaPartArmory = 0.4f / kirasaParts.Count;
-            shieldPartArmory = 0.4f / shieldParts.Count;
+            shieldPartArmory = 0.4f / (shieldParts.Count-1);
 
-            SwitchPositionInCuirassList();
+            //SwitchPositionInCuirassList();
             SwitchPositionInShieldList();
         }
 
@@ -99,7 +100,7 @@ namespace PlayerBehaviour
         /// <summary>
         /// Ставит на нулевую позицию наплечник
         /// </summary>
-        private void SwitchPositionInCuirassList()
+        public void SwitchPositionInCuirassList()
         {
             int tempNumber = 0;
             PartArmoryManager tempGameObject = KirasaParts[0] ;
@@ -110,7 +111,6 @@ namespace PlayerBehaviour
                     tempNumber = i;
                     break;
                 }
-
             }
             kirasaParts[0] = kirasaParts[tempNumber];
             kirasaParts[tempNumber] = tempGameObject;
@@ -119,21 +119,20 @@ namespace PlayerBehaviour
         /// <summary>
         /// Ставит на нулевую позицию наплечник
         /// </summary>
-        private void SwitchPositionInShieldList()
+        public void SwitchPositionInShieldList()
         {
             int tempNumber = 0;
             PartArmoryManager tempGameObject = ShieldParts[0];
-            for (int i = 0; i < ShieldParts.Count; i++)
+            for (int i = 0; i < shieldParts.Count; i++)
             {
-                if (!ShieldParts[i].IsActivePart)
+                if (!shieldParts[i].IsActivePart)
                 {
                     tempNumber = i;
                     break;
                 }
-
             }
-            ShieldParts[0] = ShieldParts[tempNumber];
-            ShieldParts[tempNumber] = tempGameObject;
+            shieldParts[0] = ShieldParts[tempNumber];
+            shieldParts[tempNumber] = tempGameObject;
         }
 
         /// <summary>
@@ -147,8 +146,7 @@ namespace PlayerBehaviour
                 healthValue += value;
                 RefreshHealthCircle();
             }
-
-            if (healthValue <= 0)
+            else
             {
                 IsAlive = false;
                 healthValue = 0;
@@ -195,21 +193,21 @@ namespace PlayerBehaviour
                 {
                     while (tempArmory >= shieldPartArmory)
                     {
-                        int a;
+                        int a = 0;
                         if (shieldParts.Count > 1)
                         {
                             a = LibraryStaticFunctions.rnd.Next(1, shieldParts.Count);
-                        }
-                        else
-                        {
-                            a = 0;
-                            isShieldDeactive = true;
-                            break;
                         }
 
                         shieldParts[a].FireEvent();
                         shieldParts.RemoveAt(a);
                         tempArmory -= shieldPartArmory;
+
+                        if (shieldParts.Count == 1)
+                        {
+                            isShieldDeactive = true;
+                            break;
+                        }
                     }
                 }
             }
@@ -217,14 +215,14 @@ namespace PlayerBehaviour
             // если броня целая
             if (!isKirasaDeactive && isHelmetDeactive && isShieldDeactive)
             {
-                if (tempArmory >= shieldPartArmory)
+                if (tempArmory >= kirasaPartArmory)
                 {
                     while (tempArmory >= kirasaPartArmory)
                     {
                         int a;
-                        if (kirasaParts.Count > 1)
+                        if (kirasaParts.Count >= 1)
                         {
-                            a = LibraryStaticFunctions.rnd.Next(1, kirasaParts.Count);
+                            a = LibraryStaticFunctions.rnd.Next(0, kirasaParts.Count);
                         }
                         else
                         {
@@ -246,8 +244,16 @@ namespace PlayerBehaviour
     /// Тип брони. Перечислитель.
     /// Шлем, кираса или щит.
     /// </summary>
-    public enum ArmoryType
+    public enum ArmoryClass
     {
         Helmet, Cuirass,Shield
     }
+
+	/// <summary>
+    /// Позиция брони. Перечислитель
+    /// </summary>
+    public enum ArmoryPosition
+	{
+		Helmet, Shield, Cuirass, LeftShoulder, RightShoulder, LeftBallast, RightBallast
+	}
 }

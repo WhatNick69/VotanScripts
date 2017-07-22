@@ -13,17 +13,12 @@ namespace GameBehaviour
         : MonoBehaviour
     {
         #region Переменные
-        [SerializeField, Tooltip("Величина брони")]
-        private float armoryValue;
-        [SerializeField, Tooltip("Тип брони")]
-        private ArmoryType armoryType;
         [SerializeField, Tooltip("Эта часть будет уничтожаться?")]
         private bool isActivePart;
-        [SerializeField, Tooltip("Номер позиции"),Range(0,8)]
-        private int numberPosition;
+        [SerializeField, Tooltip("Номер позиции")]
+        private ArmoryPosition numberPosition;
 
         private Rigidbody rigFromObj;
-        private PlayerComponentsControl playerComponentsControl;
         private BoxCollider boxCollider;
         #endregion
 
@@ -43,51 +38,20 @@ namespace GameBehaviour
         #endregion
 
         /// <summary>
-        /// Суммировать броню к общей броне игрока
-        /// </summary>
-        private void IncremenentToPlayerArmory()
-        {
-            if (armoryValue > 0)
-                playerComponentsControl.PlayerArmory.HealthValue
-                    += armoryValue;
-        }
-
         /// <summary>
         /// Инициализация 2
         /// </summary>
-        private void Start() 
+        private void Awake()
         {
-            playerComponentsControl =
-                GameObject.FindWithTag("Player").GetComponent<PlayerComponentsControl>();
-            transform.SetParent(playerComponentsControl.PlayerArmory.GetMyParent(numberPosition));
+            transform.SetParent(GameObject.FindWithTag("Player").
+                GetComponent<PlayerComponentsControl>().PlayerArmory.
+                GetMyParent((int)numberPosition));
             transform.localPosition = Vector3.zero;
-            IncremenentToPlayerArmory();
-            InitToPlayerArmory();
 
             if (!isActivePart) return;
             rigFromObj = transform.GetComponentInChildren<Rigidbody>();
             boxCollider = transform.GetComponentInChildren<BoxCollider>();
             rigFromObj.detectCollisions = false;
-        }
-
-        /// <summary>
-        /// Инициализация массивов брони для игрока
-        /// </summary>
-        private void InitToPlayerArmory()
-        {
-            switch (armoryType)
-            {
-                case ArmoryType.Helmet:
-                    playerComponentsControl.PlayerArmory.Helmet 
-                        = this;
-                    break;
-                case ArmoryType.Cuirass:
-                    playerComponentsControl.PlayerArmory.KirasaParts.Add(this);
-                    break;
-                case ArmoryType.Shield:
-                    playerComponentsControl.PlayerArmory.ShieldParts.Add(this);
-                    break;
-            }
         }
 
         /// <summary>

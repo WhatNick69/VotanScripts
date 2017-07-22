@@ -54,7 +54,6 @@ namespace GameBehaviour
         /// <param name="weapon"></param>
         public void EventEffect(IWeapon weapon)
         {
-            Debug.Log(weapon.GetPlayer.PlayerModel + " получил " + scoreBonus);
             playerTransform = weapon.GetPlayer.PlayerWeapon.transform;
             playerScore = weapon.GetPlayer.PlayerScore;
             trailBonus.GetComponent<TrailRenderer>().startColor = weapon.TrailRenderer.startColor;

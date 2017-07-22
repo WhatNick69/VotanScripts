@@ -1,5 +1,6 @@
 ﻿using PlayerBehaviour;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace CraftSystem
 {
@@ -10,6 +11,8 @@ namespace CraftSystem
         : MonoBehaviour
     {
         #region Переменные
+        [SerializeField, Tooltip("Изображение части брони")]
+        private Image imageArmory;
         [SerializeField,Tooltip("Тип атаки камня")]
         private DamageType damageTypeGem;
         [SerializeField, Range(1, 100f),Tooltip("Сила камня")]

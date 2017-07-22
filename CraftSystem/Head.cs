@@ -1,5 +1,6 @@
 ﻿using PlayerBehaviour;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace CraftSystem
 {
@@ -10,6 +11,8 @@ namespace CraftSystem
         : MonoBehaviour
     {
         #region Переменные
+        [SerializeField, Tooltip("Изображение части брони")]
+        private Image imageArmory;
         [SerializeField, Range(1, 75f),Tooltip("Вес головной части")]
         private float headWeight;
         [SerializeField,Range(1,100f),Tooltip("Базовое значение урона оружием")]

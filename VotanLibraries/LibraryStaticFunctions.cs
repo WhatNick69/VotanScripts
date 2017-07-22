@@ -38,8 +38,7 @@ namespace VotanLibraries
         public static float GetCoefficientForGetDamageNoize(float coefficient)
         {
             if (coefficient > 1) coefficient = 1;
-            else if (coefficient < 0.25f) coefficient = 0.25f;
-            return coefficient /= 2;
+            return coefficient /= 4;
         }
 
         /// <summary>
@@ -84,7 +83,8 @@ namespace VotanLibraries
         /// <summary>
         /// Получить урон от огненного оружия
         /// 
-        /// Текущая реализация: УРОН/10 * (1+СИЛА_ГЕМА/200)
+        /// Текущая реализация: УРОН/10 * (1+СИЛА_ГЕМА/200).
+        /// Значение: 0.126 - 150
         /// </summary>
         /// <param name="damage"></param>
         /// <param name="weapon"></param>
@@ -92,6 +92,20 @@ namespace VotanLibraries
         public static float FireDamagePerPeriod(float damage, IWeapon weapon)
         {
             return (damage / 10) * (1 + (weapon.GemPower / 200));
+        }
+
+        /// <summary>
+        /// Получить урон от ледяного оружия
+        /// 
+        /// Текущая реализация: УРОН/10 * (1+СИЛА_ГЕМА/200)
+        /// Значение: 0.01 - 16.5
+        /// </summary>
+        /// <param name="damage"></param>
+        /// <param name="weapon"></param>
+        /// <returns></returns>
+        public static float IceDamagePerPeriod(float damage, IWeapon weapon)
+        {
+            return (damage / 100) * (1 + (weapon.GemPower / 200));
         }
 
         /// <summary>
@@ -117,6 +131,40 @@ namespace VotanLibraries
         public static float TimeToFreezy(float gemPower)
         {
             return GetRangeValue(1 + (gemPower / 100) * 3, 0.1f);
+        }
+
+        /// <summary>
+        /// Сила отталкивания
+        /// </summary>
+        /// <param name="weapon"></param>
+        /// <returns></returns>
+        public static float StrenghtOfNockback(IWeapon weapon)
+        {
+            return 2 +  (weapon.GemPower / 100);
+        }
+
+        /// <summary>
+        /// Как долго ждать после очередной физической атаки?
+        /// </summary>
+        /// <param name="gemPower"></param>
+        /// <returns></returns>
+        public static float HowMuchWaitForPhysicAttack(float gemPower)
+        {
+            return 1 - (gemPower / 100);
+        }
+
+        /// <summary>
+        /// Урон, после прохождения через временную защиту 
+        /// камня земли
+        /// </summary>
+        /// <param name="damage"></param>
+        /// <param name="weapon"></param>
+        /// <returns></returns>
+        public static float DamageFromTempPhysicDefence(float damage, IWeapon weapon)
+        {
+            float a = 0;
+            if (weapon.TempPhysicDefence <= 0.01f) return damage;
+            else return damage * (1 - (weapon.TempPhysicDefence / 100));
         }
 
         /// <summary>

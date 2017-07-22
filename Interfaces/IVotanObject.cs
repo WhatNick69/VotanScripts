@@ -104,6 +104,11 @@ namespace VotanInterfaces
         IElectricEffect ElectricEffect { get; set; }
 
         /// <summary>
+        /// Земляной эффект
+        /// </summary>
+        IPhysicEffect Physicffect { get; set; }
+
+        /// <summary>
         /// Эффект начисления бонуса за убийство игроку
         /// </summary>
         IScoreAddingEffect ScoreAddingEffect { get; set; }

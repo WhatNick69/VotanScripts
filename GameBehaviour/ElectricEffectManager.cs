@@ -82,6 +82,8 @@ namespace GameBehaviour
             this.damage = damage;
             this.weapon = weapon;
 
+            GameAnimationsObjects.FireEventForDynamicObject(0); // чтобы ящик упал
+
             if (gemPower < 0) return;
             //Debug.Log("Запускаем, со значениями DMG: " + damage + ", GP: " + gemPower);
             listTrailObjects.Clear();

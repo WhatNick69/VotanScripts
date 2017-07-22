@@ -83,6 +83,7 @@ namespace PlayerBehaviour
         {
             if (!isNoising)
             {
+                //Debug.Log(coeff);
                 isNoising = true;
                 Timing.RunCoroutine(CoroutineForNoizeDoDamage(coeff));
             }
@@ -115,7 +116,7 @@ namespace PlayerBehaviour
 
             followMoveSpeed = followMoveSpeed * multiplierNoise;
             followRotateSpeed = followRotateSpeed * multiplierNoise;
-            coeff -= 0.25f;
+            coeff -= 0.75f;
 
             int i = 0;
             while (i < 10)
@@ -171,6 +172,7 @@ namespace PlayerBehaviour
                 yield return Timing.WaitForSeconds(0.05f);
                 i++;
             }
+
             followMoveSpeed = noiseMoveUpdateSpeed;
             followRotateSpeed = noiseRotateUpdateSpeed;
             standartVectorForCamera = new Vector3(0, 9, -8);

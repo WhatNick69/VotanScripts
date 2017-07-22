@@ -12,7 +12,7 @@ namespace VotanInterfaces
         /// Зажечь ледяной эффект
         /// </summary>
         /// <param name="time"></param>
-        void EventEffect(float time, IWeapon weapon);
+        void EventEffect(float damage,float time, IWeapon weapon);
     }
 
     /// <summary>
@@ -37,6 +37,18 @@ namespace VotanInterfaces
         /// </summary>
         /// <param name="time"></param>
         void EventEffect(float damage,IWeapon weapon);
+    }
+
+    /// <summary>
+    /// Интерфейс для реализации земляного эффекта
+    /// </summary>
+    public interface IPhysicEffect
+    {
+        /// <summary>
+        /// Зажечь огненный эффект
+        /// </summary>
+        /// <param name="time"></param>
+        void EventEffect(IWeapon weapon);
     }
 
     /// <summary>
