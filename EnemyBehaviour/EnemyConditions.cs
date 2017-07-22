@@ -367,7 +367,6 @@ namespace EnemyBehaviour
         /// <returns></returns>
         public IEnumerator<float> CoroutineForFrozenDamage(float damage,IWeapon weapon)
         {
-            Debug.Log("ICE");
             enemyAbstract.EnemyAnimationsController.SetState(2, true);
             enemyMove.SetNewSpeedOfNavMeshAgent(0, 0);
             enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0);

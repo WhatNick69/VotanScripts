@@ -77,6 +77,7 @@ namespace GameBehaviour
             int maxI = Convert.ToInt32(time / 0.25f);
             isBurning = true;
 
+            particleSystem.gameObject.SetActive(true);
             particleSystem.Play();
 
             while (i < maxI)
@@ -94,9 +95,12 @@ namespace GameBehaviour
             }
             if (particleSystem)
                 particleSystem.Stop();
-
             damagePerTime = 0;
             isBurning = false;
+
+            yield return Timing.WaitForSeconds(2);
+            if (particleSystem && !isBurning)
+                particleSystem.gameObject.SetActive(false);
         }
     }
 }

@@ -117,6 +117,7 @@ namespace PlayerBehaviour
             followMoveSpeed = followMoveSpeed * multiplierNoise;
             followRotateSpeed = followRotateSpeed * multiplierNoise;
             coeff -= 0.5f;
+            coeff /= 2;
             if (coeff > 1) coeff = 1;
 
             int i = 0;
