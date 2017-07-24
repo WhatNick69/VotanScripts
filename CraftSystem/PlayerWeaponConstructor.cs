@@ -55,18 +55,18 @@ namespace CraftSystem
 			{
 				case LenghtGrip.Short:
 					gripPoint = shortGripPosition;
-					headPosition = new Vector3(-62,0,0); //
-					attackPoint = new Vector3(-65, 0, 0);
+					headPosition = new Vector3(-62,0,0);
+					attackPoint = new Vector3(-70, 0, 0);
 					break;
 				case LenghtGrip.Middle:
 					gripPoint = midleGripPosition;
 					headPosition = new Vector3(-67, 0, 0);
-					attackPoint = new Vector3(-70, 0, 0);
+					attackPoint = new Vector3(-72, 0, 0);
 					break;
 				case LenghtGrip.Long:
 					gripPoint = longGripPosition;
-					headPosition = new Vector3(-72,0,0); //	
-					attackPoint = new Vector3(-75, 0, 0);
+					headPosition = new Vector3(-72,0,0);
+					attackPoint = new Vector3(-82, 0, 0);
 					break;
 				default:
 					gripPoint = Vector3.zero;

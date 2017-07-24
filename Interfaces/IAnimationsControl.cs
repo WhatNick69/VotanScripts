@@ -33,6 +33,12 @@ namespace VotanInterfaces
         void LowSpeedAnimation();
 
         /// <summary>
+        /// Установить минимальную скорость анимации 
+        /// без проверки на состояния
+        /// </summary>
+        void NonCheckLowSpeedAnimation();
+
+        /// <summary>
         /// Установить максимальную скорость анимации
         /// </summary>
         void HighSpeedAnimation();

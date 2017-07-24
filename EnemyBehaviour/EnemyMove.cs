@@ -30,8 +30,12 @@ namespace EnemyBehaviour
         private float agentSpeed;
         [SerializeField, Tooltip("Коэффициент анимации при движении"), Range(0.5f,5)]
         private float speedCoefficient;
+        [SerializeField, Tooltip("Предупредительная дистанция для атаки"), Range(0,100)]
+        private float preDistanceForAttack;
         [SerializeField, Tooltip("Враг")]
         private AbstractEnemy abstractEnemy;
+        [SerializeField, Tooltip("Модель врага")]
+        private Transform modelEnemy;
 
         private float randomRadius;
         private float rotationSpeed;
@@ -135,7 +139,7 @@ namespace EnemyBehaviour
         /// </summary>
         private void RandomSpeedSet()
         {
-            agent.speed = LibraryStaticFunctions.GetRangeValue(agentSpeed, 0.25f);
+            agent.speed = LibraryStaticFunctions.GetRangeValue(agentSpeed, 0.2f);
             agentSpeed = agent.speed;
             rotationSpeed = agent.angularSpeed;
         }
@@ -172,7 +176,7 @@ namespace EnemyBehaviour
             {
                 isStopped = Vector3.Distance
                     (transform.position, playerObjectTransformForFollow.position)
-                    <= agent.stoppingDistance ? true : false;
+                    <= agent.stoppingDistance+preDistanceForAttack ? true : false;
                 if (!isStopped && PlayerObjectTransformForFollow)
                     abstractEnemy.EnemyAttack.IsMayToPlayAttackAnimation = true;
             }
@@ -259,6 +263,7 @@ namespace EnemyBehaviour
             {
                 if (playerObjectTransformForFollow != null)
                 {
+                    LookAtNullRotation();
                     if (playerConditions.IsAlive)
                     {
                         if (agent != null && agent.enabled)
@@ -298,6 +303,14 @@ namespace EnemyBehaviour
         }
 
         /// <summary>
+        /// Обнулять поворот модели
+        /// </summary>
+        private void LookAtNullRotation()
+        {
+            lerpRotationQuar.y = 0;
+        }
+
+        /// <summary>
         /// Поворот
         /// </summary>
         public virtual IEnumerator<float> CoroutineForRotating()
@@ -310,11 +323,25 @@ namespace EnemyBehaviour
                         transform.rotation =
                         Quaternion.Lerp(transform.rotation
                             , lerpRotationQuar, angularLookSpeed);
+                    else if (modelEnemy.localEulerAngles.y != 0)
+                    {
+                        modelEnemy.localRotation =
+                        Quaternion.Lerp(modelEnemy.localRotation
+                            , Quaternion.identity, angularLookSpeed);
+                    }
                 }
                 else
                 {
                     CheckStopped(true);
+                    if (modelEnemy.localEulerAngles.y != 0)
+                    {
+                        modelEnemy.localRotation =
+                        Quaternion.Lerp(modelEnemy.localRotation
+                            , Quaternion.identity, angularLookSpeed);
+                    }
                 }
+
+                
                 yield return Timing.WaitForSeconds(frequencyResting);
             }
         }

@@ -113,6 +113,7 @@ namespace CraftSystem
 					button.SetArmorClass(ArmoryClass.Shield);
 					button.SetName(shieldList[i].ArmoryName);
 					button.SetArmor(shieldList[i].ArmoryValue.ToString());
+					button.GetComponent<Button>().image.sprite = shieldList[i].ImageArm;
 					item.transform.SetParent(shieldRepository.transform, false);
 				}
 			}
@@ -135,6 +136,7 @@ namespace CraftSystem
 					button.SetArmorClass(ArmoryClass.Cuirass);
 					button.SetName(cuirassList[i].ArmoryName);
 					button.SetArmor(cuirassList[i].ArmoryValue.ToString());
+					button.GetComponent<Button>().image.sprite = cuirassList[i].ImageArm;
 					item.transform.SetParent(cuirassRepository.transform, false);
 				}
 			}
@@ -157,6 +159,7 @@ namespace CraftSystem
 					button.SetArmorClass(ArmoryClass.Helmet);
 					button.SetName(helmetList[i].ArmoryName);
 					button.SetArmor(helmetList[i].ArmoryValue.ToString());
+					button.GetComponent<Button>().image.sprite = helmetList[i].ImageArm;
 					item.transform.SetParent(helmetRepository.transform, false);
 				}
 			}

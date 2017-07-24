@@ -51,6 +51,14 @@ namespace PlayerBehaviour
         }
 
         /// <summary>
+        /// Установить низкую скорость анимации без проверки на состояние
+        /// </summary>
+        public override void NonCheckLowSpeedAnimation()
+        {
+           // НЕ ЮЗАЕТСЯ
+        }
+
+        /// <summary>
         /// Установить высокую скорость анимации
         /// </summary>
         public override void HighSpeedAnimation()

@@ -97,6 +97,19 @@ namespace EnemyBehaviour
                 isDownInterfaceTransformHasBeenChanged = value;
             }
         }
+
+        public bool IsMayGetDamage
+        {
+            get
+            {
+                return isMayGetDamage;
+            }
+
+            set
+            {
+                isMayGetDamage = value;
+            }
+        }
         #endregion
 
         /// <summary>

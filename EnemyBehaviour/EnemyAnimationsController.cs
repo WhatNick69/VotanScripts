@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using AbstractBehaviour;
 using MovementEffects;
 using UnityEngine;
@@ -13,6 +12,11 @@ namespace EnemyBehaviour
     public class EnemyAnimationsController
         : AbstactObjectAnimations
     {
+        [SerializeField,Tooltip("Скорость аниматора")]
+        private float lowSpeedAnimator;
+        [SerializeField,Tooltip("Необходимо ли после смерти нормализовывать по Y?")]
+        private bool needToNormalizeYAfterDead;
+
         private IEnemyConditions enemyConditions;
         private IEnemyBehaviour enemyBehaviour;
 
@@ -50,7 +54,9 @@ namespace EnemyBehaviour
         public override void SetSpeedAnimationByRunSpeed(float value)
         {
             if (enemyConditions != null && !enemyConditions.IsFrozen)
+            {
                 animatorOfObject.speed = value;
+            }
         }
 
         /// <summary>
@@ -59,9 +65,18 @@ namespace EnemyBehaviour
         public override void LowSpeedAnimation()
         {
             if (IsFalseAllStates())
-                animatorOfObject.speed = 0.05f;
+                animatorOfObject.speed = lowSpeedAnimator;
         }
-      
+
+        /// <summary>
+        /// Установить низкую скорость анимации врага 
+        /// без проверки на состояния
+        /// </summary>
+        public override void NonCheckLowSpeedAnimation()
+        {
+            animatorOfObject.speed = lowSpeedAnimator;
+        }
+
         /// <summary>
         /// Задаем значение состоянию анимации врагу-рыцарю.
         /// 0 - бег, 1 - битва, 2 - ущерб, 
@@ -94,13 +109,16 @@ namespace EnemyBehaviour
             yield return Timing.WaitForSeconds(0.5f);
             if (this == null) yield break;
 
-            while (i < 17)
+            if (needToNormalizeYAfterDead)
             {
-                i++;
-                if (this == null) yield break;
+                while (i < 17)
+                {
+                    i++;
+                    if (this == null) yield break;
 
-                transformForDeadYNormalizing.Translate(0, -0.035f, 0);
-                yield return Timing.WaitForSeconds(0.01f);
+                    transformForDeadYNormalizing.Translate(0, -0.035f, 0);
+                    yield return Timing.WaitForSeconds(0.01f);
+                }
             }
             yield return Timing.WaitForSeconds(3);
 

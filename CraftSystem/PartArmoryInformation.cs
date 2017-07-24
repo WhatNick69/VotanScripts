@@ -5,63 +5,72 @@ using UnityEngine.UI;
 
 namespace CraftSystem
 {
-    /// <summary>
-    /// Информация об префабе брони
-    /// </summary>
-    public class PartArmoryInformation 
-        : MonoBehaviour
+	/// <summary>
+	/// Информация об префабе брони
+	/// </summary>
+	public class PartArmoryInformation
+		: MonoBehaviour
 	{
-        #region Переменные
-        [SerializeField, Tooltip("Изображение части брони")]
-        private Image imageArmory;
-        [SerializeField, Tooltip("Тип брони")]
-        private ArmoryClass armoryType;
-        [SerializeField, Range(1, 1000f), Tooltip("Базовое значение части брони")]
+		#region Переменные
+		[SerializeField, Tooltip("Изображение части брони")]
+		private Sprite imageArmory;
+		[SerializeField, Tooltip("Тип брони")]
+		private ArmoryClass armoryType;
+		[SerializeField, Range(1, 1000f), Tooltip("Базовое значение части брони")]
 		private float armoryValue;
 		[SerializeField, Tooltip("Название части брони")]
 		private string armoryName;
-        private PlayerComponentsControl playerComponentsControl;
-        #endregion
+		private PlayerComponentsControl playerComponentsControl;
+		#endregion
 
-        #region Свойства
-        public float ArmoryValue
-        {
-            get
-            {
-                return armoryValue;
-            }
+		#region Свойства
+		public float ArmoryValue
+		{
+			get
+			{
+				return armoryValue;
+			}
 
-            set
-            {
-                armoryValue = value;
-            }
-        }
+			set
+			{
+				armoryValue = value;
+			}
+		}
 
-        public Image ImageArmory
-        {
-            get
-            {
-                return imageArmory;
-            }
+		public Sprite ImageArmory
+		{
+			get
+			{
+				return imageArmory;
+			}
 
-            set
-            {
-                imageArmory = value;
-            }
-        }
+			set
+			{
+				imageArmory = value;
+			}
+		}
 
-        public string ArmoryName
-        {
-            get
-            {
-                return armoryName;
-            }
+		public string ArmoryName
+		{
+			get
+			{
+				return armoryName;
+			}
 
-            set
-            {
-                armoryName = value;
-            }
-        }
+			set
+			{
+				armoryName = value;
+			}
+		}
+
+		public Sprite ImageArm
+		{
+			get
+			{
+				return imageArmory;
+			}
+		}
+			
         #endregion
 
         /// <summary>

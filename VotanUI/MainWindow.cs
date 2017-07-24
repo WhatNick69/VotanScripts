@@ -7,6 +7,7 @@ namespace VotanUI
     public class MainWindow 
         : MonoBehaviour
     {
+		SelectArena sceneSc;
 		[SerializeField]
 		GameObject inventoryMenuPage;
 		[SerializeField]
@@ -47,9 +48,13 @@ namespace VotanUI
         public void PlayArena()
         {
 
-            SceneManager.LoadScene(1);
+            SceneManager.LoadScene("Arena_" + 1);
         }
 
+		private void Start()
+		{
+			sceneSc = new SelectArena();
+		}
 
 	}
 }

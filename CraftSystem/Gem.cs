@@ -11,8 +11,8 @@ namespace CraftSystem
         : MonoBehaviour
     {
         #region Переменные
-        [SerializeField, Tooltip("Изображение части брони")]
-        private Image imageArmory;
+        [SerializeField, Tooltip("Изображение камня")]
+        private Sprite imageGem;
         [SerializeField,Tooltip("Тип атаки камня")]
         private DamageType damageTypeGem;
         [SerializeField, Range(1, 100f),Tooltip("Сила камня")]
@@ -69,6 +69,14 @@ namespace CraftSystem
                 gemName = value;
             }
         }
-        #endregion
-    }
+
+		public Sprite ItemImage
+		{
+			get
+			{
+				return imageGem;
+			}
+		}
+		#endregion
+	}
 }

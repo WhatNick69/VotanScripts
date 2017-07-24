@@ -14,6 +14,7 @@ namespace CraftSystem
 		[SerializeField]
 		Text armor;
 		ArmoryClass ac;
+		Image logo;
 
 		public void SetNumber(int x)
 		{

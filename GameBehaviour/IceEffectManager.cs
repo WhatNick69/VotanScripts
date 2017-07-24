@@ -90,7 +90,8 @@ namespace GameBehaviour
 
             while (i < maxI)
             {
-                if (abstractEnemy.EnemyConditions.HealthValue <= 0) yield break;
+                if (!abstractEnemy ||
+                    abstractEnemy.EnemyConditions.HealthValue <= 0) yield break;
                 abstractEnemy.EnemyConditions.HealthValue -=
                     LibraryStaticFunctions.GetRangeValue(damage, 0.05f);
                 if (abstractEnemy.EnemyConditions.HealthValue <= 0)

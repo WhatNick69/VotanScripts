@@ -128,12 +128,13 @@ namespace CraftSystem
 					GameObject gemGgamObj = (GameObject)Resources.Load(gemPrefix + i.ToString() + gemPostfix);
 					gemList.Add(gemGgamObj.GetComponent<Gem>());
 					GameObject item = Instantiate(itemGem);
-					GemButton GmM = item.GetComponent<GemButton>();
-					GmM.SetWeaponCraft(WC);
-					GmM.SetNumber(i);
-					GmM.SetName(gemList[i].GemName);
-					GmM.SetGemPower(gemList[i].GemPower.ToString());
-					GmM.SetGemType(gemList[i].DamageTypeGem);
+					GemButton button = item.GetComponent<GemButton>();
+					button.SetWeaponCraft(WC);
+					button.SetNumber(i);
+					button.SetName(gemList[i].GemName);
+					button.SetGemPower(gemList[i].GemPower.ToString());
+					button.SetGemType(gemList[i].DamageTypeGem);
+					button.GetComponent<Button>().image.sprite = gemList[i].ItemImage;
 					item.transform.SetParent(gemRepository.transform, false);
 				}
 			}
@@ -150,13 +151,14 @@ namespace CraftSystem
 					GameObject headGamObj = (GameObject)Resources.Load(headPrefix + i.ToString() + headPostfix);
 					headList.Add(headGamObj.GetComponent<Head>());
 					GameObject item = Instantiate(itemHead);
-					HeadButton HB = item.GetComponent<HeadButton>();
-					HB.SetWeaponCraft(WC);
-					HB.SetNumber(i);
-					HB.SetName(headList[i].HeadName);
-					HB.SetDamage(headList[i].DamageBase.ToString());
-					HB.SetWeight(headList[i].HeadWeight.ToString());
-					HB.SetSpinBous(headList[i].BonusSpinSpeedFromHead.ToString());
+					HeadButton button = item.GetComponent<HeadButton>();
+					button.SetWeaponCraft(WC);
+					button.SetNumber(i);
+					button.SetName(headList[i].HeadName);
+					button.SetDamage(headList[i].DamageBase.ToString());
+					button.SetWeight(headList[i].HeadWeight.ToString());
+					button.SetSpinBous(headList[i].BonusSpinSpeedFromHead.ToString());
+					button.GetComponent<Button>().image.sprite = headList[i].ItemImage;
 					item.transform.SetParent(headRepository.transform, false);
 
 				}
@@ -175,13 +177,14 @@ namespace CraftSystem
 					GameObject gripGamObj = (GameObject)Resources.Load(gripPrefix + i.ToString() + gripPostfix); // загрузка префаба оружия
 					gripList.Add(gripGamObj.GetComponent<Grip>()); // отправка компонента в лист
 					GameObject item = Instantiate(itemGrip); // создание кнопки
-					GripButton GB = item.GetComponent<GripButton>(); // Снимаем компонент свойств кномпи с объекта
-					GB.SetWeaponCraft(WC);  // ниже задаем параметры, которые увидит игрок
-					GB.SetNumber(i);
-					GB.SetName(gripList[i].GripName);
-					GB.SetWeight(gripList[i].GripWeight.ToString());
-					GB.SetSpinBous(gripList[i].BonusSpinSpeedFromGrip.ToString());
-					GB.SetDefence(gripList[i].GripDefence.ToString());
+					GripButton button = item.GetComponent<GripButton>(); // Снимаем компонент свойств кномпи с объекта
+					button.SetWeaponCraft(WC);  // ниже задаем параметры, которые увидит игрок
+					button.SetNumber(i);
+					button.SetName(gripList[i].GripName);
+					button.SetWeight(gripList[i].GripWeight.ToString());
+					button.SetSpinBous(gripList[i].BonusSpinSpeedFromGrip.ToString());
+					button.SetDefence(gripList[i].GripDefence.ToString());
+					button.GetComponent<Button>().image.sprite = gripList[i].ItemImage;
 					item.transform.SetParent(gripRepository.transform, false); // удочерям кнопку "листу" кнопок
 
 				}

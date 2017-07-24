@@ -4,7 +4,6 @@ using UnityEngine.AI;
 using VotanInterfaces;
 using MovementEffects;
 using System.Collections.Generic;
-using System;
 
 namespace EnemyBehaviour
 {
@@ -16,13 +15,13 @@ namespace EnemyBehaviour
         : AbstractEnemy
     {
         [SerializeField,Tooltip("Частота обновления состояний для атаки"),Range(0.01f,0.5f)]
-        private float refreshLatency;
+        protected float refreshLatency;
         private float movingSpeed;
 
         /// <summary>
         /// Инициализация
         /// </summary>
-        public void Awake()
+        public virtual void Awake()
         {
             EnemyOpponentChoiser =
                 GetComponent<EnemyOpponentChoiser>();
@@ -47,7 +46,10 @@ namespace EnemyBehaviour
             Timing.RunCoroutine(UpdateAttackState());
         }
 
-        public void Start()
+        /// <summary>
+        /// Инициализация
+        /// </summary>
+        public virtual void Start()
         {
             movingSpeed = EnemyMove.AgentSpeed / 5;
         }
@@ -56,7 +58,7 @@ namespace EnemyBehaviour
         /// Обновление
         /// </summary>
         /// <returns></returns>
-        private IEnumerator<float> UpdateAttackState()
+        protected virtual IEnumerator<float> UpdateAttackState()
         {
             yield return Timing.WaitForSeconds(1);
             while (EnemyConditions.IsAlive)

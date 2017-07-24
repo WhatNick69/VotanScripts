@@ -3,6 +3,7 @@ using PlayerBehaviour;
 using UnityEngine;
 using VotanInterfaces;
 using MovementEffects;
+using VotanLibraries;
 
 namespace GameBehaviour
 {
@@ -54,6 +55,7 @@ namespace GameBehaviour
         /// <param name="weapon"></param>
         public void EventEffect(IWeapon weapon)
         {
+            scoreBonus = (int)LibraryStaticFunctions.GetRangeValue(scoreBonus, 0.1f);
             playerTransform = weapon.GetPlayer.PlayerWeapon.transform;
             playerScore = weapon.GetPlayer.PlayerScore;
             trailBonus.GetComponent<TrailRenderer>().startColor = weapon.TrailRenderer.startColor;

@@ -155,8 +155,21 @@ namespace AbstractBehaviour
                 animatorOfObject.SetBool(StructStatesNames.GetState(i), false);
         }
 
+        /// <summary>
+        /// Проиграть корутину на нормализацию положения относительно
+        /// координаты "Y"
+        /// </summary>
         public abstract void PlayDeadNormalizeCoroutine();
             
+        /// <summary>
+        /// Корутина на нормализацию по координате "Y"
+        /// </summary>
+        /// <returns></returns>
         public abstract IEnumerator<float> CoroutineDeadYNormalized();
+
+        /// <summary>
+        /// Установить минимальную скорость анимации без проверки на состояние
+        /// </summary>
+        public abstract void NonCheckLowSpeedAnimation();
     }
 }

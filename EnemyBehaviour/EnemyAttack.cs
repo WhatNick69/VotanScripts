@@ -17,7 +17,7 @@ namespace EnemyBehaviour
         #region Переменные
         [SerializeField, Tooltip("Урон от удара врага")]
         private float dmgEnemy;
-        private PlayerAttack playerTarget;
+        protected PlayerAttack playerTarget;
         private IEnemyBehaviour enemyAbstract;
         private bool inFightMode;
         private bool isMayToPlayAttackAnimation = true;
@@ -114,7 +114,7 @@ namespace EnemyBehaviour
         /// Атакуем персонажа
         /// </summary>
         /// <returns></returns>
-        public bool AttackToPlayer()
+        public virtual bool AttackToPlayer()
         {
             //if (isMayToDamage) DrawerLiner();
             if (isMayToDamage && (LibraryPhysics.BushInLine
@@ -134,7 +134,6 @@ namespace EnemyBehaviour
                 return false;
             }
         }
-        private int i = 0;
 
         /// <summary>
         /// Для класса врага
@@ -174,13 +173,12 @@ namespace EnemyBehaviour
         /// Корутина для нанесения урона по персонажу
         /// </summary>
         /// <returns></returns>
-        public IEnumerator<float> CoroutineMayDoDamage()
+        public virtual IEnumerator<float> CoroutineMayDoDamage()
         {
             isMayToDamage = false;
             enemyAbstract.EnemyAnimationsController.SetState(1, false);
             yield return Timing.WaitForSeconds(attackLatency + 0.5f);
             enemyAbstract.EnemyAnimationsController.SetState(1, true);
-            //isMayToDamage = true;
         }
 
         public void MayToCalculateHiting()

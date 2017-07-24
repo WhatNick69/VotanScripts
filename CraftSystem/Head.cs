@@ -11,8 +11,8 @@ namespace CraftSystem
         : MonoBehaviour
     {
         #region Переменные
-        [SerializeField, Tooltip("Изображение части брони")]
-        private Image imageArmory;
+        [SerializeField, Tooltip("Изображение лезвия")]
+        private Sprite imageHead;
         [SerializeField, Range(1, 75f),Tooltip("Вес головной части")]
         private float headWeight;
         [SerializeField,Range(1,100f),Tooltip("Базовое значение урона оружием")]
@@ -115,6 +115,14 @@ namespace CraftSystem
                 trailRenderer = value;
             }
         }
+
+		public Sprite ItemImage
+		{
+			get
+			{
+				return imageHead;
+			}
+		}
         #endregion
     }
 }

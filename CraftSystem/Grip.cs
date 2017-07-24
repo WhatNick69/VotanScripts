@@ -11,8 +11,8 @@ namespace CraftSystem
 		: MonoBehaviour
 	{
         #region Переменные
-        [SerializeField, Tooltip("Изображение части брони")]
-        private Image imageArmory;
+        [SerializeField, Tooltip("Изображение рукояти")]
+        private Sprite imageGrip;
         [SerializeField, Range(1, 25f), Tooltip("Вес ручки")]
 		private float gripWeight;
 		[SerializeField, Range(1, 100f), Tooltip("Защита")]
@@ -105,6 +105,14 @@ namespace CraftSystem
                 gripDefence = value;
             }
         }
-        #endregion
-    }
+
+		public Sprite ItemImage
+		{
+			get
+			{
+				return imageGrip;
+			}
+		}
+		#endregion
+	}
 }
