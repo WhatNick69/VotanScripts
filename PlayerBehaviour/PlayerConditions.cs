@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using VotanLibraries;
 using VotanInterfaces;
 using GameBehaviour;
+using VotanGameplay;
 
 namespace PlayerBehaviour
 {

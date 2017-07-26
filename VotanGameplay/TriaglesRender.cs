@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace GameBehaviour
+namespace VotanGameplay
 {
     /// <summary>
     /// Поворачивает интерфейс под объектом
@@ -30,21 +30,40 @@ namespace GameBehaviour
         [SerializeField,Tooltip("Угол")]
         private float angle;
 
-        private static List<TriaglesRender> trianglesOnTheScene;
+        private static List<TriaglesRender> trianglesOnTheScene =
+            new List<TriaglesRender>();
         #endregion
 
+        /// <summary>
+        /// Пре-инициализация
+        /// </summary>
         private void Awake()
         {
-            trianglesOnTheScene = new List<TriaglesRender>();
-
+            CheckList();
+            trianglesOnTheScene.Add(this);
             AB = Vector3.Distance(A.position, B.position);
             AC = Vector3.Distance(A.position, C.position);
             BC = Vector3.Distance(C.position, B.position);
             AA1 = Vector3.Distance(A.position, A1.position);
             center = transform;
-            trianglesOnTheScene.Add(this);
+
             normalLevel = 0.55f;
             positionOfStairs = stairs.position;
+        }
+
+        /// <summary>
+        /// Проверить лист на пустые элементы
+        /// </summary>
+        private void CheckList()
+        {
+            foreach (TriaglesRender stairs in trianglesOnTheScene)
+            {
+                if (stairs == null)
+                {
+                    trianglesOnTheScene.Remove(stairs);
+                    break;
+                }
+            }
         }
 
         /// <summary>

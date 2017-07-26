@@ -5,6 +5,7 @@ using VotanInterfaces;
 using MovementEffects;
 using VotanLibraries;
 using GameBehaviour;
+using VotanGameplay;
 
 namespace PlayerBehaviour
 {

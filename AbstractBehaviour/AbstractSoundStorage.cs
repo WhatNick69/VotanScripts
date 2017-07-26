@@ -218,6 +218,10 @@ namespace AbstractBehaviour
             auSo.Play();
         }
 
+        /// <summary>
+        /// Работа со звуком воспламенения
+        /// </summary>
+        /// <param name="auSo"></param>
         public static void WorkWithBurn(AudioSource auSo)
         {
             auSo.clip =
@@ -227,6 +231,10 @@ namespace AbstractBehaviour
             auSo.Play();
         }
 
+        /// <summary>
+        /// Работа со звуком длительного горения
+        /// </summary>
+        /// <param name="auSo"></param>
         public static void WorkWithBurning(AudioSource auSo)
         {
             auSo.clip =
@@ -244,7 +252,7 @@ namespace AbstractBehaviour
         {
             auSo.clip =
                 audioGameMusic[LibraryStaticFunctions.rnd.
-                Next(1, audioGameMusic.Length)];
+                Next(2, audioGameMusic.Length)];
             auSo.Play();
         }
 
@@ -254,10 +262,16 @@ namespace AbstractBehaviour
         /// <param name="auSo"></param>
         public static void GameOverMusic(AudioSource auSo)
         {
-            auSo.clip = audioGameMusic[0];
+            auSo.clip =
+                audioGameMusic[LibraryStaticFunctions.rnd.
+                Next(0, 2)];
             auSo.Play();
         }
 
+        /// <summary>
+        /// Работа со звуком падения тела
+        /// </summary>
+        /// <param name="audioSource"></param>
         public void WorkWithSoundsBodyFall(AudioSource audioSource)
         {
             audioSource.clip =
@@ -273,6 +287,9 @@ namespace AbstractBehaviour
         /// </summary>
         public abstract void PlayDeadAudio();
 
+        /// <summary>
+        /// Уронить объект
+        /// </summary>
         public abstract void FallObject();
 
         /// <summary>
@@ -281,10 +298,23 @@ namespace AbstractBehaviour
         /// <param name="isArmory"></param>
         public abstract void PlayGetDamageAudio(bool isArmory=false);
 
+        /// <summary>
+        /// Звук удара оружия
+        /// </summary>
+        /// <param name="value"></param>
         public abstract void PlayWeaponHitAudio(int value);
 
+        /// <summary>
+        /// Звук кручения оружия
+        /// </summary>
+        /// <param name="speed"></param>
         public abstract void PlaySpinAudio(float speed);
 
+        /// <summary>
+        /// Звук кручения оружия. Перегрузка
+        /// </summary>
+        /// <param name="speed"></param>
+        /// <param name="value"></param>
         public abstract void PlaySpinAudio(float speed, bool value=false);
         #endregion
     }

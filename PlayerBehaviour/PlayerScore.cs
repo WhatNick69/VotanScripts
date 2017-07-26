@@ -17,13 +17,25 @@ namespace PlayerBehaviour
         private int scoreValue;
         [SerializeField, Tooltip("Элемент UI - Text")]
         private Text textElement;
+
+        public int ScoreValue
+        {
+            get
+            {
+                return scoreValue;
+            }
+
+            set
+            {
+                scoreValue = value;
+            }
+        }
         #endregion
 
-        private void Start()
-        {
-            //Timing.RunCoroutine(AddNewScore());
-        }
-
+        /// <summary>
+        /// Добавить очки
+        /// </summary>
+        /// <returns></returns>
         private IEnumerator<float> AddNewScore()
         {
             while (true)

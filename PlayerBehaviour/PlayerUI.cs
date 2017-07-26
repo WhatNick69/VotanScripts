@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using GameBehaviour;
 using UnityEngine.UI;
+using VotanGameplay;
 
 namespace PlayerBehaviour
 {
@@ -13,12 +14,17 @@ namespace PlayerBehaviour
     public class PlayerUI 
         : MonoBehaviour
     {
+        private PlayerComponentsControl playerComponentsControl;
         [SerializeField, Tooltip("Gameover окно")]
         private GameObject gameoverWindow;
         [SerializeField, Tooltip("Продолжить игру")]
         private GameObject continuePlayButton;
         [SerializeField, Tooltip("Кнопка паузы")]
         private GameObject pauseButton;
+        [SerializeField, Tooltip("Очки на интерфейсе")]
+        private GameObject scoreInterface;
+        [SerializeField, Tooltip("Очки при выигрыше")]
+        private GameObject scores;
         private Animation gameoverWindowAnimation;
         [SerializeField, Tooltip("Левый стик")]
         private Image leftStick;
@@ -31,6 +37,8 @@ namespace PlayerBehaviour
         /// </summary>
         private void Start()
         {
+            playerComponentsControl =
+                GetComponent<PlayerComponentsControl>();
             gameoverWindowAnimation =
                 gameoverWindow.GetComponent<Animation>();
             gameoverWindow.SetActive(false);
@@ -46,20 +54,47 @@ namespace PlayerBehaviour
             rightStick.enabled = active;
         }
 
+        /// <summary>
+        /// Событие победы
+        /// </summary>
+        public void EventWin()
+        {
+            GameManager.DisableMusic(true);
+            SetActiveOfPlayerInterface(false);
+            pauseButton.SetActive(false);
+            scoreInterface.SetActive(false);
+            scores.SetActive(true);
+            scores.transform.GetComponentInChildren<Text>().text = "Scores: " 
+                + playerComponentsControl.PlayerScore.ScoreValue;
+            Timing.RunCoroutine(CoroutineForVisibleGameOverWindow(0.3f));
+        }
+
+        /// <summary>
+        /// Событие на проигрышь
+        /// </summary>
         public void EventGameOver()
         {
             SetActiveOfPlayerInterface(false);
             pauseButton.SetActive(false);
-            Timing.RunCoroutine(CoroutineForVisibleGameOverWindow());
+            Timing.RunCoroutine(CoroutineForVisibleGameOverWindow(1));
         }
 
-        private IEnumerator<float> CoroutineForVisibleGameOverWindow()
+        /// <summary>
+        /// Корутина на визуализацию окна 
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        private IEnumerator<float> CoroutineForVisibleGameOverWindow(float time)
         {
-            yield return Timing.WaitForSeconds(1);
+            yield return Timing.WaitForSeconds(time);
             gameoverWindow.SetActive(true);
             CallGameOverWindow(false);
         }
 
+        /// <summary>
+        /// ВЫзвать окно проигрыша/выигрыша
+        /// </summary>
+        /// <param name="isReverse"></param>
         private void CallGameOverWindow(bool isReverse)
         {
             if (isReverse)
@@ -88,6 +123,9 @@ namespace PlayerBehaviour
             SceneManager.LoadScene(0);
         }
 
+        /// <summary>
+        /// Удалить все элементы в сцене
+        /// </summary>
         private void DeleteAll()
         {
             foreach (GameObject gameObject in FindObjectsOfType<GameObject>())
@@ -97,6 +135,9 @@ namespace PlayerBehaviour
             }
         }
 
+        /// <summary>
+        /// Пауза
+        /// </summary>
         public void PauseGame()
         {
             SetActiveOfPlayerInterface(false);
@@ -108,6 +149,9 @@ namespace PlayerBehaviour
             Time.timeScale = 0.000001f;
         }
 
+        /// <summary>
+        /// Продолжить игру
+        /// </summary>
         public void ContinuePlay()
         {
             Time.timeScale = 1;

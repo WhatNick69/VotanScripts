@@ -1,7 +1,11 @@
 ﻿using UnityEngine;
 
-namespace GameBehaviour
+namespace VotanGameplay
 {
+    /// <summary>
+    /// Анимации внутриигровых объектов. Вызов их событий 
+    /// (ящики, бочки и прочее).
+    /// </summary>
     public class GameAnimationsObjects
         : MonoBehaviour
     {

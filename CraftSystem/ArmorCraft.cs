@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using PlayerBehaviour;
+using VotanUI;
 
 namespace CraftSystem
 {
@@ -51,16 +52,19 @@ namespace CraftSystem
 		#region Свойства
 		public void SetCuirassItemNumber(int x)
 		{
-			cuirassItemNumber = x;
+            MenuSoundManager.PlaySoundStatic(1);
+            cuirassItemNumber = x;
 		}
 		public void SetShieldItemNumber(int x)
 		{
-			shieldItemNumber = x;
+            MenuSoundManager.PlaySoundStatic(1);
+            shieldItemNumber = x;
 		}
 
 		public void SetHelmetItemNumber(int x)
 		{
-			helmetItemNumber = x;
+            MenuSoundManager.PlaySoundStatic(1);
+            helmetItemNumber = x;
 		}
 
 		public GameObject GetCuirassPrafab()

@@ -2,6 +2,7 @@
 using UnityEngine;
 using VotanLibraries;
 using GameBehaviour;
+using VotanGameplay;
 
 namespace EnemyBehaviour
 {
@@ -35,7 +36,8 @@ namespace EnemyBehaviour
             GameObject obj;
             if (CheckListOfPlayer())
             {
-                    obj = AllPlayerManager.PlayerList[LibraryStaticFunctions.rnd.Next(0, AllPlayerManager.PlayerList.Count)];
+                    obj = AllPlayerManager.PlayerList[LibraryStaticFunctions
+                        .rnd.Next(0, AllPlayerManager.PlayerList.Count)];
                 playerConditionsTarget = 
                     obj.GetComponent<PlayerConditions>();
                 return obj.transform;

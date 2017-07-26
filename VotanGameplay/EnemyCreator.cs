@@ -6,8 +6,9 @@ using UnityEngine;
 using System;
 using VotanLibraries;
 using VotanInterfaces;
+using PlayerBehaviour;
 
-namespace GameBehaviour
+namespace VotanGameplay
 {
     /// <summary>
     /// Создатель противников
@@ -26,8 +27,6 @@ namespace GameBehaviour
         private int waves;
         [SerializeField,Tooltip("Время, между генерации противника"),Range(0.5f,5)]
         private float timeToInstantiate;
-        [SerializeField, Tooltip("Время между волнами"), Range(0.5f, 10)]
-        private float timeToWave;
         [SerializeField, Tooltip("Random радиус"), Range(3, 25)]
         private float randomRadius;
         [SerializeField, Tooltip("Количество одновременных противников"), Range(5, 50)]
@@ -38,7 +37,27 @@ namespace GameBehaviour
         private int tempEnemiesForWave;
         private int tempEnemyIndexNumber;
         GameObject enemyObjNew;
+        private static bool isWin;
+
+        public static bool IsWin
+        {
+            get
+            {
+                return isWin;
+            }
+
+            set
+            {
+                isWin = value;
+            }
+        }
         #endregion
+
+        private void Start()
+        {
+            isWin = false;
+            Timing.RunCoroutine(CoroutineInstantiate());
+        }
 
         /// <summary>
         /// Корутина для создания врагов
@@ -61,14 +80,27 @@ namespace GameBehaviour
                     }
                     else
                     {
-                        yield return Timing.WaitForSeconds(0.1f);
+                        yield return Timing.WaitForSeconds(timeToInstantiate/2);
                     }
                 }
 
-                GrowNumberOfEnemiesForNextWave();
-                w++;
-                e = 0;
-                yield return Timing.WaitForSeconds(timeToWave);
+                if (StaticStorageWithEnemies.GetCountListOfEnemies() == 0)
+                {
+                    GrowNumberOfEnemiesForNextWave();
+                    w++;
+                    e = 0;
+                }
+                yield return Timing.WaitForSeconds(timeToInstantiate/2);
+            }
+            isWin = true;
+            SendToPlayersCallOfWin();
+        }
+
+        private void SendToPlayersCallOfWin()
+        {
+            foreach (GameObject player in AllPlayerManager.PlayerList)
+            {
+                player.GetComponent<PlayerUI>().EventWin();
             }
         }
 
@@ -145,13 +177,5 @@ namespace GameBehaviour
             tempEnemyIndexNumber = 
                 LibraryStaticFunctions.rnd.Next(0, enemyList.Length);
         }
-
-        /// <summary>
-        /// Инициализация
-        /// </summary>
-        private void Start()
-        { 
-            Timing.RunCoroutine(CoroutineInstantiate());	
-		}
     }
 }

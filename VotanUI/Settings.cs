@@ -1,17 +1,23 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class Settings : MonoBehaviour
+namespace VotanUI
 {
-	[SerializeField]
-	Slider slider;
+    /// <summary>
+    /// Настройки
+    /// </summary>
+    public class Settings 
+        : MonoBehaviour
+    {
+        [SerializeField]
+        Slider slider;
 
-	private void FixedUpdate()
-	{
-		AudioListener.volume = slider.value;
-	}
-
-
+        /// <summary>
+        /// Обновление с заданной частотой
+        /// </summary>
+        private void FixedUpdate()
+        {
+            AudioListener.volume = slider.value;
+        }
+    }
 }

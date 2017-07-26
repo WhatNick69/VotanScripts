@@ -3,7 +3,7 @@ using MovementEffects;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GameBehaviour
+namespace VotanGameplay
 {
     /// <summary>
     /// Менеджер игры. Ставит музыку.

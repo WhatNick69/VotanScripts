@@ -1,6 +1,7 @@
 ﻿using GameBehaviour;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
+using VotanGameplay;
 using VotanInterfaces;
 
 namespace PlayerBehaviour

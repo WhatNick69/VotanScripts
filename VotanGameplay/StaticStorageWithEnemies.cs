@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GameBehaviour
+namespace VotanGameplay
 {
     /// <summary>
     /// Лист со всеми врагами.

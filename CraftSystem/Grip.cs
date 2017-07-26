@@ -25,7 +25,7 @@ namespace CraftSystem
 		[SerializeField, Tooltip("Название рукояти")]
 		private string gripName;
 		[SerializeField]
-		private string prefabName; // Задать ,только, имя префаба
+		private string prefabName; // Задать только имя префаба
 
 		private string linkPrefab = "Prefabs/Weapon/Grip/";
 		#endregion

@@ -3,7 +3,7 @@ using PlayerBehaviour;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GameBehaviour
+namespace VotanGameplay
 {
     /// <summary>
     /// Хранит в себе всех игроков

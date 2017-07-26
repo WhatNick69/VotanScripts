@@ -1,6 +1,7 @@
 ﻿using MovementEffects;
 using System.Collections.Generic;
 using UnityEngine;
+using VotanGameplay;
 using VotanInterfaces;
 
 namespace GameBehaviour

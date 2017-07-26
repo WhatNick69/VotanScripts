@@ -2,7 +2,7 @@
 using UnityEngine;
 using VotanLibraries;
 
-namespace GameBehaviour
+namespace VotanGameplay
 {
     /// <summary>
     /// Контролирует скорость облаков
