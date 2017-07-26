@@ -1,12 +1,15 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace CraftSystem
 {
-    public class ArmorPrefabs : MonoBehaviour
+    /// <summary>
+    /// Объект игрока, который никогда не погибает.
+    /// Передает броню.
+    /// </summary>
+    public class ArmorPrefabs 
+        : MonoBehaviour
     {
-
+        private static bool onLoad;
         GameObject cuirass;
         GameObject helmet;
         GameObject shield;
@@ -14,7 +17,15 @@ namespace CraftSystem
 
         private void Start()
         {
-            DontDestroyOnLoad(this);
+            if (!onLoad)
+            {
+                DontDestroyOnLoad(this);
+                onLoad = true;
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
 
         public GameObject Cuirass

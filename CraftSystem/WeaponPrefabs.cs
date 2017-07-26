@@ -2,16 +2,29 @@
 
 namespace CraftSystem
 {
-    public class WeaponPrefabs : MonoBehaviour
+    /// <summary>
+    /// Объект игрока, который никогда не погибает.
+    /// Передает оружие.
+    /// </summary>
+    public class WeaponPrefabs 
+        : MonoBehaviour
     {
+        private static bool onLoad;
         GameObject grip;
         GameObject head;
         GameObject gem;
 
-
         private void Start()
         {
-            DontDestroyOnLoad(this);
+            if (!onLoad)
+            {
+                DontDestroyOnLoad(this);
+                onLoad = true;
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
 
         public GameObject Grip

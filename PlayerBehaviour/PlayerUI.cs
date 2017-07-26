@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using MovementEffects;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityStandardAssets.CrossPlatformInput;
+using GameBehaviour;
+using UnityEngine.UI;
 
 namespace PlayerBehaviour
 {
@@ -13,12 +13,17 @@ namespace PlayerBehaviour
     public class PlayerUI 
         : MonoBehaviour
     {
-        [SerializeField, Tooltip("Интерфейс экрана игрока")]
-        private GameObject playerInterface;
         [SerializeField, Tooltip("Gameover окно")]
         private GameObject gameoverWindow;
+        [SerializeField, Tooltip("Продолжить игру")]
+        private GameObject continuePlayButton;
+        [SerializeField, Tooltip("Кнопка паузы")]
+        private GameObject pauseButton;
         private Animation gameoverWindowAnimation;
-        private MobileControlRig mobileControlRig;
+        [SerializeField, Tooltip("Левый стик")]
+        private Image leftStick;
+        [SerializeField, Tooltip("Правый стик")]
+        private Image rightStick;
         private string animName = "GameOverUIAnimation";
 
         /// <summary>
@@ -26,9 +31,6 @@ namespace PlayerBehaviour
         /// </summary>
         private void Start()
         {
-            mobileControlRig =
-                playerInterface.transform.parent.
-                GetComponent<MobileControlRig>();
             gameoverWindowAnimation =
                 gameoverWindow.GetComponent<Animation>();
             gameoverWindow.SetActive(false);
@@ -40,13 +42,14 @@ namespace PlayerBehaviour
         /// <param name="active"></param>
         public void SetActiveOfPlayerInterface(bool active)
         {
-            mobileControlRig.enabled = false;
-            playerInterface.SetActive(active);
+            leftStick.enabled = active;
+            rightStick.enabled = active;
         }
 
         public void EventGameOver()
         {
             SetActiveOfPlayerInterface(false);
+            pauseButton.SetActive(false);
             Timing.RunCoroutine(CoroutineForVisibleGameOverWindow());
         }
 
@@ -78,8 +81,42 @@ namespace PlayerBehaviour
         /// </summary>
         public void ExitToMenu()
         {
+            Time.timeScale = 1;
+            SetActiveOfPlayerInterface(true);
             Timing.KillCoroutines();
+            DeleteAll();
             SceneManager.LoadScene(0);
+        }
+
+        private void DeleteAll()
+        {
+            foreach (GameObject gameObject in FindObjectsOfType<GameObject>())
+            {
+                if (gameObject.tag == "ImportantGameobject") continue;
+                Destroy(gameObject);
+            }
+        }
+
+        public void PauseGame()
+        {
+            SetActiveOfPlayerInterface(false);
+            gameoverWindow.SetActive(true);
+            continuePlayButton.SetActive(true);
+            pauseButton.SetActive(false);
+            GameManager.DisableMusic(true);
+
+            Time.timeScale = 0.000001f;
+        }
+
+        public void ContinuePlay()
+        {
+            Time.timeScale = 1;
+
+            SetActiveOfPlayerInterface(true);
+            gameoverWindow.SetActive(false);
+            continuePlayButton.SetActive(false);
+            pauseButton.SetActive(true);
+            GameManager.DisableMusic(false);
         }
     }
 }

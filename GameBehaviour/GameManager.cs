@@ -16,10 +16,12 @@ namespace GameBehaviour
         /// <summary>
         /// Инициализация
         /// </summary>
-        private void Start()
+        private void Awake()
         {
             gameAudioSource =
                 GetComponent<AudioSource>();
+            gameAudioSource.clip = null;
+            gameAudioSource.playOnAwake = false;
             AbstractSoundStorage.LoadAllStaticSounds();
             AbstractSoundStorage.GameplayMusic(gameAudioSource);
             Timing.RunCoroutine(CoroutineForCheckIfMusicIsEnded());
@@ -31,6 +33,14 @@ namespace GameBehaviour
         private static void EventGameOver()
         {
             AbstractSoundStorage.GameOverMusic(gameAudioSource);
+        }
+
+        public static void DisableMusic(bool isPause)
+        {
+            if (isPause)
+                gameAudioSource.pitch = 0;
+            else
+                gameAudioSource.pitch = 1;
         }
 
         /// <summary>

@@ -1,14 +1,15 @@
 ﻿using MovementEffects;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using PlayerBehaviour;
 
 namespace CraftSystem
 {
-	public class ArmorCraft : MonoBehaviour
+    /// <summary>
+    /// Крафт брони
+    /// </summary>
+    public class ArmorCraft 
+        : MonoBehaviour
 	{
 
 		#region Переменные
@@ -80,7 +81,10 @@ namespace CraftSystem
 
 		public void PlayArena()
 		{
-			AP.Cuirass = (GameObject)Resources.Load(cuirassPrefix + cuirassItemNumber + cuirassPostfix);
+            if (AP == null)
+                AP = GameObject.Find("GetArmorPrefabs").GetComponent<ArmorPrefabs>();
+
+            AP.Cuirass = (GameObject)Resources.Load(cuirassPrefix + cuirassItemNumber + cuirassPostfix);
 			AP.Helmet = (GameObject)Resources.Load(helmetPrefix + helmetItemNumber + helmetPostfix);
 			AP.Shield = (GameObject)Resources.Load(shieldPrefix + shieldItemNumber + shieldPostfix);
 		}
@@ -113,7 +117,7 @@ namespace CraftSystem
 					button.SetArmorClass(ArmoryClass.Shield);
 					button.SetName(shieldList[i].ArmoryName);
 					button.SetArmor(shieldList[i].ArmoryValue.ToString());
-					button.GetComponent<Button>().image.sprite = shieldList[i].ImageArm;
+					button.SetLogo (shieldList[i].ImageArm);
 					item.transform.SetParent(shieldRepository.transform, false);
 				}
 			}
@@ -136,7 +140,7 @@ namespace CraftSystem
 					button.SetArmorClass(ArmoryClass.Cuirass);
 					button.SetName(cuirassList[i].ArmoryName);
 					button.SetArmor(cuirassList[i].ArmoryValue.ToString());
-					button.GetComponent<Button>().image.sprite = cuirassList[i].ImageArm;
+					button.SetLogo (cuirassList[i].ImageArm);
 					item.transform.SetParent(cuirassRepository.transform, false);
 				}
 			}
@@ -159,7 +163,7 @@ namespace CraftSystem
 					button.SetArmorClass(ArmoryClass.Helmet);
 					button.SetName(helmetList[i].ArmoryName);
 					button.SetArmor(helmetList[i].ArmoryValue.ToString());
-					button.GetComponent<Button>().image.sprite = helmetList[i].ImageArm;
+					button.SetLogo (helmetList[i].ImageArm);
 					item.transform.SetParent(helmetRepository.transform, false);
 				}
 			}

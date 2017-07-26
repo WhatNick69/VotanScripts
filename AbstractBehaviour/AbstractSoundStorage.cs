@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using VotanLibraries;
 
 namespace AbstractBehaviour
@@ -40,7 +39,6 @@ namespace AbstractBehaviour
         protected float volumeDead;
 
         protected static object[] tempAudioList;
-        private static bool isLoaded;
         #endregion
 
         #region Инициализация
@@ -58,15 +56,11 @@ namespace AbstractBehaviour
         /// </summary>
         public static void LoadAllStaticSounds()
         {
-            if (!isLoaded)
-            {
-                InitialisationGameMusic();
-                InitialisationSoundsForMetalThings();
-                InitialisationSoundsIce();
-                InitialisationSoundsBodyFall();
-                InitialisationSoundsBurnAndBurning();
-                isLoaded = true;
-            }
+            InitialisationGameMusic();
+            InitialisationSoundsForMetalThings();
+            InitialisationSoundsIce();
+            InitialisationSoundsBodyFall();
+            InitialisationSoundsBurnAndBurning();
         }
 
         /// <summary>

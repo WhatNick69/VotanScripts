@@ -16,8 +16,7 @@ namespace GameBehaviour
         /// <summary>
         /// Лист с игроками
         /// </summary>
-        private static List<GameObject> playerList 
-            = new List<GameObject>();
+        private static List<GameObject> playerList;
 
         /// <summary>
         /// Свойство для получения ссылки на лист с игроками
@@ -46,6 +45,12 @@ namespace GameBehaviour
             {
                 isGameOver = value;
             }
+        }
+
+        private void Awake()
+        {
+            playerList = new List<GameObject>();
+            isGameOver = false;
         }
 
         /// <summary>

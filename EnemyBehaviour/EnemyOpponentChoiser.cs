@@ -55,7 +55,9 @@ namespace EnemyBehaviour
         private bool CheckListOfPlayer()
         {
             foreach (GameObject player in AllPlayerManager.PlayerList)
+            {
                 if (player.GetComponent<PlayerConditions>().IsAlive) return true;
+            }
 
             return false;
         }

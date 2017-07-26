@@ -7,9 +7,9 @@ namespace CraftSystem
 {
 	public class GripButton : MonoBehaviour
 	{
-
 		int numberButton;
 		[SerializeField]
+		Image logo;
 		WeaponCraft wepCraft;
 		[SerializeField]
 		Text nameWeapon;
@@ -61,6 +61,11 @@ namespace CraftSystem
 		public void SetType(string str)
 		{
 			type.text = str;
+		}
+
+		public void SetLogo(Sprite sprt)
+		{
+			logo.sprite = sprt;
 		}
 	}
 }

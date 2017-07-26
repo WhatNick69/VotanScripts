@@ -30,22 +30,22 @@ namespace GameBehaviour
         [SerializeField,Tooltip("Угол")]
         private float angle;
 
-        private static List<TriaglesRender> trianglesOnTheScene =
-            new List<TriaglesRender>();
-
-        public Vector3 PositionOfStairs
-        {
-            get
-            {
-                return positionOfStairs;
-            }
-
-            set
-            {
-                positionOfStairs = value;
-            }
-        }
+        private static List<TriaglesRender> trianglesOnTheScene;
         #endregion
+
+        private void Awake()
+        {
+            trianglesOnTheScene = new List<TriaglesRender>();
+
+            AB = Vector3.Distance(A.position, B.position);
+            AC = Vector3.Distance(A.position, C.position);
+            BC = Vector3.Distance(C.position, B.position);
+            AA1 = Vector3.Distance(A.position, A1.position);
+            center = transform;
+            trianglesOnTheScene.Add(this);
+            normalLevel = 0.55f;
+            positionOfStairs = stairs.position;
+        }
 
         /// <summary>
         /// Находимся ли мы на лестнице
@@ -97,89 +97,11 @@ namespace GameBehaviour
             {
                 value = angle;
                 return true;
-                //gravity = false;
-                //d = Vector3.Distance(player.position, A.position);
-                //e = Vector3.Distance(player.position, A1.position);
-                //f = (d + e + AA1) / 2;
-                //S = Mathf.Sqrt(f * (f - AA1) * (f - d) * (f - e));
-                //H = (2 * S) / AA1;
-                //sootn = H / AC;
-                //
-                //Y = BC * sootn + 0.55f;
             }
             else
             {
-                // gravity = true;
                 return false;
             }
         }
-
-		/// <summary>
-		/// Просчет гравитации для персонажа
-		/// </summary>
-		private void GravityScale(Vector3 position)
-		{
-			if (Vector3.Distance(position, center.position) < 11f && gravity)
-			{
-				if (Y > normalLevel)
-				{
-					if (Y - 0.35f < normalLevel)
-					{
-						Y = normalLevel;
-						onLevelOne = true;
-					}
-					else
-					{
-						Y -= 0.35f;
-						onLevelOne = true;
-					}
-				}
-				else
-				{
-					Y = normalLevel;
-					onLevelOne = true;
-					onLevelTwo = false;
-				}
-			}
-		}
-
-        /// <summary>
-        /// Возвращает нужную высоту по Y
-        /// </summary>
-        /// <returns></returns>
-        public static float GetHightOnY()
-        {
-            return Y;
-        }
-
-        /// <summary>
-        /// Инициализация
-        /// </summary>
-        private void Start()
-        {
-            AB = Vector3.Distance(A.position, B.position);
-            AC = Vector3.Distance(A.position, C.position);
-            BC = Vector3.Distance(C.position, B.position);
-            AA1 = Vector3.Distance(A.position, A1.position);
-			center =transform;
-            trianglesOnTheScene.Add(this);
-			normalLevel = 0.55f;
-            positionOfStairs = stairs.position;
-        }
-
-        /// <summary>
-        /// Таймовое обновление
-        /// </summary>
-        private void FixedUpdate()
-        {
-			//if (Vector3.Distance(stairs.position, player.position) <= 2f)
-			//{
-			//	HightOnY();
-			//}
-			//else
-			//{
-			//	GravityScale();
-			//}
-		}
     }
 }

@@ -10,12 +10,23 @@ namespace CraftSystem
 	{
 		int numberButton;
 		[SerializeField]
+		Sprite fireLogo;
+		[SerializeField]
+		Sprite frostLogo;
+		[SerializeField]
+		Sprite electricLogo;
+		[SerializeField]
+		Sprite powerfulLogo;
+		[SerializeField]
+		Image logo;
+		[SerializeField]
+		Image gemTypeImg;
+		[SerializeField]
 		Text nameWeapon;
 		[SerializeField]
 		Text gemPower;
 		[SerializeField]
 		Text gemType;
-		[SerializeField]
 		WeaponCraft wepCraft;
 
 		public void SetNumber(int x)
@@ -46,6 +57,30 @@ namespace CraftSystem
 		public void SetGemType(DamageType DT)
 		{
 			gemType.text = DT.ToString();
+			switch (DT)
+			{
+				case DamageType.Electric:
+					gemTypeImg.sprite = electricLogo;
+					break;
+
+				case DamageType.Fire:
+					gemTypeImg.sprite = fireLogo;
+					break;
+
+				case DamageType.Frozen:
+					gemTypeImg.sprite = frostLogo;
+					break;
+
+				case DamageType.Powerful:
+					gemTypeImg.sprite = powerfulLogo;
+					break;
+
+			}
+		}
+
+		public void SetLogo(Sprite sprt)
+		{
+			logo.sprite = sprt;
 		}
 	}
 }

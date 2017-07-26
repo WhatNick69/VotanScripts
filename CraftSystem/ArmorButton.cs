@@ -8,14 +8,14 @@ namespace CraftSystem
 	{
 		int numberButton;
 		[SerializeField]
+		Image logo;
 		ArmorCraft armCraft;
 		[SerializeField]
 		Text nameWeapon;
 		[SerializeField]
 		Text armor;
 		ArmoryClass ac;
-		Image logo;
-
+		
 		public void SetNumber(int x)
 		{
 			numberButton = x;
@@ -55,6 +55,11 @@ namespace CraftSystem
 		public void SetArmor(string str)
 		{
 			armor.text = str;
+		}
+
+		public void SetLogo(Sprite sprt)
+		{
+			logo.sprite = sprt;
 		}
 	}
 }

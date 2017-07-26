@@ -1,17 +1,14 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using System.Collections.Generic;
 using MovementEffects;
-using System;
-using PlayerBehaviour;
+using VotanUI;
 
 namespace CraftSystem
 {
-	/// <summary>
-	/// Система крафта оружия
-	/// </summary>
-	public class WeaponCraft
+    /// <summary>
+    /// Система крафта оружия
+    /// </summary>
+    public class WeaponCraft
 		: MonoBehaviour
 	{
 		#region Переменные
@@ -28,13 +25,6 @@ namespace CraftSystem
 		private GameObject itemHead;
 		[SerializeField]
 		private GameObject itemGem;
-
-		[SerializeField]
-		private Text gripText;
-		[SerializeField]
-		private Text headText;
-		[SerializeField]
-		private Text gemText;
 
 		private GameObject grip;
         private GameObject head;
@@ -65,16 +55,19 @@ namespace CraftSystem
 		#region Свойства
 		public void SetGemItemNumber(int x)
 		{
+            MenuSoundManager.PlaySoundStatic(1);
 			gemItemNumber = x;
 		}
 		public void SetGripItemNumber(int x)
 		{
-			gripItemNumber = x;
+            MenuSoundManager.PlaySoundStatic(1);
+            gripItemNumber = x;
 		}
 
 		public void SetHeadItemNumber(int x)
 		{
-			headItemNumber = x;
+            MenuSoundManager.PlaySoundStatic(1);
+            headItemNumber = x;
 		}
 
 		public GameObject GetGripPrafab()
@@ -95,6 +88,9 @@ namespace CraftSystem
 
         public void PlayArena()
         {
+            if (WP == null)
+                WP = GameObject.Find("GetWeaponPrefabs").GetComponent<WeaponPrefabs>();
+
             WP.Grip = (GameObject)Resources.Load(gripPrefix + gripItemNumber + gripPostfix);
 			WP.Head = (GameObject)Resources.Load(headPrefix + headItemNumber + headPostfix);
 			WP.Gem = (GameObject)Resources.Load(gemPrefix + gemItemNumber + gemPostfix);
@@ -134,7 +130,7 @@ namespace CraftSystem
 					button.SetName(gemList[i].GemName);
 					button.SetGemPower(gemList[i].GemPower.ToString());
 					button.SetGemType(gemList[i].DamageTypeGem);
-					button.GetComponent<Button>().image.sprite = gemList[i].ItemImage;
+					button.SetLogo (gemList[i].ItemImage);
 					item.transform.SetParent(gemRepository.transform, false);
 				}
 			}
@@ -158,7 +154,7 @@ namespace CraftSystem
 					button.SetDamage(headList[i].DamageBase.ToString());
 					button.SetWeight(headList[i].HeadWeight.ToString());
 					button.SetSpinBous(headList[i].BonusSpinSpeedFromHead.ToString());
-					button.GetComponent<Button>().image.sprite = headList[i].ItemImage;
+					button.SetLogo (headList[i].ItemImage);
 					item.transform.SetParent(headRepository.transform, false);
 
 				}
@@ -184,7 +180,7 @@ namespace CraftSystem
 					button.SetWeight(gripList[i].GripWeight.ToString());
 					button.SetSpinBous(gripList[i].BonusSpinSpeedFromGrip.ToString());
 					button.SetDefence(gripList[i].GripDefence.ToString());
-					button.GetComponent<Button>().image.sprite = gripList[i].ItemImage;
+					button.SetLogo (gripList[i].ItemImage);
 					item.transform.SetParent(gripRepository.transform, false); // удочерям кнопку "листу" кнопок
 
 				}
