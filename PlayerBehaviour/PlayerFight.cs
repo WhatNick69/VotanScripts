@@ -32,6 +32,9 @@ namespace PlayerBehaviour
         private float tempSpinSpeed;
         private float spiningSpeedInCoroutine;
         private bool isMayToLongAttack = true;
+
+        private float tempAngleForSound;
+        private float tempAngle;
         #endregion
 
         #region Свойства
@@ -152,9 +155,11 @@ namespace PlayerBehaviour
 
             while (spiningSpeedInCoroutine > 0)
             {
+                tempAngle = spiningSpeedInCoroutine * tempSpinSpeed;
                 playerComponentsControl.PlayerController.Angle 
-                    += spiningSpeedInCoroutine * tempSpinSpeed;
-				yield return Timing.WaitForSeconds(0.1f);
+                    += tempAngle;
+                PlaySpinSpeedAudio();
+                yield return Timing.WaitForSeconds(0.1f);
                 spiningSpeedInCoroutine -= 10;
                 playerComponentsControl.PlayerAnimationsController.
                        SetSpeedAnimationByRunSpeed
@@ -189,6 +194,20 @@ namespace PlayerBehaviour
         }
 
         /// <summary>
+        /// Проиграть звук вращения
+        /// </summary>
+        private void PlaySpinSpeedAudio()
+        {
+            tempAngleForSound += tempAngle;
+            if (Mathf.Abs(tempAngleForSound) >= 180)
+            {
+                playerComponentsControl.PlayerSounder.PlaySpinAudio
+                    (tempAngle,false);
+                tempAngleForSound = 0;
+            }
+        }
+
+        /// <summary>
         /// Совершает действие, относительно положению правого стика.
         /// Вращение влево, вправо, рывок или защита.
         /// </summary>
@@ -201,9 +220,11 @@ namespace PlayerBehaviour
                 {
                     isRotating = true;
                     isSpining = true;
-                    playerComponentsControl.PlayerController.Angle 
-                        += playerComponentsControl.PlayerWeapon
+                    tempAngle = playerComponentsControl.PlayerWeapon
                         .SpinSpeed * fightVector.x;
+                    playerComponentsControl.PlayerController.Angle 
+                        += tempAngle;
+                    PlaySpinSpeedAudio();
                     tempSpinSpeed = fightVector.x;
                     playerComponentsControl.PlayerAnimationsController.
                         SetSpeedAnimationByRunSpeed

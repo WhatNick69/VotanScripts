@@ -15,6 +15,11 @@ namespace VotanInterfaces
     public interface IVotanObjectConditions
     {
         /// <summary>
+        /// Установить значение (новое) жизней моба/игрока
+        /// </summary>
+        void SetHealthParameter(float health);
+
+        /// <summary>
         /// Жив ли объект
         /// </summary>
         bool IsAlive { get; set; }
@@ -76,7 +81,7 @@ namespace VotanInterfaces
         /// Получить урон от врага
         /// </summary>
         /// <param name="damageValue"></param>
-        void GetDamage(float damageValue);
+        int GetDamage(float damageValue);
 
         /// <summary>
         /// запуск корутины на возможность 
@@ -178,7 +183,7 @@ namespace VotanInterfaces
         /// <param name="dmg"></param>
         /// <param name="dmgType"></param>
         /// <param name="weapon"></param>
-        void GetDamage(float dmg, float gemPower, IWeapon weapon);
+        bool GetDamage(float dmg, float gemPower, IWeapon weapon);
 
         /// <summary>
         /// Корутина на получение урона от персонажа.

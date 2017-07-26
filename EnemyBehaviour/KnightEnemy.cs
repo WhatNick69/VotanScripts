@@ -23,6 +23,8 @@ namespace EnemyBehaviour
         /// </summary>
         public virtual void Awake()
         {
+            AbstractObjectSounder = 
+                GetComponent<KnightSounder>();
             EnemyOpponentChoiser =
                 GetComponent<EnemyOpponentChoiser>();
             EnemyAnimationsController = 
@@ -71,7 +73,9 @@ namespace EnemyBehaviour
 
                         if (EnemyAttack.AttackToPlayer())
                         {
-                            EnemyOpponentChoiser.PlayerConditionsTarget.GetDamage(EnemyAttack.DmgEnemy);
+                            AbstractObjectSounder.PlayWeaponHitAudio
+                                (EnemyOpponentChoiser.PlayerConditionsTarget.
+                                GetDamage(EnemyAttack.DmgEnemy));
                             EnemyAnimationsController.SetState(0, false);
                             //EnemyAnimationsController.SetState(1, true);
                             EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);

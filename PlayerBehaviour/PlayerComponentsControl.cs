@@ -1,5 +1,6 @@
 ﻿using GameBehaviour;
 using UnityEngine;
+using UnityStandardAssets.CrossPlatformInput;
 using VotanInterfaces;
 
 namespace PlayerBehaviour
@@ -36,12 +37,16 @@ namespace PlayerBehaviour
         private PlayerScore playerScore;
         [SerializeField, Tooltip("Аниматор игрока")]
         private PlayerAnimationsController playerAnimationsController;
+        [SerializeField, Tooltip("Звуковой компонент игрока")]
+        private PlayerSounder playerSounder;
         [SerializeField, Tooltip("Родитель игрока")]
         private Transform playerParent;
         [SerializeField, Tooltip("Объект игрока")]
         private Transform playerObject;
         [SerializeField, Tooltip("Моделька игрока")]
         private Transform playerModel;
+        [SerializeField, Tooltip("Интерфейс монитора игрока")]
+        private PlayerUI playerUI;
         #endregion
 
         #region Доступы к компонентам
@@ -239,8 +244,37 @@ namespace PlayerBehaviour
                 playerScore = value;
             }
         }
+
+        public PlayerSounder PlayerSounder
+        {
+            get
+            {
+                return playerSounder;
+            }
+
+            set
+            {
+                playerSounder = value;
+            }
+        }
+
+        public PlayerUI PlayerUI
+        {
+            get
+            {
+                return playerUI;
+            }
+
+            set
+            {
+                playerUI = value;
+            }
+        }
         #endregion
 
+        /// <summary>
+        /// Инициализация. Добавляем игрока в лист игроков.
+        /// </summary>
         private void Start()
         {
             AllPlayerManager.AddPlayerToPlayerList(gameObject);

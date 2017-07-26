@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using VotanLibraries;
+using VotanInterfaces;
 
 namespace GameBehaviour
 {
@@ -35,6 +36,8 @@ namespace GameBehaviour
         private Transform respawnPoint;
 
         private int tempEnemiesForWave;
+        private int tempEnemyIndexNumber;
+        GameObject enemyObjNew;
         #endregion
 
         /// <summary>
@@ -83,22 +86,64 @@ namespace GameBehaviour
         /// </summary>
         private void InstantiateOnServer(int k)
         {
-            GameObject enemyObjNew = Instantiate(enemyList[RandomEnemyChoice()]);
+            RandomEnemyChoice();
+            enemyObjNew = Instantiate(enemyList[tempEnemyIndexNumber]);
+            SetEnemyParameters();
+
             enemyObjNew.transform.parent = respawnPoint;
             enemyObjNew.GetComponent<EnemyMove>().RandomRadius = randomRadius;
 			enemyObjNew.transform.position = respawnPoint.transform.position;
-            enemyObjNew.name = "Enemy" + k;
+            enemyObjNew.name = enemyObjNew.name+"#" + k;
             StaticStorageWithEnemies.AddToList
                 (enemyObjNew.GetComponent<AbstractEnemy>());
+        }
+
+        /// <summary>
+        /// Задать параметры для моба.
+        /// </summary>
+        private void SetEnemyParameters()
+        {
+            enemyObjNew.GetComponent<IEnemyBehaviour>().
+                EnemyMove.AgentSpeed = 4; // Скорость передвижения моба
+            enemyObjNew.GetComponent<IEnemyBehaviour>().
+                EnemyAttack.DmgEnemy = 15; // Урон моба
+            enemyObjNew.GetComponent<IEnemyBehaviour>().
+                EnemyConditions.SetHealthParameter(100); // Установить жизни мобу
+            enemyObjNew.GetComponent<IEnemyBehaviour>().
+                EnemyConditions.PhysicResistance = 0.1f; // Сопротивление к физической атаке (от 0 до 1)
+            enemyObjNew.GetComponent<IEnemyBehaviour>().
+                EnemyConditions.FireResistance = 0.1f; // Сопротивление к огненной атаке (от 0 до 1)
+            enemyObjNew.GetComponent<IEnemyBehaviour>().
+                EnemyConditions.ElectricResistance = 0.1f; // Сопротивление к электрической атаке
+            enemyObjNew.GetComponent<IEnemyBehaviour>().
+                EnemyConditions.FrostResistance = 0.1f; // Сопротивление к ледяной атаке
+
+
+            switch (tempEnemyIndexNumber)
+            {
+                case 0: // РЫЦАРЬ
+                    enemyObjNew.GetComponent<IEnemyBehaviour>().
+                        EnemyMove.PreDistanceForAttack = 0.5f;
+                    // Предупредительная дистанция для атаки (чтобы бил заранее, окда? ;) )
+                    break;
+                case 1: // ПОЕХАВШИЙ БЕРСЕРКЕР
+                    enemyObjNew.GetComponent<CrazyEnemy>().
+                        FightRotatingSpeed = 800; // Скорость вращения поехавшего
+                    enemyObjNew.GetComponent<IEnemyBehaviour>().
+                        EnemyMove.PreDistanceForAttack = 1.5f; 
+                    // Предупредительная дистанция для атаки)
+                    break;
+            }
         }
 
         /// <summary>
         /// Случайный выбор противника
         /// </summary>
         /// <returns></returns>
-        private int RandomEnemyChoice()
+        private void RandomEnemyChoice()
         {
-            return LibraryStaticFunctions.rnd.Next(0, 2);
+            tempEnemyIndexNumber = 
+                LibraryStaticFunctions.rnd.Next(0, enemyList.Length);
         }
 
         /// <summary>

@@ -15,8 +15,7 @@ namespace GameBehaviour
         : MonoBehaviour, IElectricEffect
     {
         #region Переменные
-        [SerializeField, Tooltip("Лист электрических трэилов")]
-        private List<Transform> listTrailObjects;
+        private Transform[] listTrailObjects;
         private float radiusSearch;
         private float gemPower;
         private float damage;
@@ -33,6 +32,13 @@ namespace GameBehaviour
         {
             if (rnd == null)
                 rnd = LibraryStaticFunctions.rnd;
+            listTrailObjects = new Transform[transform.childCount];
+
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                listTrailObjects[i] = transform.GetChild(i);
+                listTrailObjects[i].gameObject.SetActive(false);
+            }
         }
 
         /// <summary>
@@ -46,7 +52,6 @@ namespace GameBehaviour
 
             for (int i = 0; i < childrenCount; i++)
             {
-                listTrailObjects.Add(transform.GetChild(i));
                 listTrailObjects[i].GetComponent<TrailRenderer>().startColor =
                     weapon.TrailRenderer.startColor;
             }
@@ -64,11 +69,11 @@ namespace GameBehaviour
             for (int i = 0; i < childrenCount; i++)
             {
                 listTrailObjects[i].gameObject.SetActive(flag);
-                value = LibraryStaticFunctions.GetRangeValue(0.05f, 0.1f);
+                value = LibraryStaticFunctions.GetRangeValue(0.075f, 0.1f);
                 listTrailObjects[i].GetComponent<TrailRenderer>().startWidth
                     = value;
                 listTrailObjects[i].GetComponent<TrailRenderer>().endWidth
-                    = LibraryStaticFunctions.GetRangeValue(value, 0.1f);
+                    = LibraryStaticFunctions.GetRangeValue(value, 0.25f);
             }
         }
 
@@ -85,8 +90,7 @@ namespace GameBehaviour
             GameAnimationsObjects.FireEventForDynamicObject(0); // чтобы ящик упал
 
             if (gemPower < 0) return;
-            //Debug.Log("Запускаем, со значениями DMG: " + damage + ", GP: " + gemPower);
-            listTrailObjects.Clear();
+
             GetAllChild(1 + (int)(gemPower / 20)); // находим объекты
 
             // запустить корутину, найдя ближайшего врага, как точку назначения для молний
@@ -110,10 +114,10 @@ namespace GameBehaviour
         /// <param name="isFirst"></param>
         private void ContinueElectricDamage(Vector3 position)
         {
-            if (listTrailObjects.Count != 0)
+            if (childrenCount != 0)
             {
                 abstractEnemyTarget = 
-                    StaticStorageWithEnemies.GetClosestNonShockedEnemy(position, 5);
+                    StaticStorageWithEnemies.GetClosestNonShockedEnemy(position, 10);
                 if (abstractEnemyTarget == null) return;
 
                 VisibleOfElements(true); // включаем объекты

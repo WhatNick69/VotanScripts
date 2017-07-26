@@ -67,6 +67,11 @@ namespace PlayerBehaviour
         DamageType AttackType { get; set; }
 
         /// <summary>
+        /// Тип оружия (режущее, дробящее)
+        /// </summary>
+        WeaponType WeaponType { get; set; }
+
+        /// <summary>
         /// Скорость вращения оружием
         /// </summary>
         float SpinSpeed { get; set; }
@@ -114,7 +119,8 @@ namespace PlayerBehaviour
         /// <param name="weight"></param>
         /// <param name="gemPower"></param>
         void SetWeaponParameters(float damage, float defenceValue, DamageType attackType,
-            TrailRenderer trailRenderer, float spinSpeed,float weight,float gemPower);
+            TrailRenderer trailRenderer, float spinSpeed,
+            float weight,float gemPower,WeaponType weaponType);
 
         /// <summary>
         /// Снижаем скорость вращения при попадании по врагу
@@ -152,7 +158,9 @@ namespace PlayerBehaviour
 		private float defenceValue;
 		[SerializeField]
 		private DamageType damageType;
-		[SerializeField, Tooltip("Скорость вращения"), Range(10, 100f)]
+        [SerializeField]
+        private WeaponType weaponType;
+        [SerializeField, Tooltip("Скорость вращения"), Range(10, 100f)]
 		private float spinSpeed;
         [SerializeField, Tooltip("Сила камня"), Range(1, 100f)]
         private float gemPower;
@@ -351,6 +359,19 @@ namespace PlayerBehaviour
                 isMayToGetPhysicDefence = value;
             }
         }
+
+        public WeaponType WeaponType
+        {
+            get
+            {
+                return weaponType;
+            }
+
+            set
+            {
+                weaponType = value;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -365,7 +386,8 @@ namespace PlayerBehaviour
         /// <param name="weight">Вес оружия</param>
         /// <param name="gemPower">Сила камня</param>
         public void SetWeaponParameters(float damage, float defenceValue,
-            DamageType damageType, TrailRenderer trailRenderer ,float spinSpeed,float weight,float gemPower)
+            DamageType damageType, TrailRenderer trailRenderer ,
+            float spinSpeed,float weight,float gemPower,WeaponType weaponType=WeaponType.Cutting)
         {
             DefenceValue = defenceValue;
             this.damage = damage;
@@ -374,6 +396,7 @@ namespace PlayerBehaviour
             this.weight = weight;
             this.gemPower = gemPower;
             this.trailRenderer = trailRenderer;
+            this.weaponType = weaponType;
 
             SetColorTrailWeapon();
             originalSpinSpeed = this.spinSpeed;

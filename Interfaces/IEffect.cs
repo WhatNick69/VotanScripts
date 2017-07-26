@@ -9,6 +9,11 @@ namespace VotanInterfaces
     public interface IIceEffect
     {
         /// <summary>
+        /// Инициализация
+        /// </summary>
+        void Start();
+
+        /// <summary>
         /// Зажечь ледяной эффект
         /// </summary>
         /// <param name="time"></param>

@@ -11,6 +11,8 @@ namespace GameBehaviour
     public class AllPlayerManager
         : MonoBehaviour
     {
+        private static bool isGameOver;
+
         /// <summary>
         /// Лист с игроками
         /// </summary>
@@ -30,6 +32,19 @@ namespace GameBehaviour
             set
             {
                 playerList = value;
+            }
+        }
+
+        public static bool IsGameOver
+        {
+            get
+            {
+                return isGameOver;
+            }
+
+            set
+            {
+                isGameOver = value;
             }
         }
 
@@ -62,6 +77,19 @@ namespace GameBehaviour
             for (int i = 0;i<playerList.Count;i++)
                 if (!playerList[i].GetComponent<PlayerConditions>().IsAlive)
                     playerList.Remove(playerList[i]);
+
+            CheckByGameOver();
+        }
+
+        /// <summary>
+        /// Проверить, завершилась ли игра
+        /// </summary>
+        private static void CheckByGameOver()
+        {
+            foreach (GameObject player in playerList)
+                if (player.GetComponent<PlayerConditions>().IsAlive) return;
+
+            isGameOver = true;
         }
     }
 }

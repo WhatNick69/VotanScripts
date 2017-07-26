@@ -1,4 +1,5 @@
-﻿using MovementEffects;
+﻿using AbstractBehaviour;
+using MovementEffects;
 using System.Collections.Generic;
 using UnityEngine;
 using VotanInterfaces;
@@ -21,6 +22,22 @@ namespace EnemyBehaviour
         private float frequencyOfFightRotating;
         private float angle;
         private Quaternion localQuar = new Quaternion(0, 0, 0,0);
+        private float tempAngleForSound;
+        #endregion
+
+        #region Свойства
+        public float FightRotatingSpeed
+        {
+            get
+            {
+                return fightRotatingSpeed;
+            }
+
+            set
+            {
+                fightRotatingSpeed = value;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -28,8 +45,10 @@ namespace EnemyBehaviour
         /// </summary>
         public override void Awake()
         {
+            AbstractObjectSounder =
+                GetComponent<CrazySounder>();
             EnemyOpponentChoiser =
-                           GetComponent<EnemyOpponentChoiser>();
+                GetComponent<EnemyOpponentChoiser>();
             EnemyAnimationsController =
                 GetComponent<EnemyAnimationsController>();
             EnemyAttack =
@@ -57,6 +76,7 @@ namespace EnemyBehaviour
         public override void Start()
         {
             base.Start();
+            frequencyOfFightRotating = 0.025f;
             fightRotatingSpeed = LibraryStaticFunctions.GetRangeValue(fightRotatingSpeed, 0.2f);
             Timing.RunCoroutine(CoroutineForFightRotating());
         }
@@ -78,7 +98,9 @@ namespace EnemyBehaviour
 
                         if (EnemyAttack.AttackToPlayer())
                         {
-                            EnemyOpponentChoiser.PlayerConditionsTarget.GetDamage(EnemyAttack.DmgEnemy);
+                            AbstractObjectSounder.PlayWeaponHitAudio
+                                (EnemyOpponentChoiser.PlayerConditionsTarget.
+                                GetDamage(EnemyAttack.DmgEnemy));
                             EnemyAnimationsController.SetState(0, false);
                         }
                     }
@@ -95,6 +117,16 @@ namespace EnemyBehaviour
                         EnemyMove.DependenceAnimatorSpeedOfVelocity();
                 }
                 yield return Timing.WaitForSeconds(refreshLatency);
+            }
+        }
+
+        private void PlaySpinSpeedAudio()
+        {
+            tempAngleForSound += fightRotatingSpeed;
+            if (Mathf.Abs(tempAngleForSound) >= 14000)
+            {
+                AbstractObjectSounder.PlaySpinAudio(fightRotatingSpeed);
+                tempAngleForSound = 0;
             }
         }
 
@@ -115,12 +147,12 @@ namespace EnemyBehaviour
                     else
                         crazyEnemyModel.Rotate(Vector3.up * Time.deltaTime * fightRotatingSpeed);
 
+                    PlaySpinSpeedAudio();
                     EnemyAnimationsController.SetState(1, true);
                     yield return Timing.WaitForSeconds(frequencyOfFightRotating);
                 }
                 else
                 {
-
                     EnemyAnimationsController.SetState(1, false);
                     yield return Timing.WaitForSeconds(frequencyOfFightRotating*5);
                 }

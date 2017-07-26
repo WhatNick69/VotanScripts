@@ -110,6 +110,58 @@ namespace EnemyBehaviour
                 isMayGetDamage = value;
             }
         }
+
+        public float FrostResistance
+        {
+            get
+            {
+                return frostResistance;
+            }
+
+            set
+            {
+                frostResistance = value;
+            }
+        }
+
+        public float FireResistance
+        {
+            get
+            {
+                return fireResistance;
+            }
+
+            set
+            {
+                fireResistance = value;
+            }
+        }
+
+        public float ElectricResistance
+        {
+            get
+            {
+                return electricResistance;
+            }
+
+            set
+            {
+                electricResistance = value;
+            }
+        }
+
+        public float PhysicResistance
+        {
+            get
+            {
+                return physicResistance;
+            }
+
+            set
+            {
+                physicResistance = value;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -204,6 +256,7 @@ namespace EnemyBehaviour
         public override IEnumerator<float> DieState()
         {
             IsAlive = false;
+            enemyAbstract.AbstractObjectSounder.PlayDeadAudio();
             //enemyAbstract.EnemyAnimationsController.DisableAllStates();
             enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
             enemyAbstract.EnemyAnimationsController.SetState(3, true);
@@ -259,23 +312,26 @@ namespace EnemyBehaviour
         /// Получить урон в рукопашном бою
         /// </summary>
         /// <param name="dmg"></param>
-        public virtual void GetDamage(float dmg, float gemPower
+        public virtual bool GetDamage(float dmg, float gemPower
             , IWeapon weapon)
         {
             if (isMayGetDamage)
             {
+                enemyAbstract.AbstractObjectSounder.PlayGetDamageAudio();
                 weapon.WhileTime();
                 Timing.RunCoroutine(CoroutineForGetDamage());
                 dmg = GetDamageWithResistance(dmg, gemPower, weapon);
                 //Debug.Log("Ближняя атака");
-                if (HealthValue <= 0) return;
+                if (HealthValue <= 0) return false;
                 HealthValue -=
                     LibraryStaticFunctions.GetRangeValue(dmg, 0.1f);
                 if (HealthValue <= 0)
                 {
                     enemyAbstract.ScoreAddingEffect.EventEffect(weapon);
                 }
+                return true;
             }
+            return false;
         }
 
         /// <summary>

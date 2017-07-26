@@ -10,6 +10,11 @@ namespace VotanInterfaces
     public interface IAIMoving
     {
         /// <summary>
+        /// Предупредительная дистанция до атаки
+        /// </summary>
+        float PreDistanceForAttack {get;set;}
+
+        /// <summary>
         /// Скорость агента
         /// </summary>
         float AgentSpeed { get; set; }

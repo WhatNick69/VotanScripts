@@ -12,18 +12,22 @@ namespace GameBehaviour
     /// <summary>
     /// Менеджер ледяного эффекта
     /// </summary>
+    [RequireComponent(typeof(AudioSource))]
     public class IceEffectManager
         : MonoBehaviour, IIceEffect
     {
         #region Переменные
-        [SerializeField]
+        [SerializeField,Tooltip("Враг")]
         private AbstractEnemy abstractEnemy;
         [SerializeField, Tooltip("Лист ледяных мешей")]
-        private List<Transform> listIceObjects; 
+        private Transform[] listIceObjects; 
         [SerializeField, Tooltip("Лист трэилов")]
-        private List<Transform> listTrailObjects;
+        private Transform[] listTrailObjects;
         [SerializeField, Tooltip("Материал ледяных глыб")]
         private Material iceObjectMaterial;
+        [SerializeField, Tooltip("Громкость льда")]
+        private float iceSoundVolume;
+        private AudioSource audioSource;
         private IWeapon weapon;
 
         private List<Vector3> listPositionIceObjects;
@@ -35,6 +39,15 @@ namespace GameBehaviour
         private bool isOneCoroutine;
         private float damage;
         #endregion
+
+        /// <summary>
+        /// Инициализация
+        /// </summary>
+        public void Start()
+        {
+            audioSource = 
+                GetComponent<AudioSource>();
+        }
 
         /// <summary>
         /// Зажечь событие для ледяного эффекта.
@@ -55,17 +68,33 @@ namespace GameBehaviour
             isOneCoroutine = false;
             this.timeToDisable = timeToDisable-0.5f;
 
+            SetActiveForAudioSource(true,true);
             SetActiveForTrailObjects(true);
             SetActiveForIceObjects(true);
-            InitialisationVatiables();
+            InitialisationVariables();
             RandomSetScaleAndPosition();
             RunAllCoroutines();
         }
 
         /// <summary>
+        /// Велючение. либо отключение ледяного эффекта
+        /// </summary>
+        /// <param name="flag"></param>
+        private void SetActiveForAudioSource(bool isStart,bool active)
+        {
+            if (isStart)
+                AbstractSoundStorage.WorkWithIce
+                    (isStart, iceSoundVolume/2.5f, audioSource);
+            else
+                AbstractSoundStorage.WorkWithIce
+                    (isStart, iceSoundVolume, audioSource);
+            audioSource.enabled = active;
+        }
+
+        /// <summary>
         /// Инициализация переменных
         /// </summary>
-        private void InitialisationVatiables()
+        private void InitialisationVariables()
         {
             listPositionIceObjects = new List<Vector3>();
             listPositionTrailObjects = new List<Vector3>();
@@ -83,6 +112,11 @@ namespace GameBehaviour
             Timing.RunCoroutine(CoroutineSetRandomPositionForTrailIce());
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         private IEnumerator<float> CoroutineForGetDamagePerPeriod()
         {
             int i = 0;
@@ -148,7 +182,7 @@ namespace GameBehaviour
         private void RandomSetScaleAndPosition()
         {
             float scale = 0;
-            for (int i = 0; i < listIceObjects.Count; i++)
+            for (int i = 0; i < listIceObjects.Length; i++)
             {
                 // Позиция
                 listIceObjects[i].position =
@@ -183,7 +217,7 @@ namespace GameBehaviour
             int i = 0;
             while (i < 25)
             {
-                for (int j = 0; j < listIceObjects.Count; j++)
+                for (int j = 0; j < listIceObjects.Length; j++)
                 {
                     if (this == null) yield break;
 
@@ -192,7 +226,8 @@ namespace GameBehaviour
                 }
                 yield return Timing.WaitForSeconds(0.05f);
                 i++;
-            }       
+            }
+            SetActiveForAudioSource(false,true);
         }
 
         /// <summary>
@@ -207,7 +242,7 @@ namespace GameBehaviour
 
             while (isRandomTrailPosition)
             {
-                for (int i = 0; i < listTrailObjects.Count; i++)
+                for (int i = 0; i < listTrailObjects.Length; i++)
                 {
                     if (this == null) yield break;
                     listTrailObjects[i].localPosition =
@@ -230,6 +265,8 @@ namespace GameBehaviour
         {
             yield return Timing.WaitForSeconds(timeToDisable);
             isRandomTrailPosition = false;
+
+            SetActiveForAudioSource(false,false);
             if (this == null) yield break;
             Timing.RunCoroutine(CoroutineDisableIceObjects());
         }
@@ -251,7 +288,7 @@ namespace GameBehaviour
             Vector3 localScaleTemp = new Vector3(0.5f,0.5f,0.5f);
             while (i < 15)
             {
-                for (int j = 0; j < listIceObjects.Count; j++)
+                for (int j = 0; j < listIceObjects.Length; j++)
                 {
                     if (this == null || !isOneCoroutine) yield break;
 

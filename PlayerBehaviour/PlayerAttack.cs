@@ -16,11 +16,18 @@ namespace PlayerBehaviour
     {
         [SerializeField, Tooltip("Хранитель компонентов")]
         private PlayerComponentsControl playerComponentsControl;
+        private int isCuttingWeapon;
 
-		/// <summary>
-		/// Обновление с заданной частотой
-		/// </summary>
-		public void FixedUpdate()
+        public override void Start()
+        {
+            base.Start();
+            WeaponTypeToBool();
+        }
+
+        /// <summary>
+        /// Обновление с заданной частотой
+        /// </summary>
+        public void FixedUpdate()
         {
             for (int i = 0; i < StaticStorageWithEnemies.GetCountListOfEnemies(); i++)
             {
@@ -75,18 +82,34 @@ namespace PlayerBehaviour
                     .position, attackList[i].transform.position) > 3 ||
 						(attackList[i].EnemyConditions.ReturnHealth() <= 0))
 				{
-					attackList.Remove(attackList[i]); continue;
+					attackList.Remove(attackList[i]);
+                    continue;
 				}
-				else
+				else if (IsAttackEnemy(i))
                 {
-					if (IsAttackEnemy(i))
+                    if (playerComponentsControl.PlayerConditions.IsAlive)
                     {
-						if (playerComponentsControl.PlayerConditions.IsAlive)
-						      attackList[i].EnemyConditions.GetDamage
-                                (damage, playerComponentsControl.PlayerWeapon.GemPower
-                                ,playerComponentsControl.PlayerWeapon); 
+                        if (attackList[i].EnemyConditions.GetDamage
+                            (damage, playerComponentsControl.PlayerWeapon.GemPower
+                            , playerComponentsControl.PlayerWeapon))
+                        {
+                            playerComponentsControl.PlayerSounder.
+                                PlayWeaponHitAudio(isCuttingWeapon);
+                        }
                     }
                 }
+            }
+        }
+
+        private void WeaponTypeToBool()
+        {
+            if (playerComponentsControl.PlayerWeapon.WeaponType == WeaponType.Cutting)
+            {
+                isCuttingWeapon = 1;
+            }
+            else
+            {
+                isCuttingWeapon = 0;
             }
         }
 

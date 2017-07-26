@@ -36,6 +36,7 @@ namespace PlayerBehaviour
         private float currentMagnitude; // текущее значение магнитуды векторов
         //меньше которого используется сглаженное время
         private float angle; // угол для поворота
+        private float tempAngleForSound;
 
         private Vector3 moveVector3;
         private Vector3 tempVectorTransform;
@@ -74,6 +75,7 @@ namespace PlayerBehaviour
             set
             {
                 angle = value;
+
             }
         }
 

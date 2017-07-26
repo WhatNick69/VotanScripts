@@ -1,4 +1,5 @@
-﻿using EnemyBehaviour;
+﻿using AbstractBehaviour;
+using EnemyBehaviour;
 using PlayerBehaviour;
 using UnityEngine;
 
@@ -50,6 +51,8 @@ namespace VotanInterfaces
 
         PlayerAnimationsController PlayerAnimationsController { get; set; }
 
+        PlayerSounder PlayerSounder { get; set; }
+
         Transform PlayerParent { get; set; }
 
         Transform PlayerObject { get; set; }
@@ -82,6 +85,11 @@ namespace VotanInterfaces
         /// Свойство для компоненты "Выбор игрока"
         /// </summary>
         EnemyOpponentChoiser EnemyOpponentChoiser { get; set; }
+
+        /// <summary>
+        /// Звуковой компонент
+        /// </summary>
+        AbstractSoundStorage AbstractObjectSounder { get; set; }
 
         /// <summary>
         /// Свойство для компоненты "Движение врага"

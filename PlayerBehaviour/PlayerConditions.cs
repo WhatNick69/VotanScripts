@@ -162,7 +162,7 @@ namespace PlayerBehaviour
         /// Получаем урон
         /// </summary>
         /// <param name="damageValue"></param>
-        public void GetDamage(float damageValue)
+        public int GetDamage(float damageValue)
         {
             if (mayToGetDamage)
             {
@@ -172,6 +172,9 @@ namespace PlayerBehaviour
                 playerComponentsControl.PlayerCameraSmooth.GetNoizeGamage(damageValue / initialisatedHealthValue);
                 if (!playerComponentsControl.PlayerArmory.IsAlive)
                 {
+                    // проиграть звук получения урона по телу
+                    playerComponentsControl.PlayerSounder.PlayGetDamageAudio(false);
+
                     playerComponentsControl.PlayerBloodInterfaceEffect.
                         EventBloodEyesEffect(healthValue/ initialisatedHealthValue);
                     if (playerComponentsControl.PlayerFight.IsDefensing)
@@ -187,9 +190,14 @@ namespace PlayerBehaviour
                         HealthValue -= LibraryStaticFunctions.GetRangeValue(damageValue, 0.1f);
                         CoroutineForIsMayGetDamage();
                     }
+
+                    return 1;
                 }
                 else
                 {
+                    // проиграть звук получения урона по броне
+                    playerComponentsControl.PlayerSounder.PlayGetDamageAudio(true); 
+
                     if (playerComponentsControl.PlayerFight.IsDefensing)
                     {
                         playerComponentsControl.PlayerArmory
@@ -207,8 +215,10 @@ namespace PlayerBehaviour
                        LibraryStaticFunctions.GetRangeValue(damageValue, 0.1f));
                         CoroutineForIsMayGetDamage();
                     }
+                    return 2;
                 }
             }
+            return 0;
         }
 
         /// <summary>
@@ -271,6 +281,7 @@ namespace PlayerBehaviour
         /// </summary>
         public override IEnumerator<float> DieState()
         {
+            playerComponentsControl.PlayerSounder.PlayDeadAudio();
             Debug.Log(gameObject.name +  " is dead!");
             IsAlive = false;
             AllPlayerManager.CheckList();
@@ -282,6 +293,8 @@ namespace PlayerBehaviour
             playerComponentsControl.PlayerCollision.RigidbodyDead();
             playerComponentsControl.PlayerAnimationsController
                 .PlayDeadNormalizeCoroutine();
+
+            playerComponentsControl.PlayerUI.EventGameOver();
             yield return Timing.WaitForSeconds(1);
         }
 

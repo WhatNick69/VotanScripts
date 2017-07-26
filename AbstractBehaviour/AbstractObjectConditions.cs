@@ -118,5 +118,14 @@ namespace AbstractBehaviour
             }
             circleHealthUI.color = new Color(colorChannelRed, colorChannelGreen, 0);
         }
+
+        /// <summary>
+        /// Установить оригинальное значение жизней
+        /// </summary>
+        public void SetHealthParameter(float health)
+        {
+            healthValue = health;
+            initialisatedHealthValue = healthValue;
+        }
     }
 }

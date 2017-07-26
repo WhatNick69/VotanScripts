@@ -31,6 +31,8 @@ namespace PlayerBehaviour
         private float shieldPartArmory;
 
         public float tempArmory;
+
+        private PlayerComponentsControl playerComponentsControl;
         #endregion
 
         #region Свойства и доступы
@@ -89,6 +91,7 @@ namespace PlayerBehaviour
             shieldPartArmory = 0.4f / (shieldParts.Count-1);
 
             //SwitchPositionInCuirassList();
+            playerComponentsControl = GetComponent<PlayerComponentsControl>();
             SwitchPositionInShieldList();
         }
 
@@ -177,6 +180,9 @@ namespace PlayerBehaviour
                 if (tempArmory >= 0.2f)
                 {
                     isHelmetDeactive = true;
+                    playerComponentsControl.
+                        PlayerSounder.PlayAnyDestroyArmoryAudio
+                        (helmet.NumberPosition);
                     helmet.FireEvent();
                     tempArmory -= 0.2f;
                 }
@@ -199,6 +205,9 @@ namespace PlayerBehaviour
                             a = LibraryStaticFunctions.rnd.Next(1, shieldParts.Count);
                         }
 
+                        playerComponentsControl.
+                            PlayerSounder.PlayAnyDestroyArmoryAudio
+                            (shieldParts[a].NumberPosition);
                         shieldParts[a].FireEvent();
                         shieldParts.RemoveAt(a);
                         tempArmory -= shieldPartArmory;
@@ -231,6 +240,9 @@ namespace PlayerBehaviour
                             break;
                         }
 
+                        playerComponentsControl.
+                            PlayerSounder.PlayAnyDestroyArmoryAudio
+                            (kirasaParts[a].NumberPosition);
                         kirasaParts[a].FireEvent();
                         kirasaParts.RemoveAt(a);
                         tempArmory -= kirasaPartArmory;

@@ -19,6 +19,8 @@ namespace GameBehaviour
         [SerializeField]
         private AbstractEnemy abstractEnemy;
         private ParticleSystem particleSystem;
+        private AudioSource audioSourceOfFire;
+        private AudioSource audioSourceOfBurning;
         private float time;
         private float damagePerTime;
 
@@ -31,8 +33,17 @@ namespace GameBehaviour
         /// </summary>
         void Start()
         {
-            particleSystem = transform.GetChild(0).GetComponent<ParticleSystem>();
-            damagePerTime = 0;   
+            particleSystem = 
+                transform.GetChild(0).GetComponent<ParticleSystem>();
+            damagePerTime = 0;
+            audioSourceOfFire = GetComponent<AudioSource>();
+            audioSourceOfBurning = 
+                particleSystem.transform.GetComponent<AudioSource>();
+        }
+
+        private void FireAudio()
+        {
+            AbstractSoundStorage.WorkWithBurn(audioSourceOfFire);
         }
 
         /// <summary>
@@ -44,6 +55,7 @@ namespace GameBehaviour
         {
             damagePerTime += LibraryStaticFunctions.FireDamagePerPeriod(damage,weapon);
             InitialisationParticleSystem();
+            FireAudio();
 
             if (!isBurning)
             {
@@ -79,6 +91,7 @@ namespace GameBehaviour
 
             particleSystem.gameObject.SetActive(true);
             particleSystem.Play();
+            AbstractSoundStorage.WorkWithBurning(audioSourceOfBurning);
 
             while (i < maxI)
             {

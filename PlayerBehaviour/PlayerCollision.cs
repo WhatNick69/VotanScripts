@@ -32,6 +32,11 @@ namespace PlayerBehaviour
         private RaycastHit rayCastHit;
         private static string tagNameObstacle = "Obstacle";
         private static string tagNameEnemy = "Enemy";
+        private bool isRunning;
+
+        private bool isGrounded;
+        private Ray rayGround;
+        private RaycastHit rayCastHitGround;
         #endregion
 
         #region Свойства
@@ -57,9 +62,32 @@ namespace PlayerBehaviour
             boolsList = new bool[raysCount]; // инициализируем размер массива булей
             PlayerRGB = GetComponent<Rigidbody>();
             angle = 360 / raysCount;
+            isGrounded = true;
 
             Timing.RunCoroutine(CoroutineRaycastSearching());
+            Timing.RunCoroutine(CoroutineForCheckPlayerGrounded());
             //Timing.RunCoroutine(CoroutineForErrorControlling());
+        }
+
+        private IEnumerator<float> CoroutineForCheckPlayerGrounded()
+        {
+            while (isRunning)
+            {
+                if (Physics.Raycast(transform.position, -transform.up, out rayCastHitGround, 0.5f))
+                {
+                    Debug.DrawRay(transform.position, -transform.up, Color.red, 0.1f);
+                    if (!isGrounded)
+                    {
+                        Debug.Log("Приземлились");
+                        isGrounded = true;
+                    }
+                }
+                else
+                {
+                    isGrounded = false;
+                }
+                yield return Timing.WaitForSeconds(0.1f);
+            }
         }
 
         /// <summary>
@@ -135,6 +163,7 @@ namespace PlayerBehaviour
         /// <returns></returns>
         private IEnumerator<float> CoroutineRaycastSearching()
         {
+            isRunning = true;
             while (playerComponentControl.
                 PlayerConditions.IsAlive)
             {
@@ -142,6 +171,7 @@ namespace PlayerBehaviour
 
                 yield return Timing.WaitForSeconds(frequencyUpdate);
             }
+            isRunning = false;
         }
 
         private IEnumerator<float> CoroutineForErrorControlling()

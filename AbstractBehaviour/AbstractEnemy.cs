@@ -17,7 +17,7 @@ namespace AbstractBehaviour
         [SerializeField] // точки противника
         protected Transform rightShoulderPoint, leftShoulderPoint, 
 			facePoint, backPoint;
-
+        private AbstractSoundStorage abstractObjectSounder;
         protected EnemyAnimationsController enemyAnimationsController;
         protected EnemyAttack enemyAttack;
         protected EnemyConditions enemyConditions;
@@ -29,6 +29,7 @@ namespace AbstractBehaviour
         protected IElectricEffect electricEffectManager;
         protected IPhysicEffect physicEffect;
         protected IScoreAddingEffect scoreAddingEffect;
+
         #endregion
 
         #region Свойства
@@ -159,6 +160,19 @@ namespace AbstractBehaviour
             set
             {
                 physicEffect = value;
+            }
+        }
+
+        public AbstractSoundStorage AbstractObjectSounder
+        {
+            get
+            {
+               return abstractObjectSounder;
+            }
+
+            set
+            {
+                abstractObjectSounder = value;
             }
         }
         #endregion

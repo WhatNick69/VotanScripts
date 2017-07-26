@@ -35,6 +35,19 @@ namespace GameBehaviour
                 isActivePart = value;
             }
         }
+
+        public ArmoryPosition NumberPosition
+        {
+            get
+            {
+                return numberPosition;
+            }
+
+            set
+            {
+                numberPosition = value;
+            }
+        }
         #endregion
 
         /// <summary>

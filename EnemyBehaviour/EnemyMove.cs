@@ -132,6 +132,19 @@ namespace EnemyBehaviour
                 agent = value;
             }
         }
+
+        public float PreDistanceForAttack
+        {
+            get
+            {
+                return preDistanceForAttack;
+            }
+
+            set
+            {
+                preDistanceForAttack = value;
+            }
+        }
         #endregion
 
         /// <summary>
