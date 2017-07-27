@@ -127,6 +127,11 @@ namespace VotanInterfaces
     public interface IEnemyConditions
     {
         /// <summary>
+        /// Инициализация
+        /// </summary>
+        void Start();
+
+        /// <summary>
         /// Заморожен ли враг
         /// </summary>
         bool IsFrozen { get; set; }
@@ -162,6 +167,19 @@ namespace VotanInterfaces
         IEnumerator<float> CoroutineForFrozenDamage(float damage,IWeapon weapon);
 
         /// <summary>
+        /// Корутина на физический урон
+        /// </summary>
+        /// <param name="weapon"></param>
+        /// <returns></returns>
+        IEnumerator<float> CoroutineForPhysicDamage(IWeapon weapon);
+
+        /// <summary>
+        /// Запустить корутину физичесого эффекта
+        /// </summary>
+        /// <param name="weapon"></param>
+        void RunCoroutineForPhysicDamage(IWeapon weapon);
+
+        /// <summary>
         /// Частотное обновление
         /// </summary>
         void FixedUpdate();
@@ -184,6 +202,15 @@ namespace VotanInterfaces
         /// <param name="dmgType"></param>
         /// <param name="weapon"></param>
         bool GetDamage(float dmg, float gemPower, IWeapon weapon);
+
+        /// <summary>
+        /// Получить урон в результате молнии
+        /// </summary>
+        /// <param name="dmg"></param>
+        /// <param name="gemPower"></param>
+        /// <param name="weapon"></param>
+        void GetDamageElectricity(float dmg, float gemPower
+            , IWeapon weapon);
 
         /// <summary>
         /// Корутина на получение урона от персонажа.

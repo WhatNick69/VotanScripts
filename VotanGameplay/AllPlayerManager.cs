@@ -11,8 +11,6 @@ namespace VotanGameplay
     public class AllPlayerManager
         : MonoBehaviour
     {
-        private static bool isGameOver;
-
         /// <summary>
         /// Лист с игроками
         /// </summary>
@@ -34,23 +32,9 @@ namespace VotanGameplay
             }
         }
 
-        public static bool IsGameOver
-        {
-            get
-            {
-                return isGameOver;
-            }
-
-            set
-            {
-                isGameOver = value;
-            }
-        }
-
         private void Awake()
         {
             playerList = new List<GameObject>();
-            isGameOver = false;
         }
 
         /// <summary>
@@ -94,7 +78,7 @@ namespace VotanGameplay
             foreach (GameObject player in playerList)
                 if (player.GetComponent<PlayerConditions>().IsAlive) return;
 
-            isGameOver = true;
+            GameManager.IsGameOver = true;
         }
     }
 }

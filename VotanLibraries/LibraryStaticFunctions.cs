@@ -256,6 +256,16 @@ namespace VotanLibraries
         }
 
         /// <summary>
+        /// Можно ли отталкнуть врага?
+        /// </summary>
+        /// <param name="weapon"></param>
+        /// <returns></returns>
+        public static bool MayToNockbackEnemy(IWeapon weapon)
+        {
+            return weapon.SpinSpeed / weapon.OriginalSpinSpeed >= 0.95f ? true : false;
+        }
+
+        /// <summary>
         /// Возвращает значение, которое лежит в границах от и до.
         /// 
         /// Текущая реализация: ЛЕВ + ((ПРАВ-ЛЕВ)*ЧАСТНОЕ).

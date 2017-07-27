@@ -51,6 +51,25 @@ namespace GameBehaviour
         }
 
         /// <summary>
+        /// Оттолкнуть врага, если скорость вращения выше 0.95
+        /// </summary>
+        /// <param name="weapon"></param>
+        public void EventEffectWithoutDefenceBonus(IWeapon weapon)
+        {
+            if (LibraryStaticFunctions.MayToNockbackEnemy(weapon))
+            {
+                weapon.GetPlayer.PlayerCameraSmooth.
+                       DoNoize((weapon.SpinSpeed / weapon.OriginalSpinSpeed) + 0.5f);
+                this.weapon = weapon;
+                playerObjectTransform = weapon.GetPlayer.PlayerWeapon.transform;
+                if (enemy.EnemyConditions.IsAlive)
+                {
+                    Timing.RunCoroutine(CoroutineForNockback());
+                }
+            }
+        }
+
+        /// <summary>
         /// Корутина для отталкивания
         /// </summary>
         /// <returns></returns>

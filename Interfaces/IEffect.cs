@@ -50,10 +50,16 @@ namespace VotanInterfaces
     public interface IPhysicEffect
     {
         /// <summary>
-        /// Зажечь огненный эффект
+        /// Зажечь земляной эффект
         /// </summary>
         /// <param name="time"></param>
         void EventEffect(IWeapon weapon);
+
+        /// <summary>
+        /// Земляной эффект на исключительное отталкивание врага 
+        /// </summary>
+        /// <param name="weapon"></param>
+        void EventEffectWithoutDefenceBonus(IWeapon weapon);
     }
 
     /// <summary>

@@ -244,7 +244,7 @@ namespace PlayerBehaviour
             if (flag && !IsDownInterfaceTransformHasBeenChanged)
             {
                 MainBarCanvas.localRotation =
-                    Quaternion.Euler(angle, -90, 0);
+                    Quaternion.Euler(angle, -90, -90);
                 IsDownInterfaceTransformHasBeenChanged = true;
             }
             else if (!flag && IsDownInterfaceTransformHasBeenChanged)

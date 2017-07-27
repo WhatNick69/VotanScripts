@@ -59,7 +59,6 @@ namespace PlayerBehaviour
         /// </summary>
         public void EventWin()
         {
-            GameManager.DisableMusic(true);
             SetActiveOfPlayerInterface(false);
             pauseButton.SetActive(false);
             scoreInterface.SetActive(false);

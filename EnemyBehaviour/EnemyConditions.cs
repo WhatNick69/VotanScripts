@@ -30,6 +30,9 @@ namespace EnemyBehaviour
         private float physicResistance;
         [SerializeField, Tooltip("Тень")]
         private Transform blobShadow;
+        [SerializeField, Tooltip("Электрическое управление тенью")]
+        private ElectricityColorInterfaceChanger electricityColorInterfaceChanger;
+
         private Transform cameraTransform;
 
         private IAIMoving enemyMove;
@@ -43,6 +46,7 @@ namespace EnemyBehaviour
         private Vector3 normalShadowSize;
         private Vector3 littleShadowSize;
         private bool isDownInterfaceTransformHasBeenChanged;
+
         #endregion
 
         #region Свойства
@@ -179,6 +183,8 @@ namespace EnemyBehaviour
             normalShadowSize = new Vector3(1.25f, 1.25f, 1.25f);
             littleShadowSize = new Vector3(0.6f, 0.6f, 0.6f);
 
+            electricityColorInterfaceChanger.SpriteRendererObject = 
+                blobShadow.GetComponent<SpriteRenderer>();
             FindCameraInScene();
         }
 
@@ -284,24 +290,39 @@ namespace EnemyBehaviour
             float damage = 0;
             switch (weapon.AttackType)
             {
+                // ЭЛЕКТРИЧЕСТВО
                 case DamageType.Electric:
-                    RunCoroutineForGetElectricDamage(dmg, gemPower, weapon);
+                    RunCoroutineForGetElectricDamage(dmg, gemPower, weapon); 
                     damage = dmg * (1 - electricResistance);
-                    return damage;
+                return damage;
+
+                // ОГОНЬ
                 case DamageType.Fire:
                     damage = dmg * (1 - fireResistance);
                     RunFireDamage(damage, weapon);
-                    return damage;
+                return damage;
+
+                // ЛЁД
                 case DamageType.Frozen:
                     if (!isFrozen)
                     {
                         if (LibraryStaticFunctions.MayableToBeFreezy(gemPower))
-                            RunCoroutineForFrozenDamage(dmg,weapon);
+                        {
+                            RunCoroutineForFrozenDamage(dmg, weapon);
+                        }
+                        else
+                        {
+                            // оттолкнуть врага
+                            enemyAbstract.Physicffect.
+                                EventEffectWithoutDefenceBonus(weapon); 
+                        }
                     }
-                    return dmg * (1 - frostResistance);
+                return dmg * (1 - frostResistance);
+
+                // ФИЗИКА
                 case DamageType.Powerful:
                     RunCoroutineForPhysicDamage(weapon);
-                    return dmg * (1 - physicResistance);
+                return dmg * (1 - physicResistance);
             }
 
             return dmg;
@@ -318,7 +339,6 @@ namespace EnemyBehaviour
             if (isMayGetDamage)
             {
                 enemyAbstract.AbstractObjectSounder.PlayGetDamageAudio();
-                weapon.WhileTime();
                 Timing.RunCoroutine(CoroutineForGetDamage());
                 dmg = GetDamageWithResistance(dmg, gemPower, weapon);
                 //Debug.Log("Ближняя атака");
@@ -329,13 +349,14 @@ namespace EnemyBehaviour
                 {
                     enemyAbstract.ScoreAddingEffect.EventEffect(weapon);
                 }
+                weapon.WhileTime();
                 return true;
             }
             return false;
         }
 
         /// <summary>
-        /// Получить урон от молнии, либо от огня
+        /// Получить урон от молнии
         /// </summary>
         /// <param name="dmg"></param>
         /// <param name="gemPower"></param>
@@ -346,7 +367,7 @@ namespace EnemyBehaviour
         {
             Timing.RunCoroutine(CoroutineForGetDamage(true));
             dmg = GetDamageWithResistance(dmg, gemPower, weapon);
-            //Debug.Log("Дальняя атака");
+
             if (HealthValue <= 0) return;
             HealthValue -=
                 LibraryStaticFunctions.GetRangeValue(dmg, 0.1f);
@@ -382,6 +403,8 @@ namespace EnemyBehaviour
         public void RunCoroutineForGetElectricDamage(float damage,
             float gemPower, IWeapon weapon)
         {
+            enemyAbstract.Physicffect.EventEffectWithoutDefenceBonus(weapon); // оттолкнуть врага
+
             Timing.RunCoroutine(CoroutineForElectricDamage
                 (damage, gemPower, weapon));
         }
@@ -394,7 +417,8 @@ namespace EnemyBehaviour
         public IEnumerator<float> CoroutineForElectricDamage(float damage,
             float gemPower, IWeapon weapon)
         {
-            IsShocked = true;
+            isShocked = true;
+            electricityColorInterfaceChanger.ElectricityBlobShadow();
             enemyAbstract.ElectricEffect.EventEffect(damage, gemPower, weapon);
             yield return Timing.WaitForSeconds(1);
             isShocked = false;
@@ -471,6 +495,9 @@ namespace EnemyBehaviour
         /// <param name="weapon"></param>
         public void RunFireDamage(float damage, IWeapon weapon)
         {
+            Debug.Log("УДАРИЛИ");
+            enemyAbstract.Physicffect.EventEffectWithoutDefenceBonus(weapon); // оттолкнуть врага
+
             enemyAbstract.FireEffect.EventEffect(damage, weapon);
         }
         #endregion

@@ -37,25 +37,10 @@ namespace VotanGameplay
         private int tempEnemiesForWave;
         private int tempEnemyIndexNumber;
         GameObject enemyObjNew;
-        private static bool isWin;
-
-        public static bool IsWin
-        {
-            get
-            {
-                return isWin;
-            }
-
-            set
-            {
-                isWin = value;
-            }
-        }
         #endregion
 
         private void Start()
         {
-            isWin = false;
             Timing.RunCoroutine(CoroutineInstantiate());
         }
 
@@ -92,7 +77,7 @@ namespace VotanGameplay
                 }
                 yield return Timing.WaitForSeconds(timeToInstantiate/2);
             }
-            isWin = true;
+            GameManager.IsWin = true;
             SendToPlayersCallOfWin();
         }
 

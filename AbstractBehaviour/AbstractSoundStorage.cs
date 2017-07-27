@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using VotanLibraries;
 
 namespace AbstractBehaviour
@@ -18,6 +19,8 @@ namespace AbstractBehaviour
         protected static AudioClip[] audioIce;
         protected static AudioClip[] audioBodyFall;
         protected static AudioClip[] audioGameMusic;
+        protected static AudioClip[] audioDeadMusic;
+        protected static AudioClip[] audioWinMusic;
         protected static AudioClip[] audioToBurn;
         protected static AudioClip[] audioBurning;
         protected AudioClip[] audioHitArmory; // Звуки лязка дробящего оружия
@@ -56,11 +59,52 @@ namespace AbstractBehaviour
         /// </summary>
         public static void LoadAllStaticSounds()
         {
+            InitialisationDeadMusic();
             InitialisationGameMusic();
+            InitialisationWinMusic();
             InitialisationSoundsForMetalThings();
             InitialisationSoundsIce();
             InitialisationSoundsBodyFall();
             InitialisationSoundsBurnAndBurning();
+        }
+
+        /// <summary>
+        /// Инициализация музыки
+        /// </summary>
+        private static void InitialisationGameMusic()
+        {
+            tempAudioList = Resources.LoadAll("Sounds/Music/Gameplay");
+            audioGameMusic = new AudioClip[tempAudioList.Length];
+            for (int i = 0; i < tempAudioList.Length; i++)
+            {
+                audioGameMusic[i] = (AudioClip)tempAudioList[i];
+            }
+        }
+
+        /// <summary>
+        /// Инициализация музыки проигрыша
+        /// </summary>
+        private static void InitialisationDeadMusic()
+        {
+            tempAudioList = Resources.LoadAll("Sounds/Music/Dead");
+            audioDeadMusic = new AudioClip[tempAudioList.Length];
+            for (int i = 0; i < tempAudioList.Length; i++)
+            {
+                audioDeadMusic[i] = (AudioClip)tempAudioList[i];
+            }
+        }
+
+        /// <summary>
+        /// Инициализация музыки победы
+        /// </summary>
+        private static void InitialisationWinMusic()
+        {
+            tempAudioList = Resources.LoadAll("Sounds/Music/Win");
+            audioWinMusic = new AudioClip[tempAudioList.Length];
+            for (int i = 0; i < tempAudioList.Length; i++)
+            {
+                audioWinMusic[i] = (AudioClip)tempAudioList[i];
+            }
         }
 
         /// <summary>
@@ -145,19 +189,6 @@ namespace AbstractBehaviour
             for (int i = 0; i < tempAudioList.Length; i++)
             {
                 audioHitBody[i] = (AudioClip)tempAudioList[i];
-            }
-        }
-
-        /// <summary>
-        /// Инициализация музыки
-        /// </summary>
-        private static void InitialisationGameMusic()
-        {
-            tempAudioList = Resources.LoadAll("Sounds/Music");
-            audioGameMusic = new AudioClip[tempAudioList.Length];
-            for (int i = 0; i < tempAudioList.Length; i++)
-            {
-                audioGameMusic[i] = (AudioClip)tempAudioList[i];
             }
         }
 
@@ -252,7 +283,7 @@ namespace AbstractBehaviour
         {
             auSo.clip =
                 audioGameMusic[LibraryStaticFunctions.rnd.
-                Next(2, audioGameMusic.Length)];
+                Next(0, audioGameMusic.Length)];
             auSo.Play();
         }
 
@@ -263,9 +294,18 @@ namespace AbstractBehaviour
         public static void GameOverMusic(AudioSource auSo)
         {
             auSo.clip =
-                audioGameMusic[LibraryStaticFunctions.rnd.
-                Next(0, 2)];
+                audioDeadMusic[LibraryStaticFunctions.rnd.
+                Next(0, audioDeadMusic.Length)];
             auSo.Play();
+        }
+
+        public static void WinOverMusic(AudioSource auSo)
+        {
+            auSo.clip =
+                audioWinMusic[LibraryStaticFunctions.rnd.
+                Next(0, audioWinMusic.Length)];
+            auSo.Play();
+            Debug.Log("PLAYING: " + auSo.clip);
         }
 
         /// <summary>

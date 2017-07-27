@@ -133,7 +133,10 @@ namespace GameBehaviour
         private void NullPositions()
         {
             foreach (Transform transformOfTrail in listTrailObjects)
+            {
+                transformOfTrail.gameObject.SetActive(false);
                 transformOfTrail.localPosition = Vector3.zero;
+            }
         }
 
         /// <summary>
