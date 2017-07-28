@@ -18,6 +18,7 @@ namespace VotanGameplay
         private float frequencyOfLighting;
         private AudioSource audioSource;
         private Transform[] lightingList;
+        private TrailRenderer[] trailRendererList;
         bool[] isLookAtDestinationList;
         private Vector3 startPosition;
         private Vector3 newPosition;
@@ -32,6 +33,8 @@ namespace VotanGameplay
         private void Start()
         {
             lightingList = new Transform[transform.childCount];
+            trailRendererList = new TrailRenderer[lightingList.Length];
+
             startPosition = transform.position;
             rnd = LibraryStaticFunctions.rnd;
             audioSource = GetComponent<AudioSource>();
@@ -46,7 +49,11 @@ namespace VotanGameplay
         private void GetAllChilds()
         {
             for (int i = 0; i < transform.childCount; i++)
+            {
                 lightingList[i] = transform.GetChild(i);
+                trailRendererList[i] = transform.GetChild(i).GetComponent<TrailRenderer>();
+            }
+                
             isLookAtDestinationList = new bool[lightingList.Length];
         }
 
@@ -66,18 +73,27 @@ namespace VotanGameplay
                 {
                     RandomPositionOfLighting();
                     NullPositions();
+                    RandomerScalerAndWidther();
+
                     Timing.RunCoroutine(CoroutineForMoveTrails());
                     Timing.RunCoroutine(CoroutineForSound());
                 }
             }
         }
 
+        /// <summary>
+        /// Корутина для воспроизведения звука для грозы с задержкой
+        /// </summary>
+        /// <returns></returns>
         private IEnumerator<float> CoroutineForSound()
         {
             yield return Timing.WaitForSeconds(LibraryStaticFunctions.GetRangeValue(2, 0.5f));
             AbstractSoundStorage.WorkWithEnvironmentLighting(audioSource);
         }
 
+        /// <summary>
+        /// Случайная позиция для грозы
+        /// </summary>
         private void RandomPositionOfLighting()
         {
             newPosition = new Vector3
@@ -88,6 +104,9 @@ namespace VotanGameplay
                 GetPlusMinusValue(Mathf.Abs(startPosition.z)/2)));
         }
 
+        /// <summary>
+        /// Обнулить позицию
+        /// </summary>
         private void NullPositions()
         {
             transform.position = 
@@ -107,6 +126,23 @@ namespace VotanGameplay
             return rnd.Next(0, 2) == 1 ? true : false;
         }
 
+        /// <summary>
+        /// Задать случайный размер для грозы
+        /// </summary>
+        private void RandomerScalerAndWidther()
+        {
+            foreach (TrailRenderer trailChild in trailRendererList)
+            {
+                trailChild.startWidth = 0.5f + 
+                    LibraryStaticFunctions.GetPlusMinusValue(0.2f);
+                trailChild.endWidth = trailChild.startWidth - 
+                    LibraryStaticFunctions.GetRangeValue(trailChild.startWidth/2);
+            }
+        }
+
+        /// <summary>
+        /// Отключить либо включить объекты грозы
+        /// </summary>
         private void DisableObjects()
         {
             if (isLightingsActive) isLightingsActive = false;
