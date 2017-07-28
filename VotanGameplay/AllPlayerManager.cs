@@ -80,5 +80,15 @@ namespace VotanGameplay
 
             GameManager.IsGameOver = true;
         }
+
+        /// <summary>
+        /// Запуск эффекта грозы для всех игроков
+        /// </summary>
+        public static void FireLightingEffectInAllPlayers()
+        {
+            foreach (GameObject player in playerList)
+                player.GetComponent<PlayerComponentsControl>()
+                    .PlayerLightingEffect.FireLightingEffect();
+        }
     }
 }

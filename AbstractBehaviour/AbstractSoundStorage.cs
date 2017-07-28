@@ -23,6 +23,7 @@ namespace AbstractBehaviour
         protected static AudioClip[] audioWinMusic;
         protected static AudioClip[] audioToBurn;
         protected static AudioClip[] audioBurning;
+        protected static AudioClip[] audioEnvironmentLighting;
         protected AudioClip[] audioHitArmory; // Звуки лязка дробящего оружия
 
         [SerializeField, Tooltip("Звуковой компонент на ногах")]
@@ -66,6 +67,7 @@ namespace AbstractBehaviour
             InitialisationSoundsIce();
             InitialisationSoundsBodyFall();
             InitialisationSoundsBurnAndBurning();
+            InitialisationEnvironmentLighting();
         }
 
         /// <summary>
@@ -78,6 +80,19 @@ namespace AbstractBehaviour
             for (int i = 0; i < tempAudioList.Length; i++)
             {
                 audioGameMusic[i] = (AudioClip)tempAudioList[i];
+            }
+        }
+
+        /// <summary>
+        /// Инициализация звуков грозы
+        /// </summary>
+        private static void InitialisationEnvironmentLighting()
+        {
+            tempAudioList = Resources.LoadAll("Sounds/Environment/Lighting");
+            audioEnvironmentLighting = new AudioClip[tempAudioList.Length];
+            for (int i = 0; i < tempAudioList.Length; i++)
+            {
+                audioEnvironmentLighting[i] = (AudioClip)tempAudioList[i];
             }
         }
 
@@ -245,6 +260,15 @@ namespace AbstractBehaviour
             auSo.clip =
                 audioCollisionMetalThings[LibraryStaticFunctions.rnd.
                 Next(0, audioCollisionMetalThings.Length)];
+            auSo.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
+            auSo.Play();
+        }
+
+        public static void WorkWithEnvironmentLighting(AudioSource auSo)
+        {
+            auSo.clip =
+                audioEnvironmentLighting[LibraryStaticFunctions.rnd.
+                Next(0, audioEnvironmentLighting.Length)];
             auSo.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
             auSo.Play();
         }

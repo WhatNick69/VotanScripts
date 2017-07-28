@@ -40,6 +40,8 @@ namespace PlayerBehaviour
         private PlayerAnimationsController playerAnimationsController;
         [SerializeField, Tooltip("Звуковой компонент игрока")]
         private PlayerSounder playerSounder;
+        [SerializeField, Tooltip("Эффект грозы у игрока")]
+        private PlayerLightingEffect playerLightingEffect;
         [SerializeField, Tooltip("Родитель игрока")]
         private Transform playerParent;
         [SerializeField, Tooltip("Объект игрока")]
@@ -269,6 +271,19 @@ namespace PlayerBehaviour
             set
             {
                 playerUI = value;
+            }
+        }
+
+        public PlayerLightingEffect PlayerLightingEffect
+        {
+            get
+            {
+                return playerLightingEffect;
+            }
+
+            set
+            {
+                playerLightingEffect = value;
             }
         }
         #endregion

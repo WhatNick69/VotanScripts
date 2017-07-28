@@ -1,0 +1,173 @@
+﻿using AbstractBehaviour;
+using MovementEffects;
+using System.Collections.Generic;
+using UnityEngine;
+using VotanLibraries;
+
+namespace VotanGameplay
+{
+    /// <summary>
+    /// Гроза. 
+    /// Используется в игре, на заднем плане.
+    /// </summary>
+    [RequireComponent(typeof(AudioSource))]
+    public class GameLighting 
+        : MonoBehaviour
+    {
+        [SerializeField, Tooltip("Частота молний"), Range(1, 30)]
+        private float frequencyOfLighting;
+        private AudioSource audioSource;
+        private Transform[] lightingList;
+        bool[] isLookAtDestinationList;
+        private Vector3 startPosition;
+        private Vector3 newPosition;
+        private System.Random rnd;
+        private bool isLightingsActive;
+        private bool isLight;
+        private byte iterations;
+
+        /// <summary>
+        /// Инициализация
+        /// </summary>
+        private void Start()
+        {
+            lightingList = new Transform[transform.childCount];
+            startPosition = transform.position;
+            rnd = LibraryStaticFunctions.rnd;
+            audioSource = GetComponent<AudioSource>();
+
+            GetAllChilds();
+            Timing.RunCoroutine(CoroutineForLighting());
+        }
+
+        /// <summary>
+        /// Получить все элементы грозы
+        /// </summary>
+        private void GetAllChilds()
+        {
+            for (int i = 0; i < transform.childCount; i++)
+                lightingList[i] = transform.GetChild(i);
+            isLookAtDestinationList = new bool[lightingList.Length];
+        }
+
+        /// <summary>
+        /// Корутина на обработку грозы
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator<float> CoroutineForLighting()
+        {
+            while (true)
+            {
+                // Промежуток, между грозой
+                yield return Timing.WaitForSeconds
+                    (LibraryStaticFunctions.GetRangeValue
+                    (frequencyOfLighting, 0.5f));
+                if (!isLight)
+                {
+                    RandomPositionOfLighting();
+                    NullPositions();
+                    Timing.RunCoroutine(CoroutineForMoveTrails());
+                    Timing.RunCoroutine(CoroutineForSound());
+                }
+            }
+        }
+
+        private IEnumerator<float> CoroutineForSound()
+        {
+            yield return Timing.WaitForSeconds(LibraryStaticFunctions.GetRangeValue(2, 0.5f));
+            AbstractSoundStorage.WorkWithEnvironmentLighting(audioSource);
+        }
+
+        private void RandomPositionOfLighting()
+        {
+            newPosition = new Vector3
+                (startPosition.x + (LibraryStaticFunctions.
+                GetPlusMinusValue(Mathf.Abs(startPosition.x)/2)),
+                startPosition.y-LibraryStaticFunctions.GetRangeValue(60,0.1f),
+                startPosition.z + (LibraryStaticFunctions.
+                GetPlusMinusValue(Mathf.Abs(startPosition.z)/2)));
+        }
+
+        private void NullPositions()
+        {
+            transform.position = 
+                new Vector3(newPosition.x, startPosition.y, newPosition.z);
+            foreach (Transform childTransform in lightingList)
+                childTransform.localPosition = Vector3.zero;
+        }
+
+        /// <summary>
+        /// Меняем значение буля. 
+        /// false - трэил движется в рандомном направлении.
+        /// true - трэил движется к точке назначения.
+        /// </summary>
+        /// <param name="i"></param>
+        private bool RandomBoolValue(int i)
+        {
+            return rnd.Next(0, 2) == 1 ? true : false;
+        }
+
+        private void DisableObjects()
+        {
+            if (isLightingsActive) isLightingsActive = false;
+            else isLightingsActive = true;
+
+            foreach (Transform lighting in lightingList)
+                lighting.gameObject.SetActive(isLightingsActive);
+        }
+
+        /// <summary>
+        /// Корутина для зажигания электрического эффекта
+        /// Безопасный цикл с ограничением в 100 итераций
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator<float> CoroutineForMoveTrails()
+        {
+            AllPlayerManager.FireLightingEffectInAllPlayers();
+            isLight = true;
+            DisableObjects();
+            iterations = 0;
+
+            Vector3 tempPosition = new Vector3
+                (newPosition.x + LibraryStaticFunctions.
+                GetPlusMinusValue(1),
+                newPosition.y,
+                newPosition.z + LibraryStaticFunctions.
+                GetPlusMinusValue(1));
+
+            while (iterations < 50)
+            {
+                for (int i = 0; i < lightingList.Length; i++)
+                {
+                    if (isLookAtDestinationList[i])
+                    {
+                        lightingList[i].LookAt(tempPosition);
+                        lightingList[i].Translate(lightingList[i].forward
+                            * (float)(2 + rnd.NextDouble()), Space.World);
+                    }
+                    else
+                    {
+                        lightingList[i].rotation = Quaternion.Euler
+                            (rnd.Next(0, 360), rnd.Next(0, 360), rnd.Next(0, 360));
+                        lightingList[i].Translate(lightingList[i].forward
+                            * (float)(1 + rnd.NextDouble()));
+                    }
+
+                    if (Vector3.Distance(lightingList[i].
+                        position, tempPosition) <= 1)
+                    {
+                        DisableObjects();
+                        isLight = false;
+                        yield break;
+                    }
+
+                    isLookAtDestinationList[i] = RandomBoolValue(i);
+                }
+                yield return Timing.WaitForSeconds(0.01f);
+                iterations++;
+            }
+            isLight = false;
+            DisableObjects();
+        }
+    }
+}
