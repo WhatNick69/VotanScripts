@@ -101,7 +101,6 @@ namespace CraftSystem
 
 		}
 
-
 		private void Start() // ____________start__________
 		{
 			WC = GetComponent<WeaponCraft>();

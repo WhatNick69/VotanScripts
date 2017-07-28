@@ -237,6 +237,7 @@ namespace PlayerBehaviour
                         {
                             a = 0;
                             isKirasaDeactive = true;
+                            CheckArmorCorrectly();
                             break;
                         }
 
@@ -247,6 +248,22 @@ namespace PlayerBehaviour
                         kirasaParts.RemoveAt(a);
                         tempArmory -= kirasaPartArmory;
                     }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Проверка листа кирасы на пустоту
+        /// </summary>
+        private void CheckArmorCorrectly()
+        {
+            if (kirasaParts.Count != 0)
+            {
+                Debug.Log("Коррекция");
+                foreach (PartArmoryManager part in kirasaParts)
+                {
+                    part.FireEvent();
+                    kirasaParts.Remove(part);
                 }
             }
         }

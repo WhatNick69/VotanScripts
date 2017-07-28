@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using VotanLibraries;
 
 namespace VotanGameplay
@@ -10,25 +9,27 @@ namespace VotanGameplay
     public class CloudObjectsController 
         : MonoBehaviour
     {
-        [SerializeField,Tooltip("Лист облаков-объектов")]
-        private List<GameObject> clouds;
-
         /// <summary>
         /// Инициализация генерации скорости облаков
         /// </summary>
         private void Start()
         {
-            RandomSetspeedAnimation();
+            RandomSetSpeedAnimation();
         }
 
         /// <summary>
         /// Сгенерить скорость облаков
         /// </summary>
-        private void RandomSetspeedAnimation()
+        private void RandomSetSpeedAnimation()
         {
-            foreach (GameObject cloud in clouds)
-                cloud.GetComponent<Animation>()["CloudAnimation"].speed
+            foreach (Transform child in transform)
+            {
+                foreach (Transform childOfChild in child)
+                {
+                    childOfChild.GetComponent<Animation>()["CloudAnimation"].speed
                     = LibraryStaticFunctions.GetRangeValue(0.0075f, 0.25f);
+                }
+            }
         }
     }
 }
