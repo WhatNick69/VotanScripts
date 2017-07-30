@@ -38,6 +38,19 @@ namespace GameBehaviour
 
         private bool isOneCoroutine;
         private float damage;
+
+        public float TimeToDisable
+        {
+            get
+            {
+                return timeToDisable;
+            }
+
+            set
+            {
+                timeToDisable = value;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -58,22 +71,23 @@ namespace GameBehaviour
         /// </summary>
         public void EventEffect(float damage,float timeToDisable, IWeapon weapon)
         {
-            this.weapon = weapon;
-            this.damage = LibraryStaticFunctions.IceDamagePerPeriod(damage, weapon);
             weapon.GetPlayer.PlayerCameraSmooth.
                 DoNoize((weapon.SpinSpeed / weapon.OriginalSpinSpeed)+0.5f);
 
-            SetColorOfMaterial();
-
-            isOneCoroutine = false;
-            this.timeToDisable = timeToDisable-0.5f;
-
-            SetActiveForAudioSource(true,true);
-            SetActiveForTrailObjects(true);
-            SetActiveForIceObjects(true);
-            InitialisationVariables();
-            RandomSetScaleAndPosition();
-            RunAllCoroutines();
+            if (!isOneCoroutine)
+            {
+                this.weapon = weapon;
+                this.damage = LibraryStaticFunctions.IceDamagePerPeriod(damage, weapon);
+                this.timeToDisable = timeToDisable - 0.5f;
+                isOneCoroutine = true;
+                SetColorOfMaterial();
+                SetActiveForAudioSource(true, true);
+                SetActiveForTrailObjects(true);
+                SetActiveForIceObjects(true);
+                InitialisationVariables();
+                RandomSetScaleAndPosition();
+                RunAllCoroutines();
+            }
         }
 
         /// <summary>
@@ -82,13 +96,23 @@ namespace GameBehaviour
         /// <param name="flag"></param>
         private void SetActiveForAudioSource(bool isStart,bool active)
         {
-            if (isStart)
-                AbstractSoundStorage.WorkWithIce
-                    (isStart, iceSoundVolume/2.5f, audioSource);
-            else
-                AbstractSoundStorage.WorkWithIce
-                    (isStart, iceSoundVolume, audioSource);
             audioSource.enabled = active;
+            if (active)
+            {
+                if (isStart)
+                {
+                    AbstractSoundStorage.WorkWithIce
+                        (isStart, iceSoundVolume / 2.5f, audioSource);
+                    audioSource.loop = false;
+                }
+                else
+                {
+
+                    AbstractSoundStorage.WorkWithIce
+                        (isStart, iceSoundVolume, audioSource);
+                    audioSource.loop = true;
+                }
+            }
         }
 
         /// <summary>
@@ -277,8 +301,6 @@ namespace GameBehaviour
         /// <returns></returns>
         private IEnumerator<float> CoroutineDisableIceObjects()
         {
-            isOneCoroutine = true;
-
             SetActiveForTrailObjects(false);
             Vector3 tempVector = new Vector3(0, 2, 0);
             for (int j = 0; j < listPositionIceObjects.Count; j++)
@@ -290,7 +312,7 @@ namespace GameBehaviour
             {
                 for (int j = 0; j < listIceObjects.Length; j++)
                 {
-                    if (this == null || !isOneCoroutine) yield break;
+                    if (this == null) yield break;
 
                     listIceObjects[j].position = 
                         Vector3.Lerp(listIceObjects[j].position,
@@ -301,7 +323,9 @@ namespace GameBehaviour
                 yield return Timing.WaitForSeconds(0.05f);
                 i++;
             }
-            if (isOneCoroutine) SetActiveForIceObjects(false);
+            SetActiveForIceObjects(false);
+            isOneCoroutine = false;
+            timeToDisable = 0;
         }
     }
 }

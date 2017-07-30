@@ -23,10 +23,15 @@ namespace PlayerBehaviour
         private Vector3 rotateBodyOfPlayerVector;
         private float sumAngle;
 
+        [SerializeField]
         private bool isRotating;
+        [SerializeField]
         private bool isFighting;
+        [SerializeField]
         private bool isDefensing;
+        [SerializeField]
         private bool isSpining;
+        [SerializeField]
         private bool isDamaged;
 
         private float tempSpinSpeed;

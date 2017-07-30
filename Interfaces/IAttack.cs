@@ -18,11 +18,6 @@ namespace VotanInterfaces
     public interface IVotanObjectAttack
     {
         /// <summary>
-        /// Инициализация для объекта
-        /// </summary>
-        void Start();
-
-        /// <summary>
         /// Установить позицию персонажа
         /// </summary>
         /// <param name="index"></param>
@@ -59,6 +54,22 @@ namespace VotanInterfaces
     public interface IPlayerAttack
     {
         /// <summary>
+        /// Инициализация
+        /// </summary>
+        void Start();
+
+        /// <summary>
+        /// Запуск корутинов
+        /// </summary>
+        void StartCoroutines();
+
+        /// <summary>
+        /// Корутина на атаку
+        /// </summary>
+        /// <returns></returns>
+        IEnumerator<float> CoroutineForAttackUpdate();
+
+        /// <summary>
         /// Корутина на осуществление урона по врагу
         /// </summary>
         /// <returns></returns>
@@ -70,11 +81,6 @@ namespace VotanInterfaces
         /// <param name="damage"></param>
         /// <param name="dmgType"></param>
         void AttackToEnemy(float damage, DamageType dmgType);
-
-        /// <summary>
-        /// Обновление с заданной частотой
-        /// </summary>
-        void FixedUpdate();
     }
 
     /// <summary>
@@ -82,6 +88,11 @@ namespace VotanInterfaces
     /// </summary>
     public interface IEnemyAttack
     {
+        /// <summary>
+        /// Рестарт атаки врага
+        /// </summary>
+        void RestartEnemyAttack();
+
         /// <summary>
         /// Корутина для нанесения урона по персонажу
         /// </summary>

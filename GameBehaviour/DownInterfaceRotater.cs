@@ -35,6 +35,15 @@ namespace GameBehaviour
             downInterface = GetComponent<IObjectFitBat>();
             triangleRender = GameObject.Find("Environment")
                 .transform.GetComponentInChildren<TriaglesRender>();
+        }
+
+        public virtual void RestartDownInterfaceRotater()
+        {
+            votanConditions = GetComponent<IVotanObjectConditions>();
+            downInterface = GetComponent<IObjectFitBat>();
+            triangleRender = GameObject.Find("Environment")
+                .transform.GetComponentInChildren<TriaglesRender>();
+
             if (refreshFrequency == 0)
                 Timing.RunCoroutine(CoroutineForRotateDownInterfacePerFrame());
             else
@@ -52,7 +61,7 @@ namespace GameBehaviour
                 BodyOfCoroutine();
                 yield return Timing.WaitForSeconds(refreshFrequency);
             }
-            downInterface.DisableDownInterface();
+            downInterface.ActiveDownInterface(false);
         }
 
         /// <summary>
@@ -66,7 +75,7 @@ namespace GameBehaviour
                 BodyOfCoroutine();
                 yield return Timing.WaitForOneFrame;
             }
-            downInterface.DisableDownInterface();
+            downInterface.ActiveDownInterface(false);
         }
 
         /// <summary>

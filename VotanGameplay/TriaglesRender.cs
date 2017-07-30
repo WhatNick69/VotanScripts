@@ -56,11 +56,11 @@ namespace VotanGameplay
         /// </summary>
         private void CheckList()
         {
-            foreach (TriaglesRender stairs in trianglesOnTheScene)
+            for (int i = 0;i<trianglesOnTheScene.Count;i++)
             {
-                if (stairs == null)
+                if (trianglesOnTheScene[i] == null)
                 {
-                    trianglesOnTheScene.Remove(stairs);
+                    trianglesOnTheScene.RemoveAt(i);
                     break;
                 }
             }
@@ -75,10 +75,10 @@ namespace VotanGameplay
         public bool IsOnTheStairs(Vector3 positionObject, ref float value)
         {
             bool flag = false;
-            foreach (TriaglesRender stairs in trianglesOnTheScene)
+            for (int i = 0;i<trianglesOnTheScene.Count;i++)
             {
-                if (Vector3.Distance(positionObject,stairs.positionOfStairs) <= 2f)
-                    flag = stairs.HightOnY(positionObject, ref value);
+                if (Vector3.Distance(positionObject, trianglesOnTheScene[i].positionOfStairs) <= 2f)
+                    flag = trianglesOnTheScene[i].HightOnY(positionObject, ref value);
             }
             return flag;
         }

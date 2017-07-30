@@ -4,8 +4,8 @@ using UnityEngine;
 using VotanInterfaces;
 using MovementEffects;
 using VotanLibraries;
-using GameBehaviour;
 using VotanGameplay;
+using System;
 
 namespace PlayerBehaviour
 {
@@ -17,58 +17,79 @@ namespace PlayerBehaviour
     {
         [SerializeField, Tooltip("Хранитель компонентов")]
         private PlayerComponentsControl playerComponentsControl;
+        [SerializeField, Tooltip("Частота обновления листа с врагами"),Range(0.05f,0.5f)]
+        private float updateListFrequency;
+        [SerializeField, Tooltip("Частота обновления атаки"), Range(0.01f, 0.5f)]
+        private float updateAttackFrequency;
+        private AbstractEnemy tempEnemy;
+        private Transform transformOfPlayer;
+        [SerializeField]
+        private AbstractEnemy[] listEnemy;
+
         private int isCuttingWeapon;
 
-        public override void Start()
-        {
-            base.Start();
+        /// <summary>
+        /// Инициализация
+        /// </summary>
+        public void Start()
+        {        
+            transformOfPlayer = playerComponentsControl.PlayerObject;
             WeaponTypeToBool();
         }
 
-        /// <summary>
-        /// Обновление с заданной частотой
-        /// </summary>
-        public void FixedUpdate()
+        public void GetReferenceToEnemyArray()
         {
-            for (int i = 0; i < StaticStorageWithEnemies.GetCountListOfEnemies(); i++)
-            {
-				if (StaticStorageWithEnemies.IsNonNullElement(i))
-				{
-					if (StaticStorageWithEnemies.DistanceBetweenPlayerAndEnemy(playerComponentsControl.PlayerObject
-                        .position, i) <= 3f)
-					{
-						if (!attackList.Contains(StaticStorageWithEnemies.
-                            GetFromListByIndex(i))) attackList.Add
-                                (StaticStorageWithEnemies.GetFromListByIndex(i));
-					}
-				}
-				else
-				{
-                    StaticStorageWithEnemies.RemoveFromListByIndex(i);			
-				}
-            }
+            listEnemy = new AbstractEnemy[StaticStorageWithEnemies.ListEnemy.Length];
+            Array.Copy(StaticStorageWithEnemies.ListEnemy, listEnemy, StaticStorageWithEnemies.ListEnemy.Length);
+            StartCoroutines();
+        }
 
-            if (!playerComponentsControl.PlayerFight.IsDefensing)
+        /// <summary>
+        /// Запустить корутины
+        /// </summary>
+        public void StartCoroutines()
+        {
+            Timing.RunCoroutine(CoroutineForAttackUpdate());
+        }
+
+        private bool CheckEnemyActiveInArray(int i)
+        {
+            return listEnemy[i].EnemyConditions.IsAlive 
+                && listEnemy[i].gameObject.activeSelf 
+                ? true : false;
+        }
+
+        /// <summary>
+        /// Корутина на обновление попадания по врагу
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerator<float> CoroutineForAttackUpdate()
+        {
+            while (playerComponentsControl.PlayerConditions.IsAlive)
             {
-                if (playerComponentsControl.PlayerFight.IsRotating)
+                yield return Timing.WaitForSeconds(updateAttackFrequency);
+                if (!playerComponentsControl.PlayerFight.IsDefensing)
                 {
-                    AttackToEnemy(LibraryStaticFunctions.AttackToEnemyDamage
-                        (playerComponentsControl.PlayerWeapon.Damage,
-                        playerComponentsControl.PlayerWeapon.SpinSpeed,
-                        playerComponentsControl.PlayerWeapon.OriginalSpinSpeed),
-                    playerComponentsControl.PlayerWeapon.AttackType);
+                    if (playerComponentsControl.PlayerFight.IsRotating)
+                    {
+                        AttackToEnemy(LibraryStaticFunctions.AttackToEnemyDamage
+                            (playerComponentsControl.PlayerWeapon.Damage,
+                            playerComponentsControl.PlayerWeapon.SpinSpeed,
+                            playerComponentsControl.PlayerWeapon.OriginalSpinSpeed),
+                        playerComponentsControl.PlayerWeapon.AttackType);
+                    }
+                    else if (playerComponentsControl.PlayerFight.IsFighting)
+                    {
+                        AttackToEnemy(LibraryStaticFunctions.AttackToEnemyDamage
+                           (playerComponentsControl.PlayerWeapon.Damage,
+                           playerComponentsControl.PlayerWeapon.SpinSpeed,
+                           playerComponentsControl.PlayerWeapon.OriginalSpinSpeed, true),
+                       playerComponentsControl.PlayerWeapon.AttackType);
+                    }
                 }
-                else if (playerComponentsControl.PlayerFight.IsFighting)
-                {
-                    AttackToEnemy(LibraryStaticFunctions.AttackToEnemyDamage
-                       (playerComponentsControl.PlayerWeapon.Damage,
-                       playerComponentsControl.PlayerWeapon.SpinSpeed,
-                       playerComponentsControl.PlayerWeapon.OriginalSpinSpeed,true),
-                   playerComponentsControl.PlayerWeapon.AttackType);
-                }
+                oldFinishGunPoint = playerFinishGunPoint.position;   
             }
-			oldFinishGunPoint = playerFinishGunPoint.position;
-		}
+        }
 
         /// <summary>
         /// Атакуем врага
@@ -77,31 +98,24 @@ namespace PlayerBehaviour
         /// <param name="dmgType"></param>
         public void AttackToEnemy(float damage, DamageType dmgType)
         {
-            for (int i = 0; i < attackList.Count; i++)
+            for (int i = 0; i < listEnemy.Length; i++)
             {
-				if (!attackList[i] || Vector3.Distance(playerComponentsControl.PlayerObject
-                    .position, attackList[i].transform.position) > 3 ||
-						(attackList[i].EnemyConditions.ReturnHealth() <= 0))
-				{
-					attackList.Remove(attackList[i]);
-                    continue;
-				}
-				else if (IsAttackEnemy(i))
+                if (CheckEnemyActiveInArray(i) && IsAttackEnemy(i))
                 {
-                    if (playerComponentsControl.PlayerConditions.IsAlive)
+                    if (listEnemy[i].EnemyConditions.GetDamage
+                        (damage, playerComponentsControl.PlayerWeapon.GemPower
+                        , playerComponentsControl.PlayerWeapon))
                     {
-                        if (attackList[i].EnemyConditions.GetDamage
-                            (damage, playerComponentsControl.PlayerWeapon.GemPower
-                            , playerComponentsControl.PlayerWeapon))
-                        {
-                            playerComponentsControl.PlayerSounder.
-                                PlayWeaponHitAudio(isCuttingWeapon);
-                        }
+                        playerComponentsControl.PlayerSounder.
+                            PlayWeaponHitAudio(isCuttingWeapon);
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Тип оружия в булево значение
+        /// </summary>
         private void WeaponTypeToBool()
         {
             if (playerComponentsControl.PlayerWeapon.WeaponType == WeaponType.Cutting)
@@ -122,14 +136,14 @@ namespace PlayerBehaviour
 		/// <returns></returns>
 		private bool IsAttackEnemy(int i)
 		{
-			return ((LibraryPhysics.BushInPlane(attackList[i].
+			return ((LibraryPhysics.BushInPlane(listEnemy[i].
                 ReturnPosition(4), playerPoint.position,
 						playerFinishGunPoint.position, oldFinishGunPoint) ||
-                        LibraryPhysics.BushInLine(attackList[i].ReturnPosition(0), 
-                        attackList[i].ReturnPosition(1),
+                        LibraryPhysics.BushInLine(listEnemy[i].ReturnPosition(0),
+                        listEnemy[i].ReturnPosition(1),
 							PlayerFinishGunPoint.position, PlayerStartGunPoint.position)) && 
 							Mathf.Abs(playerPoint.position.y 
-                            - attackList[i].ReturnPosition(0).y) < 1.6f);
+                            - listEnemy[i].ReturnPosition(0).y) < 1.6f);
 		}
 
         /// <summary>

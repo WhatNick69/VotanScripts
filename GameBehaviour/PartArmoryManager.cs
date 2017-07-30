@@ -86,10 +86,10 @@ namespace GameBehaviour
         private void DetachFromParent()
         {
             transform.parent = null;
-            //float localScale = 
-            //  transform.localScale.x;
-            //transform.localScale = 
-            //  new Vector3(localScale, localScale, localScale);
+            float localScale = 
+              transform.localScale.x;
+            transform.localScale = 
+              new Vector3(localScale, localScale, localScale);
         }
 
         /// <summary>

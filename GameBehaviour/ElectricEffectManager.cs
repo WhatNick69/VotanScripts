@@ -70,6 +70,7 @@ namespace GameBehaviour
             for (int i = 0; i < childrenCount; i++)
             {
                 listTrailObjects[i].gameObject.SetActive(flag);
+                listTrailObjects[i].transform.localPosition = Vector3.zero;
                 value = LibraryStaticFunctions.GetRangeValue(0.075f, 0.1f);
                 listTrailObjects[i].GetComponent<TrailRenderer>().startWidth
                     = value;
@@ -87,8 +88,6 @@ namespace GameBehaviour
             this.gemPower = gemPower;
             this.damage = damage;
             this.weapon = weapon;
-
-            GameAnimationsObjects.FireEventForDynamicObject(0); // чтобы ящик упал
 
             if (gemPower < 0) return;
 
@@ -123,7 +122,7 @@ namespace GameBehaviour
 
                 VisibleOfElements(true); // включаем объекты
                 Timing.RunCoroutine(CoroutineForMoveTrails
-                    (abstractEnemyTarget.ReturnPosition(2)));
+                    (abstractEnemyTarget.transform));
             }
         }
 
@@ -155,7 +154,7 @@ namespace GameBehaviour
         /// Безопасный цикл с ограничением в 100 итераций
         /// </summary>
         /// <returns></returns>
-        private IEnumerator<float> CoroutineForMoveTrails(Vector3 destination)
+        private IEnumerator<float> CoroutineForMoveTrails(Transform destination)
         {
             int iterations = 0;
             bool flag = false;
@@ -170,7 +169,7 @@ namespace GameBehaviour
                     if (this == null) yield break;
                     if (isLookAtDestinationList[i])
                     {
-                        tempListTrailobjects[i].LookAt(destination);
+                        tempListTrailobjects[i].LookAt(destination.position);
                         tempListTrailobjects[i].Translate(tempListTrailobjects[i].forward
                             * (float)(0.5f + rnd.NextDouble()), Space.World);
                     }
@@ -183,7 +182,7 @@ namespace GameBehaviour
                     }
 
                     if (Vector3.Distance(tempListTrailobjects[i].
-                        position, destination) <= 0.5f)
+                        position, destination.position) <= 0.5f)
                     {
                         // встретили цель. ударили её. передали эстафету.
                         if (!flag)

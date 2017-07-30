@@ -33,6 +33,10 @@ namespace GameBehaviour
             {
                 return scoreBonus;
             }
+            set
+            {
+                scoreBonus = value;
+            }
         }
 
         public Transform TrailScore
@@ -55,6 +59,7 @@ namespace GameBehaviour
         /// <param name="weapon"></param>
         public void EventEffect(IWeapon weapon)
         {
+            trailBonus.localPosition = Vector3.zero;
             scoreBonus = 
                 (int)LibraryStaticFunctions.GetRangeValue(scoreBonus, 0.1f);
             playerTransform = 

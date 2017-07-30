@@ -1,4 +1,4 @@
-﻿using AbstractBehaviour;
+﻿using GameBehaviour;
 using MovementEffects;
 using System.Collections.Generic;
 using UnityEngine;
@@ -59,6 +59,8 @@ namespace EnemyBehaviour
                 GetComponent<EnemyMove>();
             IceEffect =
                 transform.GetChild(1).GetChild(0).GetComponent<IIceEffect>();
+            DownInterfaceRotater =
+                GetComponent<DownInterfaceRotater>();
             ElectricEffect =
                 transform.GetChild(1).GetChild(1).GetComponent<IElectricEffect>();
             Physicffect =
@@ -67,18 +69,27 @@ namespace EnemyBehaviour
                 transform.GetChild(1).GetChild(3).GetComponent<IScoreAddingEffect>();
             FireEffect =
                 transform.GetChild(1).GetChild(4).GetChild(0).GetComponent<IFireEffect>();
-            Timing.RunCoroutine(UpdateAttackState());
+            frequencyOfFightRotating = 0.025f;
+
+            gameObject.SetActive(false);
         }
 
         /// <summary>
-        /// Инициализация
+        /// Обновить врага после того, как тот был возвращен и взят из стэка
         /// </summary>
-        public override void Start()
+        public override void RestartEnemy()
         {
-            base.Start();
-            frequencyOfFightRotating = 0.025f;
+            enemyConditions.RestartEnemyConditions(); // рестарт состояний врага
+            enemyAttack.RestartEnemyAttack(); // рестарт способности врага к битве
+            enemyMove.RestartEnemyMove(); // рестарт способносит врага к движению
+            downInterfaceRotater.RestartDownInterfaceRotater(); // рестарт поворота интерфейса
+            enemyAnimationsController.RestartEnemyAnimationsController(); // рестарт аниматора
+
+            movingSpeed = EnemyMove.AgentSpeed / 5;
             fightRotatingSpeed = LibraryStaticFunctions.GetRangeValue(fightRotatingSpeed, 0.2f);
+
             Timing.RunCoroutine(CoroutineForFightRotating());
+            Timing.RunCoroutine(UpdateAttackState());
         }
 
         /// <summary>
@@ -120,6 +131,9 @@ namespace EnemyBehaviour
             }
         }
 
+        /// <summary>
+        /// Проиграть звук кручения оружия
+        /// </summary>
         private void PlaySpinSpeedAudio()
         {
             tempAngleForSound += fightRotatingSpeed;

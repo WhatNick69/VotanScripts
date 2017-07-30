@@ -52,7 +52,7 @@ namespace AbstractBehaviour
         protected Animator animatorOfObject;
         protected StructStatesNames structStatesnames;
         [SerializeField]
-        protected Transform transformForDeadYNormalizing;
+        private Transform transformForDeadYNormalizing;
         #endregion
 
         #region Свойства
@@ -79,6 +79,19 @@ namespace AbstractBehaviour
             set
             {
                 structStatesnames = value;
+            }
+        }
+
+        protected Transform TransformForDeadYNormalizing
+        {
+            get
+            {
+                return transformForDeadYNormalizing;
+            }
+
+            set
+            {
+                transformForDeadYNormalizing = value;
             }
         }
         #endregion

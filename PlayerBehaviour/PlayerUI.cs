@@ -129,7 +129,7 @@ namespace PlayerBehaviour
         {
             foreach (GameObject gameObject in FindObjectsOfType<GameObject>())
             {
-                if (gameObject.tag == "ImportantGameobject") continue;
+                if (gameObject.CompareTag("ImportantGameobject")) continue;
                 Destroy(gameObject);
             }
         }

@@ -11,7 +11,9 @@ using PlayerBehaviour;
 namespace VotanGameplay
 {
     /// <summary>
-    /// Создатель противников
+    /// Создатель противников.
+    /// Реализовано при помощи стэка.
+    /// Стэк реализован при помощи массива.
     /// </summary>
     public class EnemyCreator 
         : MonoBehaviour
@@ -21,8 +23,6 @@ namespace VotanGameplay
 		private GameObject[] enemyList;
         [SerializeField, Tooltip("Количество врагов для генерации"), Range(1, 500)]
         private int perWaveEnemiesNumber;
-        [SerializeField, Tooltip("Количество врагов для генерации"), Range(1, 500)]
-        private int sumEnemiesNumber;
         [SerializeField, Tooltip("Количество волн"), Range(1, 500)]
         private int waves;
         [SerializeField,Tooltip("Время, между генерации противника"),Range(0.5f,5)]
@@ -36,19 +36,94 @@ namespace VotanGameplay
 
         private int tempEnemiesForWave;
         private int tempEnemyIndexNumber;
-        GameObject enemyObjNew;
+        private GameObject enemyObjNew;
+        private int stackLenght;
         #endregion
 
+        /// <summary>
+        /// Инициализация
+        /// </summary>
         private void Start()
         {
-            Timing.RunCoroutine(CoroutineInstantiate());
+            stackLenght = (int)(oneTimeEnemies * 1.2f);
+            StaticStorageWithEnemies.CountOfEnemies = 0;
+            StaticStorageWithEnemies.ListEnemy = new AbstractEnemy[stackLenght];
+            InitialisationOfEnemies();
+            GiveEnemyArrayReferenceToAllPlayers();
+            Timing.RunCoroutine(CoroutineEnemiesSpawn());
+        }
+
+        /// <summary>
+        /// Предоставить ссылку на массив врагом всем игрокам
+        /// </summary>
+        private void GiveEnemyArrayReferenceToAllPlayers()
+        {
+            for (int i = 0;i<AllPlayerManager.PlayerList.Count;i++)
+            {
+                AllPlayerManager.PlayerList[i].
+                    GetComponent<PlayerComponentsControl>().PlayerAttack.GetReferenceToEnemyArray();
+            }
+        }
+
+        /// <summary>
+        /// Инициализация всех врагов. Тут можно шаманить с их количеством и качеством.
+        /// </summary>
+        private void InitialisationOfEnemies()
+        {
+            for (int i = 0; i < stackLenght; i++)
+            {
+                RandomEnemyChoice();
+                enemyObjNew = Instantiate(enemyList[tempEnemyIndexNumber]);
+                enemyObjNew.GetComponent<IEnemyBehaviour>().EnemyNumber = i;
+                enemyObjNew.transform.parent = respawnPoint;
+                enemyObjNew.GetComponent<EnemyMove>().RandomRadius = randomRadius;
+                enemyObjNew.transform.position = respawnPoint.transform.position;
+                enemyObjNew.name = enemyObjNew.name + "#" + i;
+
+                StaticStorageWithEnemies.ListEnemy[i] = enemyObjNew.GetComponent<AbstractEnemy>();
+            }
+        }
+
+        /// <summary>
+        /// Случайный выбор противника для инстанса
+        /// </summary>
+        /// <returns></returns>
+        private void RandomEnemyChoice()
+        {
+            tempEnemyIndexNumber =
+                LibraryStaticFunctions.rnd.Next(0, enemyList.Length);
+        }
+
+        /// <summary>
+        /// Вернуть врага в стэк
+        /// </summary>
+        /// <param name="enemyNumber">Номер врага в стэке</param>
+        public static void ReturnEnemyToStack(int enemyNumber)
+        {
+            StaticStorageWithEnemies.ListEnemy[enemyNumber].gameObject.SetActive(false);
+            StaticStorageWithEnemies.CountOfEnemies--;
+        }
+
+        /// <summary>
+        /// Рестартировать врага
+        /// </summary>
+        private void EnemyRestart()
+        {
+            int emptyEnemyNumber = StaticStorageWithEnemies.GetNumberOfEmptyEnemy();
+            SetEnemyParameters(emptyEnemyNumber);
+
+            StaticStorageWithEnemies.ListEnemy[emptyEnemyNumber]
+                .transform.position = respawnPoint.transform.position;
+            StaticStorageWithEnemies.ListEnemy[emptyEnemyNumber]
+                .gameObject.SetActive(true);
+            StaticStorageWithEnemies.CountOfEnemies++;
         }
 
         /// <summary>
         /// Корутина для создания врагов
         /// </summary>
         /// <returns></returns>
-        private IEnumerator<float> CoroutineInstantiate()
+        private IEnumerator<float> CoroutineEnemiesSpawn()
         {
             int e = 0;
             int w = 0;
@@ -56,11 +131,11 @@ namespace VotanGameplay
             {
                 while (e < perWaveEnemiesNumber)
                 {
-                    if (StaticStorageWithEnemies.GetCountListOfEnemies() <= oneTimeEnemies)
+                    if (StaticStorageWithEnemies.CountOfEnemies < oneTimeEnemies)
                     {
                         yield return Timing.WaitForSeconds(timeToInstantiate);
 
-                        InstantiateOnServer(e);
+                        EnemyRestart();
                         e++;
                     }
                     else
@@ -69,7 +144,7 @@ namespace VotanGameplay
                     }
                 }
 
-                if (StaticStorageWithEnemies.GetCountListOfEnemies() == 0)
+                if (StaticStorageWithEnemies.CountOfEnemies == 0)
                 {
                     GrowNumberOfEnemiesForNextWave();
                     w++;
@@ -81,6 +156,9 @@ namespace VotanGameplay
             SendToPlayersCallOfWin();
         }
 
+        /// <summary>
+        /// Послать всем игрокам сигнал о победе
+        /// </summary>
         private void SendToPlayersCallOfWin()
         {
             foreach (GameObject player in AllPlayerManager.PlayerList)
@@ -90,77 +168,77 @@ namespace VotanGameplay
         }
 
         /// <summary>
-        /// Увеличиваем количество проитвников для следующей волны
+        /// Увеличиваем количество противников для следующей волны
         /// </summary>
         private void GrowNumberOfEnemiesForNextWave()
         {
             perWaveEnemiesNumber = Convert.ToInt32(perWaveEnemiesNumber * 1.2f);
-            if (perWaveEnemiesNumber > sumEnemiesNumber) perWaveEnemiesNumber = sumEnemiesNumber;
-        }
+        }     
 
         /// <summary>
-        /// Инстанцирование врага на сцене
+        /// Задать параметры для моба
         /// </summary>
-        private void InstantiateOnServer(int k)
+        /// <param name="number">Номер противника в стэке</param>
+        private void SetEnemyParameters(int number)
         {
-            RandomEnemyChoice();
-            enemyObjNew = Instantiate(enemyList[tempEnemyIndexNumber]);
-            SetEnemyParameters();
-
-            enemyObjNew.transform.parent = respawnPoint;
-            enemyObjNew.GetComponent<EnemyMove>().RandomRadius = randomRadius;
-			enemyObjNew.transform.position = respawnPoint.transform.position;
-            enemyObjNew.name = enemyObjNew.name+"#" + k;
-            StaticStorageWithEnemies.AddToList
-                (enemyObjNew.GetComponent<AbstractEnemy>());
-        }
-
-        /// <summary>
-        /// Задать параметры для моба.
-        /// </summary>
-        private void SetEnemyParameters()
-        {
-            enemyObjNew.GetComponent<IEnemyBehaviour>().
-                EnemyMove.AgentSpeed = 4; // Скорость передвижения моба
-            enemyObjNew.GetComponent<IEnemyBehaviour>().
-                EnemyAttack.DmgEnemy = 15; // Урон моба
-            enemyObjNew.GetComponent<IEnemyBehaviour>().
-                EnemyConditions.SetHealthParameter(100); // Установить жизни мобу
-            enemyObjNew.GetComponent<IEnemyBehaviour>().
-                EnemyConditions.PhysicResistance = 0.1f; // Сопротивление к физической атаке (от 0 до 1)
-            enemyObjNew.GetComponent<IEnemyBehaviour>().
-                EnemyConditions.FireResistance = 0.1f; // Сопротивление к огненной атаке (от 0 до 1)
-            enemyObjNew.GetComponent<IEnemyBehaviour>().
-                EnemyConditions.ElectricResistance = 0.1f; // Сопротивление к электрической атаке
-            enemyObjNew.GetComponent<IEnemyBehaviour>().
-                EnemyConditions.FrostResistance = 0.1f; // Сопротивление к ледяной атаке
-
-
-            switch (tempEnemyIndexNumber)
+            switch (StaticStorageWithEnemies.ListEnemy[number].EnemyType)
             {
-                case 0: // РЫЦАРЬ
-                    enemyObjNew.GetComponent<IEnemyBehaviour>().
-                        EnemyMove.PreDistanceForAttack = 0.5f;
-                    // Предупредительная дистанция для атаки (чтобы бил заранее, окда? ;) )
+                case EnemyType.Knight:
+                    StaticStorageWithEnemies.ListEnemy[number].GetComponent<IEnemyBehaviour>().
+                        EnemyMove.PreDistanceForAttack = 0.5f;   // Предупредительная дистанция для атаки
+                    StaticStorageWithEnemies.ListEnemy[number]
+                        .GetComponent<IEnemyBehaviour>().EnemyMove.AgentSpeed = 3; // Скорость передвижения моба
+                    StaticStorageWithEnemies.ListEnemy[number]
+                        .GetComponent<IEnemyBehaviour>().EnemyAttack.DmgEnemy = 20; // Урон моба
+                    StaticStorageWithEnemies.ListEnemy[number]
+                        .GetComponent<IEnemyBehaviour>().EnemyConditions.SetHealthParameter
+                        (LibraryStaticFunctions.GetRangeValue(100, 0.1f)); // Установить жизни мобу
+
+                    StaticStorageWithEnemies.ListEnemy[number]
+               .        GetComponent<IEnemyBehaviour>().EnemyConditions.PhysicResistance = 
+                        LibraryStaticFunctions.GetRangeValue(0.1f,0.2f); // Сопротивление к физической атаке (от 0 до 1)
+                    StaticStorageWithEnemies.ListEnemy[number]
+                        .GetComponent<IEnemyBehaviour>().EnemyConditions.FireResistance = 0; // Сопротивление к огненной атаке (от 0 до 1)
+                    StaticStorageWithEnemies.ListEnemy[number]
+                        .GetComponent<IEnemyBehaviour>().EnemyConditions.ElectricResistance = 0; // Сопротивление к электрической атаке
+                    StaticStorageWithEnemies.ListEnemy[number].
+                        GetComponent<IEnemyBehaviour>().EnemyConditions.FrostResistance = 0; // Сопротивление к ледяной атаке
+
+                    StaticStorageWithEnemies.ListEnemy[number].
+                        GetComponent<IEnemyBehaviour>().ScoreAddingEffect.ScoreBonus = 150; // задаем количество очков
                     break;
-                case 1: // ПОЕХАВШИЙ БЕРСЕРКЕР
-                    enemyObjNew.GetComponent<CrazyEnemy>().
+                case EnemyType.Crazy:
+                    StaticStorageWithEnemies.ListEnemy[number].GetComponent<CrazyEnemy>().
                         FightRotatingSpeed = 800; // Скорость вращения поехавшего
-                    enemyObjNew.GetComponent<IEnemyBehaviour>().
-                        EnemyMove.PreDistanceForAttack = 1.5f; 
-                    // Предупредительная дистанция для атаки)
+                    StaticStorageWithEnemies.ListEnemy[number].GetComponent<IEnemyBehaviour>().
+                        EnemyMove.PreDistanceForAttack = 1.5f;                     // Предупредительная дистанция для атаки)
+                    StaticStorageWithEnemies.ListEnemy[number]
+                        .GetComponent<IEnemyBehaviour>().EnemyMove.AgentSpeed = 4; // Скорость передвижения моба
+                    StaticStorageWithEnemies.ListEnemy[number]
+                        .GetComponent<IEnemyBehaviour>().EnemyAttack.DmgEnemy = 10; // Урон моба
+                    StaticStorageWithEnemies.ListEnemy[number]
+                        .GetComponent<IEnemyBehaviour>().EnemyConditions.SetHealthParameter
+                        (LibraryStaticFunctions.GetRangeValue(150, 0.1f)); // Установить жизни мобу
+
+                    StaticStorageWithEnemies.ListEnemy[number]
+                        .GetComponent<IEnemyBehaviour>().EnemyConditions.PhysicResistance =
+                        LibraryStaticFunctions.GetRangeValue(0.1f, 0.2f); ; // Сопротивление к физической атаке (от 0 до 1)
+                    StaticStorageWithEnemies.ListEnemy[number]
+                        .GetComponent<IEnemyBehaviour>().EnemyConditions.FireResistance =
+                        LibraryStaticFunctions.GetRangeValue(0.1f, 0.2f); ; // Сопротивление к огненной атаке (от 0 до 1)
+                    StaticStorageWithEnemies.ListEnemy[number]
+                        .GetComponent<IEnemyBehaviour>().EnemyConditions.ElectricResistance =
+                        LibraryStaticFunctions.GetRangeValue(0.1f, 0.2f); ; // Сопротивление к электрической атаке
+                    StaticStorageWithEnemies.ListEnemy[number].
+                        GetComponent<IEnemyBehaviour>().EnemyConditions.FrostResistance =
+                        LibraryStaticFunctions.GetRangeValue(0.1f, 0.2f); ; // Сопротивление к ледяной атаке
+
+                    StaticStorageWithEnemies.ListEnemy[number].
+                        GetComponent<IEnemyBehaviour>().ScoreAddingEffect.ScoreBonus = 300; // задаем количество очков
                     break;
             }
-        }
-
-        /// <summary>
-        /// Случайный выбор противника
-        /// </summary>
-        /// <returns></returns>
-        private void RandomEnemyChoice()
-        {
-            tempEnemyIndexNumber = 
-                LibraryStaticFunctions.rnd.Next(0, enemyList.Length);
+            StaticStorageWithEnemies.ListEnemy[number]
+                .GetComponent<IEnemyInStack>().RestartEnemy();
         }
     }
 }

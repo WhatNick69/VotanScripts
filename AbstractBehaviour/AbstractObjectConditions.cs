@@ -22,6 +22,7 @@ namespace AbstractBehaviour
         protected float initialisatedHealthValue;
         protected float colorChannelRed;
         protected float colorChannelGreen;
+        [SerializeField]
         private bool isAlive = true; // жив ли объект
         [SerializeField]
         private RectTransform mainBarCanvas;
@@ -47,7 +48,6 @@ namespace AbstractBehaviour
                 }
                 else if (healthValue <= 0 && isAlive)
                 {
-  
                     isAlive = false;
                     Timing.RunCoroutine(DieState());
                     healthValue = 0;
@@ -87,20 +87,7 @@ namespace AbstractBehaviour
         /// Состояние смерти
         /// </summary>
         /// <returns></returns>
-        public virtual IEnumerator<float> DieState()
-        {
-            isAlive = false;
-            yield return Timing.WaitForSeconds(0);
-            DestroyObject();
-        }
-
-        /// <summary>
-        /// Уничтожить объект
-        /// </summary>
-        public virtual void DestroyObject()
-        {
-            Destroy(gameObject);
-        }
+        public abstract IEnumerator<float> DieState();
 
         /// <summary>
         /// Обновить RingbarUIImage (заполненность и цвет)
@@ -119,12 +106,18 @@ namespace AbstractBehaviour
             circleHealthUI.color = new Color(colorChannelRed, colorChannelGreen, 0);
         }
 
+        public void RestartFiller()
+        {
+            circleHealthUI.fillAmount = 1;
+            circleHealthUI.color = new Color(0, 1, 0);
+        }
+
         /// <summary>
         /// Установить оригинальное значение жизней
         /// </summary>
         public void SetHealthParameter(float health)
         {
-            healthValue = health;
+            healthValue = (int)health;
             initialisatedHealthValue = healthValue;
         }
     }

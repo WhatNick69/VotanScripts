@@ -9,6 +9,11 @@ namespace VotanInterfaces
     public interface IIceEffect
     {
         /// <summary>
+        /// Время заморозки
+        /// </summary>
+        float TimeToDisable { get; set; }
+
+        /// <summary>
         /// Инициализация
         /// </summary>
         void Start();
@@ -42,6 +47,11 @@ namespace VotanInterfaces
         /// </summary>
         /// <param name="time"></param>
         void EventEffect(float damage,IWeapon weapon);
+
+        /// <summary>
+        /// Рестартировать огонь
+        /// </summary>
+        void RestartFire();
     }
 
     /// <summary>
@@ -71,7 +81,7 @@ namespace VotanInterfaces
         /// <summary>
         /// Бонус за убийство противника
         /// </summary>
-        int ScoreBonus { get; }
+        int ScoreBonus { get; set; }
 
         /// <summary>
         /// Трэил-бонус

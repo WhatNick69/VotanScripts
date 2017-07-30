@@ -25,17 +25,6 @@ namespace VotanInterfaces
         bool IsAlive { get; set; }
 
         /// <summary>
-        /// Состояние смерти объекта
-        /// </summary>
-        /// <returns></returns>
-        IEnumerator<float> DieState();
-
-        /// <summary>
-        /// Уничтожить объект
-        /// </summary>
-        void DestroyObject();
-
-        /// <summary>
         /// Обновить бар здоровья объекта
         /// </summary>
         void RefreshHealthCircle();
@@ -116,9 +105,9 @@ namespace VotanInterfaces
         void RotateConditionBar(bool flag, float angle=0);
 
         /// <summary>
-        /// Отключить объект-интерфейс под объектом
+        /// Отключить/включить объект-интерфейс под объектом
         /// </summary>
-        void DisableDownInterface();
+        void ActiveDownInterface(bool flag);
     }
 
     /// <summary>
@@ -126,6 +115,11 @@ namespace VotanInterfaces
     /// </summary>
     public interface IEnemyConditions
     {
+        /// <summary>
+        /// Ресрат состояний врага
+        /// </summary>
+        void RestartEnemyConditions();
+
         /// <summary>
         /// Инициализация
         /// </summary>
@@ -180,20 +174,9 @@ namespace VotanInterfaces
         void RunCoroutineForPhysicDamage(IWeapon weapon);
 
         /// <summary>
-        /// Частотное обновление
-        /// </summary>
-        void FixedUpdate();
-
-        /// <summary>
         /// Поворачивать бар в сторону камеры
         /// </summary>
-        void BarBillboard();
-
-        /// <summary>
-        /// Вернуть здоровье объекта
-        /// </summary>
-        /// <returns></returns>
-        float ReturnHealth();
+        IEnumerator<float> CoroutineBarBillboard();
 
         /// <summary>
         /// Получить урон от персонажа

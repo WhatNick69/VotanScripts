@@ -16,7 +16,6 @@ namespace EnemyBehaviour
         protected Transform enemyStartGunPointSecond, 
             enemyFinishGunPointSecond;
 
-
         /// <summary>
         /// Двойная атака
         /// </summary>
@@ -50,6 +49,10 @@ namespace EnemyBehaviour
             }
         }
 
+        /// <summary>
+        /// Корутина на возможность удара
+        /// </summary>
+        /// <returns></returns>
         public override IEnumerator<float> CoroutineMayDoDamage()
         {
             isMayToDamage = false;

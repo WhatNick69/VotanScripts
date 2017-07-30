@@ -9,6 +9,8 @@ namespace VotanInterfaces
     /// </summary>
     public interface IAIMoving
     {
+        void RestartEnemyMove();
+
         /// <summary>
         /// Предупредительная дистанция до атаки
         /// </summary>

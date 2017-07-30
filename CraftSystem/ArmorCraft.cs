@@ -6,11 +6,11 @@ using VotanUI;
 
 namespace CraftSystem
 {
-    /// <summary>
-    /// Крафт брони
-    /// </summary>
-    public class ArmorCraft 
-        : MonoBehaviour
+	/// <summary>
+	/// Крафт брони
+	/// </summary>
+	public class ArmorCraft
+		: MonoBehaviour
 	{
 
 		#region Переменные
@@ -23,6 +23,13 @@ namespace CraftSystem
 
 		[SerializeField]
 		private GameObject itemArmor;
+
+		[SerializeField]
+		GameObject helmetWindow;
+		[SerializeField]
+		GameObject cuirassWindow;
+		[SerializeField]
+		GameObject shieldWindow;
 
 		private GameObject cuirass;
 		private GameObject helmet;
@@ -50,21 +57,34 @@ namespace CraftSystem
 		#endregion
 
 		#region Свойства
-		public void SetCuirassItemNumber(int x)
+		/// <summary>
+		/// Вызывает окно с лнтой шлемов
+		/// </summary>
+		public void HelmetWindow()
 		{
-            MenuSoundManager.PlaySoundStatic(1);
-            cuirassItemNumber = x;
-		}
-		public void SetShieldItemNumber(int x)
-		{
-            MenuSoundManager.PlaySoundStatic(1);
-            shieldItemNumber = x;
+			shieldWindow.SetActive(false);
+			cuirassWindow.SetActive(false);
+			helmetWindow.SetActive(true);
 		}
 
-		public void SetHelmetItemNumber(int x)
+		/// <summary>
+		/// Вызывает окно с лнтой кирас
+		/// </summary>
+		public void CuirassWindow()
 		{
-            MenuSoundManager.PlaySoundStatic(1);
-            helmetItemNumber = x;
+			shieldWindow.SetActive(false);
+			helmetWindow.SetActive(false);
+			cuirassWindow.SetActive(true);
+		}
+
+		/// <summary>
+		/// Вызывает окно с лнтой щитов
+		/// </summary>
+		public void ShieldWindow()
+		{
+			helmetWindow.SetActive(false);
+			cuirassWindow.SetActive(false);
+			shieldWindow.SetActive(true);
 		}
 
 		public GameObject GetCuirassPrafab()
@@ -83,11 +103,14 @@ namespace CraftSystem
 		}
 		#endregion
 
+		/// <summary>
+		/// Запускать при старте игры, обязательно!
+		/// </summary>
 		public void PlayArena()
 		{
             if (AP == null)
                 AP = GameObject.Find("GetArmorPrefabs").GetComponent<ArmorPrefabs>();
-
+	        
             AP.Cuirass = (GameObject)Resources.Load(cuirassPrefix + cuirassItemNumber + cuirassPostfix);
 			AP.Helmet = (GameObject)Resources.Load(helmetPrefix + helmetItemNumber + helmetPostfix);
 			AP.Shield = (GameObject)Resources.Load(shieldPrefix + shieldItemNumber + shieldPostfix);
@@ -105,6 +128,10 @@ namespace CraftSystem
 
 		}
 
+		/// <summary>
+		/// Создает и настраивает кнопу в ленте - ШИТ
+		/// </summary>
+		/// <returns></returns>
 		private IEnumerator<float> ShieldCorutine()
 		{
 			int count = Resources.LoadAll("Prefabs/Armor/Shield").Length;
@@ -118,7 +145,6 @@ namespace CraftSystem
 					ArmorButton button = item.GetComponent<ArmorButton>();
 					button.SetArmorCraft(AC);
 					button.SetNumber(i);
-					button.SetArmorClass(ArmoryClass.Shield);
 					button.SetName(shieldList[i].ArmoryName);
 					button.SetArmor(shieldList[i].ArmoryValue.ToString());
 					button.SetLogo (shieldList[i].ImageArm);
@@ -128,6 +154,10 @@ namespace CraftSystem
 			yield return 0;
 		}
 
+		/// <summary>
+		/// Создает и настраивает кнопу в ленте - КИРАСА
+		/// </summary>
+		/// <returns></returns>
 		private IEnumerator<float> CuirassCorutine()
 		{
 			int count = Resources.LoadAll("Prefabs/Armor/Cuirass").Length;
@@ -141,7 +171,6 @@ namespace CraftSystem
 					ArmorButton button = item.GetComponent<ArmorButton>();
 					button.SetArmorCraft(AC);
 					button.SetNumber(i);
-					button.SetArmorClass(ArmoryClass.Cuirass);
 					button.SetName(cuirassList[i].ArmoryName);
 					button.SetArmor(cuirassList[i].ArmoryValue.ToString());
 					button.SetLogo (cuirassList[i].ImageArm);
@@ -151,6 +180,10 @@ namespace CraftSystem
 			yield return 0;
 		}
 
+		/// <summary>
+		/// Создает и настраивает кнопу в ленте - ШЛЕМ
+		/// </summary>
+		/// <returns></returns>
 		private IEnumerator<float> HelmetCorutine()
 		{
 			int count = Resources.LoadAll("Prefabs/Armor/Helmet").Length;
@@ -164,7 +197,6 @@ namespace CraftSystem
 					ArmorButton button = item.GetComponent<ArmorButton>();
 					button.SetArmorCraft(AC);
 					button.SetNumber(i);
-					button.SetArmorClass(ArmoryClass.Helmet);
 					button.SetName(helmetList[i].ArmoryName);
 					button.SetArmor(helmetList[i].ArmoryValue.ToString());
 					button.SetLogo (helmetList[i].ImageArm);

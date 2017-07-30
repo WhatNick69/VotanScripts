@@ -16,10 +16,13 @@ namespace GameBehaviour
         : MonoBehaviour, IFireEffect
     {
         #region Переменные
-        [SerializeField]
+        [SerializeField,Tooltip("Враг")]
         private AbstractEnemy abstractEnemy;
+        [SerializeField, Tooltip("Система частиц")]
         private ParticleSystem particleSystem;
+        [SerializeField, Tooltip("Звук воспламенения")]
         private AudioSource audioSourceOfFire;
+        [SerializeField, Tooltip("Звук горения")]
         private AudioSource audioSourceOfBurning;
         private float time;
         private float damagePerTime;
@@ -28,22 +31,15 @@ namespace GameBehaviour
         private IWeapon weapon;
         #endregion
 
-        /// <summary>
-        /// Инициализация
-        /// </summary>
-        void Start()
-        {
-            particleSystem = 
-                transform.GetChild(0).GetComponent<ParticleSystem>();
-            damagePerTime = 0;
-            audioSourceOfFire = GetComponent<AudioSource>();
-            audioSourceOfBurning = 
-                particleSystem.transform.GetComponent<AudioSource>();
-        }
-
         private void FireAudio()
         {
             AbstractSoundStorage.WorkWithBurn(audioSourceOfFire);
+        }
+
+        public void RestartFire()
+        {
+            damagePerTime = 0;
+            audioSourceOfBurning.Stop();
         }
 
         /// <summary>
@@ -92,6 +88,7 @@ namespace GameBehaviour
             particleSystem.gameObject.SetActive(true);
             particleSystem.Play();
             AbstractSoundStorage.WorkWithBurning(audioSourceOfBurning);
+            audioSourceOfBurning.Play();
 
             while (i < maxI)
             {
@@ -114,6 +111,7 @@ namespace GameBehaviour
             yield return Timing.WaitForSeconds(2);
             if (particleSystem && !isBurning)
                 particleSystem.gameObject.SetActive(false);
+            audioSourceOfBurning.Stop();
         }
     }
 }

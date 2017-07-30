@@ -55,7 +55,7 @@ namespace VotanGameplay
         //[ClientRpc]
         private static void RpcAddEnemyToList(GameObject enemy)
         {
-            StaticStorageWithEnemies.AddToList(enemy.GetComponent<AbstractEnemy>());
+            //StaticStorageWithEnemies.AddToList(enemy.GetComponent<AbstractEnemy>());
         }
 
         /// <summary>
@@ -75,8 +75,11 @@ namespace VotanGameplay
         /// </summary>
         private static void CheckByGameOver()
         {
-            foreach (GameObject player in playerList)
-                if (player.GetComponent<PlayerConditions>().IsAlive) return;
+            for (int i = 0;i<playerList.Count;i++)
+            {
+                if (playerList[i].
+                    GetComponent<PlayerConditions>().IsAlive) return;
+            }
 
             GameManager.IsGameOver = true;
         }
@@ -86,9 +89,11 @@ namespace VotanGameplay
         /// </summary>
         public static void FireLightingEffectInAllPlayers()
         {
-            foreach (GameObject player in playerList)
-                player.GetComponent<PlayerComponentsControl>()
+            for (int i = 0; i < playerList.Count; i++)
+            {
+                playerList[i].GetComponent<PlayerComponentsControl>()
                     .PlayerLightingEffect.FireLightingEffect();
+            }
         }
     }
 }

@@ -80,10 +80,13 @@ namespace EnemyBehaviour
         /// <summary>
         /// Инициализация
         /// </summary>
-        public override void Start()
+        public void Start()
         {
-            base.Start();
-            enemyAbstract = GetComponent<AbstractEnemy>();
+            enemyAbstract = GetComponent<AbstractEnemy>();       
+        }
+
+        public virtual void RestartEnemyAttack()
+        {
             isMayToDamage = false;
         }
 
@@ -181,6 +184,9 @@ namespace EnemyBehaviour
             enemyAbstract.EnemyAnimationsController.SetState(1, true);
         }
 
+        /// <summary>
+        /// Можно ли рассчитывать удар
+        /// </summary>
         public void MayToCalculateHiting()
         {
             isMayToDamage = true;

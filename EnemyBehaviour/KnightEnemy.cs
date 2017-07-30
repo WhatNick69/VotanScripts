@@ -4,6 +4,7 @@ using UnityEngine.AI;
 using VotanInterfaces;
 using MovementEffects;
 using System.Collections.Generic;
+using GameBehaviour;
 
 namespace EnemyBehaviour
 {
@@ -16,7 +17,7 @@ namespace EnemyBehaviour
     {
         [SerializeField,Tooltip("Частота обновления состояний для атаки"),Range(0.01f,0.5f)]
         protected float refreshLatency;
-        private float movingSpeed;
+        protected float movingSpeed;
 
         /// <summary>
         /// Инициализация
@@ -35,6 +36,8 @@ namespace EnemyBehaviour
                 GetComponent<EnemyConditions>();
             EnemyMove = 
                 GetComponent<EnemyMove>();
+            DownInterfaceRotater =
+                GetComponent<DownInterfaceRotater>();
             IceEffect =
                 transform.GetChild(1).GetChild(0).GetComponent<IIceEffect>();
             ElectricEffect =
@@ -45,15 +48,23 @@ namespace EnemyBehaviour
                 transform.GetChild(1).GetChild(3).GetComponent<IPhysicEffect>();
             ScoreAddingEffect =
                 transform.GetChild(1).GetChild(4).GetComponent<IScoreAddingEffect>();
-            Timing.RunCoroutine(UpdateAttackState());
+            gameObject.SetActive(false);
         }
 
         /// <summary>
-        /// Инициализация
+        /// Рестарт врага
         /// </summary>
-        public virtual void Start()
+        public override void RestartEnemy()
         {
+            enemyConditions.RestartEnemyConditions(); // рестарт состояний врага
+            enemyAttack.RestartEnemyAttack(); // рестарт способности врага к битве
+            enemyMove.RestartEnemyMove(); // рестарт способносит врага к движению
+            downInterfaceRotater.RestartDownInterfaceRotater(); // рестарт поворота интерфейса
+            enemyAnimationsController.RestartEnemyAnimationsController(); // рестарт аниматора
+
             movingSpeed = EnemyMove.AgentSpeed / 5;
+
+            Timing.RunCoroutine(UpdateAttackState());
         }
 
         /// <summary>

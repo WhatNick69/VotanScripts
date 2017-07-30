@@ -1,41 +1,86 @@
 ﻿using AbstractBehaviour;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace VotanGameplay
 {
     /// <summary>
-    /// Лист со всеми врагами.
-    /// 
-    /// Обеспечивает прямую работу с листом.
+    /// Массив со всеми врагами.
+    /// Реализован, как стэк
     /// </summary>
     public class StaticStorageWithEnemies 
     {
+        #region Переменные
         /// <summary>
-        /// Лист врагов. Является статическим объектом
+        /// Массив врагов. Является статическим объектом
         /// к которому возможен доступ через методы,
         /// реализованные в этом классе из любой точки
         /// кода.
         /// </summary>
-        private static List<AbstractEnemy> listEnemy
-            = new List<AbstractEnemy>();
+        private static AbstractEnemy[] listEnemy;
+        private static int countOfEnemies;
+        #endregion
 
+        #region Свойства
         /// <summary>
-        /// Получить размер листа
+        /// Лист врагов
         /// </summary>
-        /// <returns></returns>
-        public static int GetCountListOfEnemies()
+        public static AbstractEnemy[] ListEnemy
         {
-            return listEnemy.Count;
+            get
+            {
+                return listEnemy;
+            }
+
+            set
+            {
+                listEnemy = value;
+            }
         }
 
         /// <summary>
-        /// Добавить в лист элемент
+        /// Число врагов, готовых сражаться
         /// </summary>
-        /// <param name="absEnemy"></param>
-        public static void AddToList(AbstractEnemy absEnemy)
+        public static int CountOfEnemies
         {
-            listEnemy.Add(absEnemy);
+            get
+            {
+                return countOfEnemies;
+            }
+
+            set
+            {
+                countOfEnemies = value;
+                if (countOfEnemies < 0) countOfEnemies = 0;
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Получить число врагов, которые готовы сражаться
+        /// </summary>
+        /// <returns></returns>
+        public static int GetNumberOfEmptyEnemy()
+        {
+            for (int i = 0;i<countOfEnemies;i++)
+            {
+                if (!listEnemy[i].gameObject.activeSelf)
+                    return i;
+            }
+            return countOfEnemies;
+        }
+
+        /// <summary>
+        /// Получить размер листа врагов, которые не мертвы
+        /// </summary>
+        /// <returns></returns>
+        public static int GetCountOfAliveEnemies()
+        {
+            int count = 0;
+            for (int i = 0;i<listEnemy.Length;i++)
+            {
+                if (listEnemy[i].gameObject.activeSelf) count++;
+            }
+            return count;
         }
 
         /// <summary>
@@ -46,45 +91,6 @@ namespace VotanGameplay
         public static AbstractEnemy GetFromListByIndex(int index)
         {
             return listEnemy[index];
-        }
-
-        /// <summary>
-        /// Это не пустой элемент?
-        /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        public static bool IsNonNullElement(int index)
-        {
-            return listEnemy[index] ? true : false;
-        }
-
-        /// <summary>
-        /// Удалить из листа элемент по его и ндексу
-        /// </summary>
-        /// <param name="index"></param>
-        public static void RemoveFromListByIndex(int index)
-        {
-            listEnemy.RemoveAt(index);
-        }
-
-        /// <summary>
-        /// Удалить из листа элемент
-        /// </summary>
-        /// <param name="enemyBehaviour"></param>
-        public static void RemoveFromListByElement(AbstractEnemy enemyBehaviour)
-        {
-            listEnemy.Remove(enemyBehaviour);
-        }
-
-        /// <summary>
-        /// Получить дистанцию, между игроком и врагом
-        /// </summary>
-        /// <param name="playerPos"></param>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        public static float DistanceBetweenPlayerAndEnemy(Vector3 playerPos,int index)
-        {
-            return Vector3.Distance(playerPos, listEnemy[index].transform.position);
         }
 
         /// <summary>
@@ -100,9 +106,10 @@ namespace VotanGameplay
             float tempDistance = float.MaxValue;
             AbstractEnemy closestEnemy = null;
 
-            for (int i = 0;i<listEnemy.Count;i++)
+            for (int i = 0;i<listEnemy.Length;i++)
             {
-                if (!listEnemy[i]) continue;
+                if (!listEnemy[i].gameObject.activeSelf 
+                    || !listEnemy[i].EnemyConditions.IsAlive) continue;
 
                 tempDistance = Vector3.Distance
                     (ourPosition, listEnemy[i].transform.position);

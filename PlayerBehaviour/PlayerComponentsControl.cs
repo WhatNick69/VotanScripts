@@ -42,6 +42,8 @@ namespace PlayerBehaviour
         private PlayerSounder playerSounder;
         [SerializeField, Tooltip("Эффект грозы у игрока")]
         private PlayerLightingEffect playerLightingEffect;
+        [SerializeField, Tooltip("Ротатор интерфейса игрока")]
+        private DownInterfaceRotater downInterfaceRotater;
         [SerializeField, Tooltip("Родитель игрока")]
         private Transform playerParent;
         [SerializeField, Tooltip("Объект игрока")]
@@ -286,6 +288,19 @@ namespace PlayerBehaviour
                 playerLightingEffect = value;
             }
         }
+
+        public DownInterfaceRotater DownInterfaceRotater
+        {
+            get
+            {
+                return downInterfaceRotater;
+            }
+
+            set
+            {
+                downInterfaceRotater = value;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -294,6 +309,7 @@ namespace PlayerBehaviour
         private void Start()
         {
             AllPlayerManager.AddPlayerToPlayerList(gameObject);
+            DownInterfaceRotater.RestartDownInterfaceRotater();
         }
     }
 }

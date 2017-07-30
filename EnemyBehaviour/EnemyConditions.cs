@@ -4,6 +4,7 @@ using MovementEffects;
 using PlayerBehaviour;
 using System.Collections.Generic;
 using UnityEngine;
+using VotanGameplay;
 using VotanInterfaces;
 using VotanLibraries;
 
@@ -19,6 +20,8 @@ namespace EnemyBehaviour
         #region Переменные
         [SerializeField, Tooltip("Бар для здоровья")]
         private GameObject healthBar;
+        [SerializeField, Tooltip("Частота обновления поворота биллборда врага"),Range(0.01f,0.1f)]
+        private float billboardRotateFrequency;
 
         [SerializeField,Tooltip("Защита от холода"),Range(0, 0.9f)]
         private float frostResistance;
@@ -173,19 +176,27 @@ namespace EnemyBehaviour
         /// </summary>
         public void Start()
         {
-			IsAlive = true;
-            initialisatedHealthValue = healthValue;
-            colorChannelRed = 0;
-            colorChannelGreen = 1;
-
             enemyAbstract = GetComponent<IEnemyBehaviour>();
             enemyMove = enemyAbstract.EnemyMove;
             normalShadowSize = new Vector3(1.25f, 1.25f, 1.25f);
             littleShadowSize = new Vector3(0.6f, 0.6f, 0.6f);
 
             electricityColorInterfaceChanger.SpriteRendererObject = 
-                blobShadow.GetComponent<SpriteRenderer>();
+                blobShadow.GetComponent<SpriteRenderer>();       
+        }
+
+        public virtual void RestartEnemyConditions()
+        {
+            IsAlive = true;
+            ActiveDownInterface(true);
+            RestartFiller();
+            initialisatedHealthValue = healthValue;
+            colorChannelRed = 0;
+            colorChannelGreen = 1;
             FindCameraInScene();
+            MainBarCanvas.gameObject.SetActive(true);
+            GetComponent<BoxCollider>().enabled = true;
+            Timing.RunCoroutine(CoroutineBarBillboard());
         }
 
         /// <summary>
@@ -201,31 +212,18 @@ namespace EnemyBehaviour
         }
 
         /// <summary>
-        /// Таймовые вычисления
-        /// </summary>
-        public void FixedUpdate()
-        {
-            BarBillboard();
-        }
-
-        /// <summary>
         /// Поворачивает биллборд вслед за камерой игрока
         /// </summary>
-        public void BarBillboard()
+        public IEnumerator<float> CoroutineBarBillboard()
         {
-            if (cameraTransform != null)
-                healthBar.transform.LookAt(cameraTransform);
-            else
-                FindCameraInScene();
-        }
-
-        /// <summary>
-        /// Вернуть здоровье
-        /// </summary>
-        /// <returns></returns>
-        public virtual float ReturnHealth()
-        {
-            return HealthValue;
+            while (IsAlive)
+            {
+                yield return Timing.WaitForSeconds(billboardRotateFrequency);
+                if (cameraTransform != null)
+                    healthBar.transform.LookAt(cameraTransform);
+                else
+                    FindCameraInScene();
+            }
         }
 
         /// <summary>
@@ -250,9 +248,9 @@ namespace EnemyBehaviour
         /// <summary>
         /// Отключить тень
         /// </summary>
-        public void DisableDownInterface()
+        public void ActiveDownInterface(bool flag)
         {
-            blobShadow.gameObject.SetActive(false);
+            blobShadow.gameObject.SetActive(flag);
         }
 
         /// <summary>
@@ -272,10 +270,14 @@ namespace EnemyBehaviour
             GetComponent<BoxCollider>().enabled = false;
 
             if (isFrozen)
-                yield return Timing.WaitForSeconds(6.5f);
+                yield return Timing.WaitForSeconds(5 + enemyAbstract.IceEffect.TimeToDisable);
             else
                 yield return Timing.WaitForSeconds(5);
-            DestroyObject();
+
+            // Выключаем врага. Возвращаем в стек врагов. Почти, как если бы
+            // мы его уничтожали.
+            //enemyAbstract.EnemyAnimationsController.AnimatorOfObject.enabled = false;
+            EnemyCreator.ReturnEnemyToStack(enemyAbstract.EnemyNumber);
         }
 
         /// <summary>
@@ -340,6 +342,12 @@ namespace EnemyBehaviour
             {
                 enemyAbstract.AbstractObjectSounder.PlayGetDamageAudio();
                 Timing.RunCoroutine(CoroutineForGetDamage());
+
+                /* Если это электрический удар в рукопашную - отодвигаем противника.
+                 Молния не должна иметь право отодвигать врага. */
+                if (weapon.AttackType == DamageType.Electric)
+                    enemyAbstract.Physicffect.EventEffectWithoutDefenceBonus(weapon);
+
                 dmg = GetDamageWithResistance(dmg, gemPower, weapon);
                 //Debug.Log("Ближняя атака");
                 if (HealthValue <= 0) return false;
@@ -403,8 +411,6 @@ namespace EnemyBehaviour
         public void RunCoroutineForGetElectricDamage(float damage,
             float gemPower, IWeapon weapon)
         {
-            enemyAbstract.Physicffect.EventEffectWithoutDefenceBonus(weapon); // оттолкнуть врага
-
             Timing.RunCoroutine(CoroutineForElectricDamage
                 (damage, gemPower, weapon));
         }
@@ -468,7 +474,7 @@ namespace EnemyBehaviour
             enemyAbstract.EnemyMove.Agent.enabled = false;
 
             IsFrozen = true;
-            yield return Timing.WaitForSeconds(LibraryStaticFunctions.GetRangeValue(time));
+            yield return Timing.WaitForSeconds(time);
             IsFrozen = false;
 
             if (IsAlive)
@@ -495,7 +501,6 @@ namespace EnemyBehaviour
         /// <param name="weapon"></param>
         public void RunFireDamage(float damage, IWeapon weapon)
         {
-            Debug.Log("УДАРИЛИ");
             enemyAbstract.Physicffect.EventEffectWithoutDefenceBonus(weapon); // оттолкнуть врага
 
             enemyAbstract.FireEffect.EventEffect(damage, weapon);

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using VotanInterfaces;
 
 namespace AbstractBehaviour
@@ -14,7 +12,7 @@ namespace AbstractBehaviour
 		: MonoBehaviour, IVotanObjectAttack
     {
         #region Переменные
-		protected List<AbstractEnemy> attackList;
+
 		[SerializeField] // точки персонажа
         protected Transform playerPoint, playerRightPoint,
 		playerLeftPoint, playerFacePoint, playerBackPoint,
@@ -89,14 +87,6 @@ namespace AbstractBehaviour
             }
         }
         #endregion
-
-        /// <summary>
-        /// Инициализация
-        /// </summary>
-        public virtual void Start()
-        {      
-            attackList = new List<AbstractEnemy>();
-        }
 
         /// <summary>
         /// Установить позицию персонажа

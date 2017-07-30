@@ -1,7 +1,8 @@
-﻿using System;
-using EnemyBehaviour;
+﻿using EnemyBehaviour;
 using UnityEngine;
 using VotanInterfaces;
+using GameBehaviour;
+using System;
 
 namespace AbstractBehaviour
 {
@@ -11,17 +12,22 @@ namespace AbstractBehaviour
     /// Хранит в себе ссылки на все компоненты
     /// </summary>
     public abstract class AbstractEnemy
-      : MonoBehaviour, IEnemyBehaviour
+      : MonoBehaviour, IEnemyBehaviour, IEnemyInStack
     {
         #region Переменные
         [SerializeField] // точки противника
         protected Transform rightShoulderPoint, leftShoulderPoint, 
 			facePoint, backPoint;
+        [SerializeField,Tooltip("Класс врага")]
+        private EnemyType enemyType;
+        [SerializeField,Tooltip("Номер противника в стеке")]
+        private int enemyNumber;
         private AbstractSoundStorage abstractObjectSounder;
         protected EnemyAnimationsController enemyAnimationsController;
         protected EnemyAttack enemyAttack;
         protected EnemyConditions enemyConditions;
         protected EnemyOpponentChoiser enemyOpponentChoiser;
+        protected DownInterfaceRotater downInterfaceRotater;
         protected IAIMoving enemyMove;
 
         protected IIceEffect iceEffectManager;
@@ -175,6 +181,40 @@ namespace AbstractBehaviour
                 abstractObjectSounder = value;
             }
         }
+
+        public int EnemyNumber
+        {
+            get
+            {
+                return enemyNumber;
+            }
+
+            set
+            {
+                enemyNumber = value;
+            }
+        }
+
+        public DownInterfaceRotater DownInterfaceRotater
+        {
+            get
+            {
+                return downInterfaceRotater;
+            }
+
+            set
+            {
+                downInterfaceRotater = value;
+            }
+        }
+
+        public EnemyType EnemyType
+        {
+            get
+            {
+                return enemyType;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -203,5 +243,18 @@ namespace AbstractBehaviour
             }  
 			return Vector3.zero;
         }
+
+        /// <summary>
+        /// Рестартировать врага
+        /// </summary>
+        public abstract void RestartEnemy();
+    }
+
+    /// <summary>
+    /// Перечислитель, задающий класс врага
+    /// </summary>
+    public enum EnemyType
+    {
+        Knight, Crazy, CrossbowMan, Halberdier
     }
 }

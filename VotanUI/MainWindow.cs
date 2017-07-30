@@ -31,6 +31,7 @@ namespace VotanUI
         [SerializeField]
         private Image imageFromLoadingFone;
 
+        #region
 		public void InventotyPageLoad()
         {
 			onMenu(inventoryMenuPage);
@@ -71,8 +72,9 @@ namespace VotanUI
         {
             Timing.RunCoroutine(CoroutineForLoadingScene());
         }
+        #endregion
 
-        private IEnumerator<float> CoroutineForLoadingScene()
+		private IEnumerator<float> CoroutineForLoadingScene()
         {
             onMenu();
             MenuSoundManager.PlaySoundStatic(2);
@@ -94,7 +96,14 @@ namespace VotanUI
 		{
 			for (int i = 0; i < allMenu.Count; i++)
 			{
-				allMenu[i].SetActive(false);
+				if (allMenu[i])
+				{
+					allMenu[i].SetActive(false);
+				}
+				else
+				{
+					continue;
+				}
 			}
             MenuSoundManager.PlaySoundStatic();
             if (page) page.SetActive(true);

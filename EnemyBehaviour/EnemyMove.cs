@@ -152,6 +152,7 @@ namespace EnemyBehaviour
         /// </summary>
         private void RandomSpeedSet()
         {
+            if (agent == null) agent = GetComponent<NavMeshAgent>();
             agent.speed = LibraryStaticFunctions.GetRangeValue(agentSpeed, 0.2f);
             agentSpeed = agent.speed;
             rotationSpeed = agent.angularSpeed;
@@ -254,13 +255,17 @@ namespace EnemyBehaviour
         public void Start()
         {
             agent = GetComponent<NavMeshAgent>();
-            GetPlayerAndComponent();
-
             angularLookSpeed = Time.deltaTime * 8;
-            abstractEnemy.EnemyConditions.IsAlive = true;
             randomPosition.y = 3;
+        }
+
+        public virtual void RestartEnemyMove()
+        {
+            GetPlayerAndComponent();
             RandomSpeedSet();
             tempVector = transform.position;
+            Agent.enabled = true;
+
             Timing.RunCoroutine(CoroutineForSearchingByPlayerObject());
             Timing.RunCoroutine(CoroutineForRotating());
         }
@@ -271,7 +276,6 @@ namespace EnemyBehaviour
         /// <returns></returns>
         public virtual IEnumerator<float> CoroutineForSearchingByPlayerObject()
         {
-            agent.enabled = true;
             while (abstractEnemy.EnemyConditions.IsAlive)
             {
                 if (playerObjectTransformForFollow != null)

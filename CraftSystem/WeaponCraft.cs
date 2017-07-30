@@ -26,6 +26,13 @@ namespace CraftSystem
 		[SerializeField]
 		private GameObject itemGem;
 
+		[SerializeField]
+		GameObject gripWindow;
+		[SerializeField]
+		GameObject headWindow;
+		[SerializeField]
+		GameObject gemWindow;
+
 		private GameObject grip;
         private GameObject head;
         private GameObject gem;
@@ -53,6 +60,27 @@ namespace CraftSystem
 		#endregion
 
 		#region Свойства
+		public void GripWindow()
+		{
+			headWindow.SetActive(false);
+			gemWindow.SetActive(false);
+			gripWindow.SetActive(true);
+		}
+
+		public void HeadWindow()
+		{
+			gemWindow.SetActive(false);
+			gripWindow.SetActive(false);
+			headWindow.SetActive(true);
+		}
+
+		public void GemWindow()
+		{
+			headWindow.SetActive(false);
+			gripWindow.SetActive(false);
+			gemWindow.SetActive(true);
+		}
+
 		public void SetGemItemNumber(int x)
 		{
             MenuSoundManager.PlaySoundStatic(1);

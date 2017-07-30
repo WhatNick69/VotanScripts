@@ -38,6 +38,13 @@ namespace EnemyBehaviour
             enemyConditions = enemyBehaviour.EnemyConditions;
         }
 
+        public void RestartEnemyAnimationsController()
+        {
+            animatorOfObject.enabled = true;
+            TransformForDeadYNormalizing.localPosition = Vector3.zero;
+            animatorOfObject.Rebind();
+        }
+
         /// <summary>
         /// Установить высокую скорость анимации врага
         /// </summary>
@@ -116,7 +123,7 @@ namespace EnemyBehaviour
                     i++;
                     if (this == null) yield break;
 
-                    transformForDeadYNormalizing.Translate(0, -0.035f, 0);
+                    TransformForDeadYNormalizing.Translate(0, -0.035f, 0);
                     yield return Timing.WaitForSeconds(0.01f);
                 }
             }
@@ -128,7 +135,7 @@ namespace EnemyBehaviour
                 i++;
                 if (this == null) yield break;
 
-                transformForDeadYNormalizing.Translate(0, -0.05f, 0);
+                TransformForDeadYNormalizing.Translate(0, -0.05f, 0);
                 yield return Timing.WaitForSeconds(0.01f);
             }
         }

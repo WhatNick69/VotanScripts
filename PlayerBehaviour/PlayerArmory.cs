@@ -4,6 +4,7 @@ using UnityEngine;
 using VotanLibraries;
 using GameBehaviour;
 using VotanInterfaces;
+using System;
 
 namespace PlayerBehaviour
 {
@@ -259,13 +260,17 @@ namespace PlayerBehaviour
         {
             if (kirasaParts.Count != 0)
             {
-                Debug.Log("Коррекция");
                 foreach (PartArmoryManager part in kirasaParts)
                 {
                     part.FireEvent();
                     kirasaParts.Remove(part);
                 }
             }
+        }
+
+        public override IEnumerator<float> DieState()
+        {
+            yield break;
         }
     }
 

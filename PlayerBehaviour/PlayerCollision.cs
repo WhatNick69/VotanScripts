@@ -1,5 +1,6 @@
 ﻿using GameBehaviour;
 using MovementEffects;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -119,8 +120,8 @@ namespace PlayerBehaviour
                     , rotaterRaycaster.forward);
                 if (Physics.Raycast(ray, out rayCastHit, searchingRadius))
                 {
-                    if (rayCastHit.collider.tag.Equals(tagNameObstacle)
-                    || rayCastHit.collider.tag.Equals(tagNameEnemy))
+                    if (rayCastHit.collider.CompareTag(tagNameObstacle)
+                    || rayCastHit.collider.CompareTag(tagNameEnemy))
                     {
                         //Debug.DrawRay(rotaterRaycaster.position, rotaterRaycaster.forward, Color.red, 0.05f);
                         boolsList[i] = false;

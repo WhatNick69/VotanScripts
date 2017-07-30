@@ -283,10 +283,10 @@ namespace PlayerBehaviour
         public override IEnumerator<float> DieState()
         {
             playerComponentsControl.PlayerSounder.PlayDeadAudio();
-            Debug.Log(gameObject.name +  " is dead!");
             IsAlive = false;
             AllPlayerManager.CheckList();
-
+            playerComponentsControl.PlayerAnimationsController
+                .SetSpeedAnimationByRunSpeed(0.5f);
             GetComponent<PlayerController>().IsAliveFromConditions = false;
             playerComponentsControl.PlayerAnimationsController
                 .DisableAllStates();
@@ -296,15 +296,16 @@ namespace PlayerBehaviour
                 .PlayDeadNormalizeCoroutine();
 
             playerComponentsControl.PlayerUI.EventGameOver();
+            MainBarCanvas.gameObject.SetActive(false);
             yield return Timing.WaitForSeconds(1);
         }
 
         /// <summary>
         /// Отключить интерфейс под игроком
         /// </summary>
-        public void DisableDownInterface()
+        public void ActiveDownInterface(bool flag)
         {
-            MainBarCanvas.gameObject.SetActive(false);
+            MainBarCanvas.gameObject.SetActive(flag);
         }
     }
 }

@@ -89,7 +89,7 @@ namespace PlayerBehaviour
             while (i < 10)
             {
                 i++;
-                transformForDeadYNormalizing.Translate(0, -0.02f, 0);// =
+                TransformForDeadYNormalizing.Translate(0, -0.02f, 0);// =
                 yield return Timing.WaitForSeconds(0.01f);
             }
             yield return Timing.WaitForSeconds(0.01f);

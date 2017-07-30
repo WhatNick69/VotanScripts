@@ -1,5 +1,6 @@
 ﻿using AbstractBehaviour;
 using EnemyBehaviour;
+using GameBehaviour;
 using PlayerBehaviour;
 using UnityEngine;
 
@@ -67,6 +68,16 @@ namespace VotanInterfaces
     public interface IEnemyBehaviour
     {
         /// <summary>
+        /// Класс врага
+        /// </summary>
+        EnemyType EnemyType { get;}
+
+        /// <summary>
+        /// Номер врага из стэка
+        /// </summary>
+        int EnemyNumber { get; set; }
+
+        /// <summary>
         /// Свойства для компоненты "Атака"
         /// </summary>
         EnemyAttack EnemyAttack { get; set; }
@@ -85,6 +96,11 @@ namespace VotanInterfaces
         /// Свойство для компоненты "Выбор игрока"
         /// </summary>
         EnemyOpponentChoiser EnemyOpponentChoiser { get; set; }
+
+        /// <summary>
+        /// Поворачиватель интерфейса врага
+        /// </summary>
+        DownInterfaceRotater DownInterfaceRotater { get; set; }
 
         /// <summary>
         /// Звуковой компонент
@@ -127,6 +143,18 @@ namespace VotanInterfaces
         /// <param name="child"></param>
         /// <returns></returns>
         Vector3 ReturnPosition(int child);
+    }
+
+    /// <summary>
+    /// Данный интерфейс позволяет реализовывать инстанс врагов
+    /// на основе стэка.
+    /// </summary>
+    public interface IEnemyInStack
+    {
+        /// <summary>
+        /// Рестартировать врага
+        /// </summary>
+        void RestartEnemy();
     }
 }
 
