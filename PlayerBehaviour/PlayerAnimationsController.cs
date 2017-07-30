@@ -89,10 +89,20 @@ namespace PlayerBehaviour
             while (i < 10)
             {
                 i++;
-                TransformForDeadYNormalizing.Translate(0, -0.02f, 0);// =
+                TransformForDeadYNormalizing.Translate(0, -0.02f, 0); 
                 yield return Timing.WaitForSeconds(0.01f);
             }
             yield return Timing.WaitForSeconds(0.01f);
+        }
+
+        public void StopLongAttack()
+        {
+            playerComponentsControl.PlayerController.StopLongAttack();
+        }
+
+        public void LongAttackTranslate()
+        {
+            playerComponentsControl.PlayerController.StraightMovingTranslate();
         }
     }
 }

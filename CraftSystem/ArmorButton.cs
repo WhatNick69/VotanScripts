@@ -14,13 +14,27 @@ namespace CraftSystem
 		Text nameWeapon;
 		[SerializeField]
 		Text armor;
-		
-		public void SetNumber(int x)
+        ArmoryClass armoryClass;
+
+        public ArmoryClass ArmoryClass
+        {
+            get
+            {
+                return armoryClass;
+            }
+
+            set
+            {
+                armoryClass = value;
+            }
+        }
+
+        public void SetNumber(int x)
 		{
 			numberButton = x;
 		}
 
-		public void SetArmorCraft(ArmorCraft AC)
+        public void SetArmorCraft(ArmorCraft AC)
 		{
 			armCraft = AC;
 		}
@@ -38,6 +52,22 @@ namespace CraftSystem
 		public void SetLogo(Sprite sprt)
 		{
 			logo.sprite = sprt;
-		}
+		} 
+
+        public void SetNumberItem()
+        {
+            switch (armoryClass)
+            {
+                case ArmoryClass.Cuirass:
+                    armCraft.CuirassItemNumber = numberButton;
+                    break;
+                case ArmoryClass.Helmet:
+                    armCraft.HelmetItemNumber = numberButton;
+                    break;
+                case ArmoryClass.Shield:
+                    armCraft.ShieldItemNumber = numberButton;
+                    break;
+            }
+        }
 	}
 }

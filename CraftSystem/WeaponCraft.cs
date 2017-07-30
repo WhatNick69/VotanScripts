@@ -129,7 +129,7 @@ namespace CraftSystem
 
 		}
 
-		private void Start() // ____________start__________
+		private void Awake() // ____________start__________
 		{
 			WC = GetComponent<WeaponCraft>();
 			gripList = new List<Grip>();

@@ -250,7 +250,7 @@ namespace PlayerBehaviour
                     {
                         if (!isFighting && isMayToLongAttack)
                         {
-                            Timing.RunCoroutine(CoroutineForStraightAttack());
+                            CoroutineForStraightAttack();
                         }
                     }
                     // Защита
@@ -298,16 +298,13 @@ namespace PlayerBehaviour
         /// Корутина для атакующего рывка
         /// </summary>
         /// <returns></returns>
-        private IEnumerator<float> CoroutineForStraightAttack()
+        private void CoroutineForStraightAttack()
         {
             isMayToLongAttack = false;
             spiningSpeedInCoroutine = 0;
             IsRotating = false;
             isFighting = true;
-            playerComponentsControl.PlayerController.StraightMoving();
-            yield return Timing.WaitForSeconds(1);
-            playerComponentsControl.PlayerController.StopLongAttack();
-            isFighting = false;
+            playerComponentsControl.PlayerController.StraightMovingPlayAnimation();
         }
     }
 }

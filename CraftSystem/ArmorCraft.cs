@@ -1,15 +1,13 @@
 ﻿using MovementEffects;
 using System.Collections.Generic;
 using UnityEngine;
-using PlayerBehaviour;
-using VotanUI;
 
 namespace CraftSystem
 {
-	/// <summary>
-	/// Крафт брони
-	/// </summary>
-	public class ArmorCraft
+    /// <summary>
+    /// Крафт брони
+    /// </summary>
+    public class ArmorCraft
 		: MonoBehaviour
 	{
 
@@ -54,13 +52,52 @@ namespace CraftSystem
 		[SerializeField]
 		ArmorPrefabs AP;
 		ArmorCraft AC;
-		#endregion
+        #endregion
 
-		#region Свойства
-		/// <summary>
-		/// Вызывает окно с лнтой шлемов
-		/// </summary>
-		public void HelmetWindow()
+        #region Свойства
+        public int HelmetItemNumber
+        {
+            get
+            {
+                return helmetItemNumber;
+            }
+
+            set
+            {
+                helmetItemNumber = value;
+            }
+        }
+
+        public int CuirassItemNumber
+        {
+            get
+            {
+                return cuirassItemNumber;
+            }
+
+            set
+            {
+                cuirassItemNumber = value;
+            }
+        }
+
+        public int ShieldItemNumber
+        {
+            get
+            {
+                return shieldItemNumber;
+            }
+
+            set
+            {
+                shieldItemNumber = value;
+            }
+        }
+
+        /// <summary>
+        /// Вызывает окно с лнтой шлемов
+        /// </summary>
+        public void HelmetWindow()
 		{
 			shieldWindow.SetActive(false);
 			cuirassWindow.SetActive(false);
@@ -116,7 +153,7 @@ namespace CraftSystem
 			AP.Shield = (GameObject)Resources.Load(shieldPrefix + shieldItemNumber + shieldPostfix);
 		}
 
-		private void Start() // ____________start__________
+		private void Awake() // ____________start__________
 		{
 			AC = gameObject.GetComponent<ArmorCraft>();
 			cuirassList = new List<PartArmoryInformation>();
@@ -125,7 +162,6 @@ namespace CraftSystem
 			Timing.RunCoroutine(ShieldCorutine());
 			Timing.RunCoroutine(HelmetCorutine());
 			Timing.RunCoroutine(CuirassCorutine());
-
 		}
 
 		/// <summary>
@@ -145,7 +181,9 @@ namespace CraftSystem
 					ArmorButton button = item.GetComponent<ArmorButton>();
 					button.SetArmorCraft(AC);
 					button.SetNumber(i);
-					button.SetName(shieldList[i].ArmoryName);
+                    button.ArmoryClass = shieldList[i].ArmoryType;
+
+                    button.SetName(shieldList[i].ArmoryName);
 					button.SetArmor(shieldList[i].ArmoryValue.ToString());
 					button.SetLogo (shieldList[i].ImageArm);
 					item.transform.SetParent(shieldRepository.transform, false);
@@ -171,7 +209,9 @@ namespace CraftSystem
 					ArmorButton button = item.GetComponent<ArmorButton>();
 					button.SetArmorCraft(AC);
 					button.SetNumber(i);
-					button.SetName(cuirassList[i].ArmoryName);
+                    button.ArmoryClass = cuirassList[i].ArmoryType;
+
+                    button.SetName(cuirassList[i].ArmoryName);
 					button.SetArmor(cuirassList[i].ArmoryValue.ToString());
 					button.SetLogo (cuirassList[i].ImageArm);
 					item.transform.SetParent(cuirassRepository.transform, false);
@@ -197,7 +237,9 @@ namespace CraftSystem
 					ArmorButton button = item.GetComponent<ArmorButton>();
 					button.SetArmorCraft(AC);
 					button.SetNumber(i);
-					button.SetName(helmetList[i].ArmoryName);
+                    button.ArmoryClass = helmetList[i].ArmoryType;
+
+                    button.SetName(helmetList[i].ArmoryName);
 					button.SetArmor(helmetList[i].ArmoryValue.ToString());
 					button.SetLogo (helmetList[i].ImageArm);
 					item.transform.SetParent(helmetRepository.transform, false);

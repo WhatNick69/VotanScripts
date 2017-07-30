@@ -1,14 +1,13 @@
 ﻿using GameBehaviour;
 using PlayerBehaviour;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace CraftSystem
 {
-	/// <summary>
-	/// Информация об префабе брони
-	/// </summary>
-	public class PartArmoryInformation
+    /// <summary>
+    /// Информация об префабе брони
+    /// </summary>
+    public class PartArmoryInformation
 		: MonoBehaviour
 	{
 		#region Переменные
@@ -70,7 +69,20 @@ namespace CraftSystem
 				return imageArmory;
 			}
 		}
-			
+
+        public ArmoryClass ArmoryType
+        {
+            get
+            {
+                return armoryType;
+            }
+
+            set
+            {
+                armoryType = value;
+            }
+        }
+
         #endregion
 
         /// <summary>

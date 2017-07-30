@@ -147,12 +147,9 @@ namespace PlayerBehaviour
         /// <summary>
         /// Рывок-атака
         /// </summary>
-        public void StraightMoving()
+        public void StraightMovingTranslate()
         {
             // Включаю рывок
-            playerComponentsControl.PlayerAnimationsController.SetState(3, true);
-            playerComponentsControl.PlayerAnimationsController
-                .HighSpeedAnimation();
             attackTransform.position = 
                 new Vector3(attackTransform.position.x,
                 playerObjectTransform.position.y, attackTransform.position.z);
@@ -164,6 +161,13 @@ namespace PlayerBehaviour
             {
                 tempVectorTransform = playerObjectTransform.position;
             }
+        }
+
+        public void StraightMovingPlayAnimation()
+        {
+            playerComponentsControl.PlayerAnimationsController.SetState(3, true);
+            playerComponentsControl.PlayerAnimationsController
+                .HighSpeedAnimation();
         }
 
         /// <summary>
@@ -299,6 +303,7 @@ namespace PlayerBehaviour
             // выключить рывок
             playerComponentsControl.PlayerAnimationsController.SetState(3, false);
             playerComponentsControl.PlayerAnimationsController.SetState(1, false);
+            playerComponentsControl.PlayerFight.IsFighting = false;
         }
 
         /// <summary>
