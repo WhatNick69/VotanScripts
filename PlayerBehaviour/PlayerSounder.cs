@@ -151,7 +151,7 @@ namespace PlayerBehaviour
         /// <param name="isSuperAttack"></param>
         public override void PlaySpinAudio(float speed, bool isSuperAttack=false)
         {
-            speed /= 100;
+            speed /= 25;
             speed = Mathf.Abs(speed);
             if (speed <= 0.1f) return;
 
@@ -165,7 +165,7 @@ namespace PlayerBehaviour
                     audioSpin[LibraryStaticFunctions.rnd.
                     Next(0, audioSpin.Length - 1)];
             }
-            audioSourceWeapon.pitch = 0.8f + speed/2;
+            audioSourceWeapon.pitch = LibraryStaticFunctions.GetRangeValue(0.8f + speed/2,0.05f);
             audioSourceWeapon.Play();
         }
 

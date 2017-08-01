@@ -67,8 +67,8 @@ namespace VotanGameplay
             {
                 // Промежуток, между грозой
                 yield return Timing.WaitForSeconds
-                    (LibraryStaticFunctions.GetRangeValue
-                    (frequencyOfLighting, 0.5f));
+                    (5+(LibraryStaticFunctions.GetRangeValue
+                    (frequencyOfLighting, 0.9f)));
                 if (!isLight)
                 {
                     RandomPositionOfLighting();

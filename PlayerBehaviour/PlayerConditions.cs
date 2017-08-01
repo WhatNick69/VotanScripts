@@ -285,8 +285,7 @@ namespace PlayerBehaviour
             playerComponentsControl.PlayerSounder.PlayDeadAudio();
             IsAlive = false;
             AllPlayerManager.CheckList();
-            playerComponentsControl.PlayerAnimationsController
-                .SetSpeedAnimationByRunSpeed(0.5f);
+
             GetComponent<PlayerController>().IsAliveFromConditions = false;
             playerComponentsControl.PlayerAnimationsController
                 .DisableAllStates();
@@ -297,6 +296,10 @@ namespace PlayerBehaviour
 
             playerComponentsControl.PlayerUI.EventGameOver();
             MainBarCanvas.gameObject.SetActive(false);
+            playerComponentsControl.PlayerAnimationsController
+                .HighSpeedAnimation();
+            playerComponentsControl.PlayerWeapon.EventKillWeapon();
+
             yield return Timing.WaitForSeconds(1);
         }
 

@@ -13,6 +13,8 @@ namespace PlayerBehaviour
     {
         [SerializeField,Tooltip("Хранитель компонентов")]
         private PlayerComponentsControl playerComponentsControl;
+        private PlayerFight playerFight;
+        private PlayerConditions playerConditions;
 
         /// <summary>
         /// Конструктор
@@ -37,14 +39,38 @@ namespace PlayerBehaviour
         }
 
         /// <summary>
+        /// Инициализация
+        /// </summary>
+        private void Start()
+        {
+            playerFight = playerComponentsControl.PlayerFight;
+            playerConditions = playerComponentsControl.PlayerConditions;
+        }
+
+        /// <summary>
+        /// Установить скорость для анимации
+        /// </summary>
+        /// <param name="value"></param>
+        public override void SetSpeedAnimationByRunSpeed(float value)
+        {
+            if (playerFight.IsMayToLongAttack 
+                && playerConditions.IsAlive)
+            {
+                animatorOfObject.speed = value;
+            }
+        }
+
+        /// <summary>
         /// Установить низкую скорость анимации
         /// </summary>
         public override void LowSpeedAnimation()
         {
             if (animatorOfObject.speed == 0.2f) return;
-            else if ((!playerComponentsControl.PlayerFight.IsFighting 
-                || playerComponentsControl.PlayerFight.IsDefensing) && !playerComponentsControl.PlayerFight.IsSpining
-                && playerComponentsControl.PlayerConditions.IsAlive)
+            else if ((!playerFight.IsFighting 
+                || playerFight.IsDefensing) 
+                && !playerFight.IsSpining
+                && playerConditions.IsAlive 
+                && playerFight.IsMayToLongAttack)
             {
                 animatorOfObject.speed = 0.2f;
             }
@@ -93,16 +119,6 @@ namespace PlayerBehaviour
                 yield return Timing.WaitForSeconds(0.01f);
             }
             yield return Timing.WaitForSeconds(0.01f);
-        }
-
-        public void StopLongAttack()
-        {
-            playerComponentsControl.PlayerController.StopLongAttack();
-        }
-
-        public void LongAttackTranslate()
-        {
-            playerComponentsControl.PlayerController.StraightMovingTranslate();
         }
     }
 }

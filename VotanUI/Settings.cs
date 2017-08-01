@@ -10,7 +10,7 @@ namespace VotanUI
         : MonoBehaviour
     {
         [SerializeField]
-        Slider slider;
+        private Slider slider;
 
         /// <summary>
         /// Обновление с заданной частотой

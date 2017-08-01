@@ -3,10 +3,10 @@ using UnityStandardAssets.CrossPlatformInput;
 using MovementEffects;
 using System.Collections.Generic;
 using VotanLibraries;
+using System;
 
 namespace PlayerBehaviour
 {
-
     /// <summary>
     /// Используется для управления персонажем.
     /// Задает движение и поворот.
@@ -30,12 +30,16 @@ namespace PlayerBehaviour
         private float updateFrequency;
         [SerializeField, Tooltip("Хранитель компонентов")]
         private PlayerComponentsControl playerComponentsControl;
+
+        private PlayerAnimationsController playerAnimationsController;
+        private PlayerWeapon playerWeapon;
+        private PlayerFight playerFight;
+
         private Transform playerObjectTransform;
         private Transform playerModel;
 
         private float currentMagnitude; // текущее значение магнитуды векторов
         //меньше которого используется сглаженное время
-        private float angle; // угол для поворота
         private float tempAngleForSound;
 
         private Vector3 moveVector3;
@@ -49,6 +53,11 @@ namespace PlayerBehaviour
         private Vector3 normalYVector;
         private const string horizontalAxis = "Horizontal";
         private const string verticalAxis = "Vertical";
+        private float angle;
+        private float angle2;
+        private float maxSpinSpeed;
+        private bool isNormal;
+        private float originalSpinSpeed;
         #endregion
 
         #region Свойства
@@ -65,19 +74,6 @@ namespace PlayerBehaviour
             }
         }
 
-        public float Angle
-        {
-            get
-            {
-                return angle;
-            }
-
-            set
-            {
-                angle = value;
-
-            }
-        }
 
         public bool IsAliveFromConditions
         {
@@ -105,6 +101,7 @@ namespace PlayerBehaviour
             }
         }
 
+
         public float RotateSpeed
         {
             get
@@ -116,6 +113,57 @@ namespace PlayerBehaviour
             {
                 rotateSpeed = value;
             }
+        }
+
+        public bool IsNormal
+        {
+            get
+            {
+                return isNormal;
+            }
+
+            set
+            {
+                isNormal = value;
+            }
+        }
+
+        public float Angle
+        {
+            get
+            {
+                return angle;
+            }
+
+            set
+            {
+                angle = value;
+                if (angle > maxSpinSpeed) angle = maxSpinSpeed;
+                else if (angle < -maxSpinSpeed) angle = -maxSpinSpeed;
+                playerWeapon.SpinSpeed = Math.Abs(angle);
+            }
+        }
+
+        public float MaxSpinSpeed
+        {
+            get
+            {
+                return maxSpinSpeed;
+            }
+
+            set
+            {
+                maxSpinSpeed = value;
+                if (maxSpinSpeed > originalSpinSpeed) maxSpinSpeed = originalSpinSpeed;
+                else if (maxSpinSpeed < 0) maxSpinSpeed = 0;
+            }
+        }
+
+        public void SetAngle(float angleTemp)
+        {
+            angle = angleTemp;
+            if (angle > maxSpinSpeed) angle = maxSpinSpeed;
+            else if (angle < -maxSpinSpeed) angle = -maxSpinSpeed;
         }
         #endregion
 
@@ -133,7 +181,24 @@ namespace PlayerBehaviour
                 (playerComponentsControl.PlayerWeapon.Weight);
             RotateSpeed = LibraryStaticFunctions.DependenceRotateSpeedAndWeaponWeight
                 (playerComponentsControl.PlayerWeapon.Weight);
+            originalSpinSpeed = playerComponentsControl.PlayerWeapon.OriginalSpinSpeed; ;
+            maxSpinSpeed = playerComponentsControl.PlayerWeapon.OriginalSpinSpeed;
+
+            LibraryStaticFunctions.SetAttackTransformPosition
+                (playerComponentsControl.PlayerWeapon, attackTransform);
+            playerWeapon = playerComponentsControl.PlayerWeapon;
+            playerAnimationsController = playerComponentsControl.PlayerAnimationsController;
+            playerFight = playerComponentsControl.PlayerFight;
+
             InitialisationOfCoroutines();
+        }
+
+        /// <summary>
+        /// Остановить атакующий рывок во время блока
+        /// </summary>
+        public void StopAttackWhenDefensing()
+        {
+            tempVectorTransform = playerObjectTransform.position;
         }
 
         /// <summary>
@@ -145,12 +210,21 @@ namespace PlayerBehaviour
         }
 
         /// <summary>
-        /// Рывок-атака
+        /// Воспроизведение анимации во время атакующего рывка
         /// </summary>
-        public void StraightMovingTranslate()
+        public void LongAttackAnimation()
         {
             // Включаю рывок
-            attackTransform.position = 
+            playerAnimationsController.SetState(3, true);
+            playerAnimationsController.HighSpeedAnimation();
+        }
+
+        /// <summary>
+        /// Атакующий рывок
+        /// </summary>
+        public void StraightMoving()
+        {          
+            attackTransform.position =
                 new Vector3(attackTransform.position.x,
                 playerObjectTransform.position.y, attackTransform.position.z);
             tempVectorTransform = attackTransform.position;
@@ -163,13 +237,6 @@ namespace PlayerBehaviour
             }
         }
 
-        public void StraightMovingPlayAnimation()
-        {
-            playerComponentsControl.PlayerAnimationsController.SetState(3, true);
-            playerComponentsControl.PlayerAnimationsController
-                .HighSpeedAnimation();
-        }
-
         /// <summary>
         /// Корутин на обновление позиции и поворота
         /// </summary>
@@ -179,10 +246,10 @@ namespace PlayerBehaviour
             yield return Timing.WaitForSeconds(1);
             while (isAliveFromConditions)
             {
-                if (!playerComponentsControl.PlayerFight.IsFighting)
+                if (!playerFight.IsFighting)
                 {
                     MovePlayerGetNetPosition();
-                    RotatePlayeGetNewRotation();   
+                    RotatePlayerGetNewRotation();   
                 }
                 if (!playerComponentsControl.PlayerCollision.
                     CheckDirection(LibraryStaticFunctions.
@@ -194,7 +261,7 @@ namespace PlayerBehaviour
                 UpdateYCoordinate();
                 yield return Timing.WaitForSeconds(updateFrequency);
             }
-            playerComponentsControl.PlayerAnimationsController.SetState(5, true);
+            playerAnimationsController.SetState(5, true);
         }
 
         /// <summary>
@@ -226,7 +293,7 @@ namespace PlayerBehaviour
             currentMagnitude = (playerObjectTransform
                 .position - tempVectorTransform).magnitude;
 
-            if (!playerComponentsControl.PlayerFight.IsFighting)
+            if (!playerFight.IsFighting)
             {
                 if (IsMagnitudeMoreThanValue())
                 {
@@ -234,11 +301,8 @@ namespace PlayerBehaviour
                     // на бег. Иначе - плавно замедляемся
                     if (isUpdating)
                     {
-                        playerComponentsControl.
-                            PlayerAnimationsController
-                            .SetSpeedAnimationByRunSpeed(magnitudeForSpeed);
-                        playerComponentsControl.PlayerAnimationsController
-                            .SetState(0, true);
+                        playerAnimationsController.SetSpeedAnimationByRunSpeed(magnitudeForSpeed);
+                        playerAnimationsController.SetState(0, true);
 
                         playerObjectTransform.position =
                             Vector3.MoveTowards(playerObjectTransform
@@ -247,8 +311,7 @@ namespace PlayerBehaviour
                     }
                     else
                     {
-                        playerComponentsControl.PlayerAnimationsController
-                            .SetState(0, false);
+                        playerAnimationsController.SetState(0, false);
                         tempVectorTransform.y = playerObjectTransform.position.y;
                         playerObjectTransform
                             .position = Vector3.Lerp(playerObjectTransform.position,
@@ -257,37 +320,31 @@ namespace PlayerBehaviour
                 }
                 else
                 {
-                    playerComponentsControl.PlayerAnimationsController
-                        .SetState(0, false);
+                    playerAnimationsController.SetState(0, false);
                 }
 
-                if (playerComponentsControl.PlayerFight.IsRotating)
+                if (playerFight.IsRotating)
                 {
-                    playerComponentsControl.PlayerModel.localRotation 
-                        = Quaternion.Slerp(playerComponentsControl.PlayerModel
-                        .rotation, Quaternion.Euler(0, angle, 0)
-                        , rotateSpeed * 2f * Time.deltaTime);
+                        playerComponentsControl.PlayerModel.Rotate(new Vector3(0, angle/4, 0));
 
                     // Включаю атаку
-                    playerComponentsControl.PlayerAnimationsController
-                        .SetState(1,true);
+                    playerAnimationsController.SetState(1,true);
                     // Выключаю бег
-                    playerComponentsControl.PlayerAnimationsController
-                        .SetState(0, false);
+                    playerAnimationsController.SetState(0, false);
                 }
                 else
                 {
+
                     playerComponentsControl.PlayerModel.localRotation 
                         = Quaternion.Slerp(playerComponentsControl.PlayerModel
-                        .rotation, Quaternion.Euler(0, angle, 0)
+                        .localRotation, Quaternion.Euler(0, angle2, 0)
                         , rotateSpeed * Time.deltaTime);
 
                     // выключаем атаку
-                    playerComponentsControl.PlayerAnimationsController
-                        .SetState(1, false);
+                    playerAnimationsController.SetState(1, false);
                 }
             }
-            else if (!playerComponentsControl.PlayerFight.IsDefensing)
+            else if (!playerFight.IsDefensing)
             {
                 playerObjectTransform.position 
                     = Vector3.Lerp(playerObjectTransform.position,
@@ -301,9 +358,10 @@ namespace PlayerBehaviour
         public void StopLongAttack()
         {
             // выключить рывок
-            playerComponentsControl.PlayerAnimationsController.SetState(3, false);
-            playerComponentsControl.PlayerAnimationsController.SetState(1, false);
-            playerComponentsControl.PlayerFight.IsFighting = false;
+            playerAnimationsController.SetState(3, false);
+            playerAnimationsController.SetState(1, false);
+            playerFight.IsFighting = false;
+            playerFight.IsMayToLongAttack = true;
         }
 
         /// <summary>
@@ -339,7 +397,7 @@ namespace PlayerBehaviour
                 normalYVector.z = playerObjectTransform.position.z;
                 playerObjectTransform.position = normalYVector;
             }
-            if (!playerComponentsControl.PlayerFight.IsFighting &&
+            if (!playerFight.IsFighting &&
                 (playerModel.localPosition.y < 0 
                 || playerModel.localPosition.y > 0))
             {
@@ -348,12 +406,22 @@ namespace PlayerBehaviour
         }
 
         /// <summary>
+        /// Угол после вращения
+        /// </summary>
+        public void AngleBeforeSpining()
+        {
+            angle2 = playerComponentsControl.PlayerModel.localEulerAngles.y;
+        }
+
+        /// <summary>
         /// Поворачиваем персонажа вслед за джойстиком
         /// </summary>
-        private void RotatePlayeGetNewRotation()
+        private void RotatePlayerGetNewRotation()
         {
-            if (isUpdating && !playerComponentsControl.PlayerFight.IsRotating)
-                angle = Mathf.Atan2(moveVector3.x, moveVector3.z) * Mathf.Rad2Deg;
+            if (isUpdating && !playerFight.IsRotating)
+            {
+                angle2 = Mathf.Atan2(moveVector3.x, moveVector3.z) * Mathf.Rad2Deg;
+            }
         }                 
     }
 }

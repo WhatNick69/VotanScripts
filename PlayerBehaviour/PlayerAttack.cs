@@ -26,6 +26,7 @@ namespace PlayerBehaviour
         [SerializeField]
         private AbstractEnemy[] listEnemy;
 
+        private PlayerWeapon playerWeapon;
         private int isCuttingWeapon;
 
         /// <summary>
@@ -34,13 +35,18 @@ namespace PlayerBehaviour
         public void Start()
         {        
             transformOfPlayer = playerComponentsControl.PlayerObject;
+            playerWeapon = playerComponentsControl.PlayerWeapon;
             WeaponTypeToBool();
         }
 
+        /// <summary>
+        /// Получить ссылку на всех врагов
+        /// </summary>
         public void GetReferenceToEnemyArray()
         {
             listEnemy = new AbstractEnemy[StaticStorageWithEnemies.ListEnemy.Length];
-            Array.Copy(StaticStorageWithEnemies.ListEnemy, listEnemy, StaticStorageWithEnemies.ListEnemy.Length);
+            Array.Copy(StaticStorageWithEnemies.ListEnemy, 
+                listEnemy, StaticStorageWithEnemies.ListEnemy.Length);
             StartCoroutines();
         }
 
@@ -52,10 +58,15 @@ namespace PlayerBehaviour
             Timing.RunCoroutine(CoroutineForAttackUpdate());
         }
 
+        /// <summary>
+        /// Проверить, является ли враг активным (он жив и он есть)
+        /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
         private bool CheckEnemyActiveInArray(int i)
         {
-            return listEnemy[i].EnemyConditions.IsAlive 
-                && listEnemy[i].gameObject.activeSelf 
+            return listEnemy[i].gameObject.activeSelf &&
+                listEnemy[i].EnemyConditions.IsAlive 
                 ? true : false;
         }
 
@@ -73,18 +84,14 @@ namespace PlayerBehaviour
                     if (playerComponentsControl.PlayerFight.IsRotating)
                     {
                         AttackToEnemy(LibraryStaticFunctions.AttackToEnemyDamage
-                            (playerComponentsControl.PlayerWeapon.Damage,
-                            playerComponentsControl.PlayerWeapon.SpinSpeed,
-                            playerComponentsControl.PlayerWeapon.OriginalSpinSpeed),
-                        playerComponentsControl.PlayerWeapon.AttackType);
+                            (playerWeapon.Damage,playerWeapon.SpinSpeed,
+                            playerWeapon.OriginalSpinSpeed),
+                            playerWeapon.AttackType,false);
                     }
                     else if (playerComponentsControl.PlayerFight.IsFighting)
                     {
-                        AttackToEnemy(LibraryStaticFunctions.AttackToEnemyDamage
-                           (playerComponentsControl.PlayerWeapon.Damage,
-                           playerComponentsControl.PlayerWeapon.SpinSpeed,
-                           playerComponentsControl.PlayerWeapon.OriginalSpinSpeed, true),
-                       playerComponentsControl.PlayerWeapon.AttackType);
+                        AttackToEnemy(LibraryStaticFunctions.AttackToEnemyDamageLongAttack
+                           (playerWeapon),playerWeapon.AttackType,true);
                     }
                 }
                 oldFinishGunPoint = playerFinishGunPoint.position;   
@@ -96,15 +103,15 @@ namespace PlayerBehaviour
         /// </summary>
         /// <param name="damage"></param>
         /// <param name="dmgType"></param>
-        public void AttackToEnemy(float damage, DamageType dmgType)
+        public void AttackToEnemy(float damage, DamageType dmgType,bool isSuperAttack)
         {
             for (int i = 0; i < listEnemy.Length; i++)
             {
                 if (CheckEnemyActiveInArray(i) && IsAttackEnemy(i))
                 {
                     if (listEnemy[i].EnemyConditions.GetDamage
-                        (damage, playerComponentsControl.PlayerWeapon.GemPower
-                        , playerComponentsControl.PlayerWeapon))
+                        (damage, playerWeapon.GemPower
+                        , playerWeapon, isSuperAttack))
                     {
                         playerComponentsControl.PlayerSounder.
                             PlayWeaponHitAudio(isCuttingWeapon);
@@ -118,7 +125,7 @@ namespace PlayerBehaviour
         /// </summary>
         private void WeaponTypeToBool()
         {
-            if (playerComponentsControl.PlayerWeapon.WeaponType == WeaponType.Cutting)
+            if (playerWeapon.WeaponType == WeaponType.Cutting)
             {
                 isCuttingWeapon = 1;
             }

@@ -138,9 +138,9 @@ namespace VotanLibraries
         /// </summary>
         /// <param name="weapon"></param>
         /// <returns></returns>
-        public static float StrenghtOfNockback(IWeapon weapon)
+        public static float StrenghtOfNockback(IWeapon weapon,bool isSuperAttack=false)
         {
-            return 2 +  (weapon.GemPower / 100);
+            return isSuperAttack ? 4 : 2 +  (weapon.GemPower / 100);
         }
 
         /// <summary>
@@ -227,22 +227,49 @@ namespace VotanLibraries
         /// <returns></returns>
         public static float TotalDamage(float damageBase, float totalWeight)
         {
+
             return damageBase * (1+(totalWeight / 10));
         }
 
         /// <summary>
         /// Рассчет урона при атаке по врагу.
         /// 
-        /// Если это кручение: умножить урон на 0.5*(СКОРОСТЬ/ОБЩАЯСКОРОСТЬ).
-        /// Если это рывок: умножить атаку на 2
+        /// Текущая реализация:
+        /// Умножить урон на (СКОРОСТЬ/ОБЩАЯСКОРОСТЬ).
         /// </summary>
         /// <param name="damage"></param>
         /// <param name="spinSpeed"></param>
         /// <returns></returns>
         public static float AttackToEnemyDamage(float damage, 
-            float spinSpeed,float spinSpeedoriginal,bool isSuperAttack=false)
+            float spinSpeed,float spinSpeedoriginal)
         {
-            return isSuperAttack ? damage*1.5f : damage * (spinSpeed / spinSpeedoriginal);
+            return damage * (spinSpeed / spinSpeedoriginal);
+        }
+
+        /// <summary>
+        /// Рассчет урона при атаке по врагу атакующим рывком
+        /// 
+        /// Текущая реализация:
+        /// Умножить урон на 0.5+(ВЕС/200)
+        /// </summary>
+        /// <param name="weapon"></param>
+        /// <returns></returns>
+        public static float AttackToEnemyDamageLongAttack(IWeapon weapon)
+        {
+            return weapon.Damage * (0.5f+ weapon.Weight / 200);
+        }
+
+        /// <summary>
+        /// Установить длину позиции для атакующего рывка
+        /// 
+        /// Текущая реализация:
+        /// Длина по оси Z=8-(ВЕС/50)
+        /// </summary>
+        /// <param name="weapon"></param>
+        /// <param name="attackPosition"></param>
+        public static void SetAttackTransformPosition(IWeapon weapon,Transform attackPosition)
+        {
+            attackPosition.localPosition = new Vector3(0,0.5f, 8-(weapon.Weight/50));
         }
 
         /// <summary>

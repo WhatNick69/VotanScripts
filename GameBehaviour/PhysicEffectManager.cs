@@ -26,6 +26,7 @@ namespace GameBehaviour
         private IWeapon weapon;
         private Transform playerObjectTransform;
         private bool isStillTrailMoving;
+        private bool isSuperAttack;
 
         /// <summary>
         /// Зажечь земляной эффект
@@ -58,6 +59,8 @@ namespace GameBehaviour
         {
             if (LibraryStaticFunctions.MayToNockbackEnemy(weapon))
             {
+                isSuperAttack = false;
+
                 weapon.GetPlayer.PlayerCameraSmooth.
                        DoNoize((weapon.SpinSpeed / weapon.OriginalSpinSpeed) + 0.5f);
                 this.weapon = weapon;
@@ -66,6 +69,19 @@ namespace GameBehaviour
                 {
                     Timing.RunCoroutine(CoroutineForNockback());
                 }
+            }
+        }
+
+        public void EventEffectRageAttack(IWeapon weapon)
+        {
+            isSuperAttack = true;
+            weapon.GetPlayer.PlayerCameraSmooth.
+                      DoNoize(1);
+
+            playerObjectTransform = weapon.GetPlayer.PlayerWeapon.transform;
+            if (enemy.EnemyConditions.IsAlive)
+            {
+                Timing.RunCoroutine(CoroutineForNockback());
             }
         }
 
@@ -78,7 +94,7 @@ namespace GameBehaviour
             Vector3 vec = enemy.transform.position - enemy.EnemyMove.
                 PlayerObjectTransformForFollow.transform.position;
             Vector3 nockBackPosition = enemy.transform.position + 
-                vec*LibraryStaticFunctions.StrenghtOfNockback(weapon);
+                vec*LibraryStaticFunctions.StrenghtOfNockback(weapon, isSuperAttack);
 
             int i = 0;
             while (Vector3.Distance(enemy.transform.position,nockBackPosition) > 0.2f)

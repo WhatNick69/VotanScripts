@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using MovementEffects;
 using VotanInterfaces;
-using System;
 using VotanLibraries;
+using System;
 
 namespace PlayerBehaviour
 {
@@ -35,16 +35,6 @@ namespace PlayerBehaviour
         /// попадания по врагу земляной атакой
         /// </summary>
         bool IsMayToGetPhysicDefence { get; set; }
-
-        /// <summary>
-        /// Название оружия
-        /// </summary>
-        string WeaponName { get; set; }
-
-		/// <summary>
-        /// Название рукояти
-        /// </summary>
-        string GripName { get; set; }
 
         /// <summary>
         /// Получить игрока
@@ -137,6 +127,11 @@ namespace PlayerBehaviour
         /// Установить цвет трэил-ленты оружия
         /// </summary>
         void SetColorTrailWeapon();
+
+        /// <summary>
+        /// Выбросить оружие из рук игрока оплсе его смерти
+        /// </summary>
+        void EventKillWeapon();
     }
 
 	/// <summary>
@@ -146,19 +141,13 @@ namespace PlayerBehaviour
         : MonoBehaviour, IWeapon
 	{
         #region Переменные
-        [SerializeField, Tooltip("Название оружия")]
-        private string weaponName;
-        [SerializeField, Tooltip("Название рукояти")]
-        private string gripName;
-        private TrailRenderer trailRenderer;
-
         [SerializeField, Tooltip("Урон от оружия"), Range(1, 2200f)]
 		private float damage;
 		[SerializeField, Tooltip("Защита"), Range(0, 99f)]
 		private float defenceValue;
-		[SerializeField]
+		[SerializeField, Tooltip("Тип атаки")]
 		private DamageType damageType;
-        [SerializeField]
+        [SerializeField, Tooltip("Тип оружия")]
         private WeaponType weaponType;
         [SerializeField, Tooltip("Скорость вращения"), Range(10, 100f)]
 		private float spinSpeed;
@@ -166,18 +155,25 @@ namespace PlayerBehaviour
         private float gemPower;
         [SerializeField, Tooltip("Временная защита")]
         private float tempDefence;
-        private bool isMayToGetPhysicDefence;
         private float originalSpinSpeed;
-
 		[SerializeField, 
             Tooltip("Вес оружия. Чем больше - тем меньше замедление при попадании по противнику")
                 , Range(1f, 100f)]
 		private float weight;
 		[SerializeField, Tooltip("Задержка перед возвращением скорости"), Range(0.1f, 3)]
 		private float speedReturnLatency;
-
 		[SerializeField, Tooltip("Хранитель компонентов")]
 		private PlayerComponentsControl playerComponentsControl;
+
+        private PlayerController playerController;
+        private bool isSlowMotion;
+        private bool isMayToGetPhysicDefence;
+        private float tempAngleForSound;
+        private int coroutinesCount;
+        private TrailRenderer trailRenderer;
+
+        private Rigidbody rigidbodyOfWeapon;
+        private BoxCollider[] boxColliderOfWeaponArray;
         #endregion
 
         #region Свойства
@@ -231,11 +227,24 @@ namespace PlayerBehaviour
 
             set
             {
-                if (value > 100)
-                    value = 100;
-                else if (value < 1)
-                    value = 1;
+                if (value > originalSpinSpeed)
+                    value = originalSpinSpeed;
+                else if (value < 0)
+                    value = 0;
                 spinSpeed = value;
+                playerComponentsControl.PlayerAnimationsController.
+                    SetSpeedAnimationByRunSpeed(0.25f+spinSpeed * 0.005f);
+                PlaySpinSpeedAudio();
+            }
+        }
+        private void PlaySpinSpeedAudio()
+        {
+            tempAngleForSound += spinSpeed/2;
+            if (Mathf.Abs(tempAngleForSound) >= 25)
+            {
+                playerComponentsControl.PlayerSounder.PlaySpinAudio
+                    (SpinSpeed, false);
+                tempAngleForSound = 0;
             }
         }
 
@@ -284,8 +293,8 @@ namespace PlayerBehaviour
             {
                 if (value > 100)
                     value = 100;
-                else if (value < 1)
-                    value = 1;
+                else if (value < 0)
+                    value = 0;
                 originalSpinSpeed = value;
             }
         }
@@ -295,32 +304,6 @@ namespace PlayerBehaviour
             get
             {
                 return playerComponentsControl;
-            }
-        }
-
-        public string WeaponName
-        {
-            get
-            {
-                return weaponName;
-            }
-
-            set
-            {
-                weaponName = value;
-            }
-        }
-
-        public string GripName
-        {
-            get
-            {
-                return gripName;
-            }
-
-            set
-            {
-                gripName = value;
             }
         }
 
@@ -372,6 +355,19 @@ namespace PlayerBehaviour
                 weaponType = value;
             }
         }
+
+        public bool IsSlowMotion
+        {
+            get
+            {
+                return isSlowMotion;
+            }
+
+            set
+            {
+                isSlowMotion = value;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -389,17 +385,17 @@ namespace PlayerBehaviour
             DamageType damageType, TrailRenderer trailRenderer ,
             float spinSpeed,float weight,float gemPower,WeaponType weaponType=WeaponType.Cutting)
         {
+            originalSpinSpeed = spinSpeed;
             DefenceValue = defenceValue;
             this.damage = damage;
             this.damageType = damageType;
-            this.spinSpeed = spinSpeed;
+            this.spinSpeed = 0;
             this.weight = weight;
             this.gemPower = gemPower;
             this.trailRenderer = trailRenderer;
             this.weaponType = weaponType;
 
             SetColorTrailWeapon();
-            originalSpinSpeed = this.spinSpeed;
         }
         
         /// <summary>
@@ -408,7 +404,44 @@ namespace PlayerBehaviour
         public void Start()
         {
             playerComponentsControl.PlayerWeapon = this;
+            playerController = playerComponentsControl.PlayerController;
             isMayToGetPhysicDefence = true;
+
+            rigidbodyOfWeapon = GetComponent<Rigidbody>();
+            boxColliderOfWeaponArray = GetComponents<BoxCollider>();
+        }
+
+        /// <summary>
+        /// Выбросить оружие из рук игрока после его смерти
+        /// </summary>
+        public void EventKillWeapon()
+        {
+            DetachWeapon();
+            EnableActiveRigidbodyOfWeapon();
+        }
+
+        /// <summary>
+        /// Отсоединить оружие
+        /// </summary>
+        private void DetachWeapon()
+        {
+            rigidbodyOfWeapon.transform.parent = null;
+        }
+
+        /// <summary>
+        /// Включить просчет физики
+        /// </summary>
+        private void EnableActiveRigidbodyOfWeapon()
+        {
+            foreach (BoxCollider collider in boxColliderOfWeaponArray)
+                collider.enabled = true;
+
+            rigidbodyOfWeapon.useGravity = true;
+            rigidbodyOfWeapon.detectCollisions = true;
+            rigidbodyOfWeapon.constraints = RigidbodyConstraints.None;
+            rigidbodyOfWeapon.AddForce(new Vector3(LibraryStaticFunctions.GetPlusMinusValue(75),
+                LibraryStaticFunctions.rnd.Next(40, 100),
+                LibraryStaticFunctions.GetPlusMinusValue(75)));
         }
 
         /// <summary>
@@ -417,7 +450,9 @@ namespace PlayerBehaviour
         /// </summary>
         public void WhileTime()
         {
+            isSlowMotion = true;
             Timing.RunCoroutine(CoroutineDoSlowMotionSpinSpeed());
+            coroutinesCount++;
         }
 
         /// <summary>
@@ -426,24 +461,22 @@ namespace PlayerBehaviour
         /// <returns></returns>
         public IEnumerator<float> CoroutineDoSlowMotionSpinSpeed()
         {
-			float spSpeed = spinSpeed * (0.5f + Weight / 200);
-
+			float spSpeed = originalSpinSpeed * (0.5f-(Weight / 200));
+            float partOfSpeed = spSpeed / 20;
             if (spinSpeed / originalSpinSpeed >= 0.75f)
                 playerComponentsControl.PlayerCameraSmooth.DoNoize(spinSpeed / originalSpinSpeed);
 
-            spinSpeed -= spSpeed;
-         
+            playerController.MaxSpinSpeed -= spSpeed;
             yield return Timing.WaitForSeconds(speedReturnLatency);
 
-            for (int i = 0;i<10;i++)
+            for (int i = 0;i<20;i++)
             {
-                spinSpeed += spSpeed / 10;
-                if (spinSpeed > originalSpinSpeed)
-                {
-                    spinSpeed = originalSpinSpeed;
-				}
-                yield return Timing.WaitForSeconds(0.1f);
+                playerController.MaxSpinSpeed += partOfSpeed;
+                yield return Timing.WaitForSeconds(Time.deltaTime);
             }
+            coroutinesCount--;
+            if (coroutinesCount == 0)
+                isSlowMotion = false;
         }
 
         /// <summary>

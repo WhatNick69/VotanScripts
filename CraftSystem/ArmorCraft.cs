@@ -1,6 +1,7 @@
 ﻿using MovementEffects;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace CraftSystem
 {
@@ -52,6 +53,10 @@ namespace CraftSystem
 		[SerializeField]
 		ArmorPrefabs AP;
 		ArmorCraft AC;
+
+        ScrollRect scrollRectHelmetRepository;
+        ScrollRect scrollRectShieldRepository;
+        ScrollRect scrollRectCuirasseRepository;
         #endregion
 
         #region Свойства
@@ -102,7 +107,8 @@ namespace CraftSystem
 			shieldWindow.SetActive(false);
 			cuirassWindow.SetActive(false);
 			helmetWindow.SetActive(true);
-		}
+            scrollRectHelmetRepository.horizontalNormalizedPosition = 0;
+        }
 
 		/// <summary>
 		/// Вызывает окно с лнтой кирас
@@ -112,7 +118,8 @@ namespace CraftSystem
 			shieldWindow.SetActive(false);
 			helmetWindow.SetActive(false);
 			cuirassWindow.SetActive(true);
-		}
+            scrollRectCuirasseRepository.horizontalNormalizedPosition = 0;
+        }
 
 		/// <summary>
 		/// Вызывает окно с лнтой щитов
@@ -122,7 +129,8 @@ namespace CraftSystem
 			helmetWindow.SetActive(false);
 			cuirassWindow.SetActive(false);
 			shieldWindow.SetActive(true);
-		}
+            scrollRectShieldRepository.horizontalNormalizedPosition = 0;
+        }
 
 		public GameObject GetCuirassPrafab()
 		{
@@ -159,6 +167,7 @@ namespace CraftSystem
 			cuirassList = new List<PartArmoryInformation>();
 			helmetList = new List<PartArmoryInformation>();
 			shieldList = new List<PartArmoryInformation>();
+
 			Timing.RunCoroutine(ShieldCorutine());
 			Timing.RunCoroutine(HelmetCorutine());
 			Timing.RunCoroutine(CuirassCorutine());
@@ -189,7 +198,9 @@ namespace CraftSystem
 					item.transform.SetParent(shieldRepository.transform, false);
 				}
 			}
-			yield return 0;
+            scrollRectShieldRepository = 
+                shieldRepository.transform.parent.GetComponent<ScrollRect>();
+            yield return 0;
 		}
 
 		/// <summary>
@@ -217,7 +228,9 @@ namespace CraftSystem
 					item.transform.SetParent(cuirassRepository.transform, false);
 				}
 			}
-			yield return 0;
+            scrollRectCuirasseRepository =
+                cuirassRepository.transform.parent.GetComponent<ScrollRect>();
+            yield return 0;
 		}
 
 		/// <summary>
@@ -245,7 +258,10 @@ namespace CraftSystem
 					item.transform.SetParent(helmetRepository.transform, false);
 				}
 			}
-			yield return 0;
+            scrollRectHelmetRepository =
+                helmetRepository.transform.parent.GetComponent<ScrollRect>();
+
+            yield return 0;
 		}
 	}
 }

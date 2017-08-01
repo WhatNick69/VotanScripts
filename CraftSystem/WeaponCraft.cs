@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using MovementEffects;
 using VotanUI;
+using UnityEngine.UI;
 
 namespace CraftSystem
 {
@@ -57,14 +58,18 @@ namespace CraftSystem
 		WeaponPrefabs WP;
 		WeaponCraft WC;
 
-		#endregion
+        ScrollRect scrollRectGripRepository;
+        ScrollRect scrollRectGemRepository;
+        ScrollRect scrollRectHeadRepository;
+        #endregion
 
-		#region Свойства
-		public void GripWindow()
+        #region Свойства
+        public void GripWindow()
 		{
 			headWindow.SetActive(false);
 			gemWindow.SetActive(false);
 			gripWindow.SetActive(true);
+            scrollRectGripRepository.horizontalNormalizedPosition = 0;
 		}
 
 		public void HeadWindow()
@@ -72,14 +77,16 @@ namespace CraftSystem
 			gemWindow.SetActive(false);
 			gripWindow.SetActive(false);
 			headWindow.SetActive(true);
-		}
+            scrollRectHeadRepository.horizontalNormalizedPosition = 0;
+        }
 
 		public void GemWindow()
 		{
 			headWindow.SetActive(false);
 			gripWindow.SetActive(false);
 			gemWindow.SetActive(true);
-		}
+            scrollRectGemRepository.horizontalNormalizedPosition = 0;
+        }
 
 		public void SetGemItemNumber(int x)
 		{
@@ -135,15 +142,16 @@ namespace CraftSystem
 			gripList = new List<Grip>();
 			headList = new List<Head>();
 			gemList = new List<Gem>();
+
 			Timing.RunCoroutine(GripCorutine());
 			Timing.RunCoroutine(HeadCorutine());
-			Timing.RunCoroutine(GemCorutine());
-			
+			Timing.RunCoroutine(GemCorutine());			
 		}
 
 		private IEnumerator<float> GemCorutine()
 		{
 			int count = Resources.LoadAll("Prefabs/Weapon/Gem").Length;
+
 			for (int i = 0; i < count; i++)
 			{
 				if (Resources.Load(gemPrefix + i.ToString() + gemPostfix))
@@ -161,12 +169,15 @@ namespace CraftSystem
 					item.transform.SetParent(gemRepository.transform, false);
 				}
 			}
-			yield return 0;
+            scrollRectGemRepository =
+                gemRepository.transform.parent.GetComponent<ScrollRect>();
+            yield return 0;
 		}
 
 		private IEnumerator<float> HeadCorutine()
 		{
 			int count = Resources.LoadAll("Prefabs/Weapon/Head").Length;
+
 			for (int i = 0; i < count; i++)
 			{
 				if (Resources.Load(headPrefix + i.ToString() + headPostfix))
@@ -186,7 +197,9 @@ namespace CraftSystem
 
 				}
 			}
-			yield return 0;
+            scrollRectHeadRepository =
+                headRepository.transform.parent.GetComponent<ScrollRect>();
+            yield return 0;
 		}
 
 		private IEnumerator<float> GripCorutine()
@@ -212,7 +225,9 @@ namespace CraftSystem
 
 				}
 			}
-			yield return 0;
+            scrollRectGripRepository =
+                gripRepository.transform.parent.GetComponent<ScrollRect>();
+            yield return 0;
 		}
 	}
 }

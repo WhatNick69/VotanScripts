@@ -76,10 +76,11 @@ namespace PlayerBehaviour
             {
                 if (Physics.Raycast(transform.position, -transform.up, out rayCastHitGround, 0.5f))
                 {
-                    Debug.DrawRay(transform.position, -transform.up, Color.red, 0.1f);
+                    //Debug.DrawRay(transform.position, -transform.up, Color.red, 0.1f);
                     if (!isGrounded)
                     {
                         Debug.Log("Приземлились");
+                        //playerComponentControl.PlayerSounder.FallObject();
                         isGrounded = true;
                     }
                 }

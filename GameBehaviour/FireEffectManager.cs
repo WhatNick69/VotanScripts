@@ -98,7 +98,7 @@ namespace GameBehaviour
                 if (abstractEnemy.EnemyConditions.HealthValue <= 0)
                 {
                     abstractEnemy.ScoreAddingEffect.EventEffect(weapon);
-                    yield break;
+                    break;
                 }
                 yield return Timing.WaitForSeconds(0.25f);
                 i++;

@@ -17,29 +17,28 @@ namespace PlayerBehaviour
         private float updateFrequency;
         [SerializeField, Tooltip("Хранитель компонентов")]
         private PlayerComponentsControl playerComponentsControl;
-
+        [SerializeField, Tooltip("Задержка ускорения вращения"), Range(1,50)]
+        private int spinLatency;
+        private PlayerWeapon playerWeapon;
+        private PlayerController playerController;
+        private PlayerAnimationsController playerAnimationsController;
         private Vector3 fightVector;
-        private float boostValue = 1;
-        private Vector3 rotateBodyOfPlayerVector;
-        private float sumAngle;
 
-        [SerializeField]
-        private bool isRotating;
-        [SerializeField]
-        private bool isFighting;
-        [SerializeField]
-        private bool isDefensing;
-        [SerializeField]
-        private bool isSpining;
-        [SerializeField]
-        private bool isDamaged;
+        public bool isRotating;
+        public bool isFighting;
+        public bool isDefensing;
+        public bool isSpining;
+        public bool isDamaged;
+        public bool isMayToLongAttack = true;
 
         private float tempSpinSpeed;
         private float spiningSpeedInCoroutine;
-        private bool isMayToLongAttack = true;
 
-        private float tempAngleForSound;
         private float tempAngle;
+        private int decrementer;
+        private float tempAngleFromPlayer;
+        private bool isNormal;
+        private float maxSpinSpeed;
         #endregion
 
         #region Свойства
@@ -79,6 +78,8 @@ namespace PlayerBehaviour
             set
             {
                 isDefensing = value;
+                if (isDefensing)
+                    playerComponentsControl.PlayerController.StopAttackWhenDefensing();
             }
         }
 
@@ -107,6 +108,33 @@ namespace PlayerBehaviour
                 isDamaged = value;
             }
         }
+
+        public bool IsMayToLongAttack
+        {
+            get
+            {
+                return isMayToLongAttack;
+            }
+
+            set
+            {
+                isMayToLongAttack = value;
+            }
+        }
+
+        public bool IsNormal
+        {
+            get
+            {
+                return isNormal;
+            }
+
+            set
+            {
+                isNormal = value;
+                playerController.IsNormal = isNormal;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -114,6 +142,10 @@ namespace PlayerBehaviour
         /// </summary>
         private void Start()
         {
+            playerWeapon = playerComponentsControl.PlayerWeapon;
+            maxSpinSpeed = playerWeapon.OriginalSpinSpeed;
+            playerController = playerComponentsControl.PlayerController;
+            playerAnimationsController = playerComponentsControl.PlayerAnimationsController;
             InitialisationCoroutineForFightControl();
         }
 
@@ -146,7 +178,25 @@ namespace PlayerBehaviour
         private void GetStickVector()
         {
             fightVector = new Vector3(CrossPlatformInputManager.GetAxis("AttackSide")
-              , 0, CrossPlatformInputManager.GetAxis("FightState")) * boostValue;
+              , 0, CrossPlatformInputManager.GetAxis("FightState"));
+        }
+
+        /// <summary>
+        /// Обработка величины ускорения перед отправкой игроку
+        /// </summary>
+        /// <param name="addingAngle"></param>
+        private void BeforeSendAngleToPlayer()
+        {
+            if (isNormal)
+            {
+                playerController.Angle +=
+                    (maxSpinSpeed / spinLatency);
+            }
+            else
+            {
+                playerController.Angle -=
+                    (maxSpinSpeed / spinLatency);
+            }
         }
 
         /// <summary>
@@ -154,62 +204,29 @@ namespace PlayerBehaviour
         /// </summary>
         /// <param name="x"></param>
         /// <returns></returns>
-        private IEnumerator<float> CoroutineSlowMotionFighting(float x)
+        private IEnumerator<float> CoroutineSlowMotionFighting()
         {
-            spiningSpeedInCoroutine = playerComponentsControl.PlayerWeapon.SpinSpeed;
-
-            while (spiningSpeedInCoroutine > 0)
+            bool tempFlag = playerController.Angle > 0 ? true : false;
+            float minValue = maxSpinSpeed / spinLatency;
+            while (Math.Abs(playerController.Angle) > minValue)
             {
-                tempAngle = spiningSpeedInCoroutine * tempSpinSpeed;
-                playerComponentsControl.PlayerController.Angle 
-                    += tempAngle;
-                PlaySpinSpeedAudio();
-                yield return Timing.WaitForSeconds(0.1f);
-                spiningSpeedInCoroutine -= 10;
-                playerComponentsControl.PlayerAnimationsController.
-                       SetSpeedAnimationByRunSpeed
-                       (SpeedWhileSpiningForAnimator());
+                if (isSpining) yield break;
+
+                if (tempFlag)
+                {
+                    playerController.Angle -=
+                        (maxSpinSpeed / spinLatency);
+                }
+                else
+                {
+                    playerController.Angle +=
+                        (maxSpinSpeed / spinLatency);
+                }
+                yield return Timing.WaitForSeconds(updateFrequency);
             }
-            isRotating = false;
-        }
-
-        /// <summary>
-        /// Установить скорость анимации при вращении оружием
-        /// </summary>
-        /// <param name="isStick"></param>
-        /// <returns></returns>
-        private float SpeedWhileSpiningForAnimator(bool isStick)
-        {
-            if (isStick)
-                return Math.Abs(tempSpinSpeed/2) 
-                    + playerComponentsControl.PlayerWeapon.SpinSpeed * 0.01f/2;
-            else
-                return playerComponentsControl.PlayerWeapon.SpinSpeed * 0.01f / 2;
-        }
-
-        /// <summary>
-        /// Перегрузка метода для установления 
-        /// скорости анимации вращения оружием
-        /// </summary>
-        /// <returns></returns>
-        private float SpeedWhileSpiningForAnimator()
-		{ 
-            return Math.Abs(tempSpinSpeed / 2)
-                    + spiningSpeedInCoroutine * 0.01f / 2;
-        }
-
-        /// <summary>
-        /// Проиграть звук вращения
-        /// </summary>
-        private void PlaySpinSpeedAudio()
-        {
-            tempAngleForSound += tempAngle;
-            if (Mathf.Abs(tempAngleForSound) >= 180)
-            {
-                playerComponentsControl.PlayerSounder.PlaySpinAudio
-                    (tempAngle,false);
-                tempAngleForSound = 0;
-            }
+            playerController.Angle = 0;
+            playerController.AngleBeforeSpining();
+            IsRotating = false;
         }
 
         /// <summary>
@@ -218,93 +235,96 @@ namespace PlayerBehaviour
         /// </summary>
         private void CheckFightState()
         {
-            if (fightVector.magnitude != 0)
+            if (isMayToLongAttack)
             {
-                // Вращение влево, либо вправо
-                if (Math.Abs(fightVector.x) > Math.Abs(fightVector.z))
+                if (fightVector.magnitude != 0)
                 {
-                    isRotating = true;
-                    isSpining = true;
-                    tempAngle = playerComponentsControl.PlayerWeapon
-                        .SpinSpeed * fightVector.x;
-                    playerComponentsControl.PlayerController.Angle 
-                        += tempAngle;
-                    PlaySpinSpeedAudio();
-                    tempSpinSpeed = fightVector.x;
-                    playerComponentsControl.PlayerAnimationsController.
-                        SetSpeedAnimationByRunSpeed
-                        (SpeedWhileSpiningForAnimator(true));
-                }
-                else if (isRotating)
-                {
-                    playerComponentsControl.PlayerController.Angle 
-                        += playerComponentsControl.PlayerWeapon.SpinSpeed * 0.1f;
-                    playerComponentsControl.PlayerAnimationsController.
-                        SetSpeedAnimationByRunSpeed(SpeedWhileSpiningForAnimator(false));
-                }
-                // Рывок или защита
-                else
-                {
-                    // Рывок
-                    if (fightVector.z > 0.25f)
+                    // Вращение влево, либо вправо
+                    if (Math.Abs(fightVector.x) > 0.5f)
                     {
-                        if (!isFighting && isMayToLongAttack)
+                        // но в том случае, если мы не в блоке
+                        if (!IsDefensing)
                         {
-                            CoroutineForStraightAttack();
+                            IsRotating = true;
+                            IsSpining = true;
+
+                            if (fightVector.x >= 0.5f)
+                            {
+                                IsNormal = true;
+                            }
+                            else if (fightVector.x <= -0.5f)
+                            {
+                                IsNormal = false;
+                            }
+
+                            BeforeSendAngleToPlayer();
                         }
                     }
-                    // Защита
-                    else if (fightVector.z < -0.25f)
+                    // Рывок или защита
+                    else
                     {
-                        // включаем защиту
-                        if (!isDefensing)
-                            playerComponentsControl.PlayerAnimationsController.
-                                HighSpeedAnimation();
+                        // Рывок
+                        if (fightVector.z > 0.9f)
+                        {
+                            if (!isFighting && isMayToLongAttack && !isSpining && !isRotating)
+                            {
+                                Timing.RunCoroutine(CoroutineForStraightAttack());
+                            }
+                        }
+                        // Защита
+                        else if (fightVector.z < -0.9f)
+                        {
+                            if (!isFighting && !isRotating)
+                            {
+                                // включаем защиту
+                                if (!IsDefensing)
+                                    playerAnimationsController.HighSpeedAnimation();
 
-                        playerComponentsControl.PlayerAnimationsController
-                            .SetState(2, true);
-                        isRotating = false;
-                        isDefensing = true;
-                        isFighting = true;
-                        playerComponentsControl.PlayerCameraSmooth.CameraZoom();
+                                playerAnimationsController.HighSpeedAnimation();
+                                playerAnimationsController.SetState(2, true);
+                                IsDefensing = true;
+                                IsFighting = true;
+                                playerComponentsControl.PlayerCameraSmooth.CameraZoom();
+                            }
+                        }
                     }
                 }
-            }
-            else if (isSpining)
-            {
-                playerComponentsControl.PlayerAnimationsController
-                    .HighSpeedAnimation();
-                isSpining = false;
-                Timing.RunCoroutine(CoroutineSlowMotionFighting(fightVector.x));
-            }
-            else
-            {
-                if (isDefensing)
+                else if (isSpining)
                 {
-                    playerComponentsControl.PlayerAnimationsController.
-                        HighSpeedAnimation();
-                    playerComponentsControl.PlayerAnimationsController
-                        .SetState(2, false);
-                    isDefensing = false;
-                    isFighting = false;
+                    playerAnimationsController.HighSpeedAnimation();
+                    IsSpining = false;
+                    Timing.RunCoroutine(CoroutineSlowMotionFighting());
                 }
-                isMayToLongAttack = true;
-                playerComponentsControl.
-                    PlayerCameraSmooth.CheckVectorForCamera();
+                else
+                {
+                    if (isDefensing)
+                    {
+                        playerAnimationsController.HighSpeedAnimation();
+                        playerAnimationsController.SetState(2, false);
+                        IsDefensing = false;
+                        IsFighting = false;
+                    }
+                    playerComponentsControl.
+                        PlayerCameraSmooth.CheckVectorForCamera();
+                }
             }
         }
 
         /// <summary>
-        /// Корутина для атакующего рывка
+        /// Корутина на атакующий рывок
         /// </summary>
         /// <returns></returns>
-        private void CoroutineForStraightAttack()
+        private IEnumerator<float> CoroutineForStraightAttack()
         {
             isMayToLongAttack = false;
             spiningSpeedInCoroutine = 0;
             IsRotating = false;
-            isFighting = true;
-            playerComponentsControl.PlayerController.StraightMovingPlayAnimation();
+            IsFighting = true;
+            playerComponentsControl.PlayerController.LongAttackAnimation();
+            yield return Timing.WaitForSeconds(0.5f);
+            playerComponentsControl.PlayerController.StraightMoving();
+            yield return Timing.WaitForSeconds(0.75f);
+            playerComponentsControl.PlayerController.StopLongAttack();
         }
     }
 }

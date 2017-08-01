@@ -330,35 +330,82 @@ namespace EnemyBehaviour
             return dmg;
         }
 
+        public float GetDamageWithResistanceWithoutEffect(float dmg,IWeapon weapon)
+        {
+            switch (weapon.AttackType)
+            {
+                // ЭЛЕКТРИЧЕСТВО
+                case DamageType.Electric:
+                    return dmg * (1 - electricResistance); ;
+
+                // ОГОНЬ
+                case DamageType.Fire:
+                    return dmg * (1 - fireResistance); ;
+
+                // ЛЁД
+                case DamageType.Frozen:
+                    return dmg * (1 - frostResistance);
+
+                // ФИЗИКА
+                case DamageType.Powerful:
+                    return dmg * (1 - physicResistance);
+
+                default:
+                    return dmg;
+            }
+        }
+
         #region Методы для получения разного вида урона
         /// <summary>
         /// Получить урон в рукопашном бою
         /// </summary>
         /// <param name="dmg"></param>
         public virtual bool GetDamage(float dmg, float gemPower
-            , IWeapon weapon)
+            , IWeapon weapon,bool isSuperAttack)
         {
             if (isMayGetDamage)
             {
-                enemyAbstract.AbstractObjectSounder.PlayGetDamageAudio();
-                Timing.RunCoroutine(CoroutineForGetDamage());
-
-                /* Если это электрический удар в рукопашную - отодвигаем противника.
-                 Молния не должна иметь право отодвигать врага. */
-                if (weapon.AttackType == DamageType.Electric)
-                    enemyAbstract.Physicffect.EventEffectWithoutDefenceBonus(weapon);
-
-                dmg = GetDamageWithResistance(dmg, gemPower, weapon);
-                //Debug.Log("Ближняя атака");
-                if (HealthValue <= 0) return false;
-                HealthValue -=
-                    LibraryStaticFunctions.GetRangeValue(dmg, 0.1f);
-                if (HealthValue <= 0)
+                if (isSuperAttack)
                 {
-                    enemyAbstract.ScoreAddingEffect.EventEffect(weapon);
+                    enemyAbstract.AbstractObjectSounder.PlayGetDamageAudio();
+                    Timing.RunCoroutine(CoroutineForGetDamage());
+
+                    enemyAbstract.Physicffect.EventEffectRageAttack(weapon);
+
+                    dmg = GetDamageWithResistanceWithoutEffect(dmg,weapon);
+
+                    if (HealthValue <= 0) return false;
+                    HealthValue -=
+                        LibraryStaticFunctions.GetRangeValue(dmg, 0.1f);
+                    if (HealthValue <= 0)
+                    {
+                        enemyAbstract.ScoreAddingEffect.EventEffect(weapon);
+                    }
+                    weapon.WhileTime();
+                    return true;
                 }
-                weapon.WhileTime();
-                return true;
+                else if (weapon.SpinSpeed / weapon.OriginalSpinSpeed >= 0.1f)
+                {
+                    enemyAbstract.AbstractObjectSounder.PlayGetDamageAudio();
+                    Timing.RunCoroutine(CoroutineForGetDamage());
+
+                    /* Если это электрический удар в рукопашную - отодвигаем противника.
+                     Молния не должна иметь право отодвигать врага. */
+                    if (weapon.AttackType == DamageType.Electric)
+                        enemyAbstract.Physicffect.EventEffectWithoutDefenceBonus(weapon);
+
+                    dmg = GetDamageWithResistance(dmg, gemPower, weapon);
+                    //Debug.Log("Ближняя атака");
+                    if (HealthValue <= 0) return false;
+                    HealthValue -=
+                        LibraryStaticFunctions.GetRangeValue(dmg, 0.1f);
+                    if (HealthValue <= 0)
+                    {
+                        enemyAbstract.ScoreAddingEffect.EventEffect(weapon);
+                    }
+                    weapon.WhileTime();
+                    return true;
+                }
             }
             return false;
         }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using PlayerBehaviour;
+using VotanUI;
 
 namespace CraftSystem
 {
@@ -56,6 +57,7 @@ namespace CraftSystem
 
         public void SetNumberItem()
         {
+            MenuSoundManager.PlaySoundStatic(1);
             switch (armoryClass)
             {
                 case ArmoryClass.Cuirass:

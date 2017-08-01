@@ -184,7 +184,7 @@ namespace VotanInterfaces
         /// <param name="dmg"></param>
         /// <param name="dmgType"></param>
         /// <param name="weapon"></param>
-        bool GetDamage(float dmg, float gemPower, IWeapon weapon);
+        bool GetDamage(float dmg, float gemPower, IWeapon weapon,bool isSuperAttack);
 
         /// <summary>
         /// Получить урон в результате молнии

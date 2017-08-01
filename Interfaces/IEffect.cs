@@ -66,10 +66,15 @@ namespace VotanInterfaces
         void EventEffect(IWeapon weapon);
 
         /// <summary>
-        /// Земляной эффект на исключительное отталкивание врага 
+        /// Земляной эффект на исключительное отталкивание врага.
         /// </summary>
         /// <param name="weapon"></param>
         void EventEffectWithoutDefenceBonus(IWeapon weapon);
+
+        /// <summary>
+        /// Земляной эффект на простой удар ярости (атакующий рывок)
+        /// </summary>
+        void EventEffectRageAttack(IWeapon weapon);
     }
 
     /// <summary>

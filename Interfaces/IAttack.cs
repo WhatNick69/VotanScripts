@@ -80,7 +80,7 @@ namespace VotanInterfaces
         /// </summary>
         /// <param name="damage"></param>
         /// <param name="dmgType"></param>
-        void AttackToEnemy(float damage, DamageType dmgType);
+        void AttackToEnemy(float damage, DamageType dmgType,bool isSuperAttack);
     }
 
     /// <summary>
