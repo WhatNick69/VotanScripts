@@ -10,17 +10,6 @@ namespace VotanLibraries
         Transform l1, l2, p1, p2, p3, p4;
         bool isIntersection;
 
-        // Update is called once per frame
-        void Update()
-        {
-            Drawer();
-            if (LibraryPhysics.BushInLine(l1.position, l2.position, p1.position, p2.position)
-                && LibraryPhysics.BushInLine(l1.position, l2.position, p3.position, p4.position))
-                isIntersection = true;
-            else
-                isIntersection = false;
-        }
-
         void Drawer()
         {
             if (isIntersection)

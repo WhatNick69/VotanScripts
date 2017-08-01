@@ -1,5 +1,4 @@
-﻿using System;
-using PlayerBehaviour;
+﻿using PlayerBehaviour;
 using UnityEngine;
 using VotanInterfaces;
 using AbstractBehaviour;
@@ -72,12 +71,16 @@ namespace GameBehaviour
             }
         }
 
+        /// <summary>
+        /// Оттолкнуть врага атакующим рывком
+        /// </summary>
+        /// <param name="weapon"></param>
         public void EventEffectRageAttack(IWeapon weapon)
         {
             isSuperAttack = true;
             weapon.GetPlayer.PlayerCameraSmooth.
                       DoNoize(1);
-
+            this.weapon = weapon;
             playerObjectTransform = weapon.GetPlayer.PlayerWeapon.transform;
             if (enemy.EnemyConditions.IsAlive)
             {

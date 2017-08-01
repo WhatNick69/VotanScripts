@@ -140,7 +140,8 @@ namespace VotanLibraries
         /// <returns></returns>
         public static float StrenghtOfNockback(IWeapon weapon,bool isSuperAttack=false)
         {
-            return isSuperAttack ? 4 : 2 +  (weapon.GemPower / 100);
+            Debug.Log(3 + (weapon.Weight / 100));
+            return isSuperAttack ? 3 + (weapon.Weight / 100) : 2 +  (weapon.GemPower / 100);
         }
 
         /// <summary>
