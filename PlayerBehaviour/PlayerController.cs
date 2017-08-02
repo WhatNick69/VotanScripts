@@ -26,8 +26,10 @@ namespace PlayerBehaviour
         private float rotateSpeed;
         [SerializeField, Tooltip("Величина задержки движения"), Range(1, 3)]
         private float iddleSize;
-        [SerializeField, Tooltip("Частота обновления"), Range(0.001f, 0.1f)]
+        [SerializeField, Tooltip("Частота обновления"), Range(0.01f, 0.1f)]
         private float updateFrequency;
+        [SerializeField, Tooltip("Буст на вращение"), Range(5, 30)]
+        private float rotateBooster;
         [SerializeField, Tooltip("Хранитель компонентов")]
         private PlayerComponentsControl playerComponentsControl;
 
@@ -213,7 +215,7 @@ namespace PlayerBehaviour
         /// </summary>
         private void InitialisationOfCoroutines()
         {
-            //Timing.RunCoroutine(CoroutineForRotatePlayerWeapon());
+            Timing.RunCoroutine(CoroutineForRotatePlayerWeapon());
             Timing.RunCoroutine(CoroutineForFixedUpdatePositionAndRotation());
         }
 
@@ -310,14 +312,7 @@ namespace PlayerBehaviour
                     playerAnimationsController.SetState(0, false);
                 }
 
-                if (playerFight.IsRotating)
-                {
-                    playerComponentsControl.PlayerModel.Rotate(Vector3.up, angle*0.5f);
-
-                    playerAnimationsController.SetState(1, true);
-                    playerAnimationsController.SetState(0, false);
-                }
-                else
+                if (!playerFight.IsRotating)
                 {
                     playerComponentsControl.PlayerModel.localRotation
                         = Quaternion.Slerp(playerComponentsControl.PlayerModel
@@ -445,7 +440,8 @@ namespace PlayerBehaviour
             {
                 if (playerFight.IsRotating)
                 {
-                    playerComponentsControl.PlayerModel.Rotate(Vector3.up,angle);
+                    playerComponentsControl.PlayerModel.Rotate
+                        (Vector3.up,angle*Time.deltaTime*rotateBooster);
 
                     playerAnimationsController.SetState(1, true);
                     playerAnimationsController.SetState(0, false);

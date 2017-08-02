@@ -27,6 +27,7 @@ namespace PlayerBehaviour
         private AbstractEnemy[] listEnemy;
 
         private PlayerWeapon playerWeapon;
+        private PlayerFight playerFight;
         private int isCuttingWeapon;
 
         /// <summary>
@@ -36,6 +37,7 @@ namespace PlayerBehaviour
         {        
             transformOfPlayer = playerComponentsControl.PlayerObject;
             playerWeapon = playerComponentsControl.PlayerWeapon;
+            playerFight = playerComponentsControl.PlayerFight;
             WeaponTypeToBool();
         }
 
@@ -79,16 +81,16 @@ namespace PlayerBehaviour
             while (playerComponentsControl.PlayerConditions.IsAlive)
             {
                 yield return Timing.WaitForSeconds(updateAttackFrequency);
-                if (!playerComponentsControl.PlayerFight.IsDefensing)
+                if (!playerFight.IsDefensing)
                 {
-                    if (playerComponentsControl.PlayerFight.IsRotating)
+                    if (playerFight.IsRotating)
                     {
                         AttackToEnemy(LibraryStaticFunctions.AttackToEnemyDamage
                             (playerWeapon.Damage,playerWeapon.SpinSpeed,
                             playerWeapon.OriginalSpinSpeed),
                             playerWeapon.AttackType,false);
                     }
-                    else if (playerComponentsControl.PlayerFight.IsFighting)
+                    else if (playerFight.IsFighting)
                     {
                         AttackToEnemy(LibraryStaticFunctions.AttackToEnemyDamageLongAttack
                            (playerWeapon),playerWeapon.AttackType,true);

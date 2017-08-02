@@ -54,7 +54,8 @@ namespace PlayerBehaviour
         public override void SetSpeedAnimationByRunSpeed(float value)
         {
             if (playerFight.IsMayToLongAttack 
-                && playerConditions.IsAlive)
+                && playerConditions.IsAlive
+                    && !playerFight.IsDefensing)
             {
                 animatorOfObject.speed = value;
             }
@@ -66,8 +67,8 @@ namespace PlayerBehaviour
         public override void LowSpeedAnimation()
         {
             if (animatorOfObject.speed == 0.2f) return;
-            else if ((!playerFight.IsFighting 
-                || playerFight.IsDefensing) 
+            else if (!playerFight.IsFighting 
+                && !playerFight.IsDefensing
                 && !playerFight.IsSpining
                 && playerConditions.IsAlive 
                 && playerFight.IsMayToLongAttack)

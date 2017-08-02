@@ -378,9 +378,8 @@ namespace EnemyBehaviour
                     HealthValue -=
                         LibraryStaticFunctions.GetRangeValue(dmg, 0.1f);
                     if (HealthValue <= 0)
-                    {
                         enemyAbstract.ScoreAddingEffect.EventEffect(weapon);
-                    }
+
                     weapon.WhileTime();
                     return true;
                 }
@@ -395,14 +394,13 @@ namespace EnemyBehaviour
                         enemyAbstract.Physicffect.EventEffectWithoutDefenceBonus(weapon);
 
                     dmg = GetDamageWithResistance(dmg, gemPower, weapon);
-                    //Debug.Log("Ближняя атака");
+
                     if (HealthValue <= 0) return false;
                     HealthValue -=
                         LibraryStaticFunctions.GetRangeValue(dmg, 0.1f);
                     if (HealthValue <= 0)
-                    {
                         enemyAbstract.ScoreAddingEffect.EventEffect(weapon);
-                    }
+
                     weapon.WhileTime();
                     return true;
                 }

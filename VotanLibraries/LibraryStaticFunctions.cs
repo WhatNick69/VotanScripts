@@ -140,7 +140,6 @@ namespace VotanLibraries
         /// <returns></returns>
         public static float StrenghtOfNockback(IWeapon weapon,bool isSuperAttack=false)
         {
-            Debug.Log(3 + (weapon.Weight / 100));
             return isSuperAttack ? 3 + (weapon.Weight / 100) : 2 +  (weapon.GemPower / 100);
         }
 
@@ -228,8 +227,7 @@ namespace VotanLibraries
         /// <returns></returns>
         public static float TotalDamage(float damageBase, float totalWeight)
         {
-
-            return damageBase * (1+(totalWeight / 10));
+            return (float)Math.Round(damageBase * (1+(totalWeight / 10)),1);
         }
 
         /// <summary>
@@ -257,7 +255,7 @@ namespace VotanLibraries
         /// <returns></returns>
         public static float AttackToEnemyDamageLongAttack(IWeapon weapon)
         {
-            return weapon.Damage * (0.5f+ weapon.Weight / 200);
+            return weapon.Damage * (weapon.Weight / 200);
         }
 
         /// <summary>
@@ -280,7 +278,8 @@ namespace VotanLibraries
         /// <returns></returns>
         public static bool MayableToBeElectricity(IWeapon weapon)
         {
-            return weapon.SpinSpeed / weapon.OriginalSpinSpeed >= 0.25f ? true : false;
+            return weapon.SpinSpeed / weapon.OriginalSpinSpeed >= 0.25f 
+                ? true : false;
         }
 
         /// <summary>

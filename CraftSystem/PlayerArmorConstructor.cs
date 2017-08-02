@@ -13,11 +13,11 @@ namespace CraftSystem
         /// </summary>
         private void Awake()
         {
-            Instantiate(GameObject.Find("GetArmorPrefabs").
+            Instantiate(GameObject.Find("GetPrefabs").
                 GetComponent<ArmorPrefabs>().Shield);
-            Instantiate(GameObject.Find("GetArmorPrefabs").
+            Instantiate(GameObject.Find("GetPrefabs").
                 GetComponent<ArmorPrefabs>().Cuirass);
-            Instantiate(GameObject.Find("GetArmorPrefabs").
+            Instantiate(GameObject.Find("GetPrefabs").
                 GetComponent<ArmorPrefabs>().Helmet);
         }
     }

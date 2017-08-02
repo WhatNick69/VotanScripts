@@ -57,14 +57,22 @@ namespace CraftSystem
 		[SerializeField]
 		WeaponPrefabs WP;
 		WeaponCraft WC;
+		PlayerStats PStats;
 
-        ScrollRect scrollRectGripRepository;
+		ScrollRect scrollRectGripRepository;
         ScrollRect scrollRectGemRepository;
         ScrollRect scrollRectHeadRepository;
-        #endregion
 
-        #region Свойства
-        public void GripWindow()
+		float intemNumbGrip;
+		float intemNumbHead;
+		float intemNumbGem;
+		float normPosGrip;
+		float normPosHead;
+		float normPosGem;
+		#endregion
+
+		#region Свойства
+		public void GripWindow()
 		{
 			headWindow.SetActive(false);
 			gemWindow.SetActive(false);
@@ -92,17 +100,26 @@ namespace CraftSystem
 		{
             MenuSoundManager.PlaySoundStatic(1);
 			gemItemNumber = x;
+			PStats.GemPower = gemList[x].GemPower;
+			PStats.GemType = gemList[x].DamageTypeGem.ToString();
 		}
 		public void SetGripItemNumber(int x)
 		{
             MenuSoundManager.PlaySoundStatic(1);
             gripItemNumber = x;
+			PStats.GripWeight = gripList[x].GripWeight;
+			PStats.GripDefence = gripList[x].GripDefence;
+			PStats.GripBonusSpeed = gripList[x].BonusSpinSpeedFromGrip;
+
 		}
 
 		public void SetHeadItemNumber(int x)
 		{
             MenuSoundManager.PlaySoundStatic(1);
             headItemNumber = x;
+			PStats.HeadBonusSpeed = headList[x].BonusSpinSpeedFromHead;
+			PStats.HeadDamage = headList[x].DamageBase;
+			PStats.HeadWeight = headList[x].HeadWeight;
 		}
 
 		public GameObject GetGripPrafab()
@@ -119,25 +136,52 @@ namespace CraftSystem
         {
             return gem;
         }
-        #endregion
 
-        public void PlayArena()
+		private void ChekScroll()
+		{
+			if (normPosGrip != scrollRectGripRepository.horizontalNormalizedPosition ||
+				normPosHead != scrollRectHeadRepository.horizontalNormalizedPosition||
+				normPosGem != scrollRectGemRepository.horizontalNormalizedPosition)
+			{
+				if (gripItemNumber != Mathf.Round(scrollRectGripRepository.horizontalNormalizedPosition * (gripList.Count - 1))||
+					headItemNumber != Mathf.Round(scrollRectHeadRepository.horizontalNormalizedPosition * (headList.Count - 1))||
+					gemItemNumber != Mathf.Round(scrollRectGemRepository.horizontalNormalizedPosition * (gemList.Count - 1)))
+				{
+					intemNumbHead = Mathf.Round(scrollRectHeadRepository.horizontalNormalizedPosition * (headList.Count - 1));
+					intemNumbGrip = Mathf.Round(scrollRectGripRepository.horizontalNormalizedPosition * (gripList.Count - 1));
+					intemNumbGem = Mathf.Round(scrollRectGemRepository.horizontalNormalizedPosition * (gemList.Count - 1));
+
+					PStats.NewGripWeight = gripList[(int)intemNumbGrip].GripWeight;
+					PStats.NewGripBonusSpeed = gripList[(int)intemNumbGrip].BonusSpinSpeedFromGrip;
+					PStats.NewGripDefence = gripList[(int)intemNumbGrip].GripDefence;
+
+					PStats.NewHeadDamage = headList[(int)intemNumbHead].DamageBase;
+					PStats.NewHeadWeight = headList[(int)intemNumbHead].HeadWeight;
+					PStats.NewhHeadBonusSpeed = headList[(int)intemNumbHead].BonusSpinSpeedFromHead;
+
+					PStats.NewGemPower = gemList[(int)intemNumbGem].GemPower;
+					PStats.NewGemType = gemList[(int)intemNumbGem].DamageTypeGem.ToString();
+				}
+			}
+			normPosGrip = scrollRectGripRepository.horizontalNormalizedPosition;
+			normPosHead = scrollRectHeadRepository.horizontalNormalizedPosition;
+			normPosGem = scrollRectGemRepository.horizontalNormalizedPosition;
+		}
+		#endregion
+
+		public void PlayArena()
         {
             if (WP == null)
-                WP = GameObject.Find("GetWeaponPrefabs").GetComponent<WeaponPrefabs>();
+                WP = GameObject.Find("GetPrefabs").GetComponent<WeaponPrefabs>();
 
             WP.Grip = (GameObject)Resources.Load(gripPrefix + gripItemNumber + gripPostfix);
 			WP.Head = (GameObject)Resources.Load(headPrefix + headItemNumber + headPostfix);
 			WP.Gem = (GameObject)Resources.Load(gemPrefix + gemItemNumber + gemPostfix);
         }
 
-		public void LoadPrefab()
-		{
-
-		}
-
 		private void Awake() // ____________start__________
 		{
+			PStats = GetComponent<PlayerStats>();
 			WC = GetComponent<WeaponCraft>();
 			gripList = new List<Grip>();
 			headList = new List<Head>();
@@ -145,7 +189,12 @@ namespace CraftSystem
 
 			Timing.RunCoroutine(GripCorutine());
 			Timing.RunCoroutine(HeadCorutine());
-			Timing.RunCoroutine(GemCorutine());			
+			Timing.RunCoroutine(GemCorutine());
+		}
+
+		private void FixedUpdate()
+		{
+			ChekScroll();
 		}
 
 		private IEnumerator<float> GemCorutine()

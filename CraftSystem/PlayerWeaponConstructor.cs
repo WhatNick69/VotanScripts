@@ -89,6 +89,7 @@ namespace CraftSystem
             // получаем урон оружием
             weaponDamage = 
                 LibraryStaticFunctions.TotalDamage(headClass.DamageBase,weaponWeight);
+            Debug.Log(weaponDamage);
 
             // защита от ручки
             weaponDefence = gripClass.GripDefence;
@@ -105,9 +106,9 @@ namespace CraftSystem
         private void Awake()
 		{
 			plComponents = GameObject.FindWithTag("Player").GetComponent<PlayerComponentsControl>();
-			grip = Instantiate(GameObject.Find("GetWeaponPrefabs").GetComponent<WeaponPrefabs>().Grip);
-			head = Instantiate(GameObject.Find("GetWeaponPrefabs").GetComponent<WeaponPrefabs>().Head);
-			gem = Instantiate(GameObject.Find("GetWeaponPrefabs").GetComponent<WeaponPrefabs>().Gem);
+			grip = Instantiate(GameObject.Find("GetPrefabs").GetComponent<WeaponPrefabs>().Grip);
+			head = Instantiate(GameObject.Find("GetPrefabs").GetComponent<WeaponPrefabs>().Head);
+			gem = Instantiate(GameObject.Find("GetPrefabs").GetComponent<WeaponPrefabs>().Gem);
 
 			gripClass = grip.GetComponent<Grip>();
 			headClass = head.GetComponent<Head>();
