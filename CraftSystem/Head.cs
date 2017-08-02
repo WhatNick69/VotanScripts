@@ -13,12 +13,10 @@ namespace CraftSystem
         #region Переменные
         [SerializeField, Tooltip("Изображение лезвия")]
         private Sprite imageHead;
-        [SerializeField, Range(1, 75f),Tooltip("Вес головной части")]
-        private float headWeight;
         [SerializeField,Range(1,100f),Tooltip("Базовое значение урона оружием")]
         private float damageBase;
-        [SerializeField, Range(0, 25f), Tooltip("Бонус к скорости вращения за счет головной части")]
-        private float bonusSpinSpeedFromHead;
+        [SerializeField, Range(0,100f), Tooltip("Шанс критического урона")]
+        private float criticalChance;
 
         [SerializeField, Tooltip("Тип оружия")] 
         private WeaponType headType;
@@ -64,32 +62,6 @@ namespace CraftSystem
             }
         }
 
-        public float BonusSpinSpeedFromHead
-        {
-            get
-            {
-                return bonusSpinSpeedFromHead;
-            }
-
-            set
-            {
-                bonusSpinSpeedFromHead = value;
-            }
-        }
-
-        public float HeadWeight
-        {
-            get
-            {
-                return headWeight;
-            }
-
-            set
-            {
-                headWeight = value;
-            }
-        }
-
         public float DamageBase
         {
             get
@@ -123,6 +95,19 @@ namespace CraftSystem
 				return imageHead;
 			}
 		}
+
+        public float CriticalChance
+        {
+            get
+            {
+                return criticalChance;
+            }
+
+            set
+            {
+                criticalChance = value;
+            }
+        }
         #endregion
     }
 }

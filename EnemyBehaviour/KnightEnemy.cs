@@ -5,6 +5,7 @@ using VotanInterfaces;
 using MovementEffects;
 using System.Collections.Generic;
 using GameBehaviour;
+using VotanLibraries;
 
 namespace EnemyBehaviour
 {
@@ -38,16 +39,23 @@ namespace EnemyBehaviour
                 GetComponent<EnemyMove>();
             DownInterfaceRotater =
                 GetComponent<DownInterfaceRotater>();
+
             IceEffect =
-                transform.GetChild(1).GetChild(0).GetComponent<IIceEffect>();
+                LibraryStaticFunctions.DeepFind(transform, "IceStack")
+                .GetComponent<IIceEffect>();
             ElectricEffect =
-                transform.GetChild(1).GetChild(1).GetComponent<IElectricEffect>();
-            FireEffect =
-                transform.GetChild(1).GetChild(2).GetComponent<IFireEffect>();
+                LibraryStaticFunctions.DeepFind(transform, "ElectricStack")
+                .GetComponent<IElectricEffect>();
             Physicffect =
-                transform.GetChild(1).GetChild(3).GetComponent<IPhysicEffect>();
+                LibraryStaticFunctions.DeepFind(transform, "PhysicStack")
+                .GetComponent<IPhysicEffect>();
             ScoreAddingEffect =
-                transform.GetChild(1).GetChild(4).GetComponent<IScoreAddingEffect>();
+                LibraryStaticFunctions.DeepFind(transform, "ScoreStack")
+                .GetComponent<IScoreAddingEffect>();
+            FireEffect =
+                LibraryStaticFunctions.DeepFind(transform, "FireStack")
+                .GetComponent<IFireEffect>();
+
             gameObject.SetActive(false);
         }
 

@@ -23,7 +23,6 @@ namespace PlayerBehaviour
         private float updateAttackFrequency;
         private AbstractEnemy tempEnemy;
         private Transform transformOfPlayer;
-        [SerializeField]
         private AbstractEnemy[] listEnemy;
 
         private PlayerWeapon playerWeapon;
@@ -152,7 +151,7 @@ namespace PlayerBehaviour
                         listEnemy[i].ReturnPosition(1),
 							PlayerFinishGunPoint.position, PlayerStartGunPoint.position)) && 
 							Mathf.Abs(playerPoint.position.y 
-                            - listEnemy[i].ReturnPosition(0).y) < 1.6f);
+                            - listEnemy[i].ReturnPosition(0).y) < 2f);
 		}
 
         /// <summary>

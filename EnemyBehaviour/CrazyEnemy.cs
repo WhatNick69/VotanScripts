@@ -57,20 +57,26 @@ namespace EnemyBehaviour
                 GetComponent<EnemyConditions>();
             EnemyMove =
                 GetComponent<EnemyMove>();
-            IceEffect =
-                transform.GetChild(1).GetChild(0).GetComponent<IIceEffect>();
             DownInterfaceRotater =
                 GetComponent<DownInterfaceRotater>();
-            ElectricEffect =
-                transform.GetChild(1).GetChild(1).GetComponent<IElectricEffect>();
-            Physicffect =
-                transform.GetChild(1).GetChild(2).GetComponent<IPhysicEffect>();
-            ScoreAddingEffect =
-                transform.GetChild(1).GetChild(3).GetComponent<IScoreAddingEffect>();
-            FireEffect =
-                transform.GetChild(1).GetChild(4).GetChild(0).GetComponent<IFireEffect>();
-            frequencyOfFightRotating = 0.025f;
 
+            IceEffect =
+                LibraryStaticFunctions.DeepFind(transform, "IceStack")
+                .GetComponent<IIceEffect>();
+            ElectricEffect =
+                LibraryStaticFunctions.DeepFind(transform,"ElectricStack")
+                .GetComponent<IElectricEffect>();
+            Physicffect =
+                LibraryStaticFunctions.DeepFind(transform, "PhysicStack")
+                .GetComponent<IPhysicEffect>();
+            ScoreAddingEffect =
+                LibraryStaticFunctions.DeepFind(transform, "ScoreStack")
+                .GetComponent<IScoreAddingEffect>();
+            FireEffect =
+                LibraryStaticFunctions.DeepFind(transform, "FireStack")
+                .GetComponent<IFireEffect>();
+
+            frequencyOfFightRotating = 0.025f;
             gameObject.SetActive(false);
         }
 

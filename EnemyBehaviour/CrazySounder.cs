@@ -1,9 +1,6 @@
-﻿using System;
-using AbstractBehaviour;
+﻿using AbstractBehaviour;
 using UnityEngine;
 using VotanLibraries;
-using System.Collections.Generic;
-using MovementEffects;
 
 namespace EnemyBehaviour
 {

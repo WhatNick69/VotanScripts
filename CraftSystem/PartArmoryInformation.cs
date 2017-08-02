@@ -106,7 +106,6 @@ namespace CraftSystem
         {
             playerComponentsControl = GameObject.FindWithTag("Player").
                 GetComponent<PlayerComponentsControl>();
-            playerComponentsControl.PlayerArmory.HealthValue += armoryValue;
             InitToPlayerArmory();
             Destroy(gameObject, 3);
         }

@@ -13,6 +13,25 @@ namespace VotanLibraries
         public static System.Random rnd = new System.Random();
 
         /// <summary>
+        /// Глубокий поиск объекта во всей иерархии
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static Transform DeepFind(Transform target, string name)
+        {
+            if (target.name.Equals(name)) return target;
+
+            for (int i = 0; i < target.childCount; ++i)
+            {
+                var result = DeepFind(target.GetChild(i), name);
+
+                if (result != null) return result;
+            }
+            return null;
+        }
+
+        /// <summary>
         /// В указанном диапазоне возвращает значение.
         /// 
         /// Текущая реализация: если dmg=10, а range=0.1, то
@@ -168,7 +187,7 @@ namespace VotanLibraries
         }
 
         /// <summary>
-        /// Получаем вес двух предметов. 
+        /// Получаем вес всех элеметов брони
         /// Текущая реализация: сложение.
         /// 
         /// Диапазон значений: 0 - 100 
@@ -176,9 +195,9 @@ namespace VotanLibraries
         /// <param name="weightA"></param>
         /// <param name="weightB"></param>
         /// <returns></returns>
-        public static float TotalWeight(float weightA, float weightB)
+        public static float TotalWeight(float weightA, float weightB,float weightC)
         {
-            return weightA + weightB;
+            return weightA + weightB + weightC;
         }
 
         /// <summary>
@@ -203,7 +222,7 @@ namespace VotanLibraries
 
         /// <summary>
         /// Получаем общую скорость вращения оружием.
-        /// Текущая реализация: 20 + (40-(WEIGHT)/2.5) + (A+B)/2.5.
+        /// Текущая реализация: 20 + (40-(WEIGHT)/2.5) + GRIP/2.5.
         /// 
         /// Диапазон значений: 20 - 100 
         /// </summary>
@@ -211,9 +230,9 @@ namespace VotanLibraries
         /// <param name="bonusB"></param>
         /// <param name="totalWeight"></param>
         /// <returns></returns>
-        public static float TotalSpinSpeed(float bonusA, float bonusB, float totalWeight)
+        public static float TotalSpinSpeed(float bonusGrip,float totalWeight)
         {
-            return 20 + (40 - (totalWeight) / 2.5f) + (bonusA + bonusB) / 2.5f;
+            return 20 + (40 - (totalWeight) / 2.5f) + bonusGrip / 2.5f;
         }
 
         /// <summary>

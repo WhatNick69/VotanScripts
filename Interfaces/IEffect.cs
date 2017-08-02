@@ -22,7 +22,7 @@ namespace VotanInterfaces
         /// Зажечь ледяной эффект
         /// </summary>
         /// <param name="time"></param>
-        void EventEffect(float damage,float time, IWeapon weapon);
+        float EventEffect(float damage,IWeapon weapon);
     }
 
     /// <summary>

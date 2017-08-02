@@ -183,6 +183,7 @@ namespace VotanGameplay
         {
             switch (StaticStorageWithEnemies.ListEnemy[number].EnemyType)
             {
+                // ОБЫЧНЫЙ РЫЦАРЬ
                 case EnemyType.Knight:
                     StaticStorageWithEnemies.ListEnemy[number].GetComponent<IEnemyBehaviour>().
                         EnemyMove.PreDistanceForAttack = 0.5f;   // Предупредительная дистанция для атаки
@@ -192,7 +193,7 @@ namespace VotanGameplay
                         .GetComponent<IEnemyBehaviour>().EnemyAttack.DmgEnemy = 20; // Урон моба
                     StaticStorageWithEnemies.ListEnemy[number]
                         .GetComponent<IEnemyBehaviour>().EnemyConditions.SetHealthParameter
-                        (LibraryStaticFunctions.GetRangeValue(100, 0.1f)); // Установить жизни мобу
+                        (LibraryStaticFunctions.GetRangeValue(200, 0.1f)); // Установить жизни мобу
 
                     StaticStorageWithEnemies.ListEnemy[number]
                .        GetComponent<IEnemyBehaviour>().EnemyConditions.PhysicResistance = 
@@ -207,6 +208,8 @@ namespace VotanGameplay
                     StaticStorageWithEnemies.ListEnemy[number].
                         GetComponent<IEnemyBehaviour>().ScoreAddingEffect.ScoreBonus = 150; // задаем количество очков
                     break;
+
+                // БЕШЕНЫЙ РЫЦАРЬ
                 case EnemyType.Crazy:
                     StaticStorageWithEnemies.ListEnemy[number].GetComponent<CrazyEnemy>().
                         FightRotatingSpeed = 800; // Скорость вращения поехавшего
@@ -218,7 +221,7 @@ namespace VotanGameplay
                         .GetComponent<IEnemyBehaviour>().EnemyAttack.DmgEnemy = 10; // Урон моба
                     StaticStorageWithEnemies.ListEnemy[number]
                         .GetComponent<IEnemyBehaviour>().EnemyConditions.SetHealthParameter
-                        (LibraryStaticFunctions.GetRangeValue(150, 0.1f)); // Установить жизни мобу
+                        (LibraryStaticFunctions.GetRangeValue(300, 0.1f)); // Установить жизни мобу
 
                     StaticStorageWithEnemies.ListEnemy[number]
                         .GetComponent<IEnemyBehaviour>().EnemyConditions.PhysicResistance =
@@ -235,6 +238,20 @@ namespace VotanGameplay
 
                     StaticStorageWithEnemies.ListEnemy[number].
                         GetComponent<IEnemyBehaviour>().ScoreAddingEffect.ScoreBonus = 300; // задаем количество очков
+                    break;
+
+                // ПЕРВЫЙ БОСС
+                case EnemyType.FirstBoss:
+                    StaticStorageWithEnemies.ListEnemy[number]
+                        .GetComponent<IEnemyBehaviour>().EnemyConditions.PhysicResistance = 0.3f;
+                    StaticStorageWithEnemies.ListEnemy[number]
+                        .GetComponent<IEnemyBehaviour>().EnemyConditions.FireResistance = 0.3f;
+                    StaticStorageWithEnemies.ListEnemy[number]
+                        .GetComponent<IEnemyBehaviour>().EnemyConditions.ElectricResistance = 0.3f;
+                    StaticStorageWithEnemies.ListEnemy[number].
+                        GetComponent<IEnemyBehaviour>().EnemyConditions.FrostResistance = 0.3f;
+                    StaticStorageWithEnemies.ListEnemy[number].
+                        GetComponent<IEnemyBehaviour>().ScoreAddingEffect.ScoreBonus = 5000;
                     break;
             }
             StaticStorageWithEnemies.ListEnemy[number]

@@ -107,9 +107,7 @@ namespace CraftSystem
 		{
             MenuSoundManager.PlaySoundStatic(1);
             gripItemNumber = x;
-			PStats.GripWeight = gripList[x].GripWeight;
 			PStats.GripDefence = gripList[x].GripDefence;
-			PStats.GripBonusSpeed = gripList[x].BonusSpinSpeedFromGrip;
 
 		}
 
@@ -117,9 +115,7 @@ namespace CraftSystem
 		{
             MenuSoundManager.PlaySoundStatic(1);
             headItemNumber = x;
-			PStats.HeadBonusSpeed = headList[x].BonusSpinSpeedFromHead;
 			PStats.HeadDamage = headList[x].DamageBase;
-			PStats.HeadWeight = headList[x].HeadWeight;
 		}
 
 		public GameObject GetGripPrafab()
@@ -151,13 +147,9 @@ namespace CraftSystem
 					intemNumbGrip = Mathf.Round(scrollRectGripRepository.horizontalNormalizedPosition * (gripList.Count - 1));
 					intemNumbGem = Mathf.Round(scrollRectGemRepository.horizontalNormalizedPosition * (gemList.Count - 1));
 
-					PStats.NewGripWeight = gripList[(int)intemNumbGrip].GripWeight;
-					PStats.NewGripBonusSpeed = gripList[(int)intemNumbGrip].BonusSpinSpeedFromGrip;
 					PStats.NewGripDefence = gripList[(int)intemNumbGrip].GripDefence;
 
 					PStats.NewHeadDamage = headList[(int)intemNumbHead].DamageBase;
-					PStats.NewHeadWeight = headList[(int)intemNumbHead].HeadWeight;
-					PStats.NewhHeadBonusSpeed = headList[(int)intemNumbHead].BonusSpinSpeedFromHead;
 
 					PStats.NewGemPower = gemList[(int)intemNumbGem].GemPower;
 					PStats.NewGemType = gemList[(int)intemNumbGem].DamageTypeGem.ToString();
@@ -239,8 +231,6 @@ namespace CraftSystem
 					button.SetNumber(i);
 					button.SetName(headList[i].HeadName);
 					button.SetDamage(headList[i].DamageBase.ToString());
-					button.SetWeight(headList[i].HeadWeight.ToString());
-					button.SetSpinBous(headList[i].BonusSpinSpeedFromHead.ToString());
 					button.SetLogo (headList[i].ItemImage);
 					item.transform.SetParent(headRepository.transform, false);
 
@@ -266,7 +256,6 @@ namespace CraftSystem
 					button.SetWeaponCraft(WC);  // ниже задаем параметры, которые увидит игрок
 					button.SetNumber(i);
 					button.SetName(gripList[i].GripName);
-					button.SetWeight(gripList[i].GripWeight.ToString());
 					button.SetSpinBous(gripList[i].BonusSpinSpeedFromGrip.ToString());
 					button.SetDefence(gripList[i].GripDefence.ToString());
 					button.SetLogo (gripList[i].ItemImage);

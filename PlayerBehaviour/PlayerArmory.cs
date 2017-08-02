@@ -15,12 +15,12 @@ namespace PlayerBehaviour
         : AbstractObjectConditions
     {
         #region Переменные
-        [SerializeField,Tooltip("Шлем")]
+        //[SerializeField,Tooltip("Шлем")]
         private PartArmoryManager helmet;
-        [SerializeField, Tooltip("Части кирасы. Первый элемент - главный")]
-        private List<PartArmoryManager> kirasaParts;
-        [SerializeField, Tooltip("Части щита. Первый элемент - главный")]
-        private List<PartArmoryManager> shieldParts;
+        //[SerializeField, Tooltip("Части кирасы. Первый элемент - главный")]
+        private List<PartArmoryManager> kirasaParts = new List<PartArmoryManager>();
+        //[SerializeField, Tooltip("Части щита. Первый элемент - главный")]
+        private List<PartArmoryManager> shieldParts = new List<PartArmoryManager>();
 
         [SerializeField, Tooltip("Позиции")]
         private List<Transform> armoryPosition;
@@ -31,8 +31,7 @@ namespace PlayerBehaviour
         private float kirasaPartArmory;
         private float shieldPartArmory;
 
-        public float tempArmory;
-
+        private float tempArmory;
         private PlayerComponentsControl playerComponentsControl;
         #endregion
 

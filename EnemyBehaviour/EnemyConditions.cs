@@ -33,15 +33,20 @@ namespace EnemyBehaviour
         private float physicResistance;
         [SerializeField, Tooltip("Тень")]
         private Transform blobShadow;
+        [SerializeField, Tooltip("Размер для нормальной тени"), Range(1.25f, 3)]
+        private float sizeForNormalShadow;
+        [SerializeField, Tooltip("Размер для малой тени"), Range(0.6f, 2)]
+        private float sizeForLittleShadow;
+
         [SerializeField, Tooltip("Электрическое управление тенью")]
         private ElectricityColorInterfaceChanger electricityColorInterfaceChanger;
 
         private Transform cameraTransform;
 
         private IAIMoving enemyMove;
-        private IEnemyBehaviour enemyAbstract;
+        protected IEnemyBehaviour enemyAbstract;
 
-        private bool isMayGetDamage = true;
+        protected bool isMayGetDamage = true;
         private bool isFrozen; // заморожен ли
         private bool isShocked; // шокирован электричеством ли
         private bool isBurned; // жарится ли
@@ -49,7 +54,6 @@ namespace EnemyBehaviour
         private Vector3 normalShadowSize;
         private Vector3 littleShadowSize;
         private bool isDownInterfaceTransformHasBeenChanged;
-
         #endregion
 
         #region Свойства
@@ -178,8 +182,10 @@ namespace EnemyBehaviour
         {
             enemyAbstract = GetComponent<IEnemyBehaviour>();
             enemyMove = enemyAbstract.EnemyMove;
-            normalShadowSize = new Vector3(1.25f, 1.25f, 1.25f);
-            littleShadowSize = new Vector3(0.6f, 0.6f, 0.6f);
+            normalShadowSize = new Vector3(sizeForNormalShadow, 
+                sizeForNormalShadow, sizeForNormalShadow);
+            littleShadowSize = new Vector3(sizeForLittleShadow,
+                sizeForLittleShadow, sizeForLittleShadow);
 
             electricityColorInterfaceChanger.SpriteRendererObject = 
                 blobShadow.GetComponent<SpriteRenderer>();       
@@ -514,8 +520,7 @@ namespace EnemyBehaviour
             enemyAbstract.EnemyAnimationsController.SetState(2, true);
             enemyMove.SetNewSpeedOfNavMeshAgent(0, 0);
             enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0);
-            float time = LibraryStaticFunctions.TimeToFreezy(weapon.GemPower);
-            enemyAbstract.IceEffect.EventEffect(damage,time, weapon);
+            float time = enemyAbstract.IceEffect.EventEffect(damage, weapon);
             enemyAbstract.EnemyMove.Agent.enabled = false;
 
             IsFrozen = true;

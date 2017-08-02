@@ -255,7 +255,7 @@ namespace EnemyBehaviour
         public void Start()
         {
             agent = GetComponent<NavMeshAgent>();
-            angularLookSpeed = Time.deltaTime * 8;
+            angularLookSpeed = Time.deltaTime * agent.angularSpeed/100;
             randomPosition.y = 3;
         }
 
@@ -336,15 +336,23 @@ namespace EnemyBehaviour
             {
                 if (PlayerObjectTransformForFollow != null)
                 {
-                    if (isStopped)
+                    if (isStopped && !abstractEnemy.EnemyConditions.IsFrozen)
+                    {
                         transform.rotation =
                         Quaternion.Lerp(transform.rotation
-                            , lerpRotationQuar, angularLookSpeed);
+                            , lerpRotationQuar, Time.deltaTime);
+                        yield return Timing.WaitForOneFrame;
+                    }
                     else if (modelEnemy.localEulerAngles.y != 0)
                     {
                         modelEnemy.localRotation =
                         Quaternion.Lerp(modelEnemy.localRotation
-                            , Quaternion.identity, angularLookSpeed);
+                            , Quaternion.identity, Time.deltaTime);
+                        yield return Timing.WaitForOneFrame;
+                    }
+                    else
+                    {
+                        yield return Timing.WaitForSeconds(frequencyResting);
                     }
                 }
                 else
@@ -354,12 +362,14 @@ namespace EnemyBehaviour
                     {
                         modelEnemy.localRotation =
                         Quaternion.Lerp(modelEnemy.localRotation
-                            , Quaternion.identity, angularLookSpeed);
+                            , Quaternion.identity, Time.deltaTime);
+                        yield return Timing.WaitForOneFrame;
                     }
-                }
-
-                
-                yield return Timing.WaitForSeconds(frequencyResting);
+                    else
+                    {
+                        yield return Timing.WaitForSeconds(frequencyResting);
+                    }
+                }      
             }
         }
 

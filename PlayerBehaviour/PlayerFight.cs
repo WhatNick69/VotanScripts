@@ -24,12 +24,12 @@ namespace PlayerBehaviour
         private PlayerAnimationsController playerAnimationsController;
         private Vector3 fightVector;
 
-        public bool isRotating;
-        public bool isFighting;
-        public bool isDefensing;
-        public bool isSpining;
-        public bool isDamaged;
-        public bool isMayToLongAttack = true;
+        private bool isRotating;
+        private bool isFighting;
+        private bool isDefensing;
+        private bool isSpining;
+        private bool isDamaged;
+        private bool isMayToLongAttack = true;
 
         private float tempSpinSpeed;
         private float spiningSpeedInCoroutine;

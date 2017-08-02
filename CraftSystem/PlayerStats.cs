@@ -18,8 +18,6 @@ namespace CraftSystem
 		[SerializeField]
 		Text damageText;
 		[SerializeField]
-		Text speenSpeed;
-		[SerializeField]
 		Text blockText;
 		[SerializeField]
 		Text gemText;
@@ -32,8 +30,6 @@ namespace CraftSystem
 		Text newArmor;
 		[SerializeField]
 		Text newDamage;
-		[SerializeField]
-		Text newSpeenSpeed;
 		[SerializeField]
 		Text newBlock;
 		[SerializeField]
@@ -57,19 +53,28 @@ namespace CraftSystem
 		[SerializeField]
 		GameObject gem;
 
+		[SerializeField]
+		GameObject damage;
+		[SerializeField]
+		GameObject armor;
+		[SerializeField]
+		GameObject block;
+		[SerializeField]
+		GameObject gemTape;
+		[SerializeField]
+		GameObject gemPuwer;
+		[SerializeField]
+		GameObject crit;
+
 		float gripWeight;
 		float gripDefence;
-		float gripBonusSpeed;
 		float newGripWeight;
 		float newGripDefence;
-		float newGripBonusSpeed;
 
 		float headWeight;
 		float headDamage;
-		float headBonusSpeed;
 		float newHeadWeight;
 		float newHeadDamage;
-		float newhHeadBonusSpeed;
 
 		string gemType;
 		float gemPower;
@@ -87,6 +92,41 @@ namespace CraftSystem
 		Vector4 green = new Vector4(0, 10, 0, 255);
 
 		#region
+		private void PredPageLoad()
+		{
+			damage.SetActive(false);
+			armor.SetActive(false);
+			block.SetActive(false);
+			gemTape.SetActive(false);
+			gemPuwer.SetActive(false);
+			crit.SetActive(false);
+		}
+
+		public void GripPage()
+		{
+			PredPageLoad();
+			block.SetActive(true);
+		}
+
+		public void HeadPage()
+		{
+			PredPageLoad();
+			damage.SetActive(true);
+		}
+
+		public void GemPage()
+		{
+			PredPageLoad();
+			gemTape.SetActive(true);
+			gemPuwer.SetActive(true);
+		}
+
+		public void ArmorPage()
+		{
+			PredPageLoad();
+			armor.SetActive(true);
+		}
+
 		public float CuirassArmor
 		{
 			get
@@ -200,20 +240,6 @@ namespace CraftSystem
 			}
 		}
 
-		public float GripBonusSpeed
-		{
-			get
-			{
-				return gripBonusSpeed;
-			}
-
-			set
-			{
-				gripBonusSpeed = value;
-				NewStats();
-			}
-		}
-
 		public float NewGripWeight
 		{
 			get
@@ -238,20 +264,6 @@ namespace CraftSystem
 			set
 			{
 				newGripDefence = value;
-				NewStats();
-			}
-		}
-
-		public float NewGripBonusSpeed
-		{
-			get
-			{
-				return newGripBonusSpeed;
-			}
-
-			set
-			{
-				newGripBonusSpeed = value;
 				NewStats();
 			}
 		}
@@ -284,20 +296,6 @@ namespace CraftSystem
 			}
 		}
 
-		public float HeadBonusSpeed
-		{
-			get
-			{
-				return headBonusSpeed;
-			}
-
-			set
-			{
-				headBonusSpeed = value;
-				NewStats();
-			}
-		}
-
 		public float NewHeadWeight
 		{
 			get
@@ -322,20 +320,6 @@ namespace CraftSystem
 			set
 			{
 				newHeadDamage = value;
-				NewStats();
-			}
-		}
-
-		public float NewhHeadBonusSpeed
-		{
-			get
-			{
-				return newhHeadBonusSpeed;
-			}
-
-			set
-			{
-				newhHeadBonusSpeed = value;
 				NewStats();
 			}
 		}
@@ -403,7 +387,6 @@ namespace CraftSystem
 			hpText.text = "HP: " + ((PlayerPrefs.GetInt("level") + 10) * 2);
 			armorText.text = "Armor: " + (cuirassArmor + shieldArmor + helmetArmor);
 			damageText.text = "Damage: " + LibraryStaticFunctions.TotalDamage(headDamage, headWeight + gripWeight);
-			speenSpeed.text = "BSS: " + (headBonusSpeed + gripBonusSpeed);
 			blockText.text = "Block: " + gripDefence;
 			gemText.text = "Gem Type: " + GemType;
 			gemDamageText.text = "Gem Power:" + GemPower.ToString();
@@ -420,19 +403,6 @@ namespace CraftSystem
 				newGemDamage.color = red;
 			}
 			
-
-			if (newhHeadBonusSpeed >= HeadBonusSpeed && head.activeInHierarchy)
-			{
-				newSpeenSpeed.text = "+(" + Mathf.Abs(newhHeadBonusSpeed - HeadBonusSpeed).ToString() + ")";
-				newSpeenSpeed.color = green;
-			}
-			else if (head.activeInHierarchy)
-			{
-				newSpeenSpeed.text = "-(" + Mathf.Abs(newhHeadBonusSpeed - HeadBonusSpeed).ToString() + ")";
-				newSpeenSpeed.color = red;
-			}
-			
-
 			if (NewHeadWeight >= headWeight && head.activeInHierarchy)
 			{
 				newDamage.text = "+(" + (LibraryStaticFunctions.TotalDamage(newHeadDamage, newHeadWeight + gripWeight) -
