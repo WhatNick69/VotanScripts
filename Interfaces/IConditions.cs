@@ -36,6 +36,17 @@ namespace VotanInterfaces
     }
 
     /// <summary>
+    /// Интерфейс, который необходимо реализовывать всем боссам 
+    /// </summary>
+    public interface IBossConditions
+    {
+        /// <summary>
+        /// Жив ли босс?
+        /// </summary>
+        bool IsBossAlive { get; }
+    }
+
+    /// <summary>
     /// Интерфейс для реализации контроля над состояниями игрока
     /// </summary>
     public interface IPlayerConditions
@@ -201,7 +212,7 @@ namespace VotanInterfaces
         /// </summary>
         /// <param name="isLongAttack"></param>
         /// <returns></returns>
-        IEnumerator<float> CoroutineForGetDamage(bool isLongAttack=false);
+        IEnumerator<float> CoroutineForGetDamage(bool isLongAttack=false,float dmg = 0);
 
         /// <summary>
         /// Найти камеру вотчера

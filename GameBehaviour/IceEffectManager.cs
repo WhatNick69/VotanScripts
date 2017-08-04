@@ -19,8 +19,14 @@ namespace GameBehaviour
         #region Переменные
         [SerializeField,Tooltip("Враг")]
         private AbstractEnemy abstractEnemy;
+        [SerializeField, Tooltip("Враг является боссом?")]
+        private bool isBoss;
+        [SerializeField, Tooltip("Босья сила сокращения эффекта"), Range(0, 1f)]
+        private float bossEffectDecreaseMultiplier;
+        [SerializeField, Tooltip("Разброс ледяных объектов"), Range(0.5f, 2f)]
+        private float iceObjectsDistanceBetweenOther;
         [SerializeField, Tooltip("Лист ледяных мешей")]
-        private Transform[] listIceObjects; 
+        private Transform[] listIceObjects;
         [SerializeField, Tooltip("Лист трэилов")]
         private Transform[] listTrailObjects;
         [SerializeField, Tooltip("Материал ледяных глыб")]
@@ -38,6 +44,7 @@ namespace GameBehaviour
 
         private bool isOneCoroutine;
         private float damage;
+        private bool isActiveSound;
 
         public float TimeToDisable
         {
@@ -69,7 +76,7 @@ namespace GameBehaviour
         /// трэилов. Затем, по истечению определенного времени, эти ледяные глыбы
         /// вместе с трэилами исчезают, посредством сведения к нулю их альфа-канала.
         /// </summary>
-        public void EventEffect(float damage,float timeToDisable, IWeapon weapon)
+        public float EventEffect(float damage,IWeapon weapon)
         {
             weapon.GetPlayer.PlayerCameraSmooth.
                 DoNoize((weapon.SpinSpeed / weapon.OriginalSpinSpeed)+0.5f);
@@ -78,7 +85,13 @@ namespace GameBehaviour
             {
                 this.weapon = weapon;
                 this.damage = LibraryStaticFunctions.IceDamagePerPeriod(damage, weapon);
-                this.timeToDisable = timeToDisable - 0.5f;
+                timeToDisable = LibraryStaticFunctions.TimeToFreezy(weapon.GemPower);
+
+                if (isBoss)
+                    timeToDisable = timeToDisable*(1-bossEffectDecreaseMultiplier) - 0.5f;
+                else
+                    timeToDisable = timeToDisable - 0.5f;
+
                 isOneCoroutine = true;
                 SetColorOfMaterial();
                 SetActiveForAudioSource(true, true);
@@ -88,6 +101,7 @@ namespace GameBehaviour
                 RandomSetScaleAndPosition();
                 RunAllCoroutines();
             }
+            return timeToDisable + 0.5f;
         }
 
         /// <summary>
@@ -101,17 +115,23 @@ namespace GameBehaviour
             {
                 if (isStart)
                 {
+                    isActiveSound = true;
+                    audioSource.loop = false;
                     AbstractSoundStorage.WorkWithIce
                         (isStart, iceSoundVolume / 2.5f, audioSource);
                     audioSource.loop = false;
                 }
-                else
+                else if (isActiveSound)
                 {
-
+                    audioSource.loop = true;
                     AbstractSoundStorage.WorkWithIce
                         (isStart, iceSoundVolume, audioSource);
                     audioSource.loop = true;
                 }
+            }
+            else
+            {
+                isActiveSound = false;
             }
         }
 
@@ -179,7 +199,6 @@ namespace GameBehaviour
         /// <param name="flag"></param>
         private void SetActiveForIceObjects(bool flag)
         {
-            if (this == null) return;
             foreach (Transform iceObject in listIceObjects)
             {
                 iceObject.localPosition = Vector3.zero;
@@ -211,10 +230,12 @@ namespace GameBehaviour
                 // Позиция
                 listIceObjects[i].position =
                     new Vector3(listIceObjects[i].position.x +
-                        LibraryStaticFunctions.GetPlusMinusValue(0.5f), 
+                        LibraryStaticFunctions.GetPlusMinusValue
+                        (iceObjectsDistanceBetweenOther), 
                     listIceObjects[i].position.y + 0,
                     listIceObjects[i].position.z + 
-                        LibraryStaticFunctions.GetPlusMinusValue(0.5f));
+                        LibraryStaticFunctions.GetPlusMinusValue
+                        (iceObjectsDistanceBetweenOther));
 
                 // Размер
                 scale = LibraryStaticFunctions.GetRangeValue(1+(weapon.GemPower/200),0.2f);
@@ -290,7 +311,6 @@ namespace GameBehaviour
             yield return Timing.WaitForSeconds(timeToDisable);
             isRandomTrailPosition = false;
 
-            SetActiveForAudioSource(false,false);
             if (this == null) yield break;
             Timing.RunCoroutine(CoroutineDisableIceObjects());
         }
@@ -323,6 +343,7 @@ namespace GameBehaviour
                 yield return Timing.WaitForSeconds(0.05f);
                 i++;
             }
+            SetActiveForAudioSource(false, false);
             SetActiveForIceObjects(false);
             isOneCoroutine = false;
             timeToDisable = 0;

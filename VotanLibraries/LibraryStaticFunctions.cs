@@ -13,6 +13,25 @@ namespace VotanLibraries
         public static System.Random rnd = new System.Random();
 
         /// <summary>
+        /// Глубокий поиск объекта во всей иерархии
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static Transform DeepFind(Transform target, string name)
+        {
+            if (target.name.Equals(name)) return target;
+
+            for (int i = 0; i < target.childCount; ++i)
+            {
+                var result = DeepFind(target.GetChild(i), name);
+
+                if (result != null) return result;
+            }
+            return null;
+        }
+
+        /// <summary>
         /// В указанном диапазоне возвращает значение.
         /// 
         /// Текущая реализация: если dmg=10, а range=0.1, то
@@ -140,7 +159,7 @@ namespace VotanLibraries
         /// <returns></returns>
         public static float StrenghtOfNockback(IWeapon weapon,bool isSuperAttack=false)
         {
-            return isSuperAttack ? 4 : 2 +  (weapon.GemPower / 100);
+            return isSuperAttack ? 3 + (weapon.Weight / 100) : 2 +  (weapon.GemPower / 100);
         }
 
         /// <summary>
@@ -168,7 +187,21 @@ namespace VotanLibraries
         }
 
         /// <summary>
-        /// Получаем вес двух предметов. 
+        /// Может ли босс воспроизвести анимацию получения урона?
+        /// 
+        /// Текущая реализация: если получаемый урон больше либо равен
+        /// четверти здоровья/прочности брони врага, то воспроизводим анимацию
+        /// </summary>
+        /// <param name="healthValue"></param>
+        /// <param name="dmg"></param>
+        /// <returns></returns>
+        public static bool BossMayPlayGetDamageAnimation(float healthValue, float dmg)
+        {
+            return dmg / healthValue >= 0.25f ? true : false;
+        }
+
+        /// <summary>
+        /// Получаем вес всех элеметов брони
         /// Текущая реализация: сложение.
         /// 
         /// Диапазон значений: 0 - 100 
@@ -176,9 +209,9 @@ namespace VotanLibraries
         /// <param name="weightA"></param>
         /// <param name="weightB"></param>
         /// <returns></returns>
-        public static float TotalWeight(float weightA, float weightB)
+        public static float TotalWeight(float weightA, float weightB,float weightC)
         {
-            return weightA + weightB;
+            return weightA + weightB + weightC;
         }
 
         /// <summary>
@@ -203,7 +236,7 @@ namespace VotanLibraries
 
         /// <summary>
         /// Получаем общую скорость вращения оружием.
-        /// Текущая реализация: 20 + (40-(WEIGHT)/2.5) + (A+B)/2.5.
+        /// Текущая реализация: 20 + (40-(WEIGHT)/2.5) + GRIP/2.5.
         /// 
         /// Диапазон значений: 20 - 100 
         /// </summary>
@@ -211,9 +244,9 @@ namespace VotanLibraries
         /// <param name="bonusB"></param>
         /// <param name="totalWeight"></param>
         /// <returns></returns>
-        public static float TotalSpinSpeed(float bonusA, float bonusB, float totalWeight)
+        public static float TotalSpinSpeed(float bonusGrip,float totalWeight)
         {
-            return 20 + (40 - (totalWeight) / 2.5f) + (bonusA + bonusB) / 2.5f;
+            return 20 + (40 - (totalWeight) / 2.5f) + bonusGrip / 2.5f;
         }
 
         /// <summary>
@@ -227,8 +260,7 @@ namespace VotanLibraries
         /// <returns></returns>
         public static float TotalDamage(float damageBase, float totalWeight)
         {
-
-            return damageBase * (1+(totalWeight / 10));
+            return (float)Math.Round(damageBase * (1+(totalWeight / 10)),1);
         }
 
         /// <summary>
@@ -256,7 +288,7 @@ namespace VotanLibraries
         /// <returns></returns>
         public static float AttackToEnemyDamageLongAttack(IWeapon weapon)
         {
-            return weapon.Damage * (0.5f+ weapon.Weight / 200);
+            return weapon.Damage * (weapon.Weight / 200);
         }
 
         /// <summary>
@@ -279,7 +311,8 @@ namespace VotanLibraries
         /// <returns></returns>
         public static bool MayableToBeElectricity(IWeapon weapon)
         {
-            return weapon.SpinSpeed / weapon.OriginalSpinSpeed >= 0.25f ? true : false;
+            return weapon.SpinSpeed / weapon.OriginalSpinSpeed >= 0.25f 
+                ? true : false;
         }
 
         /// <summary>

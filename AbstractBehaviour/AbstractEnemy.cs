@@ -255,6 +255,10 @@ namespace AbstractBehaviour
     /// </summary>
     public enum EnemyType
     {
-        Knight, Crazy, CrossbowMan, Halberdier
+        Knight,
+        Crazy,
+        CrossbowMan,
+        Halberdier,
+        FirstBoss
     }
 }

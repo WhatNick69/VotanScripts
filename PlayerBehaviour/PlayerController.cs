@@ -26,38 +26,41 @@ namespace PlayerBehaviour
         private float rotateSpeed;
         [SerializeField, Tooltip("Величина задержки движения"), Range(1, 3)]
         private float iddleSize;
-        [SerializeField, Tooltip("Частота обновления"), Range(0.001f, 0.1f)]
+        [SerializeField, Tooltip("Частота обновления"), Range(0.01f, 0.1f)]
         private float updateFrequency;
+        [SerializeField, Tooltip("Буст на вращение"), Range(5, 30)]
+        private float rotateBooster;
         [SerializeField, Tooltip("Хранитель компонентов")]
         private PlayerComponentsControl playerComponentsControl;
 
         private PlayerAnimationsController playerAnimationsController;
         private PlayerWeapon playerWeapon;
         private PlayerFight playerFight;
+        private PlayerCollision playerCollision;
 
         private Transform playerObjectTransform;
         private Transform playerModel;
 
-        private float currentMagnitude; // текущее значение магнитуды векторов
-        //меньше которого используется сглаженное время
+        private float currentMagnitude; 
         private float tempAngleForSound;
-
-        private Vector3 moveVector3;
-        private Vector3 tempVectorTransform;
-        private bool isUpdating; // надо ли обновлять позицию?
         private float magnitudeTemp;
         private float magnitudeForSpeed;
-        private bool isMovingStraight;
-        private bool isAliveFromConditions;
-
-        private Vector3 normalYVector;
-        private const string horizontalAxis = "Horizontal";
-        private const string verticalAxis = "Vertical";
         private float angle;
         private float angle2;
         private float maxSpinSpeed;
-        private bool isNormal;
         private float originalSpinSpeed;
+
+        private Vector3 moveVector3;
+        private Vector3 tempVectorTransform;
+        private Vector3 normalYVector;
+
+        private bool isUpdating; // надо ли обновлять позицию?
+        private bool isMovingStraight;
+        private bool isAliveFromConditions;
+        private bool isNormal;
+
+        private const string horizontalAxis = "Horizontal";
+        private const string verticalAxis = "Vertical";
         #endregion
 
         #region Свойства
@@ -172,25 +175,50 @@ namespace PlayerBehaviour
         /// </summary>
         private void Start()
         {
+            InitialisationOfVariables();
+            InitialisationOfReferences();
+            InitialisationOfCoroutines();
+        }
+
+        /// <summary>
+        /// Инициализация переменных
+        /// </summary>
+        private void InitialisationOfVariables()
+        {
             isAliveFromConditions = true;
             isUpdating = true;
             playerObjectTransform = playerComponentsControl.PlayerObject;
             playerModel = playerComponentsControl.PlayerModel;
             normalYVector.y = 0.55f;
+
             MoveSpeed = LibraryStaticFunctions.DependenceMoveSpeedAndWeaponWeight
                 (playerComponentsControl.PlayerWeapon.Weight);
             RotateSpeed = LibraryStaticFunctions.DependenceRotateSpeedAndWeaponWeight
                 (playerComponentsControl.PlayerWeapon.Weight);
             originalSpinSpeed = playerComponentsControl.PlayerWeapon.OriginalSpinSpeed; ;
             maxSpinSpeed = playerComponentsControl.PlayerWeapon.OriginalSpinSpeed;
-
             LibraryStaticFunctions.SetAttackTransformPosition
                 (playerComponentsControl.PlayerWeapon, attackTransform);
+        }
+
+        /// <summary>
+        /// Инициализация ссылок
+        /// </summary>
+        private void InitialisationOfReferences()
+        {
             playerWeapon = playerComponentsControl.PlayerWeapon;
             playerAnimationsController = playerComponentsControl.PlayerAnimationsController;
             playerFight = playerComponentsControl.PlayerFight;
+            playerCollision = playerComponentsControl.PlayerCollision;
+        }
 
-            InitialisationOfCoroutines();
+        /// <summary>
+        /// Запускаем корутины
+        /// </summary>
+        private void InitialisationOfCoroutines()
+        {
+            Timing.RunCoroutine(CoroutineForRotatePlayerWeapon());
+            Timing.RunCoroutine(CoroutineForFixedUpdatePositionAndRotation());
         }
 
         /// <summary>
@@ -199,14 +227,6 @@ namespace PlayerBehaviour
         public void StopAttackWhenDefensing()
         {
             tempVectorTransform = playerObjectTransform.position;
-        }
-
-        /// <summary>
-        /// Запускаем корутины
-        /// </summary>
-        private void InitialisationOfCoroutines()
-        {
-            Timing.RunCoroutine(CoroutineForFixedUpdatePositionAndRotation());
         }
 
         /// <summary>
@@ -238,41 +258,12 @@ namespace PlayerBehaviour
         }
 
         /// <summary>
-        /// Корутин на обновление позиции и поворота
-        /// </summary>
-        /// <returns></returns>
-        private IEnumerator<float> CoroutineForFixedUpdatePositionAndRotation()
-        {
-            yield return Timing.WaitForSeconds(1);
-            while (isAliveFromConditions)
-            {
-                if (!playerFight.IsFighting)
-                {
-                    MovePlayerGetNetPosition();
-                    RotatePlayerGetNewRotation();   
-                }
-                if (!playerComponentsControl.PlayerCollision.
-                    CheckDirection(LibraryStaticFunctions.
-                    CalculateAngleBetweenPointAndVector(tempVectorTransform,
-                    playerObjectTransform.position)))
-                {
-                    tempVectorTransform = playerObjectTransform.position;
-                }
-                UpdateYCoordinate();
-                yield return Timing.WaitForSeconds(updateFrequency);
-            }
-            playerAnimationsController.SetState(5, true);
-        }
-
-        /// <summary>
         /// Обновляем
         /// </summary>
         private void Update()
         {
-            if (isAliveFromConditions)
-            {
+            if (isAliveFromConditions && playerCollision.IsGrounded)
                 UpdateNewTransformPositionAndRotation();
-            }
         }
         
         /// <summary>
@@ -323,19 +314,9 @@ namespace PlayerBehaviour
                     playerAnimationsController.SetState(0, false);
                 }
 
-                if (playerFight.IsRotating)
+                if (!playerFight.IsRotating)
                 {
-                        playerComponentsControl.PlayerModel.Rotate(new Vector3(0, angle/4, 0));
-
-                    // Включаю атаку
-                    playerAnimationsController.SetState(1,true);
-                    // Выключаю бег
-                    playerAnimationsController.SetState(0, false);
-                }
-                else
-                {
-
-                    playerComponentsControl.PlayerModel.localRotation 
+                    playerComponentsControl.PlayerModel.localRotation
                         = Quaternion.Slerp(playerComponentsControl.PlayerModel
                         .localRotation, Quaternion.Euler(0, angle2, 0)
                         , rotateSpeed * Time.deltaTime);
@@ -391,7 +372,8 @@ namespace PlayerBehaviour
         /// </summary>
         private void UpdateYCoordinate()
         {
-            if (playerObjectTransform.position.y < 0.55f)
+            if (playerObjectTransform.position.y < 0.55f 
+                && !playerCollision.IsOutside)
             {
                 normalYVector.x = playerObjectTransform.position.x;
                 normalYVector.z = playerObjectTransform.position.z;
@@ -422,6 +404,61 @@ namespace PlayerBehaviour
             {
                 angle2 = Mathf.Atan2(moveVector3.x, moveVector3.z) * Mathf.Rad2Deg;
             }
-        }                 
+        }
+
+        /// <summary>
+        /// Корутин на обновление позиции и поворота
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator<float> CoroutineForFixedUpdatePositionAndRotation()
+        {
+            yield return Timing.WaitForSeconds(1);
+            while (isAliveFromConditions)
+            {
+                if (playerCollision.IsGrounded)
+                {
+                    if (!playerFight.IsFighting)
+                    {
+                        MovePlayerGetNetPosition();
+                        RotatePlayerGetNewRotation();
+                    }
+                    if (!playerComponentsControl.PlayerCollision.
+                        CheckDirection(LibraryStaticFunctions.
+                        CalculateAngleBetweenPointAndVector(tempVectorTransform,
+                        playerObjectTransform.position)))
+                    {
+                        tempVectorTransform = playerObjectTransform.position;
+                    }
+                    UpdateYCoordinate();
+                }
+                yield return Timing.WaitForSeconds(updateFrequency);
+            }
+            playerAnimationsController.SetState(5, true);
+        }
+
+        /// <summary>
+        /// Корутина на вращение оружием
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator<float> CoroutineForRotatePlayerWeapon()
+        {
+            while (isAliveFromConditions)
+            {
+                if (playerFight.IsRotating)
+                {
+                    playerComponentsControl.PlayerModel.Rotate
+                        (Vector3.up,angle*Time.deltaTime*rotateBooster);
+
+                    playerAnimationsController.SetState(1, true);
+                    playerAnimationsController.SetState(0, false);
+
+                    yield return Timing.WaitForSeconds(updateFrequency);
+                }
+                else
+                {
+                    yield return Timing.WaitForSeconds(updateFrequency * 2);
+                }
+            }
+        }
     }
 }

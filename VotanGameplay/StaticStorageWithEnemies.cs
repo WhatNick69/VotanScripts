@@ -1,5 +1,6 @@
 ﻿using AbstractBehaviour;
 using UnityEngine;
+using VotanInterfaces;
 
 namespace VotanGameplay
 {
@@ -17,6 +18,7 @@ namespace VotanGameplay
         /// кода.
         /// </summary>
         private static AbstractEnemy[] listEnemy;
+        private static AbstractEnemy bossEnemy;
         private static int countOfEnemies;
         #endregion
 
@@ -51,6 +53,19 @@ namespace VotanGameplay
             {
                 countOfEnemies = value;
                 if (countOfEnemies < 0) countOfEnemies = 0;
+            }
+        }
+
+        public static AbstractEnemy BossEnemy
+        {
+            get
+            {
+                return bossEnemy;
+            }
+
+            set
+            {
+                bossEnemy = value;
             }
         }
         #endregion

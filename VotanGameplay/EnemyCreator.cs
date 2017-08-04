@@ -19,7 +19,7 @@ namespace VotanGameplay
         : MonoBehaviour
     {
         #region Переменные
-        [SerializeField]
+        [SerializeField,Tooltip("Лист типичных врагов")]
 		private GameObject[] enemyList;
         [SerializeField, Tooltip("Количество врагов для генерации"), Range(1, 500)]
         private int perWaveEnemiesNumber;
@@ -48,13 +48,13 @@ namespace VotanGameplay
             stackLenght = (int)(oneTimeEnemies * 1.2f);
             StaticStorageWithEnemies.CountOfEnemies = 0;
             StaticStorageWithEnemies.ListEnemy = new AbstractEnemy[stackLenght];
-            InitialisationOfEnemies();
-            GiveEnemyArrayReferenceToAllPlayers();
-            Timing.RunCoroutine(CoroutineEnemiesSpawn());
+            Timing.RunCoroutine(CoroutineInitialisationOfEnemies()); // первый шаг
         }
 
         /// <summary>
         /// Предоставить ссылку на массив врагом всем игрокам
+        /// 
+        /// Второй шаг
         /// </summary>
         private void GiveEnemyArrayReferenceToAllPlayers()
         {
@@ -67,21 +67,37 @@ namespace VotanGameplay
 
         /// <summary>
         /// Инициализация всех врагов. Тут можно шаманить с их количеством и качеством.
+        /// 
+        /// Первый шаг
         /// </summary>
-        private void InitialisationOfEnemies()
+        private IEnumerator<float> CoroutineInitialisationOfEnemies()
         {
             for (int i = 0; i < stackLenght; i++)
             {
-                RandomEnemyChoice();
-                enemyObjNew = Instantiate(enemyList[tempEnemyIndexNumber]);
-                enemyObjNew.GetComponent<IEnemyBehaviour>().EnemyNumber = i;
-                enemyObjNew.transform.parent = respawnPoint;
-                enemyObjNew.GetComponent<EnemyMove>().RandomRadius = randomRadius;
-                enemyObjNew.transform.position = respawnPoint.transform.position;
-                enemyObjNew.name = enemyObjNew.name + "#" + i;
-
+                if (i == stackLenght - 1)
+                {
+                    enemyObjNew = Instantiate(enemyList[enemyList.Length-1]);
+                    enemyObjNew.GetComponent<IEnemyBehaviour>().EnemyNumber = i;
+                    enemyObjNew.transform.parent = respawnPoint;
+                    enemyObjNew.GetComponent<EnemyMove>().RandomRadius = randomRadius;
+                    enemyObjNew.transform.position = respawnPoint.transform.position;
+                    enemyObjNew.name = enemyObjNew.name + "#" + i;
+                }
+                else
+                {
+                    RandomEnemyChoice();
+                    enemyObjNew = Instantiate(enemyList[tempEnemyIndexNumber]);
+                    enemyObjNew.GetComponent<IEnemyBehaviour>().EnemyNumber = i;
+                    enemyObjNew.transform.parent = respawnPoint;
+                    enemyObjNew.GetComponent<EnemyMove>().RandomRadius = randomRadius;
+                    enemyObjNew.transform.position = respawnPoint.transform.position;
+                    enemyObjNew.name = enemyObjNew.name + "#" + i;
+                }
                 StaticStorageWithEnemies.ListEnemy[i] = enemyObjNew.GetComponent<AbstractEnemy>();
+                yield return Timing.WaitForSeconds(Time.deltaTime);
             }
+            GiveEnemyArrayReferenceToAllPlayers(); 
+            Timing.RunCoroutine(CoroutineEnemiesSpawn()); 
         }
 
         /// <summary>
@@ -91,7 +107,7 @@ namespace VotanGameplay
         private void RandomEnemyChoice()
         {
             tempEnemyIndexNumber =
-                LibraryStaticFunctions.rnd.Next(0, enemyList.Length);
+                LibraryStaticFunctions.rnd.Next(0, enemyList.Length-1);
         }
 
         /// <summary>
@@ -120,7 +136,29 @@ namespace VotanGameplay
         }
 
         /// <summary>
+        /// Рестартировать босса
+        /// </summary>
+        private void BossRestart()
+        {
+            SetEnemyParameters(StaticStorageWithEnemies.ListEnemy.Length-1);
+            BossInPlay();
+        }
+
+        /// <summary>
+        /// Вступление босса
+        /// </summary>
+        private void BossInPlay()
+        {
+            StaticStorageWithEnemies.ListEnemy[StaticStorageWithEnemies.ListEnemy.Length-1]
+                .transform.position = respawnPoint.transform.position;
+            StaticStorageWithEnemies.ListEnemy[StaticStorageWithEnemies.ListEnemy.Length-1]
+                .gameObject.SetActive(true);
+        }
+
+        /// <summary>
         /// Корутина для создания врагов
+        /// 
+        /// Третий шаг
         /// </summary>
         /// <returns></returns>
         private IEnumerator<float> CoroutineEnemiesSpawn()
@@ -152,15 +190,15 @@ namespace VotanGameplay
                 }
                 yield return Timing.WaitForSeconds(timeToInstantiate/2);
             }
-            GameManager.IsWin = true;
-            SendToPlayersCallOfWin();
+            BossRestart();
         }
 
         /// <summary>
         /// Послать всем игрокам сигнал о победе
         /// </summary>
-        private void SendToPlayersCallOfWin()
+        public static void SendToPlayersCallOfWin()
         {
+            GameManager.IsWin = true;
             foreach (GameObject player in AllPlayerManager.PlayerList)
             {
                 player.GetComponent<PlayerUI>().EventWin();
@@ -183,16 +221,15 @@ namespace VotanGameplay
         {
             switch (StaticStorageWithEnemies.ListEnemy[number].EnemyType)
             {
+                // ОБЫЧНЫЙ РЫЦАРЬ
                 case EnemyType.Knight:
-                    StaticStorageWithEnemies.ListEnemy[number].GetComponent<IEnemyBehaviour>().
-                        EnemyMove.PreDistanceForAttack = 0.5f;   // Предупредительная дистанция для атаки
                     StaticStorageWithEnemies.ListEnemy[number]
                         .GetComponent<IEnemyBehaviour>().EnemyMove.AgentSpeed = 3; // Скорость передвижения моба
                     StaticStorageWithEnemies.ListEnemy[number]
                         .GetComponent<IEnemyBehaviour>().EnemyAttack.DmgEnemy = 20; // Урон моба
                     StaticStorageWithEnemies.ListEnemy[number]
                         .GetComponent<IEnemyBehaviour>().EnemyConditions.SetHealthParameter
-                        (LibraryStaticFunctions.GetRangeValue(100, 0.1f)); // Установить жизни мобу
+                        (LibraryStaticFunctions.GetRangeValue(200, 0.1f)); // Установить жизни мобу
 
                     StaticStorageWithEnemies.ListEnemy[number]
                .        GetComponent<IEnemyBehaviour>().EnemyConditions.PhysicResistance = 
@@ -205,8 +242,10 @@ namespace VotanGameplay
                         GetComponent<IEnemyBehaviour>().EnemyConditions.FrostResistance = 0; // Сопротивление к ледяной атаке
 
                     StaticStorageWithEnemies.ListEnemy[number].
-                        GetComponent<IEnemyBehaviour>().ScoreAddingEffect.ScoreBonus = 150; // задаем количество очков
+                        GetComponent<IEnemyBehaviour>().ScoreAddingEffect.ScoreBonus = 400; // задаем количество очков
                     break;
+
+                // БЕШЕНЫЙ РЫЦАРЬ
                 case EnemyType.Crazy:
                     StaticStorageWithEnemies.ListEnemy[number].GetComponent<CrazyEnemy>().
                         FightRotatingSpeed = 800; // Скорость вращения поехавшего
@@ -218,7 +257,7 @@ namespace VotanGameplay
                         .GetComponent<IEnemyBehaviour>().EnemyAttack.DmgEnemy = 10; // Урон моба
                     StaticStorageWithEnemies.ListEnemy[number]
                         .GetComponent<IEnemyBehaviour>().EnemyConditions.SetHealthParameter
-                        (LibraryStaticFunctions.GetRangeValue(150, 0.1f)); // Установить жизни мобу
+                        (LibraryStaticFunctions.GetRangeValue(300, 0.1f)); // Установить жизни мобу
 
                     StaticStorageWithEnemies.ListEnemy[number]
                         .GetComponent<IEnemyBehaviour>().EnemyConditions.PhysicResistance =
@@ -234,7 +273,30 @@ namespace VotanGameplay
                         LibraryStaticFunctions.GetRangeValue(0.1f, 0.2f); ; // Сопротивление к ледяной атаке
 
                     StaticStorageWithEnemies.ListEnemy[number].
-                        GetComponent<IEnemyBehaviour>().ScoreAddingEffect.ScoreBonus = 300; // задаем количество очков
+                        GetComponent<IEnemyBehaviour>().ScoreAddingEffect.ScoreBonus = 600; // задаем количество очков
+                    break;
+
+                // ПЕРВЫЙ БОСС
+                case EnemyType.FirstBoss:
+                    // Скорость передвижения моба
+                    StaticStorageWithEnemies.ListEnemy[number]
+                        .GetComponent<IEnemyBehaviour>().EnemyMove.AgentSpeed = 2; 
+                    StaticStorageWithEnemies.ListEnemy[number]
+                        .GetComponent<IEnemyBehaviour>().EnemyAttack.DmgEnemy = 50; // Урон моба
+                    StaticStorageWithEnemies.ListEnemy[number]
+                        .GetComponent<IEnemyBehaviour>().EnemyConditions.SetHealthParameter
+                        (LibraryStaticFunctions.GetRangeValue(1000, 0.05f)); // Установить жизни мобу
+
+                    StaticStorageWithEnemies.ListEnemy[number]
+                        .GetComponent<IEnemyBehaviour>().EnemyConditions.PhysicResistance = 0.3f;
+                    StaticStorageWithEnemies.ListEnemy[number]
+                        .GetComponent<IEnemyBehaviour>().EnemyConditions.FireResistance = 0.3f;
+                    StaticStorageWithEnemies.ListEnemy[number]
+                        .GetComponent<IEnemyBehaviour>().EnemyConditions.ElectricResistance = 0.3f;
+                    StaticStorageWithEnemies.ListEnemy[number]
+                        .GetComponent<IEnemyBehaviour>().EnemyConditions.FrostResistance = 0.3f;
+                    StaticStorageWithEnemies.ListEnemy[number]
+                        .GetComponent<IEnemyBehaviour>().ScoreAddingEffect.ScoreBonus = 3000;
                     break;
             }
             StaticStorageWithEnemies.ListEnemy[number]

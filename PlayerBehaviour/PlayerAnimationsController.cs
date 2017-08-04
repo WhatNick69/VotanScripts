@@ -17,16 +17,6 @@ namespace PlayerBehaviour
         private PlayerConditions playerConditions;
 
         /// <summary>
-        /// Конструктор
-        /// </summary>
-        PlayerAnimationsController()
-        {
-            StructStatesNames = new StructStatesNames("isRunning",
-                "isFighting","isDefensing","isLongAttack","isDamage",
-                "isDead");
-        }
-
-        /// <summary>
         /// Задаем значение состоянию анимации персонажа.
         /// 0 - бег, 1 - кручение, 2 - защита, 
         /// 3 - рывок, 4 - урон, 5 - смерть
@@ -45,6 +35,7 @@ namespace PlayerBehaviour
         {
             playerFight = playerComponentsControl.PlayerFight;
             playerConditions = playerComponentsControl.PlayerConditions;
+            StructStatesNames = new StructStatesNames(animatorOfObject);
         }
 
         /// <summary>
@@ -54,7 +45,8 @@ namespace PlayerBehaviour
         public override void SetSpeedAnimationByRunSpeed(float value)
         {
             if (playerFight.IsMayToLongAttack 
-                && playerConditions.IsAlive)
+                && playerConditions.IsAlive
+                    && !playerFight.IsDefensing)
             {
                 animatorOfObject.speed = value;
             }
@@ -66,8 +58,8 @@ namespace PlayerBehaviour
         public override void LowSpeedAnimation()
         {
             if (animatorOfObject.speed == 0.2f) return;
-            else if ((!playerFight.IsFighting 
-                || playerFight.IsDefensing) 
+            else if (!playerFight.IsFighting 
+                && !playerFight.IsDefensing
                 && !playerFight.IsSpining
                 && playerConditions.IsAlive 
                 && playerFight.IsMayToLongAttack)

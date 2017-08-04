@@ -31,13 +31,15 @@ namespace PlayerBehaviour
         private Rigidbody playerRGB;
         private Ray ray;
         private RaycastHit rayCastHit;
-        private static string tagNameObstacle = "Obstacle";
-        private static string tagNameEnemy = "Enemy";
-        private bool isRunning;
-
-        private bool isGrounded;
         private Ray rayGround;
         private RaycastHit rayCastHitGround;
+
+        private static string tagNameObstacle = "Obstacle";
+        private static string tagNameEnemy = "Enemy";
+
+        private bool isRunning;
+        private bool isGrounded;
+        private bool isOutside;
         #endregion
 
         #region Свойства
@@ -51,6 +53,32 @@ namespace PlayerBehaviour
             set
             {
                 playerRGB = value;
+            }
+        }
+
+        public bool IsOutside
+        {
+            get
+            {
+                return isOutside;
+            }
+
+            set
+            {
+                isOutside = value;
+            }
+        }
+
+        public bool IsGrounded
+        {
+            get
+            {
+                return isGrounded;
+            }
+
+            set
+            {
+                isGrounded = value;
             }
         }
         #endregion
@@ -67,7 +95,7 @@ namespace PlayerBehaviour
 
             Timing.RunCoroutine(CoroutineRaycastSearching());
             Timing.RunCoroutine(CoroutineForCheckPlayerGrounded());
-            //Timing.RunCoroutine(CoroutineForErrorControlling());
+            Timing.RunCoroutine(CoroutineForErrorControlling());
         }
 
         private IEnumerator<float> CoroutineForCheckPlayerGrounded()
@@ -76,20 +104,23 @@ namespace PlayerBehaviour
             {
                 if (Physics.Raycast(transform.position, -transform.up, out rayCastHitGround, 0.5f))
                 {
-                    //Debug.DrawRay(transform.position, -transform.up, Color.red, 0.1f);
                     if (!isGrounded)
                     {
-                        Debug.Log("Приземлились");
-                        //playerComponentControl.PlayerSounder.FallObject();
                         isGrounded = true;
                     }
                 }
                 else
                 {
+                    // Метод, который пускает по диагонали в третьем измерении 4 луча и проверяет на столкновения.
                     isGrounded = false;
                 }
                 yield return Timing.WaitForSeconds(0.1f);
             }
+        }
+
+        public void AddDamageForceToPlayer(Vector3 position)
+        {
+            PlayerRGB.AddForce(position*15000);
         }
 
         /// <summary>
@@ -176,15 +207,22 @@ namespace PlayerBehaviour
             isRunning = false;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         private IEnumerator<float> CoroutineForErrorControlling()
         {
-            while (true)
+            while (transform.position.y >= -3)
             {
-                if (Vector3.Distance(Vector3.zero, playerComponentControl.PlayerObject.position) >= 18)
-                    playerComponentControl.PlayerObject.position = new Vector3(0, 1, 0);
-
+                if (!isGrounded)
+                    isOutside = true;
+                else
+                    isOutside = false;
+                   
                 yield return Timing.WaitForSeconds(0.5f);
             }
+            playerComponentControl.PlayerConditions.RunDieState();
         }
     }
 }

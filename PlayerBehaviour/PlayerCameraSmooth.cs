@@ -31,6 +31,8 @@ namespace PlayerBehaviour
         private Vector3 standartVectorForCamera;
         private Quaternion targetRotation;
         private Vector3 targetPosition;
+        private Vector3 defaultVector;
+        private Quaternion defaultQuarternion;
 
         private Transform cameraTransform;
         private Transform playerObjectTransform;
@@ -40,6 +42,7 @@ namespace PlayerBehaviour
         private float noiseMoveUpdateSpeed;
         private float noiseRotateUpdateSpeed;
         private bool isNoising;
+        private PlayerConditions playerConditions;
 
         [SerializeField]
         private float multiplierNoise;
@@ -66,11 +69,13 @@ namespace PlayerBehaviour
         private void Start()
         {
             standartVectorForCamera = new Vector3(0, 9f, -8);
+            defaultQuarternion = Quaternion.Euler(45, 0, 0);
             playerObjectTransform =
                 playerComponentsControl.PlayerObject;
             cameraTransform =
                 playerComponentsControl.PlayerCamera.transform;
             tempFrequencyUpdate = frequencyUpdate;
+            playerConditions = playerComponentsControl.PlayerConditions;
 
             Timing.RunCoroutine(CoroutineGetPositionOfPlayer());
         }
@@ -209,7 +214,7 @@ namespace PlayerBehaviour
         /// </summary>
         private void Update()
         {
-            if (isUpdating)
+            if (playerConditions.IsAlive)
             {
                 cameraTransform.rotation =
                     Quaternion.Slerp(cameraTransform.rotation
@@ -218,6 +223,16 @@ namespace PlayerBehaviour
                 cameraTransform.position =
                     Vector3.Lerp(cameraTransform.position,
                     targetPosition, followMoveSpeed);
+            }
+            else
+            {
+                cameraTransform.rotation =
+                    Quaternion.Slerp(cameraTransform.rotation
+                    , defaultQuarternion, followRotateSpeed);
+
+                cameraTransform.position =
+                    Vector3.Lerp(cameraTransform.position,
+                    standartVectorForCamera, followMoveSpeed);
             }
         }
 

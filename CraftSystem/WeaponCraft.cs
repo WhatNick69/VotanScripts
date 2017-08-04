@@ -57,14 +57,25 @@ namespace CraftSystem
 		[SerializeField]
 		WeaponPrefabs WP;
 		WeaponCraft WC;
+		PlayerStats PStats;
 
-        ScrollRect scrollRectGripRepository;
+		ScrollRect scrollRectGripRepository;
         ScrollRect scrollRectGemRepository;
         ScrollRect scrollRectHeadRepository;
-        #endregion
 
-        #region Свойства
-        public void GripWindow()
+		float intemNumbGrip;
+		float intemNumbHead;
+		float intemNumbGem;
+		float normPosGrip;
+		float normPosHead;
+		float normPosGem;
+		#endregion
+
+		#region Свойства
+		/// <summary>
+		/// Вызывать для открытия окна с рукоятями
+		/// </summary>
+		public void GripWindow()
 		{
 			headWindow.SetActive(false);
 			gemWindow.SetActive(false);
@@ -72,6 +83,9 @@ namespace CraftSystem
             scrollRectGripRepository.horizontalNormalizedPosition = 0;
 		}
 
+		/// <summary>
+		/// Вызывать для открытия окна с наконечниками
+		/// </summary>
 		public void HeadWindow()
 		{
 			gemWindow.SetActive(false);
@@ -80,6 +94,9 @@ namespace CraftSystem
             scrollRectHeadRepository.horizontalNormalizedPosition = 0;
         }
 
+		/// <summary>
+		/// Вызывать для открытия окна с камнями
+		/// </summary>
 		public void GemWindow()
 		{
 			headWindow.SetActive(false);
@@ -88,21 +105,42 @@ namespace CraftSystem
             scrollRectGemRepository.horizontalNormalizedPosition = 0;
         }
 
+		/// <summary>
+		/// При экипировке элемента оружия, его характеристики
+		/// отправляются в таблицу
+		/// </summary>
+		/// <param name="x"></param>
 		public void SetGemItemNumber(int x)
 		{
             MenuSoundManager.PlaySoundStatic(1);
 			gemItemNumber = x;
+			PStats.GemPower = gemList[x].GemPower;
+			PStats.GemType = gemList[x].DamageTypeGem.ToString();
 		}
+
+		/// <summary>
+		/// При экипировке элемента оружия, его характеристики
+		/// отправляются в таблицу
+		/// </summary>
+		/// <param name="x"></param>
 		public void SetGripItemNumber(int x)
 		{
             MenuSoundManager.PlaySoundStatic(1);
             gripItemNumber = x;
+			PStats.GripDefence = gripList[x].GripDefence;
+
 		}
 
+		/// <summary>
+		/// При экипировке элемента оружия, его характеристики
+		/// отправляются в таблицу
+		/// </summary>
+		/// <param name="x"></param>
 		public void SetHeadItemNumber(int x)
 		{
             MenuSoundManager.PlaySoundStatic(1);
             headItemNumber = x;
+			PStats.HeadDamage = headList[x].DamageBase;
 		}
 
 		public GameObject GetGripPrafab()
@@ -119,25 +157,64 @@ namespace CraftSystem
         {
             return gem;
         }
-        #endregion
 
-        public void PlayArena()
+		/// <summary>
+		/// 1. Двинул ли игрок ленту с элементаи оружия
+		/// 2. Сменился элемент на следующий или нет? Если да, то меняет номер элемента
+		/// кторый отправится в таблицу с характеристиками
+		/// 
+		/// - После этого, в таблицу отправляются значения элементов, которые находятся
+		/// по центру окна прокрутки (определяется предыдущими проверками)
+		/// - В самом кенце сохраняется позиция ленты, для проверки в следющем кадре 1го условия
+		/// </summary>
+		private void ChekScroll()
+		{
+			if (normPosGrip != scrollRectGripRepository.horizontalNormalizedPosition ||
+				normPosHead != scrollRectHeadRepository.horizontalNormalizedPosition||
+				normPosGem != scrollRectGemRepository.horizontalNormalizedPosition)
+			{
+				if (gripItemNumber != Mathf.Round(scrollRectGripRepository.horizontalNormalizedPosition * (gripList.Count - 1)) ||
+					headItemNumber != Mathf.Round(scrollRectHeadRepository.horizontalNormalizedPosition * (headList.Count - 1)) ||
+					gemItemNumber != Mathf.Round(scrollRectGemRepository.horizontalNormalizedPosition * (gemList.Count - 1)))
+				{
+					intemNumbHead = Mathf.Round(scrollRectHeadRepository.horizontalNormalizedPosition * (headList.Count - 1));
+					intemNumbGrip = Mathf.Round(scrollRectGripRepository.horizontalNormalizedPosition * (gripList.Count - 1));
+					intemNumbGem = Mathf.Round(scrollRectGemRepository.horizontalNormalizedPosition * (gemList.Count - 1));
+				}
+				else
+				{
+					intemNumbHead = headItemNumber;
+					intemNumbGrip = gripItemNumber;
+					intemNumbGem = gemItemNumber;
+				}
+
+				PStats.NewGripDefence = gripList[(int)intemNumbGrip].GripDefence;
+
+				PStats.NewHeadDamage = headList[(int)intemNumbHead].DamageBase;
+
+				PStats.NewGemPower = gemList[(int)intemNumbGem].GemPower;
+				PStats.NewGemType = gemList[(int)intemNumbGem].DamageTypeGem.ToString();
+			}
+			normPosGrip = scrollRectGripRepository.horizontalNormalizedPosition;
+			normPosHead = scrollRectHeadRepository.horizontalNormalizedPosition;
+			normPosGem = scrollRectGemRepository.horizontalNormalizedPosition;
+			PStats.NewStats();
+		}
+		#endregion
+
+		public void PlayArena()
         {
             if (WP == null)
-                WP = GameObject.Find("GetWeaponPrefabs").GetComponent<WeaponPrefabs>();
+                WP = GameObject.Find("GetPrefabs").GetComponent<WeaponPrefabs>();
 
             WP.Grip = (GameObject)Resources.Load(gripPrefix + gripItemNumber + gripPostfix);
 			WP.Head = (GameObject)Resources.Load(headPrefix + headItemNumber + headPostfix);
 			WP.Gem = (GameObject)Resources.Load(gemPrefix + gemItemNumber + gemPostfix);
         }
 
-		public void LoadPrefab()
-		{
-
-		}
-
 		private void Awake() // ____________start__________
 		{
+			PStats = GetComponent<PlayerStats>();
 			WC = GetComponent<WeaponCraft>();
 			gripList = new List<Grip>();
 			headList = new List<Head>();
@@ -145,7 +222,43 @@ namespace CraftSystem
 
 			Timing.RunCoroutine(GripCorutine());
 			Timing.RunCoroutine(HeadCorutine());
-			Timing.RunCoroutine(GemCorutine());			
+			Timing.RunCoroutine(GemCorutine());
+		}
+
+		private void FixedUpdate()
+		{
+			ChekScroll();
+		}
+
+		/// <summary>
+		/// Запускать для отображения элементов оружия в ленте
+		/// </summary>
+		/// <returns></returns>
+		private IEnumerator<float> GripCorutine()
+		{
+			int count = Resources.LoadAll("Prefabs/Weapon/Grip").Length;
+
+			for (int i = 0; i < count; i++) // Колличество видов оружия. Пока не трогать
+			{
+				if (Resources.Load(gripPrefix + i.ToString() + gripPostfix))
+				{
+					GameObject gripGamObj = (GameObject)Resources.Load(gripPrefix + i.ToString() + gripPostfix); // загрузка префаба оружия
+					gripList.Add(gripGamObj.GetComponent<Grip>()); // отправка компонента в лист
+					GameObject item = Instantiate(itemGrip); // создание кнопки
+					GripButton button = item.GetComponent<GripButton>(); // Снимаем компонент свойств кномпи с объекта
+					button.SetWeaponCraft(WC);  // ниже задаем параметры, которые увидит игрок
+					button.SetNumber(i); //
+					button.SetName(gripList[i].GripName); //
+					button.SetSpinBous(gripList[i].BonusSpinSpeedFromGrip.ToString()); //
+					button.SetDefence(gripList[i].GripDefence.ToString()); //
+					button.SetLogo(gripList[i].ItemImage); //
+					item.transform.SetParent(gripRepository.transform, false); // удочерям кнопку "листу" кнопок
+
+				}
+			}
+			scrollRectGripRepository =
+				gripRepository.transform.parent.GetComponent<ScrollRect>();
+			yield return 0;
 		}
 
 		private IEnumerator<float> GemCorutine()
@@ -190,8 +303,6 @@ namespace CraftSystem
 					button.SetNumber(i);
 					button.SetName(headList[i].HeadName);
 					button.SetDamage(headList[i].DamageBase.ToString());
-					button.SetWeight(headList[i].HeadWeight.ToString());
-					button.SetSpinBous(headList[i].BonusSpinSpeedFromHead.ToString());
 					button.SetLogo (headList[i].ItemImage);
 					item.transform.SetParent(headRepository.transform, false);
 
@@ -199,34 +310,6 @@ namespace CraftSystem
 			}
             scrollRectHeadRepository =
                 headRepository.transform.parent.GetComponent<ScrollRect>();
-            yield return 0;
-		}
-
-		private IEnumerator<float> GripCorutine()
-		{
-			int count = Resources.LoadAll("Prefabs/Weapon/Grip").Length;
-
-			for (int i = 0; i < count; i++) // Колличество видов оружия. Пока не трогать
-			{
-				if (Resources.Load(gripPrefix + i.ToString() + gripPostfix))
-				{
-					GameObject gripGamObj = (GameObject)Resources.Load(gripPrefix + i.ToString() + gripPostfix); // загрузка префаба оружия
-					gripList.Add(gripGamObj.GetComponent<Grip>()); // отправка компонента в лист
-					GameObject item = Instantiate(itemGrip); // создание кнопки
-					GripButton button = item.GetComponent<GripButton>(); // Снимаем компонент свойств кномпи с объекта
-					button.SetWeaponCraft(WC);  // ниже задаем параметры, которые увидит игрок
-					button.SetNumber(i);
-					button.SetName(gripList[i].GripName);
-					button.SetWeight(gripList[i].GripWeight.ToString());
-					button.SetSpinBous(gripList[i].BonusSpinSpeedFromGrip.ToString());
-					button.SetDefence(gripList[i].GripDefence.ToString());
-					button.SetLogo (gripList[i].ItemImage);
-					item.transform.SetParent(gripRepository.transform, false); // удочерям кнопку "листу" кнопок
-
-				}
-			}
-            scrollRectGripRepository =
-                gripRepository.transform.parent.GetComponent<ScrollRect>();
             yield return 0;
 		}
 	}

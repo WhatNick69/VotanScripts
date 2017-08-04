@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using PlayerBehaviour;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -9,7 +10,38 @@ namespace VotanInterfaces
     /// </summary>
     public interface IAIMoving
     {
+        /// <summary>
+        /// Рестартировать компонент, отвеющий за способность противника двигаться
+        /// </summary>
         void RestartEnemyMove();
+
+        /// <summary>
+        /// Включить агент
+        /// </summary>
+        void EnableAgent();
+
+        /// <summary>
+        /// Выключить агент
+        /// </summary>
+        void DisableAgent();
+
+        /// <summary>
+        /// Включить возможность смотреть на игрока
+        /// </summary>
+        void EnableMayableLookAtPlayer();
+
+        /// <summary>
+        /// Отключить возможность смотреть на игрока
+        /// </summary>
+        void DisableMayableLookAtPlayer();
+
+        /// <summary>
+        /// Переменная которая говорит, чтобы враг 
+        /// поворачивался в сторону игрока.
+        /// Полезно для боссов, чьи атаки очень сильны и длительны.
+        /// </summary>
+        /// <returns></returns>
+        bool IsLookingAtPlayer { get; set; }
 
         /// <summary>
         /// Предупредительная дистанция до атаки
@@ -35,6 +67,11 @@ namespace VotanInterfaces
         /// Игрок, до которого должен добраться враг
         /// </summary>
         Transform PlayerObjectTransformForFollow { get; set; }
+
+        /// <summary>
+        /// Компонент игрока - PlayerCollision
+        /// </summary>
+        PlayerCollision PlayerCollisionComponent { get; set; }
 
         /// <summary>
         /// Буль, достиг ли враг цели

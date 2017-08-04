@@ -15,9 +15,11 @@ namespace CraftSystem
 		private Sprite imageArmory;
 		[SerializeField, Tooltip("Тип брони")]
 		private ArmoryClass armoryType;
-		[SerializeField, Range(1, 1000f), Tooltip("Базовое значение части брони")]
-		private float armoryValue;
-		[SerializeField, Tooltip("Название части брони")]
+        [SerializeField, Range(1, 10000f), Tooltip("Базовое значение части брони")]
+        private float armoryValue;
+        [SerializeField, Range(1, 33), Tooltip("Вес")]
+        private float weightArmory;
+        [SerializeField, Tooltip("Название части брони")]
 		private string armoryName;
 		private PlayerComponentsControl playerComponentsControl;
 		#endregion
@@ -83,6 +85,18 @@ namespace CraftSystem
             }
         }
 
+        public float WeightArmory
+        {
+            get
+            {
+                return weightArmory;
+            }
+
+            set
+            {
+                weightArmory = value;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -92,7 +106,6 @@ namespace CraftSystem
         {
             playerComponentsControl = GameObject.FindWithTag("Player").
                 GetComponent<PlayerComponentsControl>();
-            playerComponentsControl.PlayerArmory.HealthValue += armoryValue;
             InitToPlayerArmory();
             Destroy(gameObject, 3);
         }

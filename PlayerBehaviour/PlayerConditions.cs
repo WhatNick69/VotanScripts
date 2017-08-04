@@ -270,11 +270,16 @@ namespace PlayerBehaviour
             playerComponentsControl.PlayerAnimationsController
                 .SetState(4, true);
             mayToGetDamage = false;
-            yield return Timing.WaitForSeconds(0.5f);
+            yield return Timing.WaitForSeconds(frequencyOfGetDamage);
             mayToGetDamage = true;
             playerComponentsControl.PlayerFight.IsDamaged = false;
             playerComponentsControl.PlayerAnimationsController
                 .SetState(4, false);
+        }
+
+        public void RunDieState()
+        {
+            Timing.RunCoroutine(DieState());
         }
 
         /// <summary>
@@ -284,6 +289,7 @@ namespace PlayerBehaviour
         {
             playerComponentsControl.PlayerSounder.PlayDeadAudio();
             IsAlive = false;
+            HealthValue = 0;
             AllPlayerManager.CheckList();
 
             GetComponent<PlayerController>().IsAliveFromConditions = false;

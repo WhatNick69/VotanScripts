@@ -19,6 +19,8 @@ namespace AbstractBehaviour
         protected float healthValue;
         [SerializeField, Tooltip("Диаграмма здоровья")]
         protected Image circleHealthUI;
+        [SerializeField, Tooltip("Частота получения урона"),Range(0.1f,1)]
+        protected float frequencyOfGetDamage;
         protected float initialisatedHealthValue;
         protected float colorChannelRed;
         protected float colorChannelGreen;
@@ -79,6 +81,19 @@ namespace AbstractBehaviour
             set
             {
                 mainBarCanvas = value;
+            }
+        }
+
+        public float InitialisatedHealthValue
+        {
+            get
+            {
+                return initialisatedHealthValue;
+            }
+
+            set
+            {
+                initialisatedHealthValue = value;
             }
         }
         #endregion

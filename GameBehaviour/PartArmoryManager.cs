@@ -1,8 +1,5 @@
-﻿using MovementEffects;
-using PlayerBehaviour;
-using System.Collections.Generic;
+﻿using PlayerBehaviour;
 using UnityEngine;
-using VotanLibraries;
 
 namespace GameBehaviour
 {
@@ -10,16 +7,11 @@ namespace GameBehaviour
     /// Контроль над частью брони
     /// </summary>
     public class PartArmoryManager
-        : MonoBehaviour
+        : ArmoryObject
     {
         #region Переменные
-        [SerializeField, Tooltip("Эта часть будет уничтожаться?")]
-        private bool isActivePart;
         [SerializeField, Tooltip("Номер позиции")]
         private ArmoryPosition numberPosition;
-
-        private Rigidbody rigFromObj;
-        private BoxCollider boxCollider;
         #endregion
 
         #region Свойства
@@ -54,7 +46,7 @@ namespace GameBehaviour
         /// <summary>
         /// Инициализация 2
         /// </summary>
-        private void Awake()
+        protected override void Awake()
         {
             transform.SetParent(GameObject.FindWithTag("Player").
                 GetComponent<PlayerComponentsControl>().PlayerArmory.
@@ -65,57 +57,6 @@ namespace GameBehaviour
             rigFromObj = transform.GetComponentInChildren<Rigidbody>();
             boxCollider = transform.GetComponentInChildren<BoxCollider>();
             rigFromObj.detectCollisions = false;
-        }
-
-        /// <summary>
-        /// Зажечь событие. 
-        /// Часть брони отрывается от тела и отскакивает.
-        /// </summary>
-        public void FireEvent()
-        {
-            if (!isActivePart) return;
-
-            DetachFromParent();
-            AddForceToObject();
-            Timing.RunCoroutine(CoroutineForDisableObject());
-        }
-
-        /// <summary>
-        /// Отсоединить от родителя
-        /// </summary>
-        private void DetachFromParent()
-        {
-            transform.parent = null;
-            float localScale = 
-              transform.localScale.x;
-            transform.localScale = 
-              new Vector3(localScale, localScale, localScale);
-        }
-
-        /// <summary>
-        /// Добавить физическую силу объекту
-        /// </summary>
-        private void AddForceToObject()
-        {
-            rigFromObj.useGravity = true;
-            rigFromObj.detectCollisions = true;
-            rigFromObj.isKinematic = false;
-            rigFromObj.constraints = RigidbodyConstraints.None;
-            rigFromObj.AddForce(new Vector3(LibraryStaticFunctions.GetPlusMinusValue(75),
-                LibraryStaticFunctions.rnd.Next(40, 100),
-                LibraryStaticFunctions.GetPlusMinusValue(75)));
-        }
-
-        /// <summary>
-        /// Корутина на отключение объекта
-        /// </summary>
-        /// <returns></returns>
-        private IEnumerator<float> CoroutineForDisableObject()
-        {
-            yield return Timing.WaitForSeconds(0.3f);
-            boxCollider.enabled = true;
-            yield return Timing.WaitForSeconds(LibraryStaticFunctions.rnd.Next(5, 10));
-            gameObject.SetActive(false);
         }
     }
 }

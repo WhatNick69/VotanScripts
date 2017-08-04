@@ -86,6 +86,19 @@ namespace AbstractBehaviour
                 enemyFinishGunPoint = value;
             }
         }
+
+        public bool IsMayToDamage
+        {
+            get
+            {
+                return isMayToDamage;
+            }
+
+            set
+            {
+                isMayToDamage = value;
+            }
+        }
         #endregion
 
         /// <summary>

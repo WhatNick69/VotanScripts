@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 namespace CraftSystem
 {
@@ -50,17 +51,25 @@ namespace CraftSystem
 		private int helmetItemNumber;
 		[SerializeField]
 		private int shieldItemNumber;
-		[SerializeField]
+
 		ArmorPrefabs AP;
 		ArmorCraft AC;
+		PlayerStats PStats;
 
         ScrollRect scrollRectHelmetRepository;
         ScrollRect scrollRectShieldRepository;
         ScrollRect scrollRectCuirasseRepository;
-        #endregion
 
-        #region Свойства
-        public int HelmetItemNumber
+		float intemNumbCuirass;
+		float intemNumbHelmet;
+		float intemNumbShield;
+		float normPosCuirass;
+		float normPosHelmet;
+		float normPosShield;
+		#endregion
+
+		#region Свойства
+		public int HelmetItemNumber
         {
             get
             {
@@ -70,7 +79,8 @@ namespace CraftSystem
             set
             {
                 helmetItemNumber = value;
-            }
+				PStats.HelmetArmor = helmetList[value].ArmoryValue;
+			}
         }
 
         public int CuirassItemNumber
@@ -83,7 +93,8 @@ namespace CraftSystem
             set
             {
                 cuirassItemNumber = value;
-            }
+				PStats.CuirassArmor = cuirassList[value].ArmoryValue;
+			}
         }
 
         public int ShieldItemNumber
@@ -96,7 +107,8 @@ namespace CraftSystem
             set
             {
                 shieldItemNumber = value;
-            }
+				PStats.ShieldArmor = shieldList[value].ArmoryValue;
+			}
         }
 
         /// <summary>
@@ -146,6 +158,46 @@ namespace CraftSystem
 		{
 			return shield;
 		}
+
+		/// <summary>
+		/// Метод проверяет: 
+		/// 1. Двинул ли игрок ленту с элементаи брони
+		/// 2. Сменился элемент на следующий или нет? Если да, то меняет номер элемента
+		/// кторый отправится в таблицу с характеристиками
+		/// 
+		/// - После этого, в таблицу отправляются значения элементов, которые находятся
+		/// по центру окна прокрутки (определяется предыдущими проверками)
+		/// - В самом кенце сохраняется позиция ленты, для проверки в следющем кадре 1го условия
+		/// </summary>
+		private void ChekScroll()
+		{
+			if (normPosCuirass != scrollRectCuirasseRepository.horizontalNormalizedPosition ||
+				normPosHelmet != scrollRectHelmetRepository.horizontalNormalizedPosition ||
+				normPosShield != scrollRectShieldRepository.horizontalNormalizedPosition)
+			{
+				if (cuirassItemNumber != Mathf.Round(scrollRectCuirasseRepository.horizontalNormalizedPosition * (cuirassList.Count - 1)) ||
+					helmetItemNumber != Mathf.Round(scrollRectHelmetRepository.horizontalNormalizedPosition * (helmetList.Count - 1)) ||
+					shieldItemNumber != Mathf.Round(scrollRectShieldRepository.horizontalNormalizedPosition * (shieldList.Count - 1)))
+				{
+					intemNumbCuirass = Mathf.Round(scrollRectCuirasseRepository.horizontalNormalizedPosition * (cuirassList.Count - 1));
+					intemNumbHelmet = Mathf.Round(scrollRectHelmetRepository.horizontalNormalizedPosition * (helmetList.Count - 1));
+					intemNumbShield = Mathf.Round(scrollRectShieldRepository.horizontalNormalizedPosition * (shieldList.Count - 1));
+				}
+				else
+				{
+					intemNumbCuirass = cuirassItemNumber;
+					intemNumbHelmet = HelmetItemNumber;
+					intemNumbShield = shieldItemNumber;
+				}
+
+				PStats.NewCuirassArmor = cuirassList[(int)intemNumbCuirass].ArmoryValue;
+				PStats.NewHelmetArmor = helmetList[(int)intemNumbHelmet].ArmoryValue;
+				PStats.NewShieldArmor = shieldList[(int)intemNumbShield].ArmoryValue;
+			}
+			normPosCuirass = scrollRectCuirasseRepository.horizontalNormalizedPosition;
+			normPosHelmet = scrollRectHelmetRepository.horizontalNormalizedPosition;
+			normPosShield = scrollRectShieldRepository.horizontalNormalizedPosition;
+		}
 		#endregion
 
 		/// <summary>
@@ -154,7 +206,7 @@ namespace CraftSystem
 		public void PlayArena()
 		{
             if (AP == null)
-                AP = GameObject.Find("GetArmorPrefabs").GetComponent<ArmorPrefabs>();
+                AP = GameObject.Find("GetPrefabs").GetComponent<ArmorPrefabs>();
 	        
             AP.Cuirass = (GameObject)Resources.Load(cuirassPrefix + cuirassItemNumber + cuirassPostfix);
 			AP.Helmet = (GameObject)Resources.Load(helmetPrefix + helmetItemNumber + helmetPostfix);
@@ -163,7 +215,8 @@ namespace CraftSystem
 
 		private void Awake() // ____________start__________
 		{
-			AC = gameObject.GetComponent<ArmorCraft>();
+			PStats = GetComponent<PlayerStats>();
+			AC = GetComponent<ArmorCraft>();
 			cuirassList = new List<PartArmoryInformation>();
 			helmetList = new List<PartArmoryInformation>();
 			shieldList = new List<PartArmoryInformation>();
@@ -171,6 +224,11 @@ namespace CraftSystem
 			Timing.RunCoroutine(ShieldCorutine());
 			Timing.RunCoroutine(HelmetCorutine());
 			Timing.RunCoroutine(CuirassCorutine());
+		}
+
+		private void FixedUpdate()
+		{
+			ChekScroll();
 		}
 
 		/// <summary>

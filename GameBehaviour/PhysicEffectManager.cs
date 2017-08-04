@@ -1,5 +1,4 @@
-﻿using System;
-using PlayerBehaviour;
+﻿using PlayerBehaviour;
 using UnityEngine;
 using VotanInterfaces;
 using AbstractBehaviour;
@@ -19,6 +18,10 @@ namespace GameBehaviour
     {
         [SerializeField, Tooltip("Враг")]
         private AbstractEnemy enemy;
+        [SerializeField, Tooltip("Враг является боссом?")]
+        private bool isBoss;
+        [SerializeField, Tooltip("Босья сила сокращения эффекта"),Range(0,1f)]
+        private float bossEffectDecreaseMultiplier;
         [SerializeField, Tooltip("Трэил земляного эффекта")]
         private TrailRenderer trailRenderer;
         [SerializeField, Tooltip("Частота обновления")]
@@ -27,6 +30,8 @@ namespace GameBehaviour
         private Transform playerObjectTransform;
         private bool isStillTrailMoving;
         private bool isSuperAttack;
+        private Vector3 nockBackPosition;
+        private Vector3 vectorTemp;
 
         /// <summary>
         /// Зажечь земляной эффект
@@ -72,16 +77,44 @@ namespace GameBehaviour
             }
         }
 
+        /// <summary>
+        /// Оттолкнуть врага атакующим рывком
+        /// </summary>
+        /// <param name="weapon"></param>
         public void EventEffectRageAttack(IWeapon weapon)
         {
             isSuperAttack = true;
             weapon.GetPlayer.PlayerCameraSmooth.
                       DoNoize(1);
-
+            this.weapon = weapon;
             playerObjectTransform = weapon.GetPlayer.PlayerWeapon.transform;
             if (enemy.EnemyConditions.IsAlive)
             {
                 Timing.RunCoroutine(CoroutineForNockback());
+            }
+        }
+
+        /// <summary>
+        /// Установить позицию для отталкивания
+        /// 
+        /// Если это босс - то в 4 раза меньше
+        /// </summary>
+        private void SetNockbackPosition()
+        {
+            vectorTemp = enemy.transform.position - enemy.EnemyMove.
+                PlayerObjectTransformForFollow.transform.position;
+            if (isBoss)
+            {
+                nockBackPosition = enemy.transform.position +
+                    (vectorTemp * LibraryStaticFunctions.
+                    StrenghtOfNockback(weapon, isSuperAttack)
+                    *(1-bossEffectDecreaseMultiplier));
+            }
+            else
+            {
+                nockBackPosition = enemy.transform.position +
+                    vectorTemp * LibraryStaticFunctions.
+                    StrenghtOfNockback(weapon, isSuperAttack);
             }
         }
 
@@ -91,10 +124,7 @@ namespace GameBehaviour
         /// <returns></returns>
         private IEnumerator<float> CoroutineForNockback()
         {
-            Vector3 vec = enemy.transform.position - enemy.EnemyMove.
-                PlayerObjectTransformForFollow.transform.position;
-            Vector3 nockBackPosition = enemy.transform.position + 
-                vec*LibraryStaticFunctions.StrenghtOfNockback(weapon, isSuperAttack);
+            SetNockbackPosition();
 
             int i = 0;
             while (Vector3.Distance(enemy.transform.position,nockBackPosition) > 0.2f)

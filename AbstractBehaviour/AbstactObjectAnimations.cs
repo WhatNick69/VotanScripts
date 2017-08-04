@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEditor.Animations;
 using UnityEngine;
 using VotanInterfaces;
 
@@ -23,11 +24,12 @@ namespace AbstractBehaviour
         /// Конструктор
         /// </summary>
         /// <param name="parameters"></param>
-        public StructStatesNames(params string[] parameters)
+        public StructStatesNames(Animator animator)
         {
+            int count = animator.parameters.Length;
             states = new List<string>();
-            foreach (string parameter in parameters)
-                states.Add(parameter);
+            for (int i = 0;i<count;i++)
+                states.Add(animator.parameters[i].name);
         }
 
         /// <summary>
