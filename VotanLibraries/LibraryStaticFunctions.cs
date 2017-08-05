@@ -190,14 +190,14 @@ namespace VotanLibraries
         /// Может ли босс воспроизвести анимацию получения урона?
         /// 
         /// Текущая реализация: если получаемый урон больше либо равен
-        /// четверти здоровья/прочности брони врага, то воспроизводим анимацию
+        /// 0.05 прочности брони врага, то воспроизводим анимацию
         /// </summary>
         /// <param name="healthValue"></param>
         /// <param name="dmg"></param>
         /// <returns></returns>
         public static bool BossMayPlayGetDamageAnimation(float healthValue, float dmg)
         {
-            return dmg / healthValue >= 0.25f ? true : false;
+            return dmg / healthValue >= 0.05f ? true : false;
         }
 
         /// <summary>

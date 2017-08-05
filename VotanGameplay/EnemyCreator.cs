@@ -224,7 +224,7 @@ namespace VotanGameplay
                 // ОБЫЧНЫЙ РЫЦАРЬ
                 case EnemyType.Knight:
                     StaticStorageWithEnemies.ListEnemy[number]
-                        .GetComponent<IEnemyBehaviour>().EnemyMove.AgentSpeed = 3; // Скорость передвижения моба
+                        .GetComponent<IEnemyBehaviour>().EnemyMove.AgentSpeed = 2.5f; // Скорость передвижения моба
                     StaticStorageWithEnemies.ListEnemy[number]
                         .GetComponent<IEnemyBehaviour>().EnemyAttack.DmgEnemy = 20; // Урон моба
                     StaticStorageWithEnemies.ListEnemy[number]
@@ -252,7 +252,7 @@ namespace VotanGameplay
                     StaticStorageWithEnemies.ListEnemy[number].GetComponent<IEnemyBehaviour>().
                         EnemyMove.PreDistanceForAttack = 1.5f;                     // Предупредительная дистанция для атаки)
                     StaticStorageWithEnemies.ListEnemy[number]
-                        .GetComponent<IEnemyBehaviour>().EnemyMove.AgentSpeed = 4; // Скорость передвижения моба
+                        .GetComponent<IEnemyBehaviour>().EnemyMove.AgentSpeed = 3; // Скорость передвижения моба
                     StaticStorageWithEnemies.ListEnemy[number]
                         .GetComponent<IEnemyBehaviour>().EnemyAttack.DmgEnemy = 10; // Урон моба
                     StaticStorageWithEnemies.ListEnemy[number]

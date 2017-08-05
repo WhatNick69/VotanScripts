@@ -167,6 +167,7 @@ namespace EnemyBehaviour
                     EnemyMove.IsStopped &&
                     EnemyMove.PlayerObjectTransformForFollow)
                 {
+                    enemyAttack.IsMayToDamage = true;
                     if (EnemyConditions.IsBurned)
                         crazyEnemyModel.Rotate(Vector3.up * Time.deltaTime * fightRotatingSpeed / 2);
                     else
@@ -178,7 +179,9 @@ namespace EnemyBehaviour
                 }
                 else
                 {
+                    enemyAttack.IsMayToDamage = false;
                     EnemyAnimationsController.SetState(1, false);
+                    EnemyAnimationsController.SetState(0, true);
                     yield return Timing.WaitForSeconds(frequencyOfFightRotating*5);
                 }
             }

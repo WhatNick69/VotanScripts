@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.AI;
 using VotanInterfaces;
 using VotanLibraries;
-using System;
 
 namespace EnemyBehaviour
 {
@@ -184,7 +183,7 @@ namespace EnemyBehaviour
                     }
                     else
                     {
-                        EnemyAnimationsController.SetState(0, false);
+                        EnemyAnimationsController.DisableAllStates();
                         EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.1f);
                     }
                 }
@@ -194,6 +193,7 @@ namespace EnemyBehaviour
                     {
                         EnemyAnimationsController.SetState(0, true);
                         EnemyAnimationsController.SetState(1, false);
+                        EnemyAnimationsController.SetState(2, false);
 
                         if (!EnemyConditions.IsFrozen)
                             EnemyMove.DependenceAnimatorSpeedOfVelocity();

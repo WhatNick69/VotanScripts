@@ -50,7 +50,7 @@ namespace EnemyBehaviour
             enemyAbstract.AbstractObjectSounder.PlayDeadAudio();
             //enemyAbstract.EnemyAnimationsController.DisableAllStates();
             enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
-            enemyAbstract.EnemyAnimationsController.SetState(3, true);
+            enemyAbstract.EnemyAnimationsController.SetState(4, true);
             enemyAbstract.EnemyAnimationsController.PlayDeadNormalizeCoroutine();
             MainBarCanvas.gameObject.SetActive(false);
             enemyAbstract.EnemyMove.Agent.enabled = false;
@@ -189,10 +189,10 @@ namespace EnemyBehaviour
             }
 
             if (flag)
-                enemyAbstract.EnemyAnimationsController.SetState(2, true);
+                enemyAbstract.EnemyAnimationsController.SetState(3, true);
             yield return Timing.WaitForSeconds(frequencyOfGetDamage);
             if (flag)
-                enemyAbstract.EnemyAnimationsController.SetState(2, false);
+                enemyAbstract.EnemyAnimationsController.SetState(3, false);
 
             if (!isLongAttack)
                 isMayGetDamage = true;

@@ -37,7 +37,7 @@ namespace EnemyBehaviour
                 enemyAbstract.EnemyMove.DisableAgent();
             enemyAbstract.EnemyAnimationsController.SetState(0, false);
             enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
-            enemyAbstract.EnemyAnimationsController.SetState(4, true);
+            enemyAbstract.EnemyAnimationsController.SetState(2, true);
             yield return Timing.WaitForSeconds(attackLatency);
             isMayToPlayAttackAnimation = true;
         }

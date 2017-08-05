@@ -106,12 +106,12 @@ namespace GameBehaviour
             if (particleSystem)
                 particleSystem.Stop();
             damagePerTime = 0;
-            isBurning = false;
 
-            yield return Timing.WaitForSeconds(2);
+            yield return Timing.WaitForSeconds(1);
             if (particleSystem && !isBurning)
                 particleSystem.gameObject.SetActive(false);
             audioSourceOfBurning.Stop();
+            isBurning = false;
         }
     }
 }

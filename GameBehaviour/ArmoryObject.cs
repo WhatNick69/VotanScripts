@@ -76,6 +76,7 @@ namespace GameBehaviour
             boxCollider.enabled = true;
             yield return Timing.WaitForSeconds(LibraryStaticFunctions.rnd.Next(5, 10));
             gameObject.SetActive(false);
+            Destroy(gameObject);
         }
     }
 }
