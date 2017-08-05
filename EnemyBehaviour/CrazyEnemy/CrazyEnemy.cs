@@ -128,7 +128,8 @@ namespace EnemyBehaviour
                 }
                 else
                 {
-                    if (enemyAttack.IsMayToPlayAttackAnimation)
+                    if (!enemyAttack.IsMayToDamage || 
+                        !EnemyMove.PlayerObjectTransformForFollow)
                     {
                         EnemyAnimationsController.SetState(0, true);
                         EnemyAnimationsController.SetState(1, false);

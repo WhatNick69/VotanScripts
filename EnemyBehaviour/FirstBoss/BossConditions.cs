@@ -46,7 +46,7 @@ namespace EnemyBehaviour
         {
             IsAlive = false;
             isBossAlive = false;
-
+            
             enemyAbstract.AbstractObjectSounder.PlayDeadAudio();
             //enemyAbstract.EnemyAnimationsController.DisableAllStates();
             enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
