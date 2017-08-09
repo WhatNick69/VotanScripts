@@ -82,8 +82,7 @@ namespace EnemyBehaviour
                 {
                     if (CheckIfArmoryActiveAtLeastOne())
                     {
-                        int a = LibraryStaticFunctions.rnd.Next
-                            (0, armoryArray.Count);
+                        int a = Random.Range(0, armoryArray.Count);
                         armoryArray[a].FireEvent();
                         armoryArray.RemoveAt(a);
                         tempArmory -= partOfArmory;

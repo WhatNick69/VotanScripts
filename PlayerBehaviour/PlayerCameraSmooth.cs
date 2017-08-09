@@ -230,9 +230,20 @@ namespace PlayerBehaviour
                     Quaternion.Slerp(cameraTransform.rotation
                     , defaultQuarternion, followRotateSpeed);
 
-                cameraTransform.position =
-                    Vector3.Lerp(cameraTransform.position,
-                    standartVectorForCamera, followMoveSpeed);
+                if (Vector3.Distance(cameraTransform.position,
+                    standartVectorForCamera) > 2)
+                {
+                    cameraTransform.position =
+                        Vector3.MoveTowards(cameraTransform.position,
+                        standartVectorForCamera, followMoveSpeed * 3);
+                }
+                else if (Vector3.Distance(cameraTransform.position,
+                    standartVectorForCamera) > distanceBetweenDestAndPers)
+                {
+                    cameraTransform.position =
+                        Vector3.Lerp(cameraTransform.position,
+                        standartVectorForCamera, followMoveSpeed);
+                }
             }
         }
 

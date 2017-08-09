@@ -243,12 +243,12 @@ namespace GameBehaviour
 
                 // Поворот
                 listIceObjects[i].rotation = Quaternion.Euler
-                    (0, LibraryStaticFunctions.rnd.Next(0,360), 0);
+                    (0, UnityEngine.Random.Range(0,360), 0);
 
                 // Кеширование позиции
                 listPositionIceObjects.Add(new Vector3(listIceObjects[i].position.x,
-                    listIceObjects[i].position.y + 
-                    (float)LibraryStaticFunctions.rnd.NextDouble()/4+1.75f,
+                    listIceObjects[i].position.y +
+                     UnityEngine.Random.Range(0,1f) / 4+1.75f,
                     listIceObjects[i].position.z));
             }
         }

@@ -371,7 +371,7 @@ namespace EnemyBehaviour
                         {
                             SetRandomPosition();
                             yield return Timing.WaitForSeconds
-                                ((float)LibraryStaticFunctions.rnd.NextDouble()
+                                (UnityEngine.Random.Range(0,1f)
                                 * 10 + 10);
                         }
                         else
@@ -385,7 +385,7 @@ namespace EnemyBehaviour
                     CheckStopped(true);
                     SetRandomPosition();
                     yield return Timing.WaitForSeconds
-                        ((float)LibraryStaticFunctions.rnd.NextDouble()
+                        (UnityEngine.Random.Range(0, 1f)
                         * 10 + 10);
                 }
             }

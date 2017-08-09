@@ -14,7 +14,7 @@ namespace CraftSystem
         [SerializeField, Tooltip("Изображение камня")]
         private Sprite imageGem;
         [SerializeField,Tooltip("Тип атаки камня")]
-        private DamageType damageTypeGem;
+        private GemType damageTypeGem;
         [SerializeField, Range(1, 100f),Tooltip("Сила камня")]
         private float gemPower;
         [SerializeField,Tooltip("Имя камня")]
@@ -31,7 +31,7 @@ namespace CraftSystem
 				return prefabName + linkPrefab;
 			}
 		}
-		public DamageType DamageTypeGem
+		public GemType DamageTypeGem
         {
             get
             {

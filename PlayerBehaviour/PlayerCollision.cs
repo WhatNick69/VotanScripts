@@ -1,6 +1,4 @@
-﻿using GameBehaviour;
-using MovementEffects;
-using System;
+﻿using MovementEffects;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,6 +23,9 @@ namespace PlayerBehaviour
         private float searchingRadius;
         [SerializeField, Tooltip("Ротатор лучей")]
         private Transform rotaterRaycaster;
+        [SerializeField, Tooltip("Величина силы, которая достается игроку при получении удара от босса")]
+        private float addForceValue;
+
         private bool[] boolsList;
         private float angle;
 
@@ -98,6 +99,10 @@ namespace PlayerBehaviour
             Timing.RunCoroutine(CoroutineForErrorControlling());
         }
 
+        /// <summary>
+        /// Корутина на проверку, находимся ли мы на земле
+        /// </summary>
+        /// <returns></returns>
         private IEnumerator<float> CoroutineForCheckPlayerGrounded()
         {
             while (isRunning)
@@ -111,33 +116,61 @@ namespace PlayerBehaviour
                 }
                 else
                 {
-                    // Метод, который пускает по диагонали в третьем измерении 4 луча и проверяет на столкновения.
-                    isGrounded = false;
+                    DiagonalGroundCheckRaycaster();
                 }
-                yield return Timing.WaitForSeconds(0.1f);
+                yield return Timing.WaitForSeconds(frequencyUpdate);
             }
         }
 
-        public void AddDamageForceToPlayer(Vector3 position)
+        private void DiagonalGroundCheckRaycaster()
         {
-            PlayerRGB.AddForce(position*15000);
+            for (int i = 0;i<4;i++)
+            {
+                rotaterRaycaster.rotation = Quaternion.Euler(30, rotaterRaycaster.localEulerAngles.y + 90 * i, 0);
+                ray = new Ray(rotaterRaycaster.position
+                  , rotaterRaycaster.forward);
+
+                if (Physics.Raycast(ray, out rayCastHitGround, 0.5f))
+                {
+                    if (!isGrounded)
+                    {
+                        isGrounded = true;
+                        Debug.Log("Упали");
+                        Debug.DrawRay(rotaterRaycaster.position, rotaterRaycaster.forward, Color.green, 0.1f);
+                        return;                   
+                    }
+                }
+                else
+                {
+                    Debug.DrawRay(rotaterRaycaster.position, rotaterRaycaster.forward, Color.red, 0.1f);
+                }            
+            }
+            isGrounded = false;
+            return;
         }
 
         /// <summary>
-        /// Отключить либо включить просчет физики персонажа
+        /// Добавить силу отталкивания по врагу.
         /// </summary>
-        public void RigidbodyState(bool flag)
+        /// <param name="position"></param>
+        public void AddDamageForceToPlayer(Vector3 position)
         {
-            PlayerRGB.detectCollisions = flag;         
+            position *= addForceValue;
+            position.y *= 1.05f;
+            PlayerRGB.AddForce(position,ForceMode.Impulse);
         }
 
         /// <summary>
         /// Отключаем ригидбади
         /// </summary>
-        public void RigidbodyDead()
+        public void RigidbodyDead(bool isFalling)
         {
             PlayerRGB.detectCollisions = false;
-            PlayerRGB.useGravity = false;
+            PlayerRGB.useGravity = isFalling;
+            if (!isFalling)
+            {
+                PlayerRGB.constraints = RigidbodyConstraints.FreezePosition;
+            }
         }
 
         /// <summary>
@@ -222,7 +255,7 @@ namespace PlayerBehaviour
                    
                 yield return Timing.WaitForSeconds(0.5f);
             }
-            playerComponentControl.PlayerConditions.RunDieState();
+            playerComponentControl.PlayerConditions.RunDieState(true);
         }
     }
 }

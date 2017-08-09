@@ -22,6 +22,7 @@ namespace PlayerBehaviour
         private static AudioClip[] audioSpin; // Звуки вращения оружия
 
         private bool isMayToPlayWeaponAudio;
+        private PlayerComponentsControl playerComponentsControl;
         #endregion
 
         #region Инициализация
@@ -32,6 +33,8 @@ namespace PlayerBehaviour
         {
             base.Start();
             isMayToPlayWeaponAudio = true;
+            playerComponentsControl = GetComponent<PlayerComponentsControl>();
+
             InitialisationHitToArmorySounds();
             InitialisationStepsSounds();
             InitialisationSpinSounds();
@@ -129,16 +132,14 @@ namespace PlayerBehaviour
             if (isArmory)
             {
                 audioSourceObject.clip =
-                   audioHitArmory[LibraryStaticFunctions.rnd.
-                   Next(0, audioHitArmory.Length)];
+                   audioHitArmory[UnityEngine.Random.Range(0, audioHitArmory.Length)];
                 audioSourceObject.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
                 audioSourceObject.Play();
             }
             else
             {
                 audioSourceObject.clip =
-                     audioHurt[LibraryStaticFunctions.rnd.
-                     Next(0, audioHurt.Length)];
+                     audioHurt[UnityEngine.Random.Range(0, audioHurt.Length)];
                 audioSourceObject.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
                 audioSourceObject.Play();
             }
@@ -162,8 +163,7 @@ namespace PlayerBehaviour
             else
             {
                 audioSourceWeapon.clip =
-                    audioSpin[LibraryStaticFunctions.rnd.
-                    Next(0, audioSpin.Length - 1)];
+                    audioSpin[UnityEngine.Random.Range(0, audioSpin.Length - 1)];
             }
             audioSourceWeapon.pitch = LibraryStaticFunctions.GetRangeValue(0.8f + speed/2,0.05f);
             audioSourceWeapon.Play();
@@ -180,16 +180,14 @@ namespace PlayerBehaviour
                 if (isCuttingWeapon == 1)
                 {
                     audioSourceWeapon.clip =
-                       audioCutBody[LibraryStaticFunctions.rnd.
-                       Next(0, audioCutBody.Length)];
+                       audioCutBody[UnityEngine.Random.Range(0, audioCutBody.Length)];
                     audioSourceWeapon.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
                     audioSourceWeapon.Play();
                 }
                 else if (isCuttingWeapon == 0)
                 { 
                     audioSourceWeapon.clip =
-                        audioHitBody[LibraryStaticFunctions.rnd.
-                        Next(0, audioHitBody.Length)];
+                        audioHitBody[UnityEngine.Random.Range(0, audioHitBody.Length)];
                     audioSourceWeapon.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
                     audioSourceWeapon.Play();
                 }
@@ -220,51 +218,44 @@ namespace PlayerBehaviour
             {                   
                 case ArmoryPosition.Cuirass:
                     audioSourceObject.clip =
-                        audioDestroyArmory[LibraryStaticFunctions.rnd.
-                        Next(0, 3)];
+                        audioDestroyArmory[UnityEngine.Random.Range(0, 3)];
                     audioSourceObject.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
                     audioSourceObject.Play();
                     break;
                 case ArmoryPosition.Helmet:
                     audioSourceObject.clip =
-                        audioDestroyArmory[LibraryStaticFunctions.rnd.
-                        Next(2, audioDestroyArmory.Length)];
+                        audioDestroyArmory[UnityEngine.Random.Range(2, audioDestroyArmory.Length)];
                     audioSourceObject.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
                     audioSourceObject.Play();
                     break;
                 case ArmoryPosition.LeftBallast:
                     audioSourceObject.clip =
-                        audioDestroyArmory[LibraryStaticFunctions.rnd.
-                        Next(2, audioDestroyArmory.Length)];
+                        audioDestroyArmory[UnityEngine.Random.Range(2, audioDestroyArmory.Length)];
                     audioSourceObject.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
                     audioSourceObject.Play();
                     break;
                 case ArmoryPosition.LeftShoulder:
                     audioSourceObject.clip =
-                        audioDestroyArmory[LibraryStaticFunctions.rnd.
-                        Next(2, audioDestroyArmory.Length)];
+                        audioDestroyArmory[UnityEngine.Random.Range(2, audioDestroyArmory.Length)];
                     audioSourceObject.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
                     audioSourceObject.Play();
                     break;
                 case ArmoryPosition.RightBallast:
                     audioSourceObject.clip =
-                        audioDestroyArmory[LibraryStaticFunctions.rnd.
-                        Next(2, audioDestroyArmory.Length)];
+                        audioDestroyArmory[UnityEngine.Random.Range(2, audioDestroyArmory.Length)];
                     audioSourceObject.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
                     audioSourceObject.Play();
                     break;
                 case ArmoryPosition.RightShoulder:
                     audioSourceObject.clip =
-                        audioDestroyArmory[LibraryStaticFunctions.rnd.
-                        Next(2, audioDestroyArmory.Length)];
+                        audioDestroyArmory[UnityEngine.Random.Range(2, audioDestroyArmory.Length)];
                     audioSourceObject.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
                     audioSourceObject.Play();
                     break;
                 case ArmoryPosition.Shield:
 
                     audioSourceObject.clip =
-                        audioDestroyArmory[LibraryStaticFunctions.rnd.
-                        Next(0, 3)];
+                        audioDestroyArmory[UnityEngine.Random.Range(0, 3)];
                     audioSourceObject.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
                     audioSourceObject.Play();
                     break;
@@ -278,15 +269,17 @@ namespace PlayerBehaviour
 
         public override void FallObject()
         {
-            WorkWithSoundsBodyFall(audioSourceLegs);
+            if (!playerComponentsControl.PlayerConditions.IsFallingDead)
+            {
+                WorkWithSoundsBodyFall(audioSourceLegs);
+            }
         }
 
         public override void PlayStepAudio()
         {
             audioSourceLegs.volume = volumeStep;
             audioSourceLegs.clip =
-                audioSteps[LibraryStaticFunctions.rnd.
-                Next(0, audioSteps.Length)];
+                audioSteps[UnityEngine.Random.Range(0, audioSteps.Length)];
             audioSourceLegs.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
             audioSourceLegs.Play();
         }
@@ -296,8 +289,7 @@ namespace PlayerBehaviour
             audioSourceObject.volume =
                 LibraryStaticFunctions.GetRangeValue(volumeDead, 0.1f);
             audioSourceObject.clip =
-               audioDead[LibraryStaticFunctions.rnd.
-               Next(0, audioDead.Length)];
+               audioDead[UnityEngine.Random.Range(0, audioDead.Length)];
             audioSourceObject.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
             audioSourceObject.Play();
         }

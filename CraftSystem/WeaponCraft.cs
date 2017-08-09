@@ -127,8 +127,6 @@ namespace CraftSystem
 		{
             MenuSoundManager.PlaySoundStatic(1);
             gripItemNumber = x;
-			PStats.GripDefence = gripList[x].GripDefence;
-
 		}
 
 		/// <summary>
@@ -187,9 +185,6 @@ namespace CraftSystem
 					intemNumbGrip = gripItemNumber;
 					intemNumbGem = gemItemNumber;
 				}
-
-				PStats.NewGripDefence = gripList[(int)intemNumbGrip].GripDefence;
-
 				PStats.NewHeadDamage = headList[(int)intemNumbHead].DamageBase;
 
 				PStats.NewGemPower = gemList[(int)intemNumbGem].GemPower;
@@ -249,8 +244,6 @@ namespace CraftSystem
 					button.SetWeaponCraft(WC);  // ниже задаем параметры, которые увидит игрок
 					button.SetNumber(i); //
 					button.SetName(gripList[i].GripName); //
-					button.SetSpinBous(gripList[i].BonusSpinSpeedFromGrip.ToString()); //
-					button.SetDefence(gripList[i].GripDefence.ToString()); //
 					button.SetLogo(gripList[i].ItemImage); //
 					item.transform.SetParent(gripRepository.transform, false); // удочерям кнопку "листу" кнопок
 

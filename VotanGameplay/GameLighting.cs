@@ -22,7 +22,6 @@ namespace VotanGameplay
         bool[] isLookAtDestinationList;
         private Vector3 startPosition;
         private Vector3 newPosition;
-        private System.Random rnd;
         private bool isLightingsActive;
         private bool isLight;
         private byte iterations;
@@ -36,7 +35,6 @@ namespace VotanGameplay
             trailRendererList = new TrailRenderer[lightingList.Length];
 
             startPosition = transform.position;
-            rnd = LibraryStaticFunctions.rnd;
             audioSource = GetComponent<AudioSource>();
 
             GetAllChilds();
@@ -123,7 +121,7 @@ namespace VotanGameplay
         /// <param name="i"></param>
         private bool RandomBoolValue(int i)
         {
-            return rnd.Next(0, 2) == 1 ? true : false;
+            return Random.Range(0,2) == 1 ? true : false;
         }
 
         /// <summary>
@@ -179,14 +177,14 @@ namespace VotanGameplay
                     {
                         lightingList[i].LookAt(tempPosition);
                         lightingList[i].Translate(lightingList[i].forward
-                            * (float)(2 + rnd.NextDouble()), Space.World);
+                            * (2 + Random.Range(0,1f)), Space.World);
                     }
                     else
                     {
                         lightingList[i].rotation = Quaternion.Euler
-                            (rnd.Next(0, 360), rnd.Next(0, 360), rnd.Next(0, 360));
+                            (Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
                         lightingList[i].Translate(lightingList[i].forward
-                            * (float)(1 + rnd.NextDouble()));
+                            * (1 + Random.Range(0,1f)));
                     }
 
                     if (Vector3.Distance(lightingList[i].

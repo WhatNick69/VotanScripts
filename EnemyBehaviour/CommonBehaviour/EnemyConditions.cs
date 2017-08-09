@@ -296,22 +296,22 @@ namespace EnemyBehaviour
             IWeapon weapon)
         {
             float damage = 0;
-            switch (weapon.AttackType)
+            switch (weapon.GemType)
             {
                 // ЭЛЕКТРИЧЕСТВО
-                case DamageType.Electric:
+                case GemType.Electric:
                     RunCoroutineForGetElectricDamage(dmg, gemPower, weapon); 
                     damage = dmg * (1 - electricResistance);
                 return damage;
 
                 // ОГОНЬ
-                case DamageType.Fire:
+                case GemType.Fire:
                     damage = dmg * (1 - fireResistance);
                     RunFireDamage(damage, weapon);
                 return damage;
 
                 // ЛЁД
-                case DamageType.Frozen:
+                case GemType.Frozen:
                     if (!isFrozen)
                     {
                         if (LibraryStaticFunctions.MayableToBeFreezy(gemPower))
@@ -328,7 +328,7 @@ namespace EnemyBehaviour
                 return dmg * (1 - frostResistance);
 
                 // ФИЗИКА
-                case DamageType.Powerful:
+                case GemType.Powerful:
                     RunCoroutineForPhysicDamage(weapon);
                 return dmg * (1 - physicResistance);
             }
@@ -338,22 +338,22 @@ namespace EnemyBehaviour
 
         public float GetDamageWithResistanceWithoutEffect(float dmg,IWeapon weapon)
         {
-            switch (weapon.AttackType)
+            switch (weapon.GemType)
             {
                 // ЭЛЕКТРИЧЕСТВО
-                case DamageType.Electric:
+                case GemType.Electric:
                     return dmg * (1 - electricResistance); ;
 
                 // ОГОНЬ
-                case DamageType.Fire:
+                case GemType.Fire:
                     return dmg * (1 - fireResistance); ;
 
                 // ЛЁД
-                case DamageType.Frozen:
+                case GemType.Frozen:
                     return dmg * (1 - frostResistance);
 
                 // ФИЗИКА
-                case DamageType.Powerful:
+                case GemType.Powerful:
                     return dmg * (1 - physicResistance);
 
                 default:
@@ -396,7 +396,7 @@ namespace EnemyBehaviour
 
                     /* Если это электрический удар в рукопашную - отодвигаем противника.
                      Молния не должна иметь право отодвигать врага. */
-                    if (weapon.AttackType == DamageType.Electric)
+                    if (weapon.GemType == GemType.Electric)
                         enemyAbstract.Physicffect.EventEffectWithoutDefenceBonus(weapon);
 
                     dmg = GetDamageWithResistance(dmg, gemPower, weapon);

@@ -145,6 +145,7 @@ namespace EnemyBehaviour
                 AbstractObjectSounder.PlayWeaponHitAudio
                     (EnemyOpponentChoiser.PlayerConditionsTarget.
                     GetDamage(EnemyAttack.DmgEnemy));
+
                 EnemyMove.PlayerCollisionComponent.AddDamageForceToPlayer
                     (firstBossAttack.SwordOfEnemy.forward);
                 EnemyAnimationsController.DisableAllStates();

@@ -162,6 +162,19 @@ namespace PlayerBehaviour
             }
         }
 
+        public float OriginalSpinSpeed
+        {
+            get
+            {
+                return originalSpinSpeed;
+            }
+
+            set
+            {
+                originalSpinSpeed = value;
+            }
+        }
+
         public void SetAngle(float angleTemp)
         {
             angle = angleTemp;
@@ -175,8 +188,8 @@ namespace PlayerBehaviour
         /// </summary>
         private void Start()
         {
-            InitialisationOfVariables();
             InitialisationOfReferences();
+            InitialisationOfVariables();
             InitialisationOfCoroutines();
         }
 
@@ -191,14 +204,22 @@ namespace PlayerBehaviour
             playerModel = playerComponentsControl.PlayerModel;
             normalYVector.y = 0.55f;
 
-            MoveSpeed = LibraryStaticFunctions.DependenceMoveSpeedAndWeaponWeight
-                (playerComponentsControl.PlayerWeapon.Weight);
-            RotateSpeed = LibraryStaticFunctions.DependenceRotateSpeedAndWeaponWeight
-                (playerComponentsControl.PlayerWeapon.Weight);
-            originalSpinSpeed = playerComponentsControl.PlayerWeapon.OriginalSpinSpeed; ;
-            maxSpinSpeed = playerComponentsControl.PlayerWeapon.OriginalSpinSpeed;
+            OverridePlayerControllerParametersDependenceArmoryWeight();
+
             LibraryStaticFunctions.SetAttackTransformPosition
                 (playerComponentsControl.PlayerWeapon, attackTransform);
+        }
+
+        /// <summary>
+        /// Переопределить параметры игрока (скорость бега, скорость поворота)
+        /// в зависимости от веса брони/оставшегося веса брони.
+        /// </summary>
+        public void OverridePlayerControllerParametersDependenceArmoryWeight()
+        {
+            MoveSpeed = LibraryStaticFunctions.DependenceMoveSpeedAndArmoryWeight
+                (playerComponentsControl.PlayerArmory.ArmoryWeight);
+            RotateSpeed = LibraryStaticFunctions.DependenceRotateSpeedAndArmoryWeight
+                (playerComponentsControl.PlayerArmory.ArmoryWeight);
         }
 
         /// <summary>

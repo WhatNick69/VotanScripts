@@ -22,6 +22,14 @@ namespace PlayerBehaviour
 
         [SerializeField, Tooltip("Позиции")]
         private List<Transform> armoryPosition;
+        [SerializeField, Tooltip("Вес брони. Общий")]
+        private float armoryWeight;
+
+        private float helmetWeight;
+        private float shieldWeight;
+        private float cuirasseWeight;
+        private float shieldWeightPart;
+        private float cuirasseWeightPart;
 
         private bool isHelmetDeactive;
         private bool isKirasaDeactive;
@@ -72,6 +80,22 @@ namespace PlayerBehaviour
                 shieldParts = value;
             }
         }
+
+        public float ArmoryWeight
+        {
+            get
+            {
+                return armoryWeight;
+            }
+
+            set
+            {
+                armoryWeight = value;
+                OverrideWeaponParametersDependenceArmoryWeight();
+                playerComponentsControl.PlayerController.
+                    OverridePlayerControllerParametersDependenceArmoryWeight();
+            }
+        }
         #endregion
 
         /// <summary>
@@ -90,7 +114,38 @@ namespace PlayerBehaviour
 
             //SwitchPositionInCuirassList();
             playerComponentsControl = GetComponent<PlayerComponentsControl>();
+
+            cuirasseWeightPart = cuirasseWeight / kirasaParts.Count; // вес элемента кирасы
+            shieldWeightPart = shieldWeight / shieldParts.Count; // вес элемента щита
+
             SwitchPositionInShieldList();
+        }
+
+        /// <summary>
+        /// Переопределить параметры оружия в зависимисти от 
+        /// веса брони на персонаже/оставшегося веса брони.
+        /// </summary>
+        private void OverrideWeaponParametersDependenceArmoryWeight()
+        {
+            playerComponentsControl.PlayerWeapon.SetSpinSpeed
+                (LibraryStaticFunctions.TotalSpinSpeed(ArmoryWeight));
+        }
+
+        /// <summary>
+        /// Задать общий вес брони и вес элементов по отдельности.
+        /// </summary>
+        /// <param name="helmetWeight">Шлем</param>
+        /// <param name="shieldWeight">Щит</param>
+        /// <param name="cuirasseWeight">Кираса</param>
+        public void SetArmoryWeight(float helmetWeight,float shieldWeight,float cuirasseWeight)
+        {
+            this.helmetWeight = helmetWeight;
+            this.shieldWeight = shieldWeight;
+            this.cuirasseWeight = cuirasseWeight;
+
+            armoryWeight = LibraryStaticFunctions.TotalWeight(this.helmetWeight
+                , this.shieldWeight
+                , this.cuirasseWeight);
         }
 
         /// <summary>
@@ -187,6 +242,8 @@ namespace PlayerBehaviour
                         PlayerSounder.PlayAnyDestroyArmoryAudio
                         (helmet.NumberPosition);
                     helmet.FireEvent();
+
+                    ArmoryWeight -= helmetWeight;
                     tempArmory -= 0.2f;
                 }
                 else
@@ -205,7 +262,7 @@ namespace PlayerBehaviour
                         int a = 0;
                         if (shieldParts.Count > 1)
                         {
-                            a = LibraryStaticFunctions.rnd.Next(1, shieldParts.Count);
+                            a = Random.Range(1, shieldParts.Count);
                         }
 
                         playerComponentsControl.
@@ -213,7 +270,9 @@ namespace PlayerBehaviour
                             (shieldParts[a].NumberPosition);
                         shieldParts[a].FireEvent();
                         shieldParts.RemoveAt(a);
+
                         tempArmory -= shieldPartArmory;
+                        ArmoryWeight -= shieldWeightPart;
 
                         if (shieldParts.Count == 1)
                         {
@@ -234,7 +293,7 @@ namespace PlayerBehaviour
                         int a;
                         if (kirasaParts.Count >= 1)
                         {
-                            a = LibraryStaticFunctions.rnd.Next(0, kirasaParts.Count);
+                            a = Random.Range(0, kirasaParts.Count);
                         }
                         else
                         {
@@ -249,7 +308,9 @@ namespace PlayerBehaviour
                             (kirasaParts[a].NumberPosition);
                         kirasaParts[a].FireEvent();
                         kirasaParts.RemoveAt(a);
+
                         tempArmory -= kirasaPartArmory;
+                        ArmoryWeight -= cuirasseWeightPart;
                     }
                 }
             }
@@ -282,7 +343,9 @@ namespace PlayerBehaviour
     /// </summary>
     public enum ArmoryClass
     {
-        Helmet, Cuirass,Shield
+        Helmet,
+        Cuirass,
+        Shield
     }
 
 	/// <summary>
@@ -290,6 +353,12 @@ namespace PlayerBehaviour
     /// </summary>
     public enum ArmoryPosition
 	{
-		Helmet, Shield, Cuirass, LeftShoulder, RightShoulder, LeftBallast, RightBallast
+		Helmet,
+        Shield,
+        Cuirass,
+        LeftShoulder,
+        RightShoulder,
+        LeftBallast,
+        RightBallast
 	}
 }

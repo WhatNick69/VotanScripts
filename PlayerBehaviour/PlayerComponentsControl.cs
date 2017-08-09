@@ -52,6 +52,8 @@ namespace PlayerBehaviour
         private Transform playerModel;
         [SerializeField, Tooltip("Интерфейс монитора игрока")]
         private PlayerUI playerUI;
+        [SerializeField, Tooltip("Обработчик звуковых событий в HUD")]
+        private PlayerHUDAudioStorage playerHUD;
         #endregion
 
         #region Доступы к компонентам
@@ -299,6 +301,19 @@ namespace PlayerBehaviour
             set
             {
                 downInterfaceRotater = value;
+            }
+        }
+
+        internal PlayerHUDAudioStorage PlayerHUD
+        {
+            get
+            {
+                return playerHUD;
+            }
+
+            set
+            {
+                playerHUD = value;
             }
         }
         #endregion

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using MovementEffects;
 using VotanInterfaces;
 using VotanLibraries;
-using System;
 
 namespace PlayerBehaviour
 {
@@ -30,6 +29,11 @@ namespace PlayerBehaviour
         void AddTempPhysicDefence(float value);
 
         /// <summary>
+        /// Скорость вращения оружием
+        /// </summary>
+        float SpinSpeed { get; set; }
+
+        /// <summary>
         /// Булева переменная, которая показывает
         /// можно ли вновь получить защиту в результате
         /// попадания по врагу земляной атакой
@@ -42,19 +46,19 @@ namespace PlayerBehaviour
         IPlayerBehaviour GetPlayer { get; }
 
         /// <summary>
-        /// Значения защиты
-        /// </summary>
-        float DefenceValue { get; set; }
-
-        /// <summary>
         /// Значения урона оружием
         /// </summary>
         float Damage { get; set; }
 
         /// <summary>
+        /// Величина критического удара в процентах
+        /// </summary>
+        float CritChanceStrenght { get; set; }
+
+        /// <summary>
         /// Тип атаки
         /// </summary>
-        DamageType AttackType { get; set; }
+        GemType GemType { get; set; }
 
         /// <summary>
         /// Тип оружия (режущее, дробящее)
@@ -62,19 +66,9 @@ namespace PlayerBehaviour
         WeaponType WeaponType { get; set; }
 
         /// <summary>
-        /// Скорость вращения оружием
-        /// </summary>
-        float SpinSpeed { get; set; }
-
-        /// <summary>
         /// Сила камня
         /// </summary>
         float GemPower { get; set; }
-
-        /// <summary>
-        /// Вес оружия
-        /// </summary>
-        float Weight { get; set; }
 
         /// <summary>
         /// Оригинальная скорость оружия
@@ -108,14 +102,19 @@ namespace PlayerBehaviour
         /// <param name="spinSpeed"></param>
         /// <param name="weight"></param>
         /// <param name="gemPower"></param>
-        void SetWeaponParameters(float damage, float defenceValue, DamageType attackType,
-            TrailRenderer trailRenderer, float spinSpeed,
-            float weight,float gemPower,WeaponType weaponType);
+        void SetWeaponParameters(float damage, float critChance,GemType attackType, 
+            TrailRenderer trailRenderer,float gemPower,WeaponType weaponType);
 
         /// <summary>
         /// Снижаем скорость вращения при попадании по врагу
         /// </summary>
         void WhileTime();
+
+        /// <summary>
+        /// Установить скорость вращения оружием
+        /// </summary>
+        /// <param name="spinSpeed"></param>
+        void SetSpinSpeed(float spinSpeed);
 
         /// <summary>
         /// Корутина, для осуществления замедления оружия игрока
@@ -141,12 +140,12 @@ namespace PlayerBehaviour
         : MonoBehaviour, IWeapon
 	{
         #region Переменные
-        [SerializeField, Tooltip("Урон от оружия"), Range(1, 2200f)]
+        [SerializeField, Tooltip("Урон от оружия"), Range(1, 10000f)]
 		private float damage;
-		[SerializeField, Tooltip("Защита"), Range(0, 99f)]
-		private float defenceValue;
-		[SerializeField, Tooltip("Тип атаки")]
-		private DamageType damageType;
+        [SerializeField, Tooltip("Величина критического урона (в процентах)"), Range(100, 1000)]
+        private float critChanceStrenght;
+        [SerializeField, Tooltip("Тип атаки")]
+		private GemType gemType;
         [SerializeField, Tooltip("Тип оружия")]
         private WeaponType weaponType;
         [SerializeField, Tooltip("Скорость вращения"), Range(10, 100f)]
@@ -156,10 +155,6 @@ namespace PlayerBehaviour
         [SerializeField, Tooltip("Временная защита")]
         private float tempDefence;
         private float originalSpinSpeed;
-		[SerializeField, 
-            Tooltip("Вес оружия. Чем больше - тем меньше замедление при попадании по противнику")
-                , Range(1f, 100f)]
-		private float weight;
 		[SerializeField, Tooltip("Задержка перед возвращением скорости"), Range(0.1f, 3)]
 		private float speedReturnLatency;
 		[SerializeField, Tooltip("Хранитель компонентов")]
@@ -174,6 +169,7 @@ namespace PlayerBehaviour
 
         private Rigidbody rigidbodyOfWeapon;
         private BoxCollider[] boxColliderOfWeaponArray;
+        private PlayerArmory playerArmory;
         #endregion
 
         #region Свойства
@@ -190,31 +186,16 @@ namespace PlayerBehaviour
             }
         }
 
-        public float DefenceValue
+        public GemType GemType
         {
             get
             {
-                return defenceValue;
+                return gemType;
             }
 
             set
             {
-                if (value >= 100)
-                    value = 99;
-                defenceValue = value;
-            }
-        }
-
-        public DamageType AttackType
-        {
-            get
-            {
-                return damageType;
-            }
-
-            set
-            {
-                damageType = value;
+                gemType = value;
             }
         }
 
@@ -232,11 +213,13 @@ namespace PlayerBehaviour
                 else if (value < 0)
                     value = 0;
                 spinSpeed = value;
+
                 playerComponentsControl.PlayerAnimationsController.
                     SetSpeedAnimationByRunSpeed(0.25f+spinSpeed * 0.005f);
                 PlaySpinSpeedAudio();
             }
         }
+
         private void PlaySpinSpeedAudio()
         {
             tempAngleForSound += spinSpeed/2;
@@ -245,23 +228,6 @@ namespace PlayerBehaviour
                 playerComponentsControl.PlayerSounder.PlaySpinAudio
                     (SpinSpeed, false);
                 tempAngleForSound = 0;
-            }
-        }
-
-        public float Weight
-        {
-            get
-            {
-                return weight;
-            }
-
-            set
-            {
-                if (value > 100)
-                    value = 100;
-                else if (value < 1)
-                    value = 1;
-                weight = value;
             }
         }
 
@@ -368,29 +334,39 @@ namespace PlayerBehaviour
                 isSlowMotion = value;
             }
         }
+
+        public float CritChanceStrenght
+        {
+            get
+            {
+                return critChanceStrenght;
+            }
+
+            set
+            {
+                critChanceStrenght = value;
+            }
+        }
         #endregion
 
         /// <summary>
         /// Задать характеристики оружия через урон, 
-        /// мощность блока, тип урона, скорость вращения и вес   
+        /// скорость вращения, тип камня, трэил, 
+        /// силу камня, и тип оружия.
         /// </summary>
-        /// <param name="damage">Величина урона от оружия.</param>
-        /// <param name="defenceValue">Величина защита от оружия.</param>
-        /// <param name="attackType">Тип атаки оружия от камня</param>
-        /// <param name="trailRenderer">Трэил-лента оружия</param>
-        /// <param name="spinSpeed">Скорость вращения оружием</param>
-        /// <param name="weight">Вес оружия</param>
-        /// <param name="gemPower">Сила камня</param>
-        public void SetWeaponParameters(float damage, float defenceValue,
-            DamageType damageType, TrailRenderer trailRenderer ,
-            float spinSpeed,float weight,float gemPower,WeaponType weaponType=WeaponType.Cutting)
+        /// <param name="damage"></param>
+        /// <param name="spinSpeed"></param>
+        /// <param name="gemType"></param>
+        /// <param name="trailRenderer"></param>
+        /// <param name="gemPower"></param>
+        /// <param name="weaponType"></param>
+        public void SetWeaponParameters(float damage, float critChance,GemType gemType, 
+            TrailRenderer trailRenderer,float gemPower,
+            WeaponType weaponType=WeaponType.Cutting)
         {
-            originalSpinSpeed = spinSpeed;
-            DefenceValue = defenceValue;
             this.damage = damage;
-            this.damageType = damageType;
-            this.spinSpeed = 0;
-            this.weight = weight;
+            critChanceStrenght = critChance;
+            this.gemType = gemType;
             this.gemPower = gemPower;
             this.trailRenderer = trailRenderer;
             this.weaponType = weaponType;
@@ -398,6 +374,16 @@ namespace PlayerBehaviour
             SetColorTrailWeapon();
         }
         
+        /// <summary>
+        /// Установить скорость вращения оружием
+        /// </summary>
+        /// <param name="spinSpeed"></param>
+        public void SetSpinSpeed(float spinSpeed)
+        {
+            this.spinSpeed = spinSpeed;
+            originalSpinSpeed = spinSpeed;
+        }
+
         /// <summary>
         /// Инициализация
         /// </summary>
@@ -409,6 +395,8 @@ namespace PlayerBehaviour
 
             rigidbodyOfWeapon = GetComponent<Rigidbody>();
             boxColliderOfWeaponArray = GetComponents<BoxCollider>();
+
+            playerArmory = GetPlayer.PlayerArmory;
         }
 
         /// <summary>
@@ -440,7 +428,7 @@ namespace PlayerBehaviour
             rigidbodyOfWeapon.detectCollisions = true;
             rigidbodyOfWeapon.constraints = RigidbodyConstraints.None;
             rigidbodyOfWeapon.AddForce(new Vector3(LibraryStaticFunctions.GetPlusMinusValue(75),
-                LibraryStaticFunctions.rnd.Next(40, 100),
+                UnityEngine.Random.Range(40, 100),
                 LibraryStaticFunctions.GetPlusMinusValue(75)));
         }
 
@@ -461,7 +449,9 @@ namespace PlayerBehaviour
         /// <returns></returns>
         public IEnumerator<float> CoroutineDoSlowMotionSpinSpeed()
         {
-			float spSpeed = originalSpinSpeed * (0.5f-(Weight / 200));
+            float spSpeed = LibraryStaticFunctions.CalculateSpinSpeedSlowMotionValue
+                (originalSpinSpeed, playerArmory.ArmoryWeight);
+
             float partOfSpeed = spSpeed / 20;
             if (spinSpeed / originalSpinSpeed >= 0.75f)
                 playerComponentsControl.PlayerCameraSmooth.DoNoize(spinSpeed / originalSpinSpeed);
@@ -487,7 +477,7 @@ namespace PlayerBehaviour
         /// </summary>
         public void SetColorTrailWeapon()
         {
-            Color color = LibraryStaticFunctions.GetColorFromGemPower(GemPower, damageType);
+            Color color = LibraryStaticFunctions.GetColorFromGemPower(GemPower, gemType);
             if (color == Color.black)
             {
                 TrailRenderer.enabled = false;
@@ -552,7 +542,7 @@ namespace PlayerBehaviour
     /// Powerful - физическая атака
     /// Electric - электрическая атака
     /// </summary>
-    public enum DamageType
+    public enum GemType
     {
         Frozen, Fire, Powerful, Electric
     }

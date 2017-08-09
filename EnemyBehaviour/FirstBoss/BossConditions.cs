@@ -5,6 +5,7 @@ using VotanInterfaces;
 using System.Collections.Generic;
 using VotanGameplay;
 using UnityEngine;
+using System;
 
 namespace EnemyBehaviour
 {
@@ -64,8 +65,16 @@ namespace EnemyBehaviour
             // Выключаем врага. Возвращаем в стек врагов. Почти, как если бы
             // мы его уничтожали.
             //enemyAbstract.EnemyAnimationsController.AnimatorOfObject.enabled = false;
-            EnemyCreator.SendToPlayersCallOfWin();
+            SendAllPlayerWinCall();
             EnemyCreator.ReturnEnemyToStack(enemyAbstract.EnemyNumber);
+        }
+
+        /// <summary>
+        /// Оповестить всех живых игроков о победе
+        /// </summary>
+        public void SendAllPlayerWinCall()
+        {
+            EnemyCreator.SendToPlayersCallOfWin();
         }
 
         /// <summary>
@@ -104,7 +113,7 @@ namespace EnemyBehaviour
 
                         /* Если это электрический удар в рукопашную - отодвигаем противника.
                          Молния не должна иметь право отодвигать врага. */
-                        if (weapon.AttackType == DamageType.Electric)
+                        if (weapon.GemType == GemType.Electric)
                             enemyAbstract.Physicffect.EventEffectWithoutDefenceBonus(weapon);
 
                         dmg = GetDamageWithResistance(dmg, gemPower, weapon);
@@ -143,7 +152,7 @@ namespace EnemyBehaviour
 
                         /* Если это электрический удар в рукопашную - отодвигаем противника.
                          Молния не должна иметь право отодвигать врага. */
-                        if (weapon.AttackType == DamageType.Electric)
+                        if (weapon.GemType == GemType.Electric)
                             enemyAbstract.Physicffect.EventEffectWithoutDefenceBonus(weapon);
 
                         dmg = GetDamageWithResistance(dmg, gemPower, weapon);

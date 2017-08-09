@@ -62,7 +62,7 @@ namespace GameBehaviour
             rigFromObj.isKinematic = false;
             rigFromObj.constraints = RigidbodyConstraints.None;
             rigFromObj.AddForce(new Vector3(LibraryStaticFunctions.GetPlusMinusValue(75),
-                LibraryStaticFunctions.rnd.Next(40, 100),
+                UnityEngine.Random.Range(40, 100),
                 LibraryStaticFunctions.GetPlusMinusValue(75)));
         }
 
@@ -74,7 +74,7 @@ namespace GameBehaviour
         {
             yield return Timing.WaitForSeconds(0.3f);
             boxCollider.enabled = true;
-            yield return Timing.WaitForSeconds(LibraryStaticFunctions.rnd.Next(5, 10));
+            yield return Timing.WaitForSeconds(UnityEngine.Random.Range(5, 10));
             gameObject.SetActive(false);
             Destroy(gameObject);
         }

@@ -65,8 +65,7 @@ namespace EnemyBehaviour
             audioSourceObject.volume =
                 LibraryStaticFunctions.GetRangeValue(volumeHutred, 0.1f);
             audioSourceObject.clip =
-                 audioHurt[LibraryStaticFunctions.rnd.
-                 Next(0, audioHurt.Length)];
+                 audioHurt[UnityEngine.Random.Range(0, audioHurt.Length)];
             audioSourceObject.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
             audioSourceObject.Play();
         }
@@ -76,10 +75,9 @@ namespace EnemyBehaviour
             audioSourceObject.volume =
                 LibraryStaticFunctions.GetRangeValue(volumeDead, 0.1f);
             audioSourceObject.clip =
-               audioDead[LibraryStaticFunctions.rnd.
-               Next(0, audioDead.Length)];
-            audioSourceObject.pitch = 1 + 
-                (float)LibraryStaticFunctions.rnd.NextDouble()/2 ;
+               audioDead[UnityEngine.Random.Range(0, audioDead.Length)];
+            audioSourceObject.pitch = 1 +
+                UnityEngine.Random.Range(0,1f) / 2 ;
             audioSourceObject.Play();
         }
 
@@ -115,8 +113,7 @@ namespace EnemyBehaviour
         public override void PlaySpinAudio(float value)
         {
             audioSourceWeapon.clip =
-                audioSpin[LibraryStaticFunctions.rnd.
-                Next(0, audioSpin.Length - 1)];
+                audioSpin[UnityEngine.Random.Range(0, audioSpin.Length - 1)];
             audioSourceWeapon.pitch =
                 LibraryStaticFunctions.GetRangeValue(0.5f, 0.1f);
             audioSourceWeapon.Play();
@@ -132,8 +129,7 @@ namespace EnemyBehaviour
             if (value == 2)
             {
                 audioSourceWeapon.clip =
-                    audioHitArmory[LibraryStaticFunctions.rnd.
-                    Next(0, audioHitArmory.Length - 1)];
+                    audioHitArmory[UnityEngine.Random.Range(0, audioHitArmory.Length - 1)];
                 audioSourceWeapon.pitch =
                     LibraryStaticFunctions.GetRangeValue(1, 0.1f);
                 audioSourceWeapon.Play();
@@ -141,8 +137,7 @@ namespace EnemyBehaviour
             else if (value == 1)
             {
                 audioSourceWeapon.clip =
-                    audioCutBody[LibraryStaticFunctions.rnd.
-                    Next(0, audioCutBody.Length - 1)];
+                    audioCutBody[UnityEngine.Random.Range(0, audioCutBody.Length - 1)];
                 audioSourceWeapon.pitch =
                     LibraryStaticFunctions.GetRangeValue(1, 0.1f);
                 audioSourceWeapon.Play();
@@ -157,8 +152,7 @@ namespace EnemyBehaviour
         public override void PlayStepAudio()
         {
             audioSourceLegs.clip =
-                audioSteps[LibraryStaticFunctions.rnd.
-                Next(0, audioSteps.Length)];
+                audioSteps[UnityEngine.Random.Range(0, audioSteps.Length)];
             audioSourceLegs.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
             audioSourceLegs.Play();
         }

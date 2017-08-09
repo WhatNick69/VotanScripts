@@ -41,7 +41,7 @@ namespace PlayerBehaviour
             while (true)
             {
                 yield return Timing.WaitForSeconds(2);
-                AddScore(LibraryStaticFunctions.rnd.Next(23, 1000));
+                AddScore(Random.Range(23, 1000));
             }
         }
 

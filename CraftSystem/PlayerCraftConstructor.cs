@@ -16,10 +16,10 @@ namespace CraftSystem
         private PlayerComponentsControl plComponents;
         private PlayerWeapon plWeapon;
 
-        private float weaponWeight;
+        private float armoryWeight;
         private float weaponDamage;
         private float weaponDefence;
-        private DamageType weaponDamType;
+        private GemType weaponDamType;
         private float weaponSpinSpeed;
 
         private Grip gripClass;
@@ -78,28 +78,6 @@ namespace CraftSystem
         }
 
         /// <summary>
-        /// Установить статы для оружия
-        /// </summary>
-        private void SetWeaponStats()
-        {
-            // получаем вращения оружием
-            weaponSpinSpeed =
-                LibraryStaticFunctions.TotalSpinSpeed
-                (gripClass.BonusSpinSpeedFromGrip, weaponWeight);
-            // получаем урон оружием
-            weaponDamage =
-                LibraryStaticFunctions.TotalDamage(headClass.DamageBase, weaponWeight);
-
-            // защита от ручки
-            weaponDefence = gripClass.GripDefence;
-
-            weaponDamType = gemClass.DamageTypeGem;
-
-            plComponents.PlayerWeapon.SetWeaponParameters(weaponDamage, weaponDefence,
-                weaponDamType, headClass.TrailRenderer, weaponSpinSpeed, weaponWeight, gemClass.GemPower);
-        }
-
-        /// <summary>
         /// Общая инициализация
         /// </summary>
         private void Awake()
@@ -108,6 +86,7 @@ namespace CraftSystem
 
             ArmoryInitialisation();
             WeaponInitialisation();
+            OtherPlayerInitialisation();
         }
 
         /// <summary>
@@ -168,9 +147,33 @@ namespace CraftSystem
             plComponents.PlayerArmory.HealthValue += helmetArmoryInformation.ArmoryValue;
             plComponents.PlayerArmory.HealthValue += cuirassArmoryInformation.ArmoryValue;
 
-            weaponWeight = LibraryStaticFunctions.TotalWeight(shieldArmoryInformation.WeightArmory
-                , helmetArmoryInformation.WeightArmory
-                , cuirassArmoryInformation.WeightArmory);
+            // Передаем вес брони в компоненту-броню на персонаже
+            plComponents.PlayerArmory.SetArmoryWeight(helmetArmoryInformation.WeightArmory,
+                shieldArmoryInformation.WeightArmory,
+                cuirassArmoryInformation.WeightArmory);
+        }
+
+        /// <summary>
+        /// Установить статы для оружия
+        /// </summary>
+        private void SetWeaponStats()
+        {
+            // получаем вращения оружием
+            weaponDamType = gemClass.DamageTypeGem;
+
+            plComponents.PlayerWeapon.SetWeaponParameters(headClass.DamageBase, 101,weaponDamType,
+                headClass.TrailRenderer, gemClass.GemPower);
+
+            plComponents.PlayerWeapon.SetSpinSpeed
+                (LibraryStaticFunctions.TotalSpinSpeed(plComponents.PlayerArmory.ArmoryWeight));
+        }
+
+        private void OtherPlayerInitialisation()
+        {
+            plComponents.PlayerController.OriginalSpinSpeed =
+                plComponents.PlayerWeapon.SpinSpeed;
+            plComponents.PlayerController.MaxSpinSpeed =
+                plComponents.PlayerWeapon.SpinSpeed;
         }
     }
 }

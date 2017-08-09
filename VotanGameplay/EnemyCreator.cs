@@ -107,7 +107,7 @@ namespace VotanGameplay
         private void RandomEnemyChoice()
         {
             tempEnemyIndexNumber =
-                LibraryStaticFunctions.rnd.Next(0, enemyList.Length-1);
+                UnityEngine.Random.Range(0, enemyList.Length-1);
         }
 
         /// <summary>

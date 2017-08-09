@@ -23,7 +23,6 @@ namespace GameBehaviour
         private IWeapon weapon;
         private int childrenCount;
         private AbstractEnemy abstractEnemyTarget; // цель для атаки
-        private static System.Random rnd;
         #endregion
 
         /// <summary>
@@ -31,8 +30,6 @@ namespace GameBehaviour
         /// </summary>
         private void Start()
         {
-            if (rnd == null)
-                rnd = LibraryStaticFunctions.rnd;
             listTrailObjects = new Transform[transform.childCount];
 
             for (int i = 0; i < transform.childCount; i++)
@@ -146,7 +143,7 @@ namespace GameBehaviour
         /// <param name="i"></param>
         private bool RandomBoolValue(int i)
         {
-            return rnd.Next(0, 2) == 1 ? true : false;
+            return Random.Range(0, 2) == 1 ? true : false;
         }
 
         /// <summary>
@@ -171,14 +168,14 @@ namespace GameBehaviour
                     {
                         tempListTrailobjects[i].LookAt(destination.position);
                         tempListTrailobjects[i].Translate(tempListTrailobjects[i].forward
-                            * (float)(0.5f + rnd.NextDouble()), Space.World);
+                            * (0.5f + Random.Range(0,1f)), Space.World);
                     }
                     else
                     {
                         tempListTrailobjects[i].rotation = Quaternion.Euler
-                            (rnd.Next(0, 360), rnd.Next(0, 360), rnd.Next(0, 360));
+                            (Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
                         tempListTrailobjects[i].Translate(tempListTrailobjects[i].forward
-                            * (float)(0.5f + rnd.NextDouble()));
+                            * (0.5f + Random.Range(0,1f)));
                     }
 
                     if (Vector3.Distance(tempListTrailobjects[i].

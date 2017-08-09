@@ -13,10 +13,6 @@ namespace CraftSystem
         #region Переменные
         [SerializeField, Tooltip("Изображение рукояти")]
         private Sprite imageGrip;
-		[SerializeField, Range(1, 100f), Tooltip("Защита")]
-		private float gripDefence;
-		[SerializeField, Range(0, 100f), Tooltip("Бонус к скорости вращения за счет ручки")]
-		private float bonusSpinSpeedFromGrip;
 
 		[SerializeField, Tooltip("Тип рукояти")]
 		private LenghtGrip gripType;
@@ -62,32 +58,6 @@ namespace CraftSystem
             set
             {
                 gripType = value;
-            }
-        }
-
-        public float BonusSpinSpeedFromGrip
-        {
-            get
-            {
-                return bonusSpinSpeedFromGrip;
-            }
-
-            set
-            {
-                bonusSpinSpeedFromGrip = value;
-            }
-        }
-
-        public float GripDefence
-        {
-            get
-            {
-                return gripDefence;
-            }
-
-            set
-            {
-                gripDefence = value;
             }
         }
 

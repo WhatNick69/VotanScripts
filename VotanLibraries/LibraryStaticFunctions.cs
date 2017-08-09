@@ -10,8 +10,6 @@ namespace VotanLibraries
     public class LibraryStaticFunctions
         : MonoBehaviour
     {
-        public static System.Random rnd = new System.Random();
-
         /// <summary>
         /// Глубокий поиск объекта во всей иерархии
         /// </summary>
@@ -45,8 +43,8 @@ namespace VotanLibraries
             if (range > 1) range = 1;
             else if (range < 0) range = 0;
 
-            return dmg + (float)((rnd.NextDouble()
-                * 2 - 1) * dmg * range); 
+            return dmg + (UnityEngine.Random.Range(0, 1f)
+                * 2 - 1) * dmg * range; 
         }
 
         /// <summary>
@@ -70,7 +68,7 @@ namespace VotanLibraries
         /// <returns></returns>
         public static float GetPlusMinusValue(float valueMax)
         {
-            return (float)rnd.NextDouble() * valueMax * 2 - valueMax;
+            return UnityEngine.Random.Range(0, 1f) * valueMax * 2 - valueMax;
         }
 
         /// <summary>
@@ -83,7 +81,7 @@ namespace VotanLibraries
         /// <returns></returns>
         public static bool MayableToBeFreezy(float gemPower)
         {
-            return rnd.NextDouble() <= (gemPower / 220)+0.05f ? true : false;
+            return UnityEngine.Random.Range(0, 1f) <= (gemPower / 220)+0.05f ? true : false;
         }
 
         /// <summary>
@@ -159,7 +157,21 @@ namespace VotanLibraries
         /// <returns></returns>
         public static float StrenghtOfNockback(IWeapon weapon,bool isSuperAttack=false)
         {
-            return isSuperAttack ? 3 + (weapon.Weight / 100) : 2 +  (weapon.GemPower / 100);
+            return isSuperAttack ? 3 + (weapon.GetPlayer.PlayerArmory.ArmoryWeight / 100) : 2 +  (weapon.GemPower / 100);
+        }
+
+        /// <summary>
+        /// Рассчитать силу замедления вращения оружия при попадании по врагу.
+        /// 
+        /// Текущая реализация: ОРИГ._СКОР._ВРАЩЕНИЯ * (0.5 - (ВЕС_БРОНИ/200)).
+        /// Диапазон значений: ~0 - 50.
+        /// </summary>
+        /// <param name="originalSpinSpeed"></param>
+        /// <param name="armoryWeight"></param>
+        /// <returns></returns>
+        public static float CalculateSpinSpeedSlowMotionValue(float originalSpinSpeed,float armoryWeight)
+        {
+            return originalSpinSpeed * (0.5f - (armoryWeight / 200));
         }
 
         /// <summary>
@@ -219,7 +231,7 @@ namespace VotanLibraries
         /// </summary>
         /// <param name="weight"></param>
         /// <returns></returns>
-        public static float DependenceMoveSpeedAndWeaponWeight(float weight)
+        public static float DependenceMoveSpeedAndArmoryWeight(float weight)
         {
             return 1.5f + (0.5f-(weight *0.005f));
         }
@@ -229,24 +241,22 @@ namespace VotanLibraries
         /// </summary>
         /// <param name="weight"></param>
         /// <returns></returns>
-        public static float DependenceRotateSpeedAndWeaponWeight(float weight)
+        public static float DependenceRotateSpeedAndArmoryWeight(float weight)
         {
             return 3.5f + (2.5f-(weight * 0.025f));
         }
 
         /// <summary>
         /// Получаем общую скорость вращения оружием.
-        /// Текущая реализация: 20 + (40-(WEIGHT)/2.5) + GRIP/2.5.
+        /// Текущая реализация: 20 + (80-(WEIGHT)/1.25).
         /// 
         /// Диапазон значений: 20 - 100 
         /// </summary>
-        /// <param name="bonusA"></param>
-        /// <param name="bonusB"></param>
         /// <param name="totalWeight"></param>
         /// <returns></returns>
-        public static float TotalSpinSpeed(float bonusGrip,float totalWeight)
+        public static float TotalSpinSpeed(float totalWeight)
         {
-            return 20 + (40 - (totalWeight) / 2.5f) + bonusGrip / 2.5f;
+            return 20 + (80 - (totalWeight) / 1.25f);
         }
 
         /// <summary>
@@ -272,11 +282,29 @@ namespace VotanLibraries
         /// <param name="damage"></param>
         /// <param name="spinSpeed"></param>
         /// <returns></returns>
-        public static float AttackToEnemyDamage(float damage, 
-            float spinSpeed,float spinSpeedoriginal)
+        public static float AttackToEnemyDamage(IWeapon weapon)
         {
-            return damage * (spinSpeed / spinSpeedoriginal);
+            return weapon.Damage * (weapon.SpinSpeed / weapon.OriginalSpinSpeed);
         }
+        
+        /// <summary>
+        /// Вызван ли критический удар?
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsCritHit()
+        {
+            return UnityEngine.Random.Range(0, 1f) <= 0.1f ? true : false;
+        }
+
+        /// <summary>
+        /// Критический удар
+        /// </summary>
+        /// <returns></returns>
+        public static float DamageWithCrit(float damage, float critPercentages)
+        {
+            return damage * (critPercentages / 100);
+        }
+
 
         /// <summary>
         /// Рассчет урона при атаке по врагу атакующим рывком
@@ -288,7 +316,7 @@ namespace VotanLibraries
         /// <returns></returns>
         public static float AttackToEnemyDamageLongAttack(IWeapon weapon)
         {
-            return weapon.Damage * (weapon.Weight / 200);
+            return weapon.Damage * (weapon.GetPlayer.PlayerArmory.ArmoryWeight / 150);
         }
 
         /// <summary>
@@ -301,7 +329,7 @@ namespace VotanLibraries
         /// <param name="attackPosition"></param>
         public static void SetAttackTransformPosition(IWeapon weapon,Transform attackPosition)
         {
-            attackPosition.localPosition = new Vector3(0,0.5f, 8-(weapon.Weight/50));
+            attackPosition.localPosition = new Vector3(0,0.5f, 8-(weapon.GetPlayer.PlayerArmory.ArmoryWeight / 50));
         }
 
         /// <summary>
@@ -347,20 +375,20 @@ namespace VotanLibraries
         /// <param name="gemPower"></param>
         /// <param name="weaponType"></param>
         /// <returns></returns>
-        public static Color GetColorFromGemPower(float gemPower, DamageType damageType)
+        public static Color GetColorFromGemPower(float gemPower, GemType damageType)
         {
             switch (damageType)
             {
-                case DamageType.Electric:
+                case GemType.Electric:
                     return new Color((gemPower * 2.55f) * 0.003921f, 0, 1);
-                case DamageType.Fire:
+                case GemType.Fire:
                     float g = gemPower /100;
                     return g >= 0.647f ?
                         new Color(1 - ((gemPower / 100) - 0.647f), 0, 0) :
                         new Color(1, 0.647f - g, 0);
-                case DamageType.Frozen:
+                case GemType.Frozen:
                     return new Color(1 - (0.21569f + (gemPower * 2) * 0.0039f), 1, 1);
-                case DamageType.Powerful:
+                case GemType.Powerful:
                     return new Color(0.803f - gemPower*0.002f, 
                         0.5215f+gemPower*0.0028f, 0.247f-gemPower*0.0005f);
                 default:

@@ -243,8 +243,7 @@ namespace AbstractBehaviour
             else
             {
                 auSo.clip =
-                    audioIce[LibraryStaticFunctions.rnd.
-                    Next(1, audioIce.Length)];
+                    audioIce[Random.Range(1, audioIce.Length)];
             }
             auSo.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
             auSo.Play();
@@ -257,8 +256,8 @@ namespace AbstractBehaviour
         public static void WorkWithMetalThing(AudioSource auSo)
         {
             auSo.clip =
-                audioCollisionMetalThings[LibraryStaticFunctions.rnd.
-                Next(0, audioCollisionMetalThings.Length)];
+                audioCollisionMetalThings[Random.Range
+                (0, audioCollisionMetalThings.Length)];
             auSo.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
             auSo.Play();
         }
@@ -266,8 +265,8 @@ namespace AbstractBehaviour
         public static void WorkWithEnvironmentLighting(AudioSource auSo)
         {
             auSo.clip =
-                audioEnvironmentLighting[LibraryStaticFunctions.rnd.
-                Next(0, audioEnvironmentLighting.Length)];
+                audioEnvironmentLighting[Random.Range
+                (0, audioEnvironmentLighting.Length)];
             auSo.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
             auSo.Play();
         }
@@ -279,8 +278,8 @@ namespace AbstractBehaviour
         public static void WorkWithBurn(AudioSource auSo)
         {
             auSo.clip =
-                audioToBurn[LibraryStaticFunctions.rnd.
-                Next(0, audioToBurn.Length)];
+                audioToBurn[Random.Range
+                (0, audioToBurn.Length)];
             auSo.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
             auSo.Play();
         }
@@ -292,8 +291,8 @@ namespace AbstractBehaviour
         public static void WorkWithBurning(AudioSource auSo)
         {
             auSo.clip =
-                audioBurning[LibraryStaticFunctions.rnd.
-                Next(0, audioBurning.Length)];
+                audioBurning[Random.Range
+                (0, audioBurning.Length)];
             auSo.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
             auSo.Play();
         }
@@ -305,8 +304,8 @@ namespace AbstractBehaviour
         public static void GameplayMusic(AudioSource auSo)
         {
             auSo.clip =
-                audioGameMusic[LibraryStaticFunctions.rnd.
-                Next(0, audioGameMusic.Length)];
+                audioGameMusic[Random.Range
+                (0, audioGameMusic.Length)];
             auSo.Play();
         }
 
@@ -317,16 +316,16 @@ namespace AbstractBehaviour
         public static void GameOverMusic(AudioSource auSo)
         {
             auSo.clip =
-                audioDeadMusic[LibraryStaticFunctions.rnd.
-                Next(0, audioDeadMusic.Length)];
+                audioDeadMusic[Random.Range
+                (0, audioDeadMusic.Length)];
             auSo.Play();
         }
 
         public static void WinOverMusic(AudioSource auSo)
         {
             auSo.clip =
-                audioWinMusic[LibraryStaticFunctions.rnd.
-                Next(0, audioWinMusic.Length)];
+                audioWinMusic[Random.Range
+                (0, audioWinMusic.Length)];
             auSo.Play();
             Debug.Log("PLAYING: " + auSo.clip);
         }
@@ -338,8 +337,8 @@ namespace AbstractBehaviour
         public void WorkWithSoundsBodyFall(AudioSource audioSource)
         {
             audioSource.clip =
-               audioBodyFall[LibraryStaticFunctions.rnd.
-               Next(0, audioBodyFall.Length)];
+               audioBodyFall[Random.Range
+               (0, audioBodyFall.Length)];
             audioSource.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
             audioSource.volume = LibraryStaticFunctions.GetRangeValue(volumeFall, 0.1f);
             audioSource.Play();

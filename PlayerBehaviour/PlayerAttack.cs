@@ -84,15 +84,14 @@ namespace PlayerBehaviour
                 {
                     if (playerFight.IsRotating)
                     {
-                        AttackToEnemy(LibraryStaticFunctions.AttackToEnemyDamage
-                            (playerWeapon.Damage,playerWeapon.SpinSpeed,
-                            playerWeapon.OriginalSpinSpeed),
-                            playerWeapon.AttackType,false);
+                        AttackToEnemy(LibraryStaticFunctions.
+                            AttackToEnemyDamage(playerWeapon)
+                            , playerWeapon.GemType,false);
                     }
                     else if (playerFight.IsFighting)
                     {
                         AttackToEnemy(LibraryStaticFunctions.AttackToEnemyDamageLongAttack
-                           (playerWeapon),playerWeapon.AttackType,true);
+                           (playerWeapon),playerWeapon.GemType,true);
                     }
                 }
                 oldFinishGunPoint = playerFinishGunPoint.position;   
@@ -100,18 +99,36 @@ namespace PlayerBehaviour
         }
 
         /// <summary>
+        /// Метод, который обрабатывает событие, 
+        /// которое возникает при возникновении 
+        /// критического удара по врагу.
+        /// </summary>
+        public float CritChanceAttackEvent(float tempDamage)
+        {
+            if (LibraryStaticFunctions.IsCritHit())
+            {
+                Debug.Log("CRIT!");
+                tempDamage = LibraryStaticFunctions.
+                    DamageWithCrit(tempDamage, playerWeapon.CritChanceStrenght);
+            }
+
+            return tempDamage;
+            //do something event
+        } 
+
+        /// <summary>
         /// Атакуем врага
         /// </summary>
         /// <param name="damage"></param>
         /// <param name="dmgType"></param>
-        public void AttackToEnemy(float damage, DamageType dmgType,bool isSuperAttack)
+        public void AttackToEnemy(float damage, GemType dmgType,bool isSuperAttack)
         {
             for (int i = 0; i < listEnemy.Length; i++)
             {
                 if (CheckEnemyActiveInArray(i) && IsAttackEnemy(i))
                 {
                     if (listEnemy[i].EnemyConditions.GetDamage
-                        (damage, playerWeapon.GemPower
+                        (CritChanceAttackEvent(damage), playerWeapon.GemPower
                         , playerWeapon, isSuperAttack))
                     {
                         playerComponentsControl.PlayerSounder.

@@ -23,17 +23,21 @@ namespace PlayerBehaviour
         private float rageValuePlayer;
         [SerializeField, Tooltip("Кольцо ярости")]
         private Image ringRageUI;
-        private Animation ringRageUIAnimation;
+        [SerializeField, Tooltip("Выкинули ли игрока со сцены")]
+        private bool isFallingDead;
+
         [SerializeField,Tooltip("Размер регена ярости")]
         private float rageRegenSize;
         [SerializeField,Tooltip("Хранитель компонентов")]
         private PlayerComponentsControl playerComponentsControl;
 
-        private bool isRageRegen; // можно ли регенерить ярость
         private float initialisatedRageValuePlayer; // начальное значение ярости
+        private Animation ringRageUIAnimation;
 
+        private bool isRageRegen; // можно ли регенерить ярость
         private bool mayToGetDamage = true;
         private bool isDownInterfaceTransformHasBeenChanged;
+
         #endregion
 
         #region Свойства
@@ -90,6 +94,19 @@ namespace PlayerBehaviour
             set
             {
                 isDownInterfaceTransformHasBeenChanged = value;
+            }
+        }
+
+        public bool IsFallingDead
+        {
+            get
+            {
+                return isFallingDead;
+            }
+
+            set
+            {
+                isFallingDead = value;
             }
         }
         #endregion
@@ -180,15 +197,14 @@ namespace PlayerBehaviour
                         EventBloodEyesEffect(healthValue/ initialisatedHealthValue);
                     if (playerComponentsControl.PlayerFight.IsDefensing)
                     {
-                        HealthValue -= LibraryStaticFunctions.GetRangeValue(damageValue, 0.1f) *
-                        (1 - LibraryStaticFunctions.GetRangeValue
-                            (playerComponentsControl.PlayerWeapon
-                            .DefenceValue, 0.1f) / 100);
+                        HealthValue -= LibraryStaticFunctions.
+                            GetRangeValue(damageValue, 0.1f) * 0.5f;
                         CoroutineForIsMayGetDamage();
                     }
                     else
                     {
-                        HealthValue -= LibraryStaticFunctions.GetRangeValue(damageValue, 0.1f);
+                        HealthValue -= LibraryStaticFunctions.
+                            GetRangeValue(damageValue, 0.1f);
                         CoroutineForIsMayGetDamage();
                     }
 
@@ -202,11 +218,8 @@ namespace PlayerBehaviour
                     if (playerComponentsControl.PlayerFight.IsDefensing)
                     {
                         playerComponentsControl.PlayerArmory
-                            .DecreaseArmoryLevel(-
-                        LibraryStaticFunctions.GetRangeValue(damageValue, 0.1f) *
-                        (1-LibraryStaticFunctions.GetRangeValue
-                            (playerComponentsControl.PlayerWeapon
-                            .DefenceValue, 0.1f)/100));
+                            .DecreaseArmoryLevel(-LibraryStaticFunctions.
+                            GetRangeValue(damageValue, 0.1f) * 0.5f);
                         CoroutineForIsMayGetDamage();
                     }
                     else
@@ -277,8 +290,9 @@ namespace PlayerBehaviour
                 .SetState(4, false);
         }
 
-        public void RunDieState()
+        public void RunDieState(bool isFalling)
         {
+            isFallingDead = true;
             Timing.RunCoroutine(DieState());
         }
 
@@ -295,8 +309,7 @@ namespace PlayerBehaviour
             GetComponent<PlayerController>().IsAliveFromConditions = false;
             playerComponentsControl.PlayerAnimationsController
                 .DisableAllStates();
-            playerComponentsControl.PlayerCollision.RigidbodyState(false);
-            playerComponentsControl.PlayerCollision.RigidbodyDead();
+            playerComponentsControl.PlayerCollision.RigidbodyDead(isFallingDead);
             playerComponentsControl.PlayerAnimationsController
                 .PlayDeadNormalizeCoroutine();
 

@@ -54,24 +54,24 @@ namespace CraftSystem
 			gemPower.text = str;
 		}
 
-		public void SetGemType(DamageType DT)
+		public void SetGemType(GemType DT)
 		{
 			gemType.text = DT.ToString();
 			switch (DT)
 			{
-				case DamageType.Electric:
+				case GemType.Electric:
 					gemTypeImg.sprite = electricLogo;
 					break;
 
-				case DamageType.Fire:
+				case GemType.Fire:
 					gemTypeImg.sprite = fireLogo;
 					break;
 
-				case DamageType.Frozen:
+				case GemType.Frozen:
 					gemTypeImg.sprite = frostLogo;
 					break;
 
-				case DamageType.Powerful:
+				case GemType.Powerful:
 					gemTypeImg.sprite = powerfulLogo;
 					break;
 

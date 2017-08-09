@@ -31,7 +31,7 @@ namespace PlayerBehaviour
         /// <summary>
         /// Инициализация
         /// </summary>
-        private void Start()
+        private void Awake()
         {
             playerFight = playerComponentsControl.PlayerFight;
             playerConditions = playerComponentsControl.PlayerConditions;

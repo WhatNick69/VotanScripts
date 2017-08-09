@@ -18,7 +18,6 @@ namespace VotanGameplay
 		private Transform center;
 		private float AB, AC, BC, AA1;
 
-		private float normalLevel;
         private float a, b, c, d, e, f;
         private float S;
         private float H;
@@ -47,7 +46,6 @@ namespace VotanGameplay
             AA1 = Vector3.Distance(A.position, A1.position);
             center = transform;
 
-            normalLevel = 0.55f;
             positionOfStairs = stairs.position;
         }
 

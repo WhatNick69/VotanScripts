@@ -44,6 +44,11 @@ namespace VotanInterfaces
         /// Жив ли босс?
         /// </summary>
         bool IsBossAlive { get; }
+
+        /// <summary>
+        /// Оповестить всех живых игроков о победе
+        /// </summary>
+        void SendAllPlayerWinCall();
     }
 
     /// <summary>

@@ -147,9 +147,9 @@ namespace GameBehaviour
             trailRenderer.transform.localPosition = Vector3.zero;
             trailRenderer.gameObject.SetActive(true);
             trailRenderer.startColor =
-                new Color((float)LibraryStaticFunctions.rnd.NextDouble(),
-                (float)LibraryStaticFunctions.rnd.NextDouble(),
-                (float)LibraryStaticFunctions.rnd.NextDouble(), 1);
+                new Color(Random.Range(0,1f),
+                Random.Range(0, 1f),
+                Random.Range(0, 1f), 1);
 
             while (Vector3.Distance(trailRenderer.transform.position, playerObjectTransform.position) >= 0.5f)
             {
