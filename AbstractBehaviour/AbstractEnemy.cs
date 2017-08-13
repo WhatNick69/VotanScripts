@@ -15,9 +15,8 @@ namespace AbstractBehaviour
       : MonoBehaviour, IEnemyBehaviour, IEnemyInStack
     {
         #region Переменные
-        [SerializeField] // точки противника
-        protected Transform rightShoulderPoint, leftShoulderPoint, 
-			facePoint, backPoint;
+        [SerializeField, Tooltip("Точка в центре врага")]
+        private Transform centerOfEnemy;
         [SerializeField,Tooltip("Класс врага")]
         private EnemyType enemyType;
         [SerializeField,Tooltip("Номер противника в стеке")]
@@ -222,26 +221,9 @@ namespace AbstractBehaviour
         /// </summary>
         /// <param name="child"></param>
         /// <returns></returns>
-        public Vector3 ReturnPosition(int child)
+        public Vector3 ReturnEnemyPosition()
         {
-            switch (child)
-            {
-                case 0:
-                    return rightShoulderPoint.position; //Right
-                case 1:
-                    return leftShoulderPoint.position; //Left
-                case 2:
-                    return facePoint.position; //Face
-                case 3:
-                    return backPoint.position; //Back
-                case 4:
-                    return transform.position; // Позиция врага
-                case 5:
-                    return EnemyAttack.PlayerStartGunPoint.position;
-                case 6:
-                    return EnemyAttack.PlayerFinishGunPoint.position;
-            }  
-			return Vector3.zero;
+            return centerOfEnemy.position; // Позиция врага
         }
 
         /// <summary>

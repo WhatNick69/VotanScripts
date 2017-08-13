@@ -94,7 +94,7 @@ namespace PlayerBehaviour
 						   (playerWeapon), playerWeapon.GemType, true);
 					}
 				}
-				oldFinishGunPoint = playerFinishGunPoint.position;
+				oldFinishGunPoint = finishGunPoint.position;
 			}
 		}
 
@@ -107,7 +107,6 @@ namespace PlayerBehaviour
 		{
 			if (LibraryStaticFunctions.IsCritHit())
 			{
-				Debug.Log("CRIT!");
 				tempDamage = LibraryStaticFunctions.
 					DamageWithCrit(tempDamage, playerWeapon.CritChanceStrenght);
 			}
@@ -161,10 +160,10 @@ namespace PlayerBehaviour
 		/// <returns></returns>
 		private bool IsAttackEnemy(int i)
 		{
-			return ((LibraryPhysics.IsAttackEnemy(playerPoint.position, playerFinishGunPoint.position,
-				listEnemy[i].ReturnPosition(0)) &&
-				Mathf.Abs(playerPoint.position.y
-				       - listEnemy[i].ReturnPosition(0).y) < 2));
+			return ((LibraryPhysics.IsAttackEnemy(PlayerPoint.position, finishGunPoint.position,
+				listEnemy[i].ReturnEnemyPosition()) &&
+				Mathf.Abs(PlayerPoint.position.y
+				       - listEnemy[i].ReturnEnemyPosition().y) < 2));
 		}
 
 		/// <summary>
@@ -172,22 +171,9 @@ namespace PlayerBehaviour
 		/// </summary>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public Vector3 GetPlayerPoint(int index) // возвращает точки персонажа игрока
+		public Vector3 GetPlayerPoint() // возвращает точки персонажа игрока
 		{
-			switch (index)
-			{
-				case 0:
-					return playerRightPoint.position;
-				case 1:
-					return playerLeftPoint.position;
-				case 2:
-					return playerFacePoint.position;
-				case 3:
-					return playerBackPoint.position;
-				case 4:
-					return playerPoint.position;
-			}
-			return Vector3.zero;
+            return PlayerPoint.position;
 		}
 
 		/// <summary>

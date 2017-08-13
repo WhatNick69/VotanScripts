@@ -17,18 +17,11 @@ namespace VotanInterfaces
     public interface IVotanObjectAttack
     {
         /// <summary>
-        /// Установить позицию персонажа
-        /// </summary>
-        /// <param name="index"></param>
-        /// <param name="tr"></param>
-        void SetPlayerPoint(int index, Transform tr);
-
-        /// <summary>
         /// Возвращает позиции персонажа
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        Transform PlayerPosition(int index);
+        Transform ObjectPosition();
 
         /// <summary>
         /// Радиус атаки

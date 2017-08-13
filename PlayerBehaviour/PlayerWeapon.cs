@@ -219,7 +219,7 @@ namespace PlayerBehaviour
 		private void PlaySpinSpeedAudio()
 		{
 			tempAngleForSound += spinSpeed / 2;
-			if (Mathf.Abs(tempAngleForSound) >= 60)
+			if (Mathf.Abs(tempAngleForSound) >= 80)
 			{
 				playerComponentsControl.PlayerSounder.PlaySpinAudio
 					(SpinSpeed, false);

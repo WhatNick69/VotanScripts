@@ -135,15 +135,9 @@ namespace PlayerBehaviour
                     if (!isGrounded)
                     {
                         isGrounded = true;
-                        Debug.Log("Упали");
-                        Debug.DrawRay(rotaterRaycaster.position, rotaterRaycaster.forward, Color.green, 0.1f);
                         return;                   
                     }
-                }
-                else
-                {
-                    Debug.DrawRay(rotaterRaycaster.position, rotaterRaycaster.forward, Color.red, 0.1f);
-                }            
+                }          
             }
             isGrounded = false;
             return;
@@ -188,13 +182,11 @@ namespace PlayerBehaviour
                     if (rayCastHit.collider.CompareTag(tagNameObstacle)
                     || rayCastHit.collider.CompareTag(tagNameEnemy))
                     {
-                        //Debug.DrawRay(rotaterRaycaster.position, rotaterRaycaster.forward, Color.red, 0.05f);
                         boolsList[i] = false;
                     }                 
                 }
                 else
                 {
-                    //Debug.DrawRay(rotaterRaycaster.position, rotaterRaycaster.forward, Color.green, 0.05f);
                     boolsList[i] = true;
                 }
                 rotaterRaycaster.rotation = Quaternion.Euler(0, rotaterRaycaster.localEulerAngles.y+angle, 0);

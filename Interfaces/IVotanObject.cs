@@ -142,7 +142,7 @@ namespace VotanInterfaces
         /// </summary>
         /// <param name="child"></param>
         /// <returns></returns>
-        Vector3 ReturnPosition(int child);
+        Vector3 ReturnEnemyPosition();
     }
 
     /// <summary>

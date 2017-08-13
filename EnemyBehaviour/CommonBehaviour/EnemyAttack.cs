@@ -97,8 +97,8 @@ namespace EnemyBehaviour
         public virtual bool AttackToPlayer()
         {
             //if (isMayToDamage) DrawerLiner();
-            if (IsMayToDamage && (LibraryPhysics.IsAttackEnemy(enemyStartGunPoint.position, 
-				enemyFinishGunPoint.position, playerTarget.GetPlayerPoint(4))))
+            if (IsMayToDamage && (LibraryPhysics.IsAttackEnemy(startGunPoint.position, 
+				finishGunPoint.position, playerTarget.GetPlayerPoint())))
             {
                 // попали по противнику - выключили просчет.
                 IsMayToDamage = false;
@@ -127,7 +127,7 @@ namespace EnemyBehaviour
         /// </summary>
         /// <param name="isStop"></param>
         /// <returns></returns>
-        private IEnumerator<float> CoroutineForAttack(bool isStop)
+        public virtual IEnumerator<float> CoroutineForAttack(bool isStop)
         {
             isMayToPlayAttackAnimation = false;
             if (isStop)
