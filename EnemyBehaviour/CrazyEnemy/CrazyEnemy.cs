@@ -90,6 +90,8 @@ namespace EnemyBehaviour
             enemyMove.RestartEnemyMove(); // рестарт способносит врага к движению
             downInterfaceRotater.RestartDownInterfaceRotater(); // рестарт поворота интерфейса
             enemyAnimationsController.RestartEnemyAnimationsController(); // рестарт аниматора
+            FireEffect.RestartFire();
+
             movingSpeed = EnemyMove.AgentSpeed / 5;
             fightRotatingSpeed = LibraryStaticFunctions.GetRangeValue(fightRotatingSpeed, 0.2f);
 

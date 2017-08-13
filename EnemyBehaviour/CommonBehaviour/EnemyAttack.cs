@@ -97,14 +97,8 @@ namespace EnemyBehaviour
         public virtual bool AttackToPlayer()
         {
             //if (isMayToDamage) DrawerLiner();
-            if (IsMayToDamage && (LibraryPhysics.BushInLine
-                (enemyStartGunPoint.position, enemyFinishGunPoint.position,
-                 playerTarget.GetPlayerPoint(0),
-                 playerTarget.GetPlayerPoint(1)) ||
-                 LibraryPhysics.BushInLine
-                    (enemyStartGunPoint.position, enemyFinishGunPoint.position,
-                 playerTarget.GetPlayerPoint(2),
-                 playerTarget.GetPlayerPoint(3))))
+            if (IsMayToDamage && (LibraryPhysics.IsAttackEnemy(enemyStartGunPoint.position, 
+				enemyFinishGunPoint.position, playerTarget.GetPlayerPoint(4))))
             {
                 // попали по противнику - выключили просчет.
                 IsMayToDamage = false;

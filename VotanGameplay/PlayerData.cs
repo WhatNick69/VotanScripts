@@ -1,12 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerData : MonoBehaviour {
 
 	
 	void Awake ()
 	{
+		if (PlayerPrefs.GetInt("shieldLevel") >= 1)
+		{ }
+		else
+		{
+			PlayerPrefs.SetInt("shieldLevel", 0);
+		}
+
 		if (PlayerPrefs.GetInt("damage") >= 0)
 		{ }
 		else

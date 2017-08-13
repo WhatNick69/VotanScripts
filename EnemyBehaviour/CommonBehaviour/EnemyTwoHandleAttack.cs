@@ -22,23 +22,10 @@ namespace EnemyBehaviour
         /// <returns></returns>
         public override bool AttackToPlayer()
         {
-            if (IsMayToDamage && (LibraryPhysics.BushInLine
-               (enemyStartGunPoint.position, enemyFinishGunPoint.position,
-                playerTarget.GetPlayerPoint(0),
-                playerTarget.GetPlayerPoint(1)) ||
-                LibraryPhysics.BushInLine
-                   (enemyStartGunPoint.position, enemyFinishGunPoint.position,
-                playerTarget.GetPlayerPoint(2),
-                playerTarget.GetPlayerPoint(3))) ||
-                (LibraryPhysics.BushInLine
-               (enemyStartGunPointSecond.position, enemyFinishGunPointSecond.position,
-                playerTarget.GetPlayerPoint(0),
-                playerTarget.GetPlayerPoint(1)) ||
-                LibraryPhysics.BushInLine
-                   (enemyStartGunPointSecond.position, enemyFinishGunPointSecond.position,
-                playerTarget.GetPlayerPoint(2),
-                playerTarget.GetPlayerPoint(3)))
-                )
+			if (IsMayToDamage && (LibraryPhysics.IsAttackEnemy(enemyStartGunPoint.position,
+				enemyFinishGunPoint.position, playerTarget.GetPlayerPoint(4)) || 
+				LibraryPhysics.IsAttackEnemy(enemyStartGunPointSecond.position, enemyFinishGunPointSecond.position,
+				playerTarget.GetPlayerPoint(4))))
             {
                 Timing.RunCoroutine(CoroutineMayDoDamage());
                 return true;

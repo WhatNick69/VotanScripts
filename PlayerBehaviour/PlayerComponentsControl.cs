@@ -1,6 +1,5 @@
 ﻿using GameBehaviour;
 using UnityEngine;
-using UnityStandardAssets.CrossPlatformInput;
 using VotanGameplay;
 using VotanInterfaces;
 
@@ -53,7 +52,9 @@ namespace PlayerBehaviour
         [SerializeField, Tooltip("Интерфейс монитора игрока")]
         private PlayerUI playerUI;
         [SerializeField, Tooltip("Обработчик звуковых событий в HUD")]
-        private PlayerHUDAudioStorage playerHUD;
+        private PlayerHUDAudioStorage playerHUDAudioStorage;
+        [SerializeField, Tooltip("HUD компонент игрока")]
+        private PlayerHUDManager playerHUDManager;
         #endregion
 
         #region Доступы к компонентам
@@ -304,16 +305,29 @@ namespace PlayerBehaviour
             }
         }
 
-        internal PlayerHUDAudioStorage PlayerHUD
+        internal PlayerHUDAudioStorage PlayerHUDAudioStorage
         {
             get
             {
-                return playerHUD;
+                return playerHUDAudioStorage;
             }
 
             set
             {
-                playerHUD = value;
+                playerHUDAudioStorage = value;
+            }
+        }
+
+        internal PlayerHUDManager PlayerHUDManager
+        {
+            get
+            {
+                return playerHUDManager;
+            }
+
+            set
+            {
+                playerHUDManager = value;
             }
         }
         #endregion

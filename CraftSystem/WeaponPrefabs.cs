@@ -10,9 +10,7 @@ namespace CraftSystem
         : MonoBehaviour
     {
         private static bool onLoad;
-        GameObject grip;
-        GameObject head;
-        GameObject gem;
+        GameObject weapon;
 
         private void Start()
         {
@@ -27,22 +25,10 @@ namespace CraftSystem
             }
         }
 
-        public GameObject Grip
+        public GameObject Weapon
         {
-            get { return grip; }
-            set { grip = value; }
-        }
-
-        public GameObject Head
-        {
-            get { return head; }
-            set { head = value; }
-        }
-
-        public GameObject Gem
-        {
-            get { return gem; }
-            set { gem = value; }
+            get { return weapon; }
+            set { weapon = value; }
         }
     }
 }

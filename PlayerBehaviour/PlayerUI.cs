@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using VotanGameplay;
-using UnityStandardAssets.CrossPlatformInput;
 
 namespace PlayerBehaviour
 {
@@ -32,25 +31,9 @@ namespace PlayerBehaviour
         [SerializeField, Tooltip("Инвентарь")]
         private Transform inventory;
 
-        // ИНВЕНТАРЬ
-        [SerializeField, Tooltip("Левая кнопка")]
-        private RectTransform leftButton;
-        [SerializeField, Tooltip("Правая кнопка")]
-        private RectTransform rightButton;
-        [SerializeField, Tooltip("Левый инвентарь")]
-        private RectTransform leftInventory;
-        [SerializeField, Tooltip("Правый инвентарь")]
-        private RectTransform rightInventory;
-        [SerializeField, Tooltip("Кнопка, нажатие по которой приводит к закрытию инвентарей")]
-        private Button outsideButton;
-
         private string animName = "GameOverUIAnimation";
-        private bool isRightInventoryOpen = true;
-        private bool isLeftInventoryOpen = true;
-        private Animation gameoverWindowAnimation;
 
-        private Coroutine rightCoroutine;
-        private Coroutine leftCoroutine;
+        private Animation gameoverWindowAnimation;
         #endregion
 
         /// <summary>
@@ -63,19 +46,6 @@ namespace PlayerBehaviour
             gameoverWindowAnimation =
                 gameoverWindow.GetComponent<Animation>();
             gameoverWindow.SetActive(false);
-            Timing.RunCoroutine(EventPlayMode());
-        }
-
-        private IEnumerator<float> EventPlayMode()
-        {
-            while (playerComponentsControl.PlayerConditions.IsAlive)
-            {
-                if (Joystick.IsPlaying)
-                {
-                    OnClickCloseAllWindows();
-                }
-                yield return Timing.WaitForSeconds(1);
-            }
         }
 
         /// <summary>
@@ -95,119 +65,6 @@ namespace PlayerBehaviour
                     SetActiveOfPlayerInterface(sticks.GetChild(i), active);
                 }
             }
-        }
-
-        /// <summary>
-        /// Открыть правый инвентарь
-        /// </summary>
-        public void OnClickOpenRightInventory()
-        {
-            if (rightCoroutine != null)
-                StopCoroutine(rightCoroutine);
-
-            if (!isRightInventoryOpen)
-            {
-                playerComponentsControl.PlayerHUD.PlaySoundSwipeInventory(true);
-                isRightInventoryOpen = true;
-                rightCoroutine = 
-                    StartCoroutine(CoroutineForMoveInventoryWindow
-                    (rightInventory, rightButton, 100,-30));
-            }
-            else
-            {
-                playerComponentsControl.PlayerHUD.PlaySoundSwipeInventory(false);
-                isRightInventoryOpen = false;
-                rightCoroutine = 
-                    StartCoroutine(CoroutineForMoveInventoryWindow
-                    (rightInventory, rightButton, -75,100));
-            }
-        }
-
-        /// <summary>
-        /// Открыть левый инвентарь
-        /// </summary>
-        public void OnClickOpenLeftInventory()
-        {
-            if (leftCoroutine != null)
-                StopCoroutine(leftCoroutine);
-
-            if (!isLeftInventoryOpen)
-            {
-                playerComponentsControl.PlayerHUD.PlaySoundSwipeInventory(true);
-                isLeftInventoryOpen = true;
-                leftCoroutine = 
-                    StartCoroutine(CoroutineForMoveInventoryWindow
-                    (leftInventory, leftButton, -100,30));
-            }
-            else
-            {
-                playerComponentsControl.PlayerHUD.PlaySoundSwipeInventory(false);
-                isLeftInventoryOpen = false;
-                leftCoroutine = 
-                    StartCoroutine(CoroutineForMoveInventoryWindow
-                    (leftInventory, leftButton, 75, -100));
-            }
-        }
-
-        /// <summary>
-        /// Корутина для движения окна с инвентарем
-        /// </summary>
-        /// <param name="inventory">Компонент объекта для движения</param>
-        /// <param name="destinationCor">Конечная координата движения</param>
-        /// <returns></returns>
-        private IEnumerator<float> CoroutineForMoveInventoryWindow
-            (RectTransform inventory, RectTransform button, float destinationCorInventory,float destinationCorButton)
-        {
-            int i = 0;
-            float cachedTime;
-            Vector2 tempVectorInventory = new Vector2(destinationCorInventory, 0);
-            Vector2 tempVectorButton = new Vector2(destinationCorButton, button.anchoredPosition.y);
-
-            while (Mathf.Abs(inventory.anchoredPosition.x - destinationCorInventory) >= 3)
-            {
-                i++;
-                cachedTime = Time.deltaTime * i;
-                inventory.anchoredPosition =
-                    Vector2.Lerp(inventory.anchoredPosition, tempVectorInventory, cachedTime);
-                button.anchoredPosition =
-                     Vector2.Lerp(button.anchoredPosition, tempVectorButton, cachedTime);
-                yield return Timing.WaitForOneFrame;
-            }
-        }
-
-        /// <summary>
-        /// Закрыть все окна
-        /// </summary>
-        public void OnClickCloseAllWindows()
-        {
-            bool flag = false;
-
-            if (!isLeftInventoryOpen)
-            {
-                flag = true;
-                if (leftInventory != null)
-                    StopCoroutine(leftCoroutine);
-
-                isLeftInventoryOpen = true;
-                leftCoroutine =
-                    StartCoroutine(CoroutineForMoveInventoryWindow
-                    (leftInventory, leftButton, -100,30));
-            }
-
-            if (!isRightInventoryOpen)
-            {
-                flag = true;
-                if (rightCoroutine != null)
-                    StopCoroutine(rightCoroutine);
-
-                isRightInventoryOpen = true;
-                rightCoroutine =
-                    StartCoroutine(CoroutineForMoveInventoryWindow
-                    (rightInventory, rightButton, 100,-30));
-            }
-
-            if (flag)
-                playerComponentsControl.PlayerHUD.PlaySoundSwipeInventory(true);
         }
 
         /// <summary>

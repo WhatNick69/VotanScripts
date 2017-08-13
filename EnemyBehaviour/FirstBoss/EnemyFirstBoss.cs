@@ -72,7 +72,9 @@ namespace EnemyBehaviour
             distanceForFirstAttack = enemyMove.Agent.stoppingDistance;
             distanceForGolfAttack = distanceForFirstAttack / 3;
             movingSpeed = EnemyMove.AgentSpeed / 5;
-            Debug.Log("РЕСТАРТ!");
+
+            FireEffect.RestartFire();
+
             Timing.RunCoroutine(UpdateAttackState());
             Timing.RunCoroutine(UpdateDistanceBetweenThisAndPlayer());
         }

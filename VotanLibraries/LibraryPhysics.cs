@@ -100,5 +100,11 @@ namespace VotanLibraries
             }
             else return Vector3.zero;
         }
+
+		public static bool IsAttackEnemy(Vector3 startWeaponPoint, Vector3 finishWeaponPoint, Vector3 enemyPoint)
+		{
+			return ((Vector3.Distance(enemyPoint, finishWeaponPoint) +
+				Vector3.Distance(enemyPoint, startWeaponPoint)) - Vector3.Distance(startWeaponPoint, finishWeaponPoint) < 1.3f);
+		}
     }
 }

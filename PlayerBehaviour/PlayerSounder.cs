@@ -1,9 +1,7 @@
 ﻿using AbstractBehaviour;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VotanLibraries;
-using System;
 using MovementEffects;
 
 namespace PlayerBehaviour
@@ -20,8 +18,10 @@ namespace PlayerBehaviour
         protected static AudioClip[] audioSteps; // Звуки шагов
         protected static AudioClip[] audioDestroyArmory; // Звуки ломающейся брони
         private static AudioClip[] audioSpin; // Звуки вращения оружия
+        private static AudioClip[] audioRoar;
 
         private bool isMayToPlayWeaponAudio;
+        [SerializeField]
         private PlayerComponentsControl playerComponentsControl;
         #endregion
 
@@ -33,7 +33,6 @@ namespace PlayerBehaviour
         {
             base.Start();
             isMayToPlayWeaponAudio = true;
-            playerComponentsControl = GetComponent<PlayerComponentsControl>();
 
             InitialisationHitToArmorySounds();
             InitialisationStepsSounds();
@@ -41,6 +40,20 @@ namespace PlayerBehaviour
             InitialisationHurtSounds();
             InitialisationDeadSounds();
             InitialisationDestroyArmorySounds();
+            InitialisationsRoarSounds();
+        }
+
+        /// <summary>
+        /// Инициализация звуков рева игрока
+        /// </summary>
+        private void InitialisationsRoarSounds()
+        {
+            tempAudioList = Resources.LoadAll("Sounds/PlayerMale/Roar");
+            audioRoar = new AudioClip[tempAudioList.Length];
+            for (int i = 0; i < tempAudioList.Length; i++)
+            {
+                audioRoar[i] = (AudioClip)tempAudioList[i];
+            }
         }
 
         /// <summary>
@@ -267,6 +280,9 @@ namespace PlayerBehaviour
             // Пустая реализация
         }
 
+        /// <summary>
+        /// Звук падения
+        /// </summary>
         public override void FallObject()
         {
             if (!playerComponentsControl.PlayerConditions.IsFallingDead)
@@ -275,6 +291,31 @@ namespace PlayerBehaviour
             }
         }
 
+        /// <summary>
+        /// Звук атакующего рывка оружием
+        /// </summary>
+        public void PlayAttackDashAudio()
+        {
+            audioSourceWeapon.clip =
+                audioSpin[audioSpin.Length-1];
+            audioSourceWeapon.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.05f);
+            audioSourceWeapon.Play();
+        }
+
+        /// <summary>
+        /// Рев персонажа
+        /// </summary>
+        public void PlayRoarAudio()
+        {
+            audioSourceObject.clip =
+                audioRoar[UnityEngine.Random.Range(0, audioRoar.Length)];
+            audioSourceObject.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.05f);
+            audioSourceObject.Play();
+        }
+
+        /// <summary>
+        /// Проиграть звук ходьбы
+        /// </summary>
         public override void PlayStepAudio()
         {
             audioSourceLegs.volume = volumeStep;
@@ -284,6 +325,9 @@ namespace PlayerBehaviour
             audioSourceLegs.Play();
         }
 
+        /// <summary>
+        /// Проиграть звук смерти
+        /// </summary>
         public override void PlayDeadAudio()
         {
             audioSourceObject.volume =

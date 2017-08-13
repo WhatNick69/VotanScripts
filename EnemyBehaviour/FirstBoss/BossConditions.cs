@@ -5,206 +5,232 @@ using VotanInterfaces;
 using System.Collections.Generic;
 using VotanGameplay;
 using UnityEngine;
-using System;
 
 namespace EnemyBehaviour
 {
-    /// <summary>
-    /// Здоровье и броня босса
-    /// </summary>
-    public class BossConditions 
-        : EnemyConditions, IBossConditions
-    {
-        #region Переменные
-        private EnemyArmory enemyArmory;
-        private bool isBossAlive = true;
-        #endregion
+    /// <summary> 
+    /// Здоровье и броня босса 
+    /// </summary> 
+    public class BossConditions
+	: EnemyConditions, IBossConditions
+	{
+		#region Переменные 
+		private EnemyArmory enemyArmory;
+		private bool isBossAlive = true;
+		#endregion
 
-        #region Свойства
-        public bool IsBossAlive
+		#region Свойства 
+		public bool IsBossAlive
+		{
+			get
+			{
+				return isBossAlive;
+			}
+		}
+
+        public override float HealthValue
         {
             get
             {
-                return isBossAlive;
+                return healthValue;
+            }
+
+            set
+            {
+                if (enemyArmory.HealthValue <= 0)
+                {
+                    healthValue = value;
+                    if (healthValue > 0)
+                    {
+                        RefreshHealthCircle();
+                    }
+                    else if (healthValue <= 0 && isAlive)
+                    {
+                        isAlive = false;
+                        Timing.RunCoroutine(DieState());
+                        healthValue = 0;
+                        RefreshHealthCircle();
+                    }
+                }
             }
         }
         #endregion
 
-        /// <summary>
-        /// Инициализация
-        /// </summary>
+        /// <summary> 
+        /// Инициализация 
+        /// </summary> 
         public override void Start()
-        {
-            base.Start();
-            enemyArmory = GetComponent<EnemyArmory>();
-        }
+		{
+			base.Start();
+			enemyArmory = GetComponent<EnemyArmory>();
+		}
 
-        /// <summary>
-        /// Состояние смерти босса
-        /// </summary>
-        /// <returns></returns>
-        public override IEnumerator<float> DieState()
-        {
-            IsAlive = false;
-            isBossAlive = false;
-            
-            enemyAbstract.AbstractObjectSounder.PlayDeadAudio();
-            //enemyAbstract.EnemyAnimationsController.DisableAllStates();
-            enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
-            enemyAbstract.EnemyAnimationsController.SetState(4, true);
-            enemyAbstract.EnemyAnimationsController.PlayDeadNormalizeCoroutine();
-            MainBarCanvas.gameObject.SetActive(false);
-            enemyAbstract.EnemyMove.Agent.enabled = false;
-            GetComponent<BoxCollider>().enabled = false;
+		/// <summary> 
+		/// Состояние смерти босса 
+		/// </summary> 
+		/// <returns></returns> 
+		public override IEnumerator<float> DieState()
+		{
+			IsAlive = false;
+			isBossAlive = false;
 
-            if (isFrozen)
-                yield return Timing.WaitForSeconds(5 + enemyAbstract.IceEffect.TimeToDisable);
-            else
-                yield return Timing.WaitForSeconds(5);
+			enemyAbstract.AbstractObjectSounder.PlayDeadAudio();
+			//enemyAbstract.EnemyAnimationsController.DisableAllStates(); 
+			enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
+			enemyAbstract.EnemyAnimationsController.SetState(4, true);
+			enemyAbstract.EnemyAnimationsController.PlayDeadNormalizeCoroutine();
+			MainBarCanvas.gameObject.SetActive(false);
+			enemyAbstract.EnemyMove.Agent.enabled = false;
+			GetComponent<BoxCollider>().enabled = false;
 
-            // Выключаем врага. Возвращаем в стек врагов. Почти, как если бы
-            // мы его уничтожали.
-            //enemyAbstract.EnemyAnimationsController.AnimatorOfObject.enabled = false;
-            SendAllPlayerWinCall();
-            EnemyCreator.ReturnEnemyToStack(enemyAbstract.EnemyNumber);
-        }
+			if (isFrozen)
+				yield return Timing.WaitForSeconds(5 + enemyAbstract.IceEffect.TimeToDisable);
+			else
+				yield return Timing.WaitForSeconds(5);
 
-        /// <summary>
-        /// Оповестить всех живых игроков о победе
-        /// </summary>
-        public void SendAllPlayerWinCall()
-        {
-            EnemyCreator.SendToPlayersCallOfWin();
-        }
+			// Выключаем врага. Возвращаем в стек врагов. Почти, как если бы 
+			// мы его уничтожали. 
+			//enemyAbstract.EnemyAnimationsController.AnimatorOfObject.enabled = false; 
+			SendAllPlayerWinCall();
+			EnemyCreator.ReturnEnemyToStack(enemyAbstract.EnemyNumber);
+		}
 
-        /// <summary>
-        /// Получить урон.
-        /// По броне, либо по телу.
-        /// </summary>
-        /// <param name="dmg"></param>
-        /// <param name="gemPower"></param>
-        /// <param name="weapon"></param>
-        /// <param name="isSuperAttack"></param>
-        /// <returns></returns>
-        public override bool GetDamage(float dmg, float gemPower, IWeapon weapon, bool isSuperAttack)
-        {
-            if (isMayGetDamage)
-            {
-                if (enemyArmory.IsAlive)
-                {
-                    if (isSuperAttack)
-                    {
-                        enemyAbstract.AbstractObjectSounder.PlayGetDamageAudio(true);
+		/// <summary> 
+		/// Оповестить всех живых игроков о победе 
+		/// </summary> 
+		public void SendAllPlayerWinCall()
+		{
+			EnemyCreator.SendToPlayersCallOfWin();
+		}
 
-                        enemyAbstract.Physicffect.EventEffectRageAttack(weapon);
+		/// <summary> 
+		/// Получить урон. 
+		/// По броне, либо по телу. 
+		/// </summary> 
+		/// <param name="dmg"></param> 
+		/// <param name="gemPower"></param> 
+		/// <param name="weapon"></param> 
+		/// <param name="isSuperAttack"></param> 
+		/// <returns></returns> 
+		public override bool GetDamage(float dmg, float gemPower, IWeapon weapon, bool isSuperAttack)
+		{
+			if (isMayGetDamage)
+			{
+				if (enemyArmory.IsAlive)
+				{
+					if (isSuperAttack)
+					{
+						enemyAbstract.AbstractObjectSounder.PlayGetDamageAudio(true);
 
-                        dmg = GetDamageWithResistanceWithoutEffect(dmg, weapon);
-                        Timing.RunCoroutine(CoroutineForGetDamage(false, dmg));
+						enemyAbstract.Physicffect.EventEffectRageAttack(weapon);
 
-                        enemyArmory.DecreaseArmoryLevel(-
-                            LibraryStaticFunctions.GetRangeValue(dmg, 0.1f));
+						dmg = GetDamageWithResistanceWithoutEffect(dmg, weapon);
+						Timing.RunCoroutine(CoroutineForGetDamage(false, dmg));
 
-                        weapon.WhileTime();
-                        return true;
-                    }
-                    else if (weapon.SpinSpeed / weapon.OriginalSpinSpeed >= 0.1f)
-                    {
-                        enemyAbstract.AbstractObjectSounder.PlayGetDamageAudio(true);
+						enemyArmory.DecreaseArmoryLevel(-
+						LibraryStaticFunctions.GetRangeValue(dmg, 0.1f));
 
-                        /* Если это электрический удар в рукопашную - отодвигаем противника.
-                         Молния не должна иметь право отодвигать врага. */
-                        if (weapon.GemType == GemType.Electric)
-                            enemyAbstract.Physicffect.EventEffectWithoutDefenceBonus(weapon);
+						weapon.WhileTime();
+						return true;
+					}
+					else if (weapon.SpinSpeed / weapon.OriginalSpinSpeed >= 0.1f)
+					{
+						enemyAbstract.AbstractObjectSounder.PlayGetDamageAudio(true);
 
-                        dmg = GetDamageWithResistance(dmg, gemPower, weapon);
-                        Timing.RunCoroutine(CoroutineForGetDamage(false, dmg));
+						/* Если это электрический удар в рукопашную - отодвигаем противника. 
+						Молния не должна иметь право отодвигать врага. */
+						if (weapon.GemType == GemType.Electric)
+							enemyAbstract.Physicffect.EventEffectWithoutDefenceBonus(weapon);
 
-                        enemyArmory.DecreaseArmoryLevel(-
-                            LibraryStaticFunctions.GetRangeValue(dmg, 0.1f));
+						dmg = GetDamageWithResistance(dmg, gemPower, weapon);
+						Timing.RunCoroutine(CoroutineForGetDamage(false, dmg));
 
-                        weapon.WhileTime();
-                        return true;
-                    }
-                }
-                else
-                {
-                    if (isSuperAttack)
-                    {
-                        enemyAbstract.AbstractObjectSounder.PlayGetDamageAudio();
+						enemyArmory.DecreaseArmoryLevel(-
+						LibraryStaticFunctions.GetRangeValue(dmg, 0.1f));
 
-                        enemyAbstract.Physicffect.EventEffectRageAttack(weapon);
+						weapon.WhileTime();
+						return true;
+					}
+				}
+				else
+				{
+					if (isSuperAttack)
+					{
+						enemyAbstract.AbstractObjectSounder.PlayGetDamageAudio();
 
-                        dmg = GetDamageWithResistanceWithoutEffect(dmg, weapon);
-                        Timing.RunCoroutine(CoroutineForGetDamage(false, dmg));
+						enemyAbstract.Physicffect.EventEffectRageAttack(weapon);
 
-                        if (HealthValue <= 0) return false;
-                        HealthValue -=
-                            LibraryStaticFunctions.GetRangeValue(dmg, 0.1f);
-                        if (HealthValue <= 0)
-                            enemyAbstract.ScoreAddingEffect.EventEffect(weapon);
+						dmg = GetDamageWithResistanceWithoutEffect(dmg, weapon);
+						Timing.RunCoroutine(CoroutineForGetDamage(false, dmg));
 
-                        weapon.WhileTime();
-                        return true;
-                    }
-                    else if (weapon.SpinSpeed / weapon.OriginalSpinSpeed >= 0.1f)
-                    {
-                        enemyAbstract.AbstractObjectSounder.PlayGetDamageAudio();
+						if (HealthValue <= 0) return false;
+						HealthValue -=
+						LibraryStaticFunctions.GetRangeValue(dmg, 0.1f);
+						if (HealthValue <= 0)
+							enemyAbstract.ScoreAddingEffect.EventEffect(weapon);
 
-                        /* Если это электрический удар в рукопашную - отодвигаем противника.
-                         Молния не должна иметь право отодвигать врага. */
-                        if (weapon.GemType == GemType.Electric)
-                            enemyAbstract.Physicffect.EventEffectWithoutDefenceBonus(weapon);
+						weapon.WhileTime();
+						return true;
+					}
+					else if (weapon.SpinSpeed / weapon.OriginalSpinSpeed >= 0.1f)
+					{
+						enemyAbstract.AbstractObjectSounder.PlayGetDamageAudio();
 
-                        dmg = GetDamageWithResistance(dmg, gemPower, weapon);
-                        Timing.RunCoroutine(CoroutineForGetDamage(false, dmg));
+						/* Если это электрический удар в рукопашную - отодвигаем противника. 
+						Молния не должна иметь право отодвигать врага. */
+						if (weapon.GemType == GemType.Electric)
+							enemyAbstract.Physicffect.EventEffectWithoutDefenceBonus(weapon);
 
-                        if (HealthValue <= 0) return false;
-                        HealthValue -=
-                            LibraryStaticFunctions.GetRangeValue(dmg, 0.1f);
-                        if (HealthValue <= 0)
-                            enemyAbstract.ScoreAddingEffect.EventEffect(weapon);
+						dmg = GetDamageWithResistance(dmg, gemPower, weapon);
+						Timing.RunCoroutine(CoroutineForGetDamage(false, dmg));
 
-                        weapon.WhileTime();
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
+						if (HealthValue <= 0) return false;
+						HealthValue -=
+						LibraryStaticFunctions.GetRangeValue(dmg, 0.1f);
+						if (HealthValue <= 0)
+							enemyAbstract.ScoreAddingEffect.EventEffect(weapon);
 
-        /// <summary>
-        /// Корутина на получения урона и воспроизведения анимации.
-        /// Если получаемый урон больше, либо равен четверти здоровья врага
-        /// то мы воспроизводим анимацию
-        /// </summary>
-        /// <param name="isLongAttack"></param>
-        /// <param name="dmg"></param>
-        /// <returns></returns>
-        public override IEnumerator<float> CoroutineForGetDamage(bool isLongAttack = false,float dmg=0)
-        {
-            if (!isLongAttack)
-                isMayGetDamage = false;
+						weapon.WhileTime();
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 
-            bool flag;
-            if (enemyArmory.IsAlive)
-            {
-                flag = LibraryStaticFunctions.BossMayPlayGetDamageAnimation
-                    (enemyArmory.InitialisatedHealthValue, dmg);
-            }
-            else
-            {
-                flag = LibraryStaticFunctions.BossMayPlayGetDamageAnimation
-                    (initialisatedHealthValue, dmg);
-            }
+		/// <summary> 
+		/// Корутина на получения урона и воспроизведения анимации. 
+		/// Если получаемый урон больше, либо равен четверти здоровья врага 
+		/// то мы воспроизводим анимацию 
+		/// </summary> 
+		/// <param name="isLongAttack"></param> 
+		/// <param name="dmg"></param> 
+		/// <returns></returns> 
+		public override IEnumerator<float> CoroutineForGetDamage(bool isLongAttack = false, float dmg = 0)
+		{
+			if (!isLongAttack)
+				isMayGetDamage = false;
 
-            if (flag)
-                enemyAbstract.EnemyAnimationsController.SetState(3, true);
-            yield return Timing.WaitForSeconds(frequencyOfGetDamage);
-            if (flag)
-                enemyAbstract.EnemyAnimationsController.SetState(3, false);
+			bool flag;
+			if (enemyArmory.IsAlive)
+			{
+				flag = LibraryStaticFunctions.BossMayPlayGetDamageAnimation
+				(enemyArmory.InitialisatedHealthValue, dmg);
+			}
+			else
+			{
+				flag = LibraryStaticFunctions.BossMayPlayGetDamageAnimation
+				(initialisatedHealthValue, dmg);
+			}
 
-            if (!isLongAttack)
-                isMayGetDamage = true;
-        }
-    }
+			if (flag)
+				enemyAbstract.EnemyAnimationsController.SetState(3, true);
+			yield return Timing.WaitForSeconds(frequencyOfGetDamage);
+			if (flag)
+				enemyAbstract.EnemyAnimationsController.SetState(3, false);
+
+			if (!isLongAttack)
+				isMayGetDamage = true;
+		}
+	}
 }

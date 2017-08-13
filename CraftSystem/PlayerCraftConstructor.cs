@@ -1,6 +1,8 @@
-﻿using PlayerBehaviour;
+﻿using System;
+using PlayerBehaviour;
 using UnityEngine;
 using VotanLibraries;
+using VotanInterfaces;
 
 namespace CraftSystem
 {
@@ -16,66 +18,35 @@ namespace CraftSystem
         private PlayerComponentsControl plComponents;
         private PlayerWeapon plWeapon;
 
-        private float armoryWeight;
+        private float weaponWeight;
         private float weaponDamage;
-        private float weaponDefence;
-        private GemType weaponDamType;
+		private float weaponCrit;
+		private float weaponGemPower;
+        private GemType weaponGemType;
         private float weaponSpinSpeed;
 
-        private Grip gripClass;
-        private Head headClass;
-        private Gem gemClass;
-        private GameObject grip;
-        private GameObject head;
-        private GameObject gem;
+        private Weapon weaponClass;
+        private GameObject weaponObj;
 
-        private Vector3 attackPoint;
-        private Vector3 headPosition;
-        private Vector3 headRotate = new Vector3(35, 0, 0);
-        private Vector3 gripPoint;
-
-        private Vector3 shortGripPosition = new Vector3(0, 0, 0);
-        private Vector3 shortGripRotate = new Vector3(0, 0, 0);
-
-        private Vector3 midleGripPosition = new Vector3(2, 0, 0);
-        private Vector3 midleGripRotate = new Vector3(0, 0, 0);
-
-        private Vector3 longGripPosition = new Vector3(4, 0, 0);
-        private Vector3 longGripRotate = new Vector3(0, 0, 0);
-
-        private int gripType;
         private PartArmoryInformation shieldArmoryInformation;
         private PartArmoryInformation cuirassArmoryInformation;
         private PartArmoryInformation helmetArmoryInformation;
         #endregion
 
         /// <summary>
-        /// Настройки оружия
+        /// Установить статы для оружия
         /// </summary>
-        private void WeaponSettings()
+        private void SetWeaponStats()
         {
-            switch (gripClass.GripType)
-            {
-                case LenghtGrip.Short:
-                    gripPoint = shortGripPosition;
-                    headPosition = new Vector3(-62, 0, 0);
-                    attackPoint = new Vector3(-70, 0, 0);
-                    break;
-                case LenghtGrip.Middle:
-                    gripPoint = midleGripPosition;
-                    headPosition = new Vector3(-67, 0, 0);
-                    attackPoint = new Vector3(-72, 0, 0);
-                    break;
-                case LenghtGrip.Long:
-                    gripPoint = longGripPosition;
-                    headPosition = new Vector3(-72, 0, 0);
-                    attackPoint = new Vector3(-82, 0, 0);
-                    break;
-                default:
-                    gripPoint = Vector3.zero;
-                    break;
-            }
-        }
+
+			weaponGemType = weaponClass.DamageTypeGem;
+
+			plComponents.PlayerWeapon.SetWeaponParameters(weaponClass.DamageBase, 101, weaponGemType,
+				weaponClass.TrailRenderer, weaponClass.GemPower);
+
+			plComponents.PlayerWeapon.SetSpinSpeed
+				(LibraryStaticFunctions.TotalSpinSpeed(plComponents.PlayerArmory.ArmoryWeight));
+		}
 
         /// <summary>
         /// Общая инициализация
@@ -86,41 +57,95 @@ namespace CraftSystem
 
             ArmoryInitialisation();
             WeaponInitialisation();
-            OtherPlayerInitialisation();
-        }
+            InventoryInitialisation();
+			OtherPlayerInitialisation();
+		}
 
         /// <summary>
         /// Инициализация оружия
         /// </summary>
         private void WeaponInitialisation()
         {
-            grip = Instantiate(GameObject.Find("GetPrefabs").GetComponent<WeaponPrefabs>().Grip);
-            head = Instantiate(GameObject.Find("GetPrefabs").GetComponent<WeaponPrefabs>().Head);
-            gem = Instantiate(GameObject.Find("GetPrefabs").GetComponent<WeaponPrefabs>().Gem);
+			weaponObj = Instantiate(GameObject.Find("GetPrefabs").GetComponent<WeaponPrefabs>().Weapon);
 
-            gripClass = grip.GetComponent<Grip>();
-            headClass = head.GetComponent<Head>();
-            gemClass = gem.GetComponent<Gem>();
+			weaponClass = weaponObj.GetComponent<Weapon>();
 
-            WeaponSettings();
-
-            grip.transform.parent = weapon.transform;
-            grip.transform.localPosition = gripPoint;
-            grip.transform.localEulerAngles = midleGripRotate;
-            grip.transform.localScale = new Vector3(1, 1, 1);
-
-            head.transform.parent = weapon.transform;
-            head.transform.localPosition = headPosition;
-            head.transform.localEulerAngles = headRotate;
-            head.transform.localScale = new Vector3(1, 1, 1);
-
-            gem.transform.parent = weapon.transform;
-            gem.transform.localPosition = headPosition;
-            gem.transform.localEulerAngles = headRotate;
-            gem.transform.localScale = new Vector3(1, 1, 1);
-
-            plComponents.PlayerAttack.SetPlayerGunLocalPoint(attackPoint);
+			weaponObj.transform.parent = weapon.transform;
+			weaponObj.transform.localPosition = Vector3.zero;
+			weaponObj.transform.localScale = new Vector3(1, 1, 1);
+			weaponObj.transform.localEulerAngles = new Vector3(50, 0, 0);
+			plComponents.PlayerAttack.SetPlayerGunLocalPoint(new Vector3(-60,0,0));
             SetWeaponStats();
+		}
+
+        /// <summary>
+        /// Инициализация инвентаря игрока: его предметов и умений
+        /// </summary>
+        private void InventoryInitialisation()
+        {
+            ItemSkillPrefabs itemSkillPrefabs = 
+                GameObject.Find("GetPrefabs").GetComponent<ItemSkillPrefabs>();
+            GameObject gO;
+
+            #region Инициализация предметов
+            if (itemSkillPrefabs.FirstItem != null)
+            {
+                gO = Instantiate(itemSkillPrefabs.FirstItem);
+                ProcedureForPlayerItem(gO);
+            }
+            if (itemSkillPrefabs.SecondItem != null)
+            {
+                gO = Instantiate(itemSkillPrefabs.SecondItem);
+                ProcedureForPlayerItem(gO);
+            }
+            if (itemSkillPrefabs.ThirdItem != null)
+            {
+                gO = Instantiate(itemSkillPrefabs.ThirdItem);
+                ProcedureForPlayerItem(gO);
+            }
+            #endregion
+
+            #region Инициализация умений
+            if (itemSkillPrefabs.FirstSkill != null)
+            {
+                gO = Instantiate(itemSkillPrefabs.FirstSkill);
+                ProcedureForPlayerSkill(gO);
+            }
+            if (itemSkillPrefabs.SecondSkill != null)
+            {
+                gO = Instantiate(itemSkillPrefabs.SecondSkill);
+                ProcedureForPlayerSkill(gO);
+            }
+            if (itemSkillPrefabs.ThirdSkill != null)
+            {
+                gO = Instantiate(itemSkillPrefabs.ThirdSkill);
+                ProcedureForPlayerSkill(gO);
+            }
+            #endregion
+        }
+
+        /// <summary>
+        /// Процедура для инициализации предмета персонажа
+        /// </summary>
+        /// <param name="gO"></param>
+        private void ProcedureForPlayerItem(GameObject gO)
+        {
+            IItem iItem = gO.GetComponent<IItem>(); // получаем интерфейс
+            iItem.PlayerComponentsControlInstance = plComponents; // инициализируем компонент-ссылку
+            gO.transform.SetParent(plComponents.PlayerHUDManager.LeftItemsParent); // даем родителя
+            gO.transform.localPosition = Vector3.zero;  // обнуляем позицию
+        }
+
+        /// <summary>
+        /// Процедура для инициализации умения персонажа
+        /// </summary>
+        /// <param name="gO"></param>
+        private void ProcedureForPlayerSkill(GameObject gO)
+        {
+            ISkill iSkill = gO.GetComponent<ISkill>(); // получаем интерфейс
+            iSkill.PlayerComponentsControlInstance = plComponents; // инициализируем компонент-ссылку
+            gO.transform.SetParent(plComponents.PlayerHUDManager.RightSkillsParent); // даем родителя
+            gO.transform.localPosition = Vector3.zero; // обнуляем позицию
         }
 
         /// <summary>
@@ -143,37 +168,22 @@ namespace CraftSystem
         /// </summary>
         private void SendArmoryParametersToPlayer()
         {
-            plComponents.PlayerArmory.HealthValue += shieldArmoryInformation.ArmoryValue;
-            plComponents.PlayerArmory.HealthValue += helmetArmoryInformation.ArmoryValue;
-            plComponents.PlayerArmory.HealthValue += cuirassArmoryInformation.ArmoryValue;
+			plComponents.PlayerArmory.HealthValue += shieldArmoryInformation.ArmoryValue;
+			plComponents.PlayerArmory.HealthValue += helmetArmoryInformation.ArmoryValue;
+			plComponents.PlayerArmory.HealthValue += cuirassArmoryInformation.ArmoryValue;
 
-            // Передаем вес брони в компоненту-броню на персонаже
-            plComponents.PlayerArmory.SetArmoryWeight(helmetArmoryInformation.WeightArmory,
-                shieldArmoryInformation.WeightArmory,
-                cuirassArmoryInformation.WeightArmory);
-        }
+			// Передаем вес брони в компоненту-броню на персонаже
+			plComponents.PlayerArmory.SetArmoryWeight(helmetArmoryInformation.WeightArmory,
+				shieldArmoryInformation.WeightArmory,
+				cuirassArmoryInformation.WeightArmory);
+		}
 
-        /// <summary>
-        /// Установить статы для оружия
-        /// </summary>
-        private void SetWeaponStats()
-        {
-            // получаем вращения оружием
-            weaponDamType = gemClass.DamageTypeGem;
-
-            plComponents.PlayerWeapon.SetWeaponParameters(headClass.DamageBase, 101,weaponDamType,
-                headClass.TrailRenderer, gemClass.GemPower);
-
-            plComponents.PlayerWeapon.SetSpinSpeed
-                (LibraryStaticFunctions.TotalSpinSpeed(plComponents.PlayerArmory.ArmoryWeight));
-        }
-
-        private void OtherPlayerInitialisation()
-        {
-            plComponents.PlayerController.OriginalSpinSpeed =
-                plComponents.PlayerWeapon.SpinSpeed;
-            plComponents.PlayerController.MaxSpinSpeed =
-                plComponents.PlayerWeapon.SpinSpeed;
-        }
-    }
+		private void OtherPlayerInitialisation()
+		{
+			plComponents.PlayerController.OriginalSpinSpeed =
+				plComponents.PlayerWeapon.SpinSpeed;
+			plComponents.PlayerController.MaxSpinSpeed =
+				plComponents.PlayerWeapon.SpinSpeed;
+		}
+	}
 }

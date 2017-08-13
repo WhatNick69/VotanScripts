@@ -40,6 +40,7 @@ namespace GameBehaviour
         {
             damagePerTime = 0;
             audioSourceOfBurning.Stop();
+            isBurning = false;
         }
 
         /// <summary>
@@ -93,6 +94,7 @@ namespace GameBehaviour
             while (i < maxI)
             {
                 if (abstractEnemy.EnemyConditions.HealthValue <= 0) yield break;
+
                 abstractEnemy.EnemyConditions.HealthValue -= 
                     LibraryStaticFunctions.GetRangeValue(damagePerTime, 0.05f);
                 if (abstractEnemy.EnemyConditions.HealthValue <= 0)
@@ -103,13 +105,12 @@ namespace GameBehaviour
                 yield return Timing.WaitForSeconds(0.25f);
                 i++;
             }
-            if (particleSystem)
-                particleSystem.Stop();
+            particleSystem.Stop();
             damagePerTime = 0;
 
             yield return Timing.WaitForSeconds(1);
-            if (particleSystem && !isBurning)
-                particleSystem.gameObject.SetActive(false);
+            particleSystem.gameObject.SetActive(false);
+
             audioSourceOfBurning.Stop();
             isBurning = false;
         }

@@ -22,6 +22,7 @@ namespace PlayerBehaviour
         private Transform attackTransform;
         [SerializeField, Tooltip("Скорость движения"), Range(1, 25)]
         private float moveSpeed;
+        private float speedItemBonus;
         [SerializeField, Tooltip("Плавность движения"), Range(1, 10)]
         private float rotateSpeed;
         [SerializeField, Tooltip("Величина задержки движения"), Range(1, 3)]
@@ -74,6 +75,8 @@ namespace PlayerBehaviour
             set
             {
                 moveSpeed = value;
+                if (moveSpeed > 2.5f)
+                    moveSpeed = 2.5f;
             }
         }
 
@@ -115,6 +118,8 @@ namespace PlayerBehaviour
             set
             {
                 rotateSpeed = value;
+                if (rotateSpeed > 7.5f)
+                    rotateSpeed = 7.5f;
             }
         }
 
@@ -175,6 +180,19 @@ namespace PlayerBehaviour
             }
         }
 
+        public float SpeedItemBonus
+        {
+            get
+            {
+                return speedItemBonus;
+            }
+
+            set
+            {
+                speedItemBonus = value;
+            }
+        }
+
         public void SetAngle(float angleTemp)
         {
             angle = angleTemp;
@@ -217,9 +235,9 @@ namespace PlayerBehaviour
         public void OverridePlayerControllerParametersDependenceArmoryWeight()
         {
             MoveSpeed = LibraryStaticFunctions.DependenceMoveSpeedAndArmoryWeight
-                (playerComponentsControl.PlayerArmory.ArmoryWeight);
+                (playerComponentsControl.PlayerArmory.ArmoryWeight) + speedItemBonus;
             RotateSpeed = LibraryStaticFunctions.DependenceRotateSpeedAndArmoryWeight
-                (playerComponentsControl.PlayerArmory.ArmoryWeight);
+                (playerComponentsControl.PlayerArmory.ArmoryWeight) + (speedItemBonus*3);
         }
 
         /// <summary>
@@ -309,6 +327,7 @@ namespace PlayerBehaviour
             {
                 if (IsMagnitudeMoreThanValue())
                 {
+                    Joystick.IsBlock = false;
                     // Если двигаем стик, то плавно разгоняемся и меняем анимацию
                     // на бег. Иначе - плавно замедляемся
                     if (isUpdating)

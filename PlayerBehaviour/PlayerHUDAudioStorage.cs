@@ -16,6 +16,7 @@ namespace PlayerBehaviour
         private static AudioClip[] audioButtons;
         private static AudioClip[] audioItemsPick;
         private static AudioClip[] audioSkillsPick;
+        private static AudioClip[] audioImpossibleClick;
         private static object[] tempAudioList;
         #endregion
 
@@ -29,6 +30,17 @@ namespace PlayerBehaviour
             InitialisationButtonAudio();
             InitialisationItemsAudio();
             InitialisationSkillsAudio();
+            InitialisationImpossibleClicksAudio();
+        }
+
+        private void InitialisationImpossibleClicksAudio()
+        {
+            tempAudioList = Resources.LoadAll("Sounds/HUD/ImpossibleClick");
+            audioImpossibleClick = new AudioClip[tempAudioList.Length];
+            for (int i = 0; i < tempAudioList.Length; i++)
+            {
+                audioImpossibleClick[i] = (AudioClip)tempAudioList[i];
+            }
         }
 
         /// <summary>
@@ -95,6 +107,16 @@ namespace PlayerBehaviour
             else
                 audioSource.clip = audioSwipeInventory[1];
 
+            audioSource.Play();
+        }
+
+        /// <summary>
+        /// Проиграть звук невозможности выполнения эффекта от предмета/умения
+        /// </summary>
+        public void PlaySoundImpossibleClick()
+        {
+            audioSource.clip =
+                audioImpossibleClick[UnityEngine.Random.Range(0, audioImpossibleClick.Length)];
             audioSource.Play();
         }
 

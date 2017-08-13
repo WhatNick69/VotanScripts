@@ -1,7 +1,5 @@
 ﻿using PlayerBehaviour;
 using UnityEngine;
-using VotanLibraries;
-using GameBehaviour;
 using VotanGameplay;
 
 namespace EnemyBehaviour

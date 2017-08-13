@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using VotanLibraries;
 using VotanInterfaces;
-using GameBehaviour;
 using VotanGameplay;
 
 namespace PlayerBehaviour
@@ -41,6 +40,33 @@ namespace PlayerBehaviour
         #endregion
 
         #region Свойства
+        public override float HealthValue
+        {
+            get
+            {
+                return base.HealthValue;
+            }
+
+            set
+            {
+                healthValue = value;
+         
+                if (healthValue > 0)
+                {
+                    if (healthValue > initialisatedHealthValue)
+                        healthValue = initialisatedHealthValue;
+                    RefreshHealthCircle();
+                }
+                else if (healthValue <= 0 && isAlive)
+                {
+                    isAlive = false;
+                    Timing.RunCoroutine(DieState());
+                    healthValue = 0;
+                    RefreshHealthCircle();
+                }
+            }
+        }
+
         /// <summary>
         /// Свойство для маны персонажа
         /// </summary>
@@ -144,6 +170,15 @@ namespace PlayerBehaviour
         public void StartRageCoroutineRegen()
         {
             Timing.RunCoroutine(CoroutineForRage());
+        }
+
+        /// <summary>
+        /// Максимальное ли у нас количество здоровья
+        /// </summary>
+        /// <returns></returns>
+        public bool IsMaxHealth()
+        {
+            return healthValue >= initialisatedHealthValue ? true : false;
         }
 
         /// <summary>
@@ -290,6 +325,10 @@ namespace PlayerBehaviour
                 .SetState(4, false);
         }
 
+        /// <summary>
+        /// ЗАпустить метод, для смерти игрока
+        /// </summary>
+        /// <param name="isFalling"></param>
         public void RunDieState(bool isFalling)
         {
             isFallingDead = true;

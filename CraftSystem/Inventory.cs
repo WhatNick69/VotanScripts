@@ -12,9 +12,7 @@ namespace CraftSystem
         private GameObject weapon;
         [SerializeField, Tooltip("Броня")]
         private GameObject armor;
-        [SerializeField, Tooltip("Крафт брони. Компонент")]
         private ArmorCraft armorCraftComponent;
-        [SerializeField,Tooltip("Крафт оружия. Компонент")]
         private WeaponCraft weaponCraftComponent;
 
         private void Start()

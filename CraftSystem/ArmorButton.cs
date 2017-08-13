@@ -15,6 +15,7 @@ namespace CraftSystem
 		Text nameWeapon;
 		[SerializeField]
 		Text armor;
+		string weight;
         ArmoryClass armoryClass;
 
         public ArmoryClass ArmoryClass
@@ -30,7 +31,20 @@ namespace CraftSystem
             }
         }
 
-        public void SetNumber(int x)
+		public string Weight
+		{
+			get
+			{
+				return weight;
+			}
+
+			set
+			{
+				weight = value;
+			}
+		}
+
+		public void SetNumber(int x)
 		{
 			numberButton = x;
 		}

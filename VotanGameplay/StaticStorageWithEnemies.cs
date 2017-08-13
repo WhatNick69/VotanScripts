@@ -1,6 +1,5 @@
 ﻿using AbstractBehaviour;
 using UnityEngine;
-using VotanInterfaces;
 
 namespace VotanGameplay
 {

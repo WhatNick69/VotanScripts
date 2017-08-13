@@ -235,6 +235,83 @@ namespace PlayerBehaviour
         /// </summary>
         private void CheckFightState()
         {
+            #region Старая реализация. Вращение, блок и рывок.
+            //if (isMayToLongAttack)
+            //{
+            //    if (fightVector.magnitude != 0)
+            //    {
+            //        // Вращение влево, либо вправо
+            //        if (Math.Abs(fightVector.x) > 0.5f)
+            //        {
+            //            // но в том случае, если мы не в блоке
+            //            if (!IsDefensing)
+            //            {
+            //                IsRotating = true;
+            //                IsSpining = true;
+            //
+            //                if (fightVector.x >= 0.5f)
+            //                {
+            //                    IsNormal = true;
+            //                }
+            //                else if (fightVector.x <= -0.5f)
+            //                {
+            //                    IsNormal = false;
+            //                }
+            //
+            //                BeforeSendAngleToPlayer();
+            //            }
+            //        }
+            //        // Рывок или защита
+            //        else
+            //        {
+            //            // Рывок
+            //            if (fightVector.z > 0.9f)
+            //            {
+            //                if (!isFighting && isMayToLongAttack && !isSpining && !isRotating)
+            //                {
+            //                    Timing.RunCoroutine(CoroutineForStraightAttack());
+            //                }
+            //            }
+            //            // Защита
+            //            else if (fightVector.z < -0.9f)
+            //            {
+            //                if (!isFighting && !isRotating)
+            //                {
+            //                    // включаем защиту
+            //                    if (!IsDefensing)
+            //                        playerAnimationsController.HighSpeedAnimation();
+            //
+            //                    playerAnimationsController.HighSpeedAnimation();
+            //                    playerAnimationsController.SetState(2, true);
+            //                    IsDefensing = true;
+            //                    IsFighting = true;
+            //                    playerComponentsControl.PlayerCameraSmooth.CameraZoom();
+            //                }
+            //            }
+            //        }
+            //    }
+            //    else if (isSpining)
+            //    {
+            //        playerAnimationsController.HighSpeedAnimation();
+            //        IsSpining = false;
+            //        Timing.RunCoroutine(CoroutineSlowMotionFighting());
+            //    }
+            //    else
+            //    {
+            //        if (isDefensing)
+            //        {
+            //            playerAnimationsController.HighSpeedAnimation();
+            //            playerAnimationsController.SetState(2, false);
+            //            IsDefensing = false;
+            //            IsFighting = false;
+            //        }
+            //        playerComponentsControl.
+            //            PlayerCameraSmooth.CheckVectorForCamera();
+            //    }
+            //}
+            #endregion
+
+            #region Новая реализация. Только 
             if (isMayToLongAttack)
             {
                 if (fightVector.magnitude != 0)
@@ -242,6 +319,7 @@ namespace PlayerBehaviour
                     // Вращение влево, либо вправо
                     if (Math.Abs(fightVector.x) > 0.5f)
                     {
+                        Joystick.IsBlock = false;
                         // но в том случае, если мы не в блоке
                         if (!IsDefensing)
                         {
@@ -260,40 +338,29 @@ namespace PlayerBehaviour
                             BeforeSendAngleToPlayer();
                         }
                     }
-                    // Рывок или защита
-                    else
-                    {
-                        // Рывок
-                        if (fightVector.z > 0.9f)
-                        {
-                            if (!isFighting && isMayToLongAttack && !isSpining && !isRotating)
-                            {
-                                Timing.RunCoroutine(CoroutineForStraightAttack());
-                            }
-                        }
-                        // Защита
-                        else if (fightVector.z < -0.9f)
-                        {
-                            if (!isFighting && !isRotating)
-                            {
-                                // включаем защиту
-                                if (!IsDefensing)
-                                    playerAnimationsController.HighSpeedAnimation();
-
-                                playerAnimationsController.HighSpeedAnimation();
-                                playerAnimationsController.SetState(2, true);
-                                IsDefensing = true;
-                                IsFighting = true;
-                                playerComponentsControl.PlayerCameraSmooth.CameraZoom();
-                            }
-                        }
-                    }
                 }
                 else if (isSpining)
                 {
                     playerAnimationsController.HighSpeedAnimation();
                     IsSpining = false;
                     Timing.RunCoroutine(CoroutineSlowMotionFighting());
+                }
+
+
+                if (Joystick.IsBlock)
+                {
+                    if (!isFighting && !isRotating)
+                    {
+                        // включаем защиту
+                        if (!IsDefensing)
+                            playerAnimationsController.HighSpeedAnimation();
+
+                        playerAnimationsController.HighSpeedAnimation();
+                        playerAnimationsController.SetState(2, true);
+                        IsDefensing = true;
+                        //IsFighting = true;
+                        playerComponentsControl.PlayerCameraSmooth.CameraZoom();
+                    }
                 }
                 else
                 {
@@ -308,6 +375,23 @@ namespace PlayerBehaviour
                         PlayerCameraSmooth.CheckVectorForCamera();
                 }
             }
+            #endregion
+        }
+
+        #region Умения персонажа
+        /// <summary>
+        /// Атакующий рывок. 
+        /// Возвращает true, если сработал.
+        /// </summary>
+        /// <returns></returns>
+        public bool SkillLongAttack()
+        {
+            if (!isFighting && isMayToLongAttack && !isSpining && !isRotating)
+            {
+                Timing.RunCoroutine(CoroutineForStraightAttack());
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -317,6 +401,8 @@ namespace PlayerBehaviour
         private IEnumerator<float> CoroutineForStraightAttack()
         {
             isMayToLongAttack = false;
+            IsDefensing = false;
+            playerAnimationsController.SetState(2, false);
             spiningSpeedInCoroutine = 0;
             IsRotating = false;
             IsFighting = true;
@@ -326,5 +412,6 @@ namespace PlayerBehaviour
             yield return Timing.WaitForSeconds(0.75f);
             playerComponentsControl.PlayerController.StopLongAttack();
         }
+        #endregion
     }
 }

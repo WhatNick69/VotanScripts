@@ -25,7 +25,7 @@ namespace AbstractBehaviour
         protected float colorChannelRed;
         protected float colorChannelGreen;
         [SerializeField]
-        private bool isAlive = true; // жив ли объект
+        protected bool isAlive = true; // жив ли объект
         [SerializeField]
         private RectTransform mainBarCanvas;
         #endregion
@@ -110,14 +110,8 @@ namespace AbstractBehaviour
         public virtual void RefreshHealthCircle()
         {
             circleHealthUI.fillAmount = healthValue / initialisatedHealthValue;
-            if (circleHealthUI.fillAmount >= 0.5f)
-            {
-                colorChannelRed = (1 - circleHealthUI.fillAmount) * 2;
-            }
-            else
-            {
-                colorChannelGreen = circleHealthUI.fillAmount * 2;
-            }
+            colorChannelRed = (1 - circleHealthUI.fillAmount);
+            colorChannelGreen = circleHealthUI.fillAmount;
             circleHealthUI.color = new Color(colorChannelRed, colorChannelGreen, 0);
         }
 

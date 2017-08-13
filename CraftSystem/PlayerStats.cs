@@ -16,9 +16,9 @@ namespace CraftSystem
 		[SerializeField]
 		Text armorText;
 		[SerializeField]
-		Text damageText;
+		Text WeightText;
 		[SerializeField]
-		Text blockText;
+		Text damageText;
 		[SerializeField]
 		Text gemText;
 		[SerializeField]
@@ -27,17 +27,17 @@ namespace CraftSystem
 		Text critChaceText;
 
 		[SerializeField]
-		Text newArmor;
+		Text newArmorText;
 		[SerializeField]
-		Text newDamage;
+		Text newWeightText;
 		[SerializeField]
-		Text newBlock;
+		Text newDamageText;
 		[SerializeField]
-		Text newGem;
+		Text newGemText;
 		[SerializeField]
-		Text newGemDamage;
+		Text newGemDamageText;
 		[SerializeField]
-		Text newCritChace;
+		Text newCritChaceText;
 
 		[SerializeField]
 		GameObject cuirass;
@@ -47,18 +47,14 @@ namespace CraftSystem
 		GameObject helmet;
 
 		[SerializeField]
-		GameObject grip;
-		[SerializeField]
-		GameObject head;
-		[SerializeField]
-		GameObject gem;
+		GameObject weapon;
 
 		[SerializeField]
 		GameObject damage;
 		[SerializeField]
 		GameObject armor;
 		[SerializeField]
-		GameObject block;
+		GameObject weight;
 		[SerializeField]
 		GameObject gemTape;
 		[SerializeField]
@@ -66,34 +62,34 @@ namespace CraftSystem
 		[SerializeField]
 		GameObject crit;
 
-		// Для рукоятей
-		float gripWeight;
-		float gripDefence;
-		float newGripWeight;
-		float newGripDefence;
-
 		// Для наконечников
-		float headWeight;
+		float critChance;
 		float headDamage;
-		float newHeadWeight;
+		float newCritChance;
 		float newHeadDamage;
 
 		// Для камней
-		string gemType;
+		GemType gemType;
 		float gemPower;
-		string newGemType;
+		GemType newGemType;
 		float newGemPower;
 
 		// Для всей брони
 		float cuirassArmor;
 		float helmetArmor;
 		float shieldArmor;
+		float cuirassWeight;
+		float helmetWeight;
+		float shieldWeight;
 		float newCuirassArmor;
 		float newHelmetArmor;
 		float newShieldArmor;
+		float newCuirassWeight;
+		float newHelmetWeight;
+		float newShieldWeight;
 
 		Vector4 red = new Vector4(255, 0, 0, 255);
-		Vector4 green = new Vector4(0, 10, 0, 255);
+		Vector4 green = new Vector4(0, 40, 0, 255);
 
 		#region
 		/// <summary>
@@ -103,38 +99,22 @@ namespace CraftSystem
 		{
 			damage.SetActive(false);
 			armor.SetActive(false);
-			block.SetActive(false);
 			gemTape.SetActive(false);
 			gemPuwer.SetActive(false);
 			crit.SetActive(false);
+			weight.SetActive(false);
 		}
 
 		/// <summary>
-		/// Вызывать при открытие листа с рукоятями
+		/// Вызывать при открытие листа с оружия
 		/// </summary>
-		public void GripPage()
-		{
-			PredPageLoad();
-			block.SetActive(true);
-		}
-
-		/// <summary>
-		/// Вызывать при открытие листа с наконечниками
-		/// </summary>
-		public void HeadPage()
+		public void WeaponPage()
 		{
 			PredPageLoad();
 			damage.SetActive(true);
-		}
-
-		/// <summary>
-		/// Вызывать при открытие листа с камнями
-		/// </summary>
-		public void GemPage()
-		{
-			PredPageLoad();
-			gemTape.SetActive(true);
+			crit.SetActive(true);
 			gemPuwer.SetActive(true);
+			gemTape.SetActive(true);
 		}
 
 		/// <summary>
@@ -144,6 +124,7 @@ namespace CraftSystem
 		{
 			PredPageLoad();
 			armor.SetActive(true);
+			weight.SetActive(true);
 		}
 
 		public float CuirassArmor
@@ -225,71 +206,6 @@ namespace CraftSystem
 			}
 		}
 
-		public float GripWeight
-		{
-			get
-			{
-				return gripWeight;
-			}
-
-			set
-			{
-				gripWeight = value;
-			}
-		}
-
-		public float GripDefence
-		{
-			get
-			{
-				return gripDefence;
-			}
-
-			set
-			{
-				gripDefence = value;
-			}
-		}
-
-		public float NewGripWeight
-		{
-			get
-			{
-				return newGripWeight;
-			}
-
-			set
-			{
-				newGripWeight = value;
-			}
-		}
-
-		public float NewGripDefence
-		{
-			get
-			{
-				return newGripDefence;
-			}
-
-			set
-			{
-				newGripDefence = value;
-			}
-		}
-
-		public float HeadWeight
-		{
-			get
-			{
-				return headWeight;
-			}
-
-			set
-			{
-				headWeight = value;
-			}
-		}
-
 		public float HeadDamage
 		{
 			get
@@ -300,19 +216,6 @@ namespace CraftSystem
 			set
 			{
 				headDamage = value;
-			}
-		}
-
-		public float NewHeadWeight
-		{
-			get
-			{
-				return newHeadWeight;
-			}
-
-			set
-			{
-				newHeadWeight = value;
 			}
 		}
 
@@ -329,19 +232,6 @@ namespace CraftSystem
 			}
 		}
 
-		public string GemType
-		{
-			get
-			{
-				return gemType;
-			}
-
-			set
-			{
-				gemType = value;
-			}
-		}
-
 		public float GemPower
 		{
 			get
@@ -352,19 +242,6 @@ namespace CraftSystem
 			set
 			{
 				gemPower = value;
-			}
-		}
-
-		public string NewGemType
-		{
-			get
-			{
-				return newGemType;
-			}
-
-			set
-			{
-				newGemType = value;
 			}
 		}
 
@@ -380,6 +257,110 @@ namespace CraftSystem
 				newGemPower = value;
 			}
 		}
+
+		public float CuirassWeight
+		{
+			get
+			{
+				return cuirassWeight;
+			}
+
+			set
+			{
+				cuirassWeight = value;
+			}
+		}
+
+		public float HelmetWeight
+		{
+			get
+			{
+				return helmetWeight;
+			}
+
+			set
+			{
+				helmetWeight = value;
+			}
+		}
+
+		public float ShieldWeight
+		{
+			get
+			{
+				return shieldWeight;
+			}
+
+			set
+			{
+				shieldWeight = value;
+			}
+		}
+
+		public float NewCuirassWeight
+		{
+			get
+			{
+				return newCuirassWeight;
+			}
+
+			set
+			{
+				newCuirassWeight = value;
+			}
+		}
+
+		public float NewHelmetWeight
+		{
+			get
+			{
+				return newHelmetWeight;
+			}
+
+			set
+			{
+				newHelmetWeight = value;
+			}
+		}
+
+		public float NewShieldWeight
+		{
+			get
+			{
+				return newShieldWeight;
+			}
+
+			set
+			{
+				newShieldWeight = value;
+			}
+		}
+
+		public float CritChance
+		{
+			get
+			{
+				return critChance;
+			}
+
+			set
+			{
+				critChance = value;
+			}
+		}
+
+		public float NewCritChance
+		{
+			get
+			{
+				return newCritChance;
+			}
+
+			set
+			{
+				newCritChance = value;
+			}
+		}
 		#endregion
 
 		/// <summary>
@@ -388,85 +369,108 @@ namespace CraftSystem
 		/// </summary>
 		public void NewStats()
 		{
-			leveTextl.text = "level: " + PlayerPrefs.GetInt("level");
+			leveTextl.text = PlayerPrefs.GetInt("level").ToString();
 			hpText.text = "HP: " + ((PlayerPrefs.GetInt("level") + 10) * 2);
-			armorText.text = "Armor: " + (cuirassArmor + shieldArmor + helmetArmor);
-			damageText.text = "Damage: " + LibraryStaticFunctions.TotalDamage(headDamage, headWeight + gripWeight);
-			blockText.text = "Block: " + gripDefence;
-			gemText.text = "Gem Type: " + GemType;
-			gemDamageText.text = "Gem Power:" + GemPower.ToString();
-			critChaceText.text = "Crit Chace: ";
+			armorText.text = (cuirassArmor + shieldArmor + helmetArmor).ToString();
+			WeightText.text = (cuirassWeight + helmetWeight + shieldWeight).ToString();
+			damageText.text = headDamage.ToString();
+			gemDamageText.text = GemPower.ToString().ToString();
+			critChaceText.text = CritChance.ToString();
 
-			// Gem Power
-			if (newGemPower >= GemPower && gem.activeInHierarchy)
+			// Crit Chance
+			if (newCritChance >= critChance && crit.activeInHierarchy)
 			{
-				newGemDamage.text = "+(" + Mathf.Abs(newGemPower - GemPower).ToString() + ")";
-				newGemDamage.color = green;
+				newCritChaceText.text = "+(" + Mathf.Abs(newCritChance - critChance) + ")";
+				newCritChaceText.color = green;
 			}
-			else if (gem.activeInHierarchy)
+			else
 			{
-				newGemDamage.text = "-(" + Mathf.Abs(newGemPower - GemPower).ToString() + ")";
-				newGemDamage.color = red;
+				newCritChaceText.text = "-(" + Mathf.Abs(newCritChance - critChance) + ")";
+				newCritChaceText.color = red;
 			}
-			
-			// Head Weight
-			if (newHeadDamage >= headDamage && head.activeInHierarchy)
+
+			// Cuiras Weight
+			if (newCuirassWeight >= cuirassWeight && cuirass.activeInHierarchy)
 			{
-                newDamage.text = "+(" + Mathf.Abs(newHeadDamage - headDamage).ToString() + ")";
-                newDamage.color = green;
+				newWeightText.text = "+(" + Mathf.Abs(newCuirassWeight - cuirassWeight) + ")";
+				newWeightText.color = green;
 			}
-			else if (head.activeInHierarchy)
+			else if (cuirass.activeInHierarchy)
 			{
-                newDamage.text = "-(" + Mathf.Abs(newHeadDamage - headDamage).ToString() + ")";
-                newDamage.color = red;
+				newWeightText.text = "-(" + Mathf.Abs(newCuirassWeight - cuirassWeight) + ")";
+				newWeightText.color = red;
 			}
-			
-			// Grip Defence
-			if (newGripDefence >= gripDefence && grip.activeInHierarchy)
+
+			// Helmet Weight
+			if (newHelmetWeight >= helmetWeight && helmet.activeInHierarchy)
 			{
-				newBlock.text = "+(" + Mathf.Abs(newGripDefence - gripDefence) + ")";
-				newBlock.color = green;
+				newWeightText.text = "+(" + Mathf.Abs(newHelmetWeight - helmetWeight) + ")";
+				newWeightText.color = green;
 			}
-			else if (grip.activeInHierarchy)
+			else if (helmet.activeInHierarchy)
 			{
-				newBlock.text = "-(" + Mathf.Abs(newGripDefence - gripDefence) + ")";
-				newBlock.color = red;
+				newWeightText.text = "-(" + Mathf.Abs(newHelmetWeight - helmetWeight) + ")";
+				newWeightText.color = red;
+			}
+
+			// Shield Weight
+			if (newShieldWeight >= shieldWeight && shield.activeInHierarchy)
+			{
+				newWeightText.text = "+(" + Mathf.Abs(newShieldWeight - shieldWeight) + ")";
+				newWeightText.color = green;
+			}
+			else if (shield.activeInHierarchy)
+			{
+				newWeightText.text = "-(" + Mathf.Abs(newShieldWeight - shieldWeight) + ")";
+				newWeightText.color = red;
+			}
+
+			// Head Damage
+			if (newHeadDamage >= headDamage && damage.activeInHierarchy)
+			{
+				newDamageText.text = "+(" + Mathf.Abs(newHeadDamage - headDamage).ToString() + ")";
+				newDamageText.color = green;
+			}
+			else if (damage.activeInHierarchy)
+			{
+				newDamageText.text = "-(" + Mathf.Abs(newHeadDamage - headDamage).ToString() + ")";
+				newDamageText.color = red;
 			}
 			
 			// Cuirass Armor
 			if (newCuirassArmor >= cuirassArmor && cuirass.activeInHierarchy)
 			{
-				newArmor.text = "+(" + Mathf.Abs(newCuirassArmor - cuirassArmor) + ")";
-				newArmor.color = green;
+				newArmorText.text = "+(" + Mathf.Abs(newCuirassArmor - cuirassArmor) + ")";
+				newArmorText.color = green;
 			}
 			else if (cuirass.activeInHierarchy)
 			{
-				newArmor.text = "-(" + Mathf.Abs(newCuirassArmor - cuirassArmor) + ")";
-				newArmor.color = red;
+				newArmorText.text = "-(" + Mathf.Abs(newCuirassArmor - cuirassArmor) + ")";
+				newArmorText.color = red;
 			}
 			
 			// Helmet Armor
 			if (newHelmetArmor >= helmetArmor && helmet.activeInHierarchy)
 			{
-				newArmor.text = "+(" + Mathf.Abs(newHelmetArmor - helmetArmor) + ")";
-				newArmor.color = green;
+				newArmorText.text = "+(" + Mathf.Abs(newHelmetArmor - helmetArmor) + ")";
+				newArmorText.color = green;
 			}
 			else if (helmet.activeInHierarchy)
 			{
-				newArmor.text = "-(" + Mathf.Abs(newHelmetArmor - helmetArmor) + ")";
-				newArmor.color = red;
+				newArmorText.text = "-(" + Mathf.Abs(newHelmetArmor - helmetArmor) + ")";
+				newArmorText.color = red;
 			}
 			
 			// Shield Armor
 			if (newShieldArmor >= shieldArmor && shield.activeInHierarchy)
 			{
-				newArmor.text = "+(" + Mathf.Abs(newShieldArmor - shieldArmor) + ")";
-				newArmor.color = green;
+				newArmorText.text = "+(" + Mathf.Abs(newShieldArmor - shieldArmor) + ")";
+				newArmorText.color = green;
 			}
 			else if (shield.activeInHierarchy)
 			{
-				newArmor.text = "-(" + Mathf.Abs(newShieldArmor - shieldArmor) + ")";
-				newArmor.color = red;
+				newArmorText.text = "-(" + Mathf.Abs(newShieldArmor - shieldArmor) + ")";
+				newArmorText.color = red;
 			}
 		}
 	}

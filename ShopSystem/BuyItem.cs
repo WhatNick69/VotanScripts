@@ -7,8 +7,6 @@ namespace ShopSystem
         : MonoBehaviour
     {
 
-        Grip grip;
-        Head head;
-        Gem gem;
+      
     }
 }

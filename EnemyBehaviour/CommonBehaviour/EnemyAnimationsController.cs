@@ -122,7 +122,7 @@ namespace EnemyBehaviour
             yield return Timing.WaitForSeconds(3);
 
             i = 0;
-            while (i < 20)
+            while (i < 100)
             {
                 i++;
                 if (this == null) yield break;

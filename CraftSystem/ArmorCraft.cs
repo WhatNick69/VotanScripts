@@ -80,6 +80,7 @@ namespace CraftSystem
             {
                 helmetItemNumber = value;
 				PStats.HelmetArmor = helmetList[value].ArmoryValue;
+				PStats.HelmetWeight = helmetList[value].WeightArmory;
 			}
         }
 
@@ -94,6 +95,7 @@ namespace CraftSystem
             {
                 cuirassItemNumber = value;
 				PStats.CuirassArmor = cuirassList[value].ArmoryValue;
+				PStats.CuirassWeight = cuirassList[value].WeightArmory;
 			}
         }
 
@@ -108,6 +110,7 @@ namespace CraftSystem
             {
                 shieldItemNumber = value;
 				PStats.ShieldArmor = shieldList[value].ArmoryValue;
+				PStats.ShieldWeight = shieldList[value].WeightArmory;
 			}
         }
 
@@ -191,8 +194,11 @@ namespace CraftSystem
 				}
 
 				PStats.NewCuirassArmor = cuirassList[(int)intemNumbCuirass].ArmoryValue;
+				PStats.NewCuirassWeight = cuirassList[(int)intemNumbCuirass].WeightArmory;
 				PStats.NewHelmetArmor = helmetList[(int)intemNumbHelmet].ArmoryValue;
+				PStats.NewHelmetWeight = helmetList[(int)intemNumbHelmet].WeightArmory;
 				PStats.NewShieldArmor = shieldList[(int)intemNumbShield].ArmoryValue;
+				PStats.NewShieldWeight = shieldList[(int)intemNumbShield].WeightArmory;
 			}
 			normPosCuirass = scrollRectCuirasseRepository.horizontalNormalizedPosition;
 			normPosHelmet = scrollRectHelmetRepository.horizontalNormalizedPosition;
@@ -249,8 +255,8 @@ namespace CraftSystem
 					button.SetArmorCraft(AC);
 					button.SetNumber(i);
                     button.ArmoryClass = shieldList[i].ArmoryType;
-
-                    button.SetName(shieldList[i].ArmoryName);
+					button.Weight = shieldList[i].WeightArmory.ToString();
+					button.SetName(shieldList[i].ArmoryName);
 					button.SetArmor(shieldList[i].ArmoryValue.ToString());
 					button.SetLogo (shieldList[i].ImageArm);
 					item.transform.SetParent(shieldRepository.transform, false);
@@ -279,8 +285,8 @@ namespace CraftSystem
 					button.SetArmorCraft(AC);
 					button.SetNumber(i);
                     button.ArmoryClass = cuirassList[i].ArmoryType;
-
-                    button.SetName(cuirassList[i].ArmoryName);
+					button.Weight = cuirassList[i].WeightArmory.ToString();
+					button.SetName(cuirassList[i].ArmoryName);
 					button.SetArmor(cuirassList[i].ArmoryValue.ToString());
 					button.SetLogo (cuirassList[i].ImageArm);
 					item.transform.SetParent(cuirassRepository.transform, false);
@@ -309,7 +315,7 @@ namespace CraftSystem
 					button.SetArmorCraft(AC);
 					button.SetNumber(i);
                     button.ArmoryClass = helmetList[i].ArmoryType;
-
+					button.Weight = helmetList[i].WeightArmory.ToString();
                     button.SetName(helmetList[i].ArmoryName);
 					button.SetArmor(helmetList[i].ArmoryValue.ToString());
 					button.SetLogo (helmetList[i].ImageArm);
