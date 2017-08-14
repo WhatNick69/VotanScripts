@@ -16,19 +16,24 @@ namespace CraftSystem
 		[SerializeField]
 		private GameObject weaponRepository;
 		[SerializeField]
+		private GameObject itemRepository;
+		[SerializeField]
+		private GameObject skillsRepository;
+		[SerializeField]
 		private GameObject itemWeapon;
 		[SerializeField]
 		GameObject weaponWindow;
         private GameObject weapon;
 
-		string headPostfix = "_W";
-		string headPrefix = "Prefabs/Weapon/";
+		string headPrefix = "Prefabs/Weapon/Weapon_";
 
 		private List<Weapon> weaponList;
 		[SerializeField]
 		private int weaponItemNumber;
 		[SerializeField]
 		WeaponPrefabs WP;
+		[SerializeField]
+		ItemSkillPrefabs ItemSkillPef;
 		WeaponCraft WC;
 		PlayerStats PStats;
 
@@ -95,12 +100,15 @@ namespace CraftSystem
 		}
 		#endregion
 
+		/// <summary>
+		/// Вызывать при запуске арены
+		/// </summary>
 		public void PlayArena()
         {
             if (WP == null)
                 WP = GameObject.Find("GetPrefabs").GetComponent<WeaponPrefabs>();
 
-			WP.Weapon = (GameObject)Resources.Load(headPrefix + weaponItemNumber + headPostfix);
+			WP.Weapon = (GameObject)Resources.Load(headPrefix + weaponItemNumber);
         }
 
 		private void Awake() // ____________start__________
@@ -127,9 +135,9 @@ namespace CraftSystem
 
 			for (int i = 0; i < count; i++)
 			{
-				if (Resources.Load(headPrefix + i.ToString() + headPostfix))
+				if (Resources.Load(headPrefix + i.ToString()))
 				{
-					GameObject headGamObj = (GameObject)Resources.Load(headPrefix + i.ToString() + headPostfix);
+					GameObject headGamObj = (GameObject)Resources.Load(headPrefix + i.ToString());
 					weaponList.Add(headGamObj.GetComponent<Weapon>());
 					GameObject item = Instantiate(itemWeapon);
 					WeaponButton button = item.GetComponent<WeaponButton>();

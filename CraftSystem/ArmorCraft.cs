@@ -249,7 +249,7 @@ namespace CraftSystem
 				if (Resources.Load(shieldPrefix + i + shieldPostfix))
 				{
 					GameObject gemGgamObj = (GameObject)Resources.Load(shieldPrefix + i + shieldPostfix);
-					shieldList.Add(gemGgamObj.GetComponent<PartArmoryInformation>());
+					shieldList.Add(gemGgamObj.GetComponent<ArmorMeneger>().GetShield(0).GetComponent<PartArmoryInformation>());
 					GameObject item = Instantiate(itemArmor);
 					ArmorButton button = item.GetComponent<ArmorButton>();
 					button.SetArmorCraft(AC);
@@ -304,9 +304,10 @@ namespace CraftSystem
 		private IEnumerator<float> HelmetCorutine()
 		{
 			int count = Resources.LoadAll("Prefabs/Armor/Helmet").Length;
+			
 			for (int i = 0; i < count; i++)
 			{
-				if (Resources.Load(shieldPrefix + i + shieldPostfix))
+				if (Resources.Load(helmetPrefix + i + helmetPostfix))
 				{
 					GameObject gemGgamObj = (GameObject)Resources.Load(helmetPrefix + i + helmetPostfix);
 					helmetList.Add(gemGgamObj.GetComponent<PartArmoryInformation>());
