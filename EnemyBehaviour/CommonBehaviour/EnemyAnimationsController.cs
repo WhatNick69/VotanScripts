@@ -12,6 +12,7 @@ namespace EnemyBehaviour
     public class EnemyAnimationsController
         : AbstactObjectAnimations
     {
+        #region Переменные и  ссылки
         [SerializeField,Tooltip("Скорость аниматора")]
         private float lowSpeedAnimator;
         [SerializeField,Tooltip("Необходимо ли после смерти нормализовывать по Y?")]
@@ -19,6 +20,7 @@ namespace EnemyBehaviour
 
         private IEnemyConditions enemyConditions;
         private IEnemyBehaviour enemyBehaviour;
+        #endregion
 
         /// <summary>
         /// Инициализация
@@ -30,8 +32,12 @@ namespace EnemyBehaviour
             StructStatesNames = new StructStatesNames(animatorOfObject);
         }
 
+        /// <summary>
+        /// Рестарт анимации врага
+        /// </summary>
         public void RestartEnemyAnimationsController()
         {
+            IsDowner = false;
             animatorOfObject.enabled = true;
             TransformForDeadYNormalizing.localPosition = Vector3.zero;
             animatorOfObject.Rebind();
@@ -106,15 +112,12 @@ namespace EnemyBehaviour
 
             int i = 0;       
             yield return Timing.WaitForSeconds(0.5f);
-            if (this == null) yield break;
 
             if (needToNormalizeYAfterDead)
             {
                 while (i < 17)
                 {
                     i++;
-                    if (this == null) yield break;
-
                     TransformForDeadYNormalizing.Translate(0, -0.035f, 0);
                     yield return Timing.WaitForSeconds(0.01f);
                 }
@@ -125,11 +128,10 @@ namespace EnemyBehaviour
             while (i < 100)
             {
                 i++;
-                if (this == null) yield break;
-
                 TransformForDeadYNormalizing.Translate(0, -0.05f, 0);
                 yield return Timing.WaitForSeconds(0.01f);
             }
+            IsDowner = true;
         }
     }
 }

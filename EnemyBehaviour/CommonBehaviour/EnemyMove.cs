@@ -287,14 +287,6 @@ namespace EnemyBehaviour
 
                 if (!GetComponent<AbstractAttack>()) return false;
                 AbstractAttack absA = GetComponent<AbstractAttack>();
-                absA.SetPlayerPoint(0, abstractEnemy.
-                    EnemyAttack.PlayerTarget.PlayerPosition(0));
-                absA.SetPlayerPoint(1, abstractEnemy.
-                    EnemyAttack.PlayerTarget.PlayerPosition(1));
-                absA.SetPlayerPoint(2, abstractEnemy.
-                    EnemyAttack.PlayerTarget.PlayerPosition(2));
-                absA.SetPlayerPoint(3, abstractEnemy.
-                    EnemyAttack.PlayerTarget.PlayerPosition(3));
 
                 playerConditionsComponent = playerObjectTransformForFollow.
                     GetComponent<PlayerConditions>();

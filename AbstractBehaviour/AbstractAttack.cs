@@ -13,12 +13,10 @@ namespace AbstractBehaviour
     {
         #region Переменные
 
-		[SerializeField] // точки персонажа
-        protected Transform playerPoint, playerRightPoint,
-		playerLeftPoint, playerFacePoint, playerBackPoint,
-        playerStartGunPoint, playerFinishGunPoint; 
+        [SerializeField] // точки персонажа
+        private Transform playerPoint;
         [SerializeField] // точки оружия врага
-        protected Transform enemyStartGunPoint, enemyFinishGunPoint; 
+        protected Transform startGunPoint, finishGunPoint; 
         [SerializeField, Tooltip("Как часто объект может бить/стрелять")]
         protected float attackLatency;
 		
@@ -35,55 +33,29 @@ namespace AbstractBehaviour
         #endregion
 
         #region Свойства
-        public Transform PlayerStartGunPoint
+        public Transform StartGunPoint
         {
             get
             {
-                return playerStartGunPoint;
+                return startGunPoint;
             }
 
             set
             {
-                playerStartGunPoint = value;
+                startGunPoint = value;
             }
         }
 
-        public Transform PlayerFinishGunPoint
+        public Transform FinishGunPoint
         {
             get
             {
-                return playerFinishGunPoint;
+                return finishGunPoint;
             }
 
             set
             {
-                playerFinishGunPoint = value;
-            }
-        }
-
-        public Transform EnemyStartGunPoint
-        {
-            get
-            {
-                return enemyStartGunPoint;
-            }
-
-            set
-            {
-                enemyStartGunPoint = value;
-            }
-        }
-
-        public Transform EnemyFinishGunPoint
-        {
-            get
-            {
-                return enemyFinishGunPoint;
-            }
-
-            set
-            {
-                enemyFinishGunPoint = value;
+                finishGunPoint = value;
             }
         }
 
@@ -99,31 +71,20 @@ namespace AbstractBehaviour
                 isMayToDamage = value;
             }
         }
-        #endregion
 
-        /// <summary>
-        /// Установить позицию персонажа
-        /// </summary>
-        /// <param name="index"></param>
-        /// <param name="tr"></param>
-        public void SetPlayerPoint(int index, Transform tr)
-		{
-            switch (index)
+        public Transform PlayerPoint
+        {
+            get
             {
-                case 0:
-                    playerRightPoint = tr;
-                    break;
-                case 1:
-                    playerLeftPoint = tr;
-                    break;
-                case 2:
-                    playerFacePoint = tr;
-                    break;
-                case 3:
-                    playerBackPoint = tr;
-                    break;
+                return playerPoint;
             }
-		}
+
+            set
+            {
+                playerPoint = value;
+            }
+        }
+        #endregion
 
 		/// <summary>
 		/// Задать новую длинну оружия 
@@ -131,7 +92,7 @@ namespace AbstractBehaviour
 		/// <param name="newPoint"></param>
 		public void SetPlayerGunLocalPoint(Vector3 newPoint)
 		{
-			playerFinishGunPoint.localPosition = newPoint;
+			finishGunPoint.localPosition = newPoint;
 		}
 	
 		/// <summary>
@@ -139,19 +100,8 @@ namespace AbstractBehaviour
 		/// </summary>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public Transform PlayerPosition(int index)
+		public Transform ObjectPosition()
 		{
-            switch (index)
-            {
-                case 0:
-                    return playerRightPoint;
-                case 1:
-                    return playerLeftPoint;
-                case 2:
-                    return playerFacePoint;
-                case 3:
-                    return playerBackPoint;
-            }
 			return playerPoint;
 		}
 

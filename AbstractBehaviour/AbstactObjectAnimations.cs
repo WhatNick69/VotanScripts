@@ -11,7 +11,10 @@ namespace AbstractBehaviour
     {
         private List<string> states; // состояния
 
-        public float structureCount
+        /// <summary>
+        /// Число анимаций в структуре
+        /// </summary>
+        public float StructureCount
         {
             get
             {
@@ -54,6 +57,7 @@ namespace AbstractBehaviour
         protected StructStatesNames structStatesnames;
         [SerializeField]
         private Transform transformForDeadYNormalizing;
+        private bool isDowner;
         #endregion
 
         #region Свойства
@@ -93,6 +97,19 @@ namespace AbstractBehaviour
             set
             {
                 transformForDeadYNormalizing = value;
+            }
+        }
+
+        public bool IsDowner
+        {
+            get
+            {
+                return isDowner;
+            }
+
+            set
+            {
+                isDowner = value;
             }
         }
         #endregion
@@ -135,7 +152,7 @@ namespace AbstractBehaviour
         /// <returns></returns>
         public virtual bool IsFalseAllStates()
         {
-            for (byte i = 0; i < structStatesnames.structureCount; i++)
+            for (byte i = 0; i < structStatesnames.StructureCount; i++)
                 if (GetBoolFromState(i)) return false;
 
             return true;
@@ -165,8 +182,10 @@ namespace AbstractBehaviour
         /// </summary>
         public virtual void DisableAllStates()
         {
-            for (byte i = 0; i < structStatesnames.structureCount-1; i++)
+            for (byte i = 0; i < structStatesnames.StructureCount-1; i++)
                 animatorOfObject.SetBool(StructStatesNames.GetState(i), false);
+
+            Debug.Log("DISABLED_ALL_STATES");
         }
 
         /// <summary>

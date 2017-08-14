@@ -83,17 +83,11 @@ namespace EnemyBehaviour
 			enemyAbstract.EnemyMove.Agent.enabled = false;
 			GetComponent<BoxCollider>().enabled = false;
 
-			if (isFrozen)
-				yield return Timing.WaitForSeconds(5 + enemyAbstract.IceEffect.TimeToDisable);
-			else
-				yield return Timing.WaitForSeconds(5);
-
-			// Выключаем врага. Возвращаем в стек врагов. Почти, как если бы 
-			// мы его уничтожали. 
-			//enemyAbstract.EnemyAnimationsController.AnimatorOfObject.enabled = false; 
-			SendAllPlayerWinCall();
-			EnemyCreator.ReturnEnemyToStack(enemyAbstract.EnemyNumber);
-		}
+            while (!enemyAbstract.EnemyAnimationsController.IsDowner)
+                yield return Timing.WaitForSeconds(0.5f);
+            SendAllPlayerWinCall();
+            EnemyCreator.ReturnEnemyToStack(enemyAbstract.EnemyNumber);
+        }
 
 		/// <summary> 
 		/// Оповестить всех живых игроков о победе 

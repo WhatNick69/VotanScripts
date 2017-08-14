@@ -178,7 +178,7 @@ namespace PlayerBehaviour
                 audioSourceWeapon.clip =
                     audioSpin[UnityEngine.Random.Range(0, audioSpin.Length - 1)];
             }
-            audioSourceWeapon.pitch = LibraryStaticFunctions.GetRangeValue(0.8f + speed/2,0.05f);
+            audioSourceWeapon.pitch = LibraryStaticFunctions.GetRangeValue(0.5f + speed/2,0.05f);
             audioSourceWeapon.Play();
         }
 
