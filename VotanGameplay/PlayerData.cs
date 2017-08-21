@@ -5,11 +5,21 @@ public class PlayerData : MonoBehaviour {
 	
 	void Awake ()
 	{
-		if (PlayerPrefs.GetInt("shieldLevel") >= 1)
+		for (int i = 0; i < 4; i++)
+		{
+			if (PlayerPrefs.GetInt("shieldLevel_" + i) >= 1)
+			{ }
+			else
+			{
+				PlayerPrefs.SetInt("shieldLevel_" + i, 0);
+			}
+		}
+
+		if (PlayerPrefs.GetInt("metal") >= 0)
 		{ }
 		else
 		{
-			PlayerPrefs.SetInt("shieldLevel", 0);
+			PlayerPrefs.SetInt("metal", 0);
 		}
 
 		if (PlayerPrefs.GetInt("damage") >= 0)

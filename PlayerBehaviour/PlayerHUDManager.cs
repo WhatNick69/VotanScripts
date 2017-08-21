@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityStandardAssets.CrossPlatformInput;
 using VotanInterfaces;
+using System;
 
 namespace PlayerBehaviour
 {
@@ -179,17 +180,102 @@ namespace PlayerBehaviour
         private void Start()
         {
             playerComponentsControl = GetComponent<PlayerComponentsControl>();
+            RefreshInventory();
+        }
+
+        /// <summary>
+        /// Обновить инвентарь
+        /// </summary>
+        public void RefreshInventory()
+        {
+            UnshowAllIndicators();
             InitialisationsLeftArrays();
             InitialisationRightArrays();
         }
 
+        /// <summary>
+        /// Удалить ссылку на интерфейс предмета из инвентаря.
+        /// </summary>
+        /// <param name="number"></param>
+        public void DeleteItemInterfaceReference(int number)
+        {
+            switch (number)
+            {
+                case 0:
+                    firstItem = null;
+                    break;
+                case 1:
+                    secondItem = null;
+                    break;
+                case 2:
+                    thirdItem = null;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Удалить ссылку на интерфейс умения из инвентаря.
+        /// </summary>
+        /// <param name="number"></param>
+        public void DeleteSkillInterfaceReference(int number)
+        {
+            switch (number)
+            {
+                case 0:
+                    firstSkill = null;
+                    break;
+                case 1:
+                    secondSkill = null;
+                    break;
+                case 2:
+                    thirdSkill = null;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// TRUE, если в инвентаре все ячейки уже имеют предметы
+        /// </summary>
+        /// <returns></returns>
+        public int GetCountOfItems()
+        {
+            int counter = 0;
+            if (firstItem != null) counter++;
+            if (secondItem != null) counter++;
+            if (thirdItem != null) counter++;
+
+            return counter;
+        }
+
         #region Левый инвентарь: предметы
+
+        /// <summary>
+        /// Присвоить ссылки на предметы.
+        /// </summary>
+        private void InitialisationReferencesToItems()
+        {
+            if (firstItem == null && arrayItems.Length>=1)
+            {
+                firstItem = arrayItems[0].GetComponent<IItem>();
+                firstItem.Starter(0);
+            }
+            if (secondItem == null && arrayItems.Length>= 2)
+            {
+                secondItem = arrayItems[1].GetComponent<IItem>();
+                secondItem.Starter(1);
+            }
+            if (thirdItem == null && arrayItems.Length>= 3)
+            {
+                thirdItem = arrayItems[2].GetComponent<IItem>();
+                thirdItem.Starter(2);
+            }
+        }
+
         /// <summary>
         /// Инициализация левого инвентаря
         /// </summary>
         private void InitialisationsLeftArrays()
         {
-            arrayItems = new RectTransform[leftItemsParent.transform.childCount];
             arrayButtonItems = new Button[arrayItems.Length];
             arrayPositionsForItems = new RectTransform[leftPositionsParent.transform.childCount];
             arrayLeftIndicators = new Image[leftIndicators.transform.childCount];
@@ -208,33 +294,21 @@ namespace PlayerBehaviour
                 arrayLeftIndicators[i] = leftIndicators.GetChild(i).GetComponent<Image>();
                 //arrayLeftIndicators[i].GetComponent<Animation>()[animationIndicator].speed = 0.5f;
             }
+
+            if (arrayItems.Length == 0) isLeftInventoryOpen = false;
+
+            InitialisationReferencesToItems();
         }
 
         /// <summary>
-        /// Инициализация предмета в левый инвентарь
+        /// Включить левые индикаторы
         /// </summary>
-        /// <param name="thisItem"></param>
-        /// <returns></returns>
-        public int InitialisationThisItemToInventory(IItem thisItem)
+        public void EnableLeftIndicators()
         {
-            if (firstItem == null)
+            if (GetCountOfItems()==1)
             {
-                firstItem = thisItem;
-                return 0;
-            }
-            else if (secondItem == null)
-            {
-                secondItem = thisItem;
-                return 1;
-            }
-            else if (thirdItem == null)
-            {
-                thirdItem = thisItem;
-                return 2;
-            }
-            else
-            {
-                return -1;
+                for (int i = 0; i < arrayLeftIndicators.Length; i++)
+                    arrayLeftIndicators[i].enabled = true;
             }
         }
 
@@ -244,7 +318,7 @@ namespace PlayerBehaviour
         /// <param name="indicatorPosition"></param>
         public void SetPositionToLeftIndicator(int indicatorPosition)
         {
-            if (arrayLeftIndicators == null) Start();
+            if (arrayLeftIndicators == null) RefreshInventory();
 
             arrayLeftIndicators[indicatorPosition].GetComponent<RectTransform>().anchoredPosition =
                 new Vector2(0, -35 + (35 * indicatorPosition));
@@ -258,7 +332,7 @@ namespace PlayerBehaviour
         public void TellItemIndicator(int indicatorPosition, bool active)
         {
             if (active)
-            {
+            {            
                 if (arrayLeftIndicators[indicatorPosition].color.r != activeIndicatorColor.r)
                 {
                     arrayLeftIndicators[indicatorPosition].color = activeIndicatorColor;
@@ -266,7 +340,7 @@ namespace PlayerBehaviour
                 }
             }
             else
-            {
+            {          
                 if (arrayLeftIndicators[indicatorPosition].color.r == activeIndicatorColor.r)
                 {
                     arrayLeftIndicators[indicatorPosition].color = unActiveIndicatorColor;
@@ -284,19 +358,22 @@ namespace PlayerBehaviour
             if (leftCoroutine != null)
                 StopCoroutine(leftCoroutine);
 
-            if (!isLeftInventoryOpen)
+            if (arrayItems.Length > 0)
             {
-                playerComponentsControl.PlayerHUDAudioStorage.PlaySoundSwipeInventory(true);
-                isLeftInventoryOpen = true;
-                leftCoroutine =
-                    StartCoroutine(CoroutineForMoveInventoryWindow(true, true));
-            }
-            else
-            {
-                playerComponentsControl.PlayerHUDAudioStorage.PlaySoundSwipeInventory(false);
-                isLeftInventoryOpen = false;
-                leftCoroutine =
-                    StartCoroutine(CoroutineForMoveInventoryWindow(true, false));
+                if (!isLeftInventoryOpen)
+                {
+                    playerComponentsControl.PlayerHUDAudioStorage.PlaySoundSwipeInventory(true);
+                    isLeftInventoryOpen = true;
+                    leftCoroutine =
+                        StartCoroutine(CoroutineForMoveInventoryWindow(true, true));
+                }
+                else
+                {
+                    playerComponentsControl.PlayerHUDAudioStorage.PlaySoundSwipeInventory(false);
+                    isLeftInventoryOpen = false;
+                    leftCoroutine =
+                        StartCoroutine(CoroutineForMoveInventoryWindow(true, false));
+                }
             }
         }
 
@@ -357,7 +434,6 @@ namespace PlayerBehaviour
         /// </summary>
         private void InitialisationRightArrays()
         {
-            arraySkills = new RectTransform[rightSkillsParent.transform.childCount];
             arrayButtonSkills = new Button[arraySkills.Length];
             arrayPositionsForSkills = new RectTransform[rightPositionsParent.transform.childCount];
             arrayRightIndicators = new Image[rightIndicators.transform.childCount];
@@ -369,12 +445,39 @@ namespace PlayerBehaviour
             }
 
             for (int i = 0; i < arrayPositionsForSkills.Length; i++)
-                arrayPositionsForSkills[i] = rightPositionsParent.GetChild(i).GetComponent<RectTransform>();
+                arrayPositionsForSkills[i] = rightPositionsParent.
+                    GetChild(i).GetComponent<RectTransform>();
 
             for (int i = 0; i < arrayRightIndicators.Length; i++)
             {
                 arrayRightIndicators[i] = rightIndicators.GetChild(i).GetComponent<Image>();
                 //arrayRightIndicators[i].GetComponent<Animation>()[animationIndicator].speed = 0.5f;
+            }
+
+            if (arraySkills.Length == 0) isRightInventoryOpen = false;
+
+            InitialisationReferencesToSkills();
+        }
+
+        /// <summary>
+        /// Присвоить ссылки на предметы.
+        /// </summary>
+        private void InitialisationReferencesToSkills()
+        {
+            if (firstSkill == null && arraySkills.Length >= 1)
+            {
+                firstSkill = arraySkills[0].GetComponent<ISkill>();
+                firstSkill.Starter(0);
+            }
+            if (secondSkill == null && arraySkills.Length >= 2)
+            {
+                secondSkill = arraySkills[1].GetComponent<ISkill>();
+                secondSkill.Starter(1);
+            }
+            if (thirdSkill == null && arraySkills.Length >= 3)
+            {
+                thirdSkill = arraySkills[2].GetComponent<ISkill>();
+                thirdSkill.Starter(2);
             }
         }
 
@@ -415,6 +518,8 @@ namespace PlayerBehaviour
         /// <param name="indicatorPosition"></param>
         public void SetPositionToRightIndicator(int indicatorPosition)
         {
+            if (arrayRightIndicators == null) RefreshInventory();
+
             arrayRightIndicators[indicatorPosition].GetComponent<RectTransform>().anchoredPosition =
                 new Vector2(0, -35 + (35 * indicatorPosition));
         }
@@ -452,19 +557,22 @@ namespace PlayerBehaviour
             if (rightCoroutine != null)
                 StopCoroutine(rightCoroutine);
 
-            if (!isRightInventoryOpen)
+            if (arraySkills.Length > 0)
             {
-                playerComponentsControl.PlayerHUDAudioStorage.PlaySoundSwipeInventory(true);
-                isRightInventoryOpen = true;
-                rightCoroutine =
-                    StartCoroutine(CoroutineForMoveInventoryWindow(false, true));
-            }
-            else
-            {
-                playerComponentsControl.PlayerHUDAudioStorage.PlaySoundSwipeInventory(false);
-                isRightInventoryOpen = false;
-                rightCoroutine =
-                    StartCoroutine(CoroutineForMoveInventoryWindow(false, false));
+                if (!isRightInventoryOpen)
+                {
+                    playerComponentsControl.PlayerHUDAudioStorage.PlaySoundSwipeInventory(true);
+                    isRightInventoryOpen = true;
+                    rightCoroutine =
+                        StartCoroutine(CoroutineForMoveInventoryWindow(false, true));
+                }
+                else
+                {
+                    playerComponentsControl.PlayerHUDAudioStorage.PlaySoundSwipeInventory(false);
+                    isRightInventoryOpen = false;
+                    rightCoroutine =
+                        StartCoroutine(CoroutineForMoveInventoryWindow(false, false));
+                }
             }
         }
 
@@ -520,6 +628,32 @@ namespace PlayerBehaviour
         #endregion
 
         #region Методы, общие для инвентарей
+        /// <summary>
+        /// Скрыть индикаторы
+        /// </summary>
+        public void UnshowAllIndicators()
+        {
+            Color alphaColor = new Color(0.5f, 0.5f, 0.5f, 0);
+            arrayLeftIndicators = new Image[leftIndicators.transform.childCount];
+            arrayRightIndicators = new Image[rightIndicators.transform.childCount];
+            arrayItems = new RectTransform[leftItemsParent.transform.childCount];
+            arraySkills = new RectTransform[rightSkillsParent.transform.childCount];
+
+            for (int i = 0; i < arrayLeftIndicators.Length; i++)
+            {
+                arrayLeftIndicators[i] = leftIndicators.GetChild(i).GetComponent<Image>();
+                arrayRightIndicators[i] = rightIndicators.GetChild(i).GetComponent<Image>();
+                if (i >= arrayItems.Length)
+                {
+                    arrayLeftIndicators[i].color = alphaColor;
+                }
+                if (i >= arraySkills.Length)
+                {
+                    arrayRightIndicators[i].color = alphaColor;
+                }
+            }
+        }
+
         /// <summary>
         /// Корутина для движения окна с инвентарем
         /// </summary>
@@ -650,9 +784,12 @@ namespace PlayerBehaviour
                 if (leftCoroutine != null)
                     StopCoroutine(leftCoroutine);
 
-                isLeftInventoryOpen = false;
-                leftCoroutine =
-                    StartCoroutine(CoroutineForMoveInventoryWindow(true, false));
+                if (arrayItems.Length > 0)
+                {
+                    isLeftInventoryOpen = false;
+                    leftCoroutine =
+                        StartCoroutine(CoroutineForMoveInventoryWindow(true, false));
+                }
             }
 
             if (isRightInventoryOpen)
@@ -661,9 +798,12 @@ namespace PlayerBehaviour
                 if (rightCoroutine != null)
                     StopCoroutine(rightCoroutine);
 
-                isRightInventoryOpen = false;
-                rightCoroutine =
-                    StartCoroutine(CoroutineForMoveInventoryWindow(false, false));
+                if (arraySkills.Length > 0)
+                {
+                    isRightInventoryOpen = false;
+                    rightCoroutine =
+                        StartCoroutine(CoroutineForMoveInventoryWindow(false, false));
+                }
             }
 
             if (flag)
@@ -686,15 +826,5 @@ namespace PlayerBehaviour
             }
         }
         #endregion
-    }
-
-    /// <summary>
-    /// Перечислитель для классов вещей
-    /// </summary>
-    public enum PlayerItems
-    {
-        HealthItem,
-        SpeedItem,
-        PowerItem
     }
 }

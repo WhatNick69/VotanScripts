@@ -167,7 +167,7 @@ namespace EnemyBehaviour
 
         public override void FallObject()
         {
-            WorkWithSoundsBodyFall(audioSourceLegs);
+            PlayBodyFallAudio(audioSourceLegs);
         }
 
         public override void PlayStepAudio()

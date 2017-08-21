@@ -10,10 +10,12 @@ namespace VotanGameplay
     public class AllPlayerManager
         : MonoBehaviour
     {
+        #region Переменные
         /// <summary>
         /// Лист с игроками
         /// </summary>
         private static List<GameObject> playerList;
+        #endregion
 
         /// <summary>
         /// Свойство для получения ссылки на лист с игроками
@@ -31,6 +33,9 @@ namespace VotanGameplay
             }
         }
 
+        /// <summary>
+        /// Инициализация
+        /// </summary>
         private void Awake()
         {
             playerList = new List<GameObject>();
@@ -91,7 +96,7 @@ namespace VotanGameplay
             for (int i = 0; i < playerList.Count; i++)
             {
                 playerList[i].GetComponent<PlayerComponentsControl>()
-                    .PlayerLightingEffect.FireLightingEffect();
+                    .PlayerVisualEffects.FireLightingEffect();
             }
         }
     }

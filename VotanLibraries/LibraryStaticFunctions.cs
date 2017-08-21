@@ -1,6 +1,7 @@
 ﻿using PlayerBehaviour;
 using System;
 using UnityEngine;
+using VotanInterfaces;
 
 namespace VotanLibraries
 {
@@ -198,6 +199,43 @@ namespace VotanLibraries
 			else return damage * (1 - (weapon.TempPhysicDefence / 100));
 		}
 
+        /// <summary>
+        /// Возвращает случайное качество предмета
+        /// </summary>
+        /// <returns></returns>
+        public static ItemQuality RandomDropItemQuality()
+        {
+            float randomValue = UnityEngine.Random.RandomRange(0, 1f);
+            if (randomValue >= 0.99f)
+            {
+                return ItemQuality.Ultimate;
+            }
+            else if (randomValue >= 0.97f)
+            {
+                return ItemQuality.UpStrong;
+            }
+            else if (randomValue >= 0.95f)
+            {
+                return ItemQuality.Strong;
+            }
+            else if (randomValue >= 0.9f)
+            {
+                return ItemQuality.UpMedium;
+            }
+            else if (randomValue >= 0.85f)
+            {
+                return ItemQuality.Medium;
+            }
+            else if (randomValue >= 0.75f)
+            {
+                return ItemQuality.Lite;
+            }
+            else 
+            {
+                return ItemQuality.VeryLite;
+            }
+        }
+
 		/// <summary> 
 		/// Может ли босс воспроизвести анимацию получения урона?
 		/// 
@@ -233,7 +271,7 @@ namespace VotanLibraries
 		/// <returns></returns> 
 		public static float DependenceMoveSpeedAndArmoryWeight(float weight)
 		{
-			return 1.5f + (0.5f - (weight * 0.005f));
+			return 1.5f + (0.7f - (weight * 0.007f));
 		}
 
 		/// <summary> 
@@ -243,7 +281,7 @@ namespace VotanLibraries
 		/// <returns></returns> 
 		public static float DependenceRotateSpeedAndArmoryWeight(float weight)
 		{
-			return 3.5f + (2.5f - (weight * 0.025f));
+			return 3.5f + (3.5f - (weight * 0.035f));
 		}
 
 		/// <summary> 

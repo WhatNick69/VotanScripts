@@ -20,7 +20,8 @@ namespace EnemyBehaviour
         protected PlayerAttack playerTarget;
         protected IEnemyBehaviour enemyAbstract;
         private bool inFightMode;
-        public bool isMayToPlayAttackAnimation = true;
+        [SerializeField]
+        protected bool isMayToPlayAttackAnimation = true;
         #endregion
 
         #region Свойства
@@ -96,11 +97,9 @@ namespace EnemyBehaviour
         /// <returns></returns>
         public virtual bool AttackToPlayer()
         {
-            //if (isMayToDamage) DrawerLiner();
             if (IsMayToDamage && (LibraryPhysics.IsAttackEnemy(startGunPoint.position, 
 				finishGunPoint.position, playerTarget.GetPlayerPoint())))
             {
-                // попали по противнику - выключили просчет.
                 IsMayToDamage = false;
                 return true;
             }

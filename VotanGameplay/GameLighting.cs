@@ -86,7 +86,7 @@ namespace VotanGameplay
         private IEnumerator<float> CoroutineForSound()
         {
             yield return Timing.WaitForSeconds(LibraryStaticFunctions.GetRangeValue(2, 0.5f));
-            AbstractSoundStorage.WorkWithEnvironmentLighting(audioSource);
+            AbstractSoundStorage.PlayLightingAudio(audioSource);
         }
 
         /// <summary>

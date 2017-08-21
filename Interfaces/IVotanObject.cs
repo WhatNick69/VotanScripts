@@ -28,7 +28,7 @@ namespace VotanInterfaces
     /// </summary>
     public interface IPlayerBehaviour
     {
-         PlayerController PlayerController { get; set; }
+        PlayerController PlayerController { get; set; }
 
         PlayerConditions PlayerConditions { get; set; }
 
@@ -46,19 +46,27 @@ namespace VotanInterfaces
 
         PlayerCameraSmooth PlayerCameraSmooth { get; set; }
 
-        PlayerBloodInterfaceEffect PlayerBloodInterfaceEffect { get; set; }
-
         PlayerScore PlayerScore { get; set; }
 
         PlayerAnimationsController PlayerAnimationsController { get; set; }
 
         PlayerSounder PlayerSounder { get; set; }
 
+        DownInterfaceRotater DownInterfaceRotater { get; set; }
+
+        PlayerVisualEffects PlayerVisualEffects { get; set; }
+
         Transform PlayerParent { get; set; }
 
         Transform PlayerObject { get; set; }
 
         Transform PlayerModel { get; set; }
+
+        PlayerUI PlayerUI { get; set; }
+
+        PlayerHUDAudioStorage PlayerHUDAudioStorage { get; set; }
+
+        PlayerHUDManager PlayerHUDManager { get; set; }
     }
 
     /// <summary>
@@ -155,6 +163,29 @@ namespace VotanInterfaces
         /// Рестартировать врага
         /// </summary>
         void RestartEnemy();
+    }
+
+    /// <summary>
+    /// Интерфейс, реализовывая который, объект должен 
+    /// зажигать событие, позволяющее выполнять какое-то действие
+    /// во время игры (падение ящика/включение крана/разрушение)
+    /// </summary>
+    public interface IDynamicGameobject
+    {
+        /// <summary>
+        /// Инициализация
+        /// </summary>
+        void Start();
+
+        /// <summary>
+        /// Зажечь событие объекта
+        /// </summary>
+        void FireEvent();
+
+        /// <summary>
+        /// Рестартировать объект
+        /// </summary>
+        void RestartObject();
     }
 }
 

@@ -10,6 +10,26 @@ namespace VotanInterfaces
     public interface IItem
     {
         /// <summary>
+        /// Тип предмета (здоровье, сила, скорость)
+        /// </summary>
+        ItemType ItemType { get; }
+
+        /// <summary>
+        /// Качество предмета
+        /// </summary>
+        ItemQuality ItemQuality { get; }
+
+        /// <summary>
+        /// Время перезарядки предмета
+        /// </summary>
+        int SecondsForTimer { get; set; }
+
+        /// <summary>
+        /// Величина силы предмета
+        /// </summary>
+        float ItemStrenght { get; set; }
+
+        /// <summary>
         /// Выполнение условий, приводящих к включению кнопки
         /// </summary>
         void EnableItem();
@@ -41,7 +61,7 @@ namespace VotanInterfaces
         /// <summary>
         /// Инициализация
         /// </summary>
-        void Start();
+        void Starter(int number);
 
         /// <summary>
         /// Если ли доступный предмет данного класса в экземпляре
@@ -115,13 +135,37 @@ namespace VotanInterfaces
         void InitialisationSkill(Image skillImage,int secondsForTimer);
 
         /// <summary>
-        /// Инициализация
+        /// Инициализация. Запуск.
         /// </summary>
-        void Start();
+        void Starter(int number);
 
         /// <summary>
         /// Изображение умения
         /// </summary>
         Image SkillImage { get; }
+    }
+
+    /// <summary>
+    /// Перечислитель возможных предметов для улучшения
+    /// </summary>
+    public enum ItemType
+    {
+        HealthItem,
+        SpeedItem,
+        PowerItem
+    }
+
+    /// <summary>
+    /// Качество предмета
+    /// </summary>
+    public enum ItemQuality
+    {
+        VeryLite = 0,
+        Lite = 1,
+        Medium = 2,
+        UpMedium = 3,
+        Strong = 4,
+        UpStrong = 5,
+        Ultimate = 6
     }
 }

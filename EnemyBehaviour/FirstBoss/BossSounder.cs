@@ -1,4 +1,5 @@
-﻿using AbstractBehaviour;
+﻿using System;
+using AbstractBehaviour;
 using UnityEngine;
 using VotanLibraries;
 
@@ -15,6 +16,7 @@ namespace EnemyBehaviour
         protected static AudioClip[] audioSteps; // Звуки шагов
         private static AudioClip[] audioSpin; // Звуки вращения оружия
         private static AudioClip[] audioRoarAttack; // Звуки вращения оружия
+        private static AudioClip[] audioBreath;
         private bool isMayToPlayWeaponAudio;
 
         protected override void Start()
@@ -27,6 +29,17 @@ namespace EnemyBehaviour
             InitialisationDeadSounds();
             InitialisationHitToArmorySounds();
             InitialisationRoarAttackSounds();
+            InitialisationBreathAudio();
+        }
+
+        private void InitialisationBreathAudio()
+        {
+            tempAudioList = Resources.LoadAll("Sounds/Mobs/FirstBoss/Breath");
+            audioBreath = new AudioClip[tempAudioList.Length];
+            for (int i = 0; i < tempAudioList.Length; i++)
+            {
+                audioBreath[i] = (AudioClip)tempAudioList[i];
+            }
         }
 
         protected override void InitialisationStepsSounds()
@@ -54,7 +67,7 @@ namespace EnemyBehaviour
         /// </summary>
         private void InitialisationSpinSounds()
         {
-            tempAudioList = Resources.LoadAll("Sounds/Mobs/Common/Swipe");
+            tempAudioList = Resources.LoadAll("Sounds/PlayerMale/Attack");
             audioSpin = new AudioClip[tempAudioList.Length];
             for (int i = 0; i < tempAudioList.Length; i++)
             {
@@ -127,7 +140,7 @@ namespace EnemyBehaviour
 
         public override void FallObject()
         {
-            WorkWithSoundsBodyFall(audioSourceLegs);
+            PlayBodyFallAudio(audioSourceLegs);
         }
 
         public override void PlayGetDamageAudio(bool isArmory = false)
@@ -170,12 +183,21 @@ namespace EnemyBehaviour
             }
         }
 
+        public void PlayBreathAudio()
+        {
+            audioSourceObject.clip =
+                audioBreath[UnityEngine.Random.Range(0, audioBreath.Length)];
+            audioSourceObject.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
+            audioSourceObject.loop = true;
+            audioSourceObject.Play();
+        }
+
         public override void PlaySpinAudio(float value)
         {
             audioSourceWeapon.clip =
-                audioSpin[UnityEngine.Random.Range(0, audioSpin.Length - 1)];
+                audioSpin[audioSpin.Length - 1];
             audioSourceWeapon.pitch =
-                LibraryStaticFunctions.GetRangeValue(0.5f, 0.1f);
+                LibraryStaticFunctions.GetRangeValue(1, 0.1f);
             audioSourceWeapon.Play();
         }
 

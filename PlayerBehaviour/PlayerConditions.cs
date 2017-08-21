@@ -228,7 +228,7 @@ namespace PlayerBehaviour
                     // проиграть звук получения урона по телу
                     playerComponentsControl.PlayerSounder.PlayGetDamageAudio(false);
 
-                    playerComponentsControl.PlayerBloodInterfaceEffect.
+                    playerComponentsControl.PlayerVisualEffects.
                         EventBloodEyesEffect(healthValue/ initialisatedHealthValue);
                     if (playerComponentsControl.PlayerFight.IsDefensing)
                     {

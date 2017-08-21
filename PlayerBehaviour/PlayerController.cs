@@ -75,8 +75,8 @@ namespace PlayerBehaviour
             set
             {
                 moveSpeed = value;
-                if (moveSpeed > 2.5f)
-                    moveSpeed = 2.5f;
+                if (moveSpeed > 2.2f)
+                    moveSpeed = 2.2f;
             }
         }
 
@@ -118,8 +118,8 @@ namespace PlayerBehaviour
             set
             {
                 rotateSpeed = value;
-                if (rotateSpeed > 7.5f)
-                    rotateSpeed = 7.5f;
+                if (rotateSpeed > 7f)
+                    rotateSpeed = 7f;
             }
         }
 
@@ -263,7 +263,7 @@ namespace PlayerBehaviour
         /// <summary>
         /// Остановить атакующий рывок во время блока
         /// </summary>
-        public void StopAttackWhenDefensing()
+        public void StopPlayerPositionInterpolate()
         {
             tempVectorTransform = playerObjectTransform.position;
         }
@@ -303,6 +303,8 @@ namespace PlayerBehaviour
         {
             if (isAliveFromConditions && playerCollision.IsGrounded)
                 UpdateNewTransformPositionAndRotation();
+            else
+                StopPlayerPositionInterpolate();
         }
         
         /// <summary>
@@ -351,6 +353,7 @@ namespace PlayerBehaviour
                 }
                 else
                 {
+                    StopPlayerPositionInterpolate();
                     playerAnimationsController.SetState(0, false);
                 }
 
@@ -392,9 +395,12 @@ namespace PlayerBehaviour
         {
             moveVector3 = new Vector3(CrossPlatformInputManager.GetAxis(horizontalAxis)
                , 0, CrossPlatformInputManager.GetAxis(verticalAxis))* moveSpeed;
-
+            
             if (moveVector3.magnitude >= 0.1f)
             {
+                if (moveVector3.magnitude > moveSpeed)
+                    moveVector3 *= moveSpeed / moveVector3.magnitude;
+
                 isUpdating = true;
                 magnitudeForSpeed = moveVector3.magnitude * 0.5f;
                 magnitudeTemp = moveVector3.magnitude*moveSpeed;

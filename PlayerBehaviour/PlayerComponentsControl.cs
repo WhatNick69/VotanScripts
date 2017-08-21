@@ -31,8 +31,6 @@ namespace PlayerBehaviour
         private PlayerWeapon playerWeapon;
         [SerializeField, Tooltip("Плавный поворот камеры")]
         private PlayerCameraSmooth playerCameraSmooth;
-        [SerializeField, Tooltip("Контроллер эффекта кровавого затемнения")]
-        private PlayerBloodInterfaceEffect playerBloodInterfaceEffect;
         [SerializeField, Tooltip("Менеджер очков игрока")]
         private PlayerScore playerScore;
         [SerializeField, Tooltip("Аниматор игрока")]
@@ -40,7 +38,7 @@ namespace PlayerBehaviour
         [SerializeField, Tooltip("Звуковой компонент игрока")]
         private PlayerSounder playerSounder;
         [SerializeField, Tooltip("Эффект грозы у игрока")]
-        private PlayerLightingEffect playerLightingEffect;
+        private PlayerVisualEffects playerVisualEffects;
         [SerializeField, Tooltip("Ротатор интерфейса игрока")]
         private DownInterfaceRotater downInterfaceRotater;
         [SerializeField, Tooltip("Родитель игрока")]
@@ -227,19 +225,6 @@ namespace PlayerBehaviour
             }
         }
 
-        public PlayerBloodInterfaceEffect PlayerBloodInterfaceEffect
-        {
-            get
-            {
-                return playerBloodInterfaceEffect;
-            }
-
-            set
-            {
-                playerBloodInterfaceEffect = value;
-            }
-        }
-
         public PlayerScore PlayerScore
         {
             get
@@ -279,16 +264,16 @@ namespace PlayerBehaviour
             }
         }
 
-        public PlayerLightingEffect PlayerLightingEffect
+        public PlayerVisualEffects PlayerVisualEffects
         {
             get
             {
-                return playerLightingEffect;
+                return playerVisualEffects;
             }
 
             set
             {
-                playerLightingEffect = value;
+                playerVisualEffects = value;
             }
         }
 
@@ -305,7 +290,7 @@ namespace PlayerBehaviour
             }
         }
 
-        internal PlayerHUDAudioStorage PlayerHUDAudioStorage
+        public PlayerHUDAudioStorage PlayerHUDAudioStorage
         {
             get
             {
@@ -318,7 +303,7 @@ namespace PlayerBehaviour
             }
         }
 
-        internal PlayerHUDManager PlayerHUDManager
+        public PlayerHUDManager PlayerHUDManager
         {
             get
             {

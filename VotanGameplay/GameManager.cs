@@ -12,6 +12,9 @@ namespace VotanGameplay
         : MonoBehaviour
     {
         #region Переменные
+        [SerializeField, Tooltip("Точки смерти для врага")]
+        private static Transform[] deadPointsForEnemy;
+
         private static AudioSource gameAudioSource;
         private static bool isGameOver;
         private static bool isWin;
@@ -50,6 +53,19 @@ namespace VotanGameplay
         #endregion
 
         /// <summary>
+        /// Получить все посмертные позиции для врагов (для босса)
+        /// </summary>
+        private void GetAllDeadPoints()
+        {
+            deadPointsForEnemy = new Transform[transform.Find("DeadPoints").GetChildCount()];
+            for (int i = 0; i < deadPointsForEnemy.Length; i++)
+                deadPointsForEnemy[i] = transform.Find("DeadPoints").
+                    GetChild(i).GetComponent<Transform>();
+
+            Debug.Log(deadPointsForEnemy.Length);
+        }
+
+        /// <summary>
         /// Инициализация
         /// </summary>
         private void Awake()
@@ -61,9 +77,33 @@ namespace VotanGameplay
                 GetComponent<AudioSource>();
             gameAudioSource.clip = null;
             gameAudioSource.playOnAwake = false;
+            GetAllDeadPoints();
             AbstractSoundStorage.LoadAllStaticSounds();
-
             Timing.RunCoroutine(CoroutineForCheckIfMusicIsEnded());
+        }
+
+        /// <summary>
+        /// Получить ближайшую позицию для предсмертной конвульсии врага
+        /// </summary>
+        /// <param name="deadPosition"></param>
+        /// <returns></returns>
+        public static Transform GetClosestDeadPositionForEnemy(Vector3 deadPosition)
+        {
+            float distance = float.MaxValue;
+            float tempDistance = float.MaxValue;
+            Transform closestPosition = null;
+
+            for (int i = 0; i < deadPointsForEnemy.Length; i++)
+            {
+                tempDistance = Vector3.Distance
+                    (deadPosition, deadPointsForEnemy[i].position);
+                if (tempDistance <= distance)
+                {
+                    distance = tempDistance;
+                    closestPosition = deadPointsForEnemy[i];
+                }
+            }
+            return closestPosition;
         }
 
         /// <summary>

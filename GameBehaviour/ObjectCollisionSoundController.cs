@@ -9,9 +9,11 @@ namespace GameBehaviour
     /// Класс, который вешается на элементы брони
     /// </summary>
     [RequireComponent(typeof(AudioSource))]
-    public class PartArmorySoundController
+    public class ObjectCollisionSoundController
         : MonoBehaviour
     {
+        [SerializeField,Tooltip("Является ли этот объект деревянным")]
+        private bool isWooden;
         private AudioSource auSo;
         private bool isMayToCollision;
 
@@ -31,7 +33,11 @@ namespace GameBehaviour
         {
             if (isMayToCollision)
             {
-                AbstractSoundStorage.WorkWithMetalThing(auSo);
+                if (isWooden)
+                    AbstractSoundStorage.PlayWoodenAudio(auSo);
+                else
+                    AbstractSoundStorage.PlayMetalAudio(auSo);
+
                 Timing.RunCoroutine(CoroutineForMayToCollision());
             }
         }

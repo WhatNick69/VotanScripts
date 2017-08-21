@@ -79,7 +79,7 @@ namespace PlayerBehaviour
             {
                 isDefensing = value;
                 if (isDefensing)
-                    playerComponentsControl.PlayerController.StopAttackWhenDefensing();
+                    playerComponentsControl.PlayerController.StopPlayerPositionInterpolate();
             }
         }
 

@@ -73,7 +73,7 @@ namespace CraftSystem
 			weaponObj.transform.parent = weapon.transform;
 			weaponObj.transform.localPosition = Vector3.zero;
 			weaponObj.transform.localScale = new Vector3(1, 1, 1);
-			weaponObj.transform.localEulerAngles = new Vector3(50, 0, 0);
+			weaponObj.transform.localEulerAngles = new Vector3(50, 180, 0);
 			plComponents.PlayerAttack.SetPlayerGunLocalPoint(new Vector3(-60,0,0));
             SetWeaponStats();
 		}
@@ -153,9 +153,10 @@ namespace CraftSystem
         /// </summary>
         private void ArmoryInitialisation()
         {
-            shieldArmoryInformation =  Instantiate(GameObject.Find("GetPrefabs").
-                GetComponent<ArmorPrefabs>().Shield.GetComponent<PartArmoryInformation>());
-            cuirassArmoryInformation =  Instantiate(GameObject.Find("GetPrefabs").
+			// На месте 0 в GetShield(0) должен стоять уровень щита
+			shieldArmoryInformation = Instantiate(GameObject.Find("GetPrefabs").
+				GetComponent<ArmorPrefabs>().Shield.GetComponent<ArmorMeneger>().GetShield(0).GetComponent<PartArmoryInformation>()); 
+			cuirassArmoryInformation =  Instantiate(GameObject.Find("GetPrefabs").
                 GetComponent<ArmorPrefabs>().Cuirass.GetComponent<PartArmoryInformation>());
             helmetArmoryInformation = Instantiate(GameObject.Find("GetPrefabs").
                 GetComponent<ArmorPrefabs>().Helmet.GetComponent<PartArmoryInformation>());

@@ -15,6 +15,10 @@ namespace GameBehaviour
         : MonoBehaviour, IItem
     {
         #region Переменные
+        [SerializeField, Tooltip("Тип предмета")]
+        private ItemType itemType;
+        [SerializeField, Tooltip("Качество предмета")]
+        private ItemQuality itemQuality;
         [SerializeField, Tooltip("Изображение предмета")]
         private Image itemImage;
         private Image parentImage;
@@ -89,19 +93,60 @@ namespace GameBehaviour
                 itemNumberPosition = value;
             }
         }
+
+        public int SecondsForTimer
+        {
+            get
+            {
+                return secondsForTimer;
+            }
+
+            set
+            {
+                secondsForTimer = value;
+            }
+        }
+
+        public float ItemStrenght
+        {
+            get
+            {
+                return powerValue;
+            }
+
+            set
+            {
+                powerValue = value;
+            }
+        }
+
+        public ItemType ItemType
+        {
+            get
+            {
+                return itemType;
+            }
+        }
+
+        public ItemQuality ItemQuality
+        {
+            get
+            {
+                return itemQuality;
+            }
+        }
         #endregion
 
         /// <summary>
         /// Инициализация
         /// </summary>
-        public void Start()
+        public void Starter(int number)
         {
             isContainsItem = true;
             parentImage = transform.GetComponentInParent<Image>();
             fonNonActiveColor = new Color(1, 1, 1, 0.2f);
 
-            itemNumberPosition = playerComponentsControlInstance.PlayerHUDManager
-                .InitialisationThisItemToInventory(this);
+            itemNumberPosition = number;
             playerComponentsControlInstance.PlayerHUDManager.
                 SetPositionToLeftIndicator(itemNumberPosition);
             playerComponentsControlInstance.PlayerHUDManager.
@@ -138,6 +183,7 @@ namespace GameBehaviour
                 playerComponentsControlInstance.PlayerHUDAudioStorage.PlaySoundItemClick();
                 ItemCount--;
                 playerComponentsControlInstance.PlayerHUDManager.TellItemIndicator(itemNumberPosition,false);
+                playerComponentsControlInstance.PlayerVisualEffects.PlayPowerEffectWeapon();
                 Timing.RunCoroutine(CoroutineForPowerItem());
                 Timing.RunCoroutine(CoroutineTimer());
             }
@@ -186,12 +232,27 @@ namespace GameBehaviour
             isEffecting = true;
             playerComponentsControlInstance.PlayerWeapon.Damage += powerValue;
 
+            if (ItemCount <= 0)
+            {
+                transform.parent = null;
+                playerComponentsControlInstance.
+                    PlayerHUDManager.DeleteItemInterfaceReference(itemNumberPosition);
+                playerComponentsControlInstance.PlayerHUDManager.RefreshInventory();
+            }
+
             yield return Timing.WaitForSeconds(10);
 
             playerComponentsControlInstance.PlayerWeapon.Damage -= powerValue;
-            isEffecting = false;
-
-            EnableItem();
+            playerComponentsControlInstance.PlayerVisualEffects.StopPowerEffectWeapon();
+            if (ItemCount <= 0)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                isEffecting = false;
+                EnableItem();
+            }
         }
 
         /// <summary>

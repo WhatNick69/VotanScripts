@@ -191,6 +191,9 @@ namespace EnemyBehaviour
                 blobShadow.GetComponent<SpriteRenderer>();       
         }
 
+        /// <summary>
+        /// Рестарт врага
+        /// </summary>
         public virtual void RestartEnemyConditions()
         {
             IsAlive = true;
@@ -272,17 +275,11 @@ namespace EnemyBehaviour
             enemyAbstract.EnemyAnimationsController.SetState(3, true);
             enemyAbstract.EnemyAnimationsController.PlayDeadNormalizeCoroutine();
             MainBarCanvas.gameObject.SetActive(false);
-            enemyAbstract.EnemyMove.Agent.enabled = false;
+            enemyAbstract.EnemyMove.DisableAgent();
             GetComponent<BoxCollider>().enabled = false;
 
-            if (isFrozen)
-                yield return Timing.WaitForSeconds(5 + enemyAbstract.IceEffect.TimeToDisable);
-            else
-                yield return Timing.WaitForSeconds(5);
-
-            // Выключаем врага. Возвращаем в стек врагов. Почти, как если бы
-            // мы его уничтожали.
-            //enemyAbstract.EnemyAnimationsController.AnimatorOfObject.enabled = false;
+            while (!enemyAbstract.EnemyAnimationsController.IsDowner)
+                yield return Timing.WaitForSeconds(0.5f);
             EnemyCreator.ReturnEnemyToStack(enemyAbstract.EnemyNumber);
         }
 
@@ -336,6 +333,12 @@ namespace EnemyBehaviour
             return dmg;
         }
 
+        /// <summary>
+        /// Получить урон без эффекта
+        /// </summary>
+        /// <param name="dmg"></param>
+        /// <param name="weapon"></param>
+        /// <returns></returns>
         public float GetDamageWithResistanceWithoutEffect(float dmg,IWeapon weapon)
         {
             switch (weapon.GemType)
@@ -522,7 +525,7 @@ namespace EnemyBehaviour
             enemyMove.SetNewSpeedOfNavMeshAgent(0, 0);
             enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0);
             float time = enemyAbstract.IceEffect.EventEffect(damage, weapon);
-            enemyAbstract.EnemyMove.Agent.enabled = false;
+            enemyAbstract.EnemyMove.DisableAgent();
 
             IsFrozen = true;
             yield return Timing.WaitForSeconds(time);

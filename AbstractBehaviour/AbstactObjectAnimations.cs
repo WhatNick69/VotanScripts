@@ -11,7 +11,10 @@ namespace AbstractBehaviour
     {
         private List<string> states; // состояния
 
-        public float structureCount
+        /// <summary>
+        /// Число анимаций в структуре
+        /// </summary>
+        public float StructureCount
         {
             get
             {
@@ -135,7 +138,7 @@ namespace AbstractBehaviour
         /// <returns></returns>
         public virtual bool IsFalseAllStates()
         {
-            for (byte i = 0; i < structStatesnames.structureCount; i++)
+            for (byte i = 0; i < structStatesnames.StructureCount; i++)
                 if (GetBoolFromState(i)) return false;
 
             return true;
@@ -165,7 +168,7 @@ namespace AbstractBehaviour
         /// </summary>
         public virtual void DisableAllStates()
         {
-            for (byte i = 0; i < structStatesnames.structureCount-1; i++)
+            for (byte i = 0; i < structStatesnames.StructureCount-1; i++)
                 animatorOfObject.SetBool(StructStatesNames.GetState(i), false);
         }
 

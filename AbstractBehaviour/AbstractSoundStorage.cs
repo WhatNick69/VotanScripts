@@ -15,6 +15,7 @@ namespace AbstractBehaviour
         protected static AudioClip[] audioCutBody; // Звуки лязга колющего оружия
         protected static AudioClip[] audioHitBody; // Звуки лязка дробящего оружия
         protected static AudioClip[] audioCollisionMetalThings;
+        protected static AudioClip[] audioCollisionWoodenThings;
         protected static AudioClip[] audioIce;
         protected static AudioClip[] audioBodyFall;
         protected static AudioClip[] audioGameMusic;
@@ -63,6 +64,7 @@ namespace AbstractBehaviour
             InitialisationGameMusic();
             InitialisationWinMusic();
             InitialisationSoundsForMetalThings();
+            InitialisationSoundsForWoodenThings();
             InitialisationSoundsIce();
             InitialisationSoundsBodyFall();
             InitialisationSoundsBurnAndBurning();
@@ -118,6 +120,19 @@ namespace AbstractBehaviour
             for (int i = 0; i < tempAudioList.Length; i++)
             {
                 audioWinMusic[i] = (AudioClip)tempAudioList[i];
+            }
+        }
+
+        /// <summary>
+        /// Инициализация деревянных звуков
+        /// </summary>
+        private static void InitialisationSoundsForWoodenThings()
+        {
+            tempAudioList = Resources.LoadAll("Sounds/Common/WoodenThings");
+            audioCollisionWoodenThings = new AudioClip[tempAudioList.Length];
+            for (int i = 0; i < tempAudioList.Length; i++)
+            {
+                audioCollisionWoodenThings[i] = (AudioClip)tempAudioList[i];
             }
         }
 
@@ -232,7 +247,7 @@ namespace AbstractBehaviour
         /// Работа со звуком ледяного эффекта
         /// </summary>
         /// <param name="auSo"></param>
-        public static void WorkWithIce(bool isStart, float volume, AudioSource auSo)
+        public static void PlayIceAudio(bool isStart, float volume, AudioSource auSo)
         {
             auSo.volume =
                 LibraryStaticFunctions.GetRangeValue(volume, 0.1f);
@@ -253,7 +268,7 @@ namespace AbstractBehaviour
         /// Работа с воспроизведением звука у металлической вещи
         /// </summary>
         /// <param name="auSo"></param>
-        public static void WorkWithMetalThing(AudioSource auSo)
+        public static void PlayMetalAudio(AudioSource auSo)
         {
             auSo.clip =
                 audioCollisionMetalThings[Random.Range
@@ -262,7 +277,24 @@ namespace AbstractBehaviour
             auSo.Play();
         }
 
-        public static void WorkWithEnvironmentLighting(AudioSource auSo)
+        /// <summary>
+        /// Работа с воспроизведением звука у деревянной вещи
+        /// </summary>
+        /// <param name="auSo"></param>
+        public static void PlayWoodenAudio(AudioSource auSo)
+        {
+            auSo.clip =
+                audioCollisionWoodenThings[Random.Range
+                (0, audioCollisionWoodenThings.Length)];
+            auSo.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
+            auSo.Play();
+        }
+
+        /// <summary>
+        /// Проиграть звук молнии
+        /// </summary>
+        /// <param name="auSo"></param>
+        public static void PlayLightingAudio(AudioSource auSo)
         {
             auSo.clip =
                 audioEnvironmentLighting[Random.Range
@@ -275,7 +307,7 @@ namespace AbstractBehaviour
         /// Работа со звуком воспламенения
         /// </summary>
         /// <param name="auSo"></param>
-        public static void WorkWithBurn(AudioSource auSo)
+        public static void PlayBurnAudio(AudioSource auSo)
         {
             auSo.clip =
                 audioToBurn[Random.Range
@@ -288,7 +320,7 @@ namespace AbstractBehaviour
         /// Работа со звуком длительного горения
         /// </summary>
         /// <param name="auSo"></param>
-        public static void WorkWithBurning(AudioSource auSo)
+        public static void PlayBurningAudio(AudioSource auSo)
         {
             auSo.clip =
                 audioBurning[Random.Range
@@ -321,6 +353,10 @@ namespace AbstractBehaviour
             auSo.Play();
         }
 
+        /// <summary>
+        /// Звук проигрыша
+        /// </summary>
+        /// <param name="auSo"></param>
         public static void WinOverMusic(AudioSource auSo)
         {
             auSo.clip =
@@ -334,7 +370,7 @@ namespace AbstractBehaviour
         /// Работа со звуком падения тела
         /// </summary>
         /// <param name="audioSource"></param>
-        public void WorkWithSoundsBodyFall(AudioSource audioSource)
+        public void PlayBodyFallAudio(AudioSource audioSource)
         {
             audioSource.clip =
                audioBodyFall[Random.Range

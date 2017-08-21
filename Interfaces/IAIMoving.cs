@@ -133,4 +133,42 @@ namespace VotanInterfaces
         /// <returns></returns>
         IEnumerator<float> CoroutineForSearchingByPlayerObject();
     }
+
+    /// <summary>
+    /// Расширяющий интерфейс для описания конечной фазы
+    /// движения (предсмертной) для первого босса (возможно,
+    /// что данное поведение может быть использовано и для
+    /// других боссов).
+    /// </summary>
+    public interface IFirstBossMove
+    {
+        /// <summary>
+        /// Установить состояние движения к пункту смерти
+        /// </summary>
+        void SetDeadPosition();
+
+        /// <summary>
+        /// Процедура смены состояния босса после достижения
+        /// им пункта смертного назначения.
+        /// </summary>
+        void DeadPositionDestination();
+
+        /// <summary>
+        /// КОрутина для движения босса до пункта смерти.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerator<float> CoroutineForMoveToDeadPosition();
+
+        /// <summary>
+        /// Корутина, которая посылает босса за пределы
+        /// башни (выкидывает его).
+        /// </summary>
+        /// <returns></returns>
+        IEnumerator<float> CoroutineForFlyBoss();
+
+        /// <summary>
+        /// Метод, который запускает корутину CoroutineForFlyBoss()
+        /// </summary>
+        void GoOutEnemy();
+    }
 }

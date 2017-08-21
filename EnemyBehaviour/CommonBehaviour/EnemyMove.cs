@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using VotanGameplay;
 using VotanInterfaces;
 using VotanLibraries;
 
@@ -19,41 +20,41 @@ namespace EnemyBehaviour
     {
         #region Переменные
         [SerializeField, Tooltip("Частота обновления позиции врага"),Range(0.1f,3)]
-        private float frequencySearching;
+        protected float frequencySearching;
         [SerializeField, Tooltip("Частота интерполяции и отдыха"), Range(0.01f, 3)]
-        private float frequencyResting;
+        protected float frequencyResting;
         [SerializeField, Tooltip("Скорость врага"), Range(1, 5)]
-        private float agentSpeed;
+        protected float agentSpeed;
         [SerializeField, Tooltip("Коэффициент анимации при движении"), Range(0.5f,5)]
-        private float speedCoefficient;
+        protected float speedCoefficient;
         [SerializeField, Tooltip("Коэффициент поворота при остановке"), Range(1, 10)]
-        private float angularBooster;
+        protected float angularBooster;
         [SerializeField, Tooltip("Предупредительная дистанция для атаки"), Range(0,100)]
-        private float preDistanceForAttack;
+        protected float preDistanceForAttack;
         [SerializeField, Tooltip("Враг")]
-        private AbstractEnemy abstractEnemy;
+        protected AbstractEnemy abstractEnemy;
         [SerializeField, Tooltip("Модель врага")]
-        private Transform modelEnemy;
+        protected Transform modelEnemy;
 
-        private float randomRadius;
-        private float rotationSpeed;
-        private float angularLookSpeed;
+        protected float randomRadius;
+        protected float rotationSpeed;
+        protected float angularLookSpeed;
 
-        private bool isStopped;
-        private bool isLookingAtPlayer;
+        protected bool isStopped;
+        protected bool isLookingAtPlayer;
 
-        private Quaternion lerpRotationQuar;
+        protected Quaternion lerpRotationQuar;
 
-        private Vector3 currentVector;
-        private Vector3 tempVector;
-        private Vector3 randomPosition;
+        protected Vector3 currentVector;
+        protected Vector3 tempVector;
+        protected Vector3 randomPosition;
 
-        private EnemyConditions enemyConditions;
-        private NavMeshAgent agent;
+        protected EnemyConditions enemyConditions;
+        protected NavMeshAgent agent;
 
-        private Transform playerObjectTransformForFollow;
-        private PlayerConditions playerConditionsComponent;
-        private PlayerCollision playerCollisionComponent;
+        protected Transform playerObjectTransformForFollow;
+        protected PlayerConditions playerConditionsComponent;
+        protected PlayerCollision playerCollisionComponent;
         #endregion
 
         #region Свойства

@@ -163,7 +163,7 @@ namespace PlayerBehaviour
 			return ((LibraryPhysics.IsAttackEnemy(PlayerPoint.position, finishGunPoint.position,
 				listEnemy[i].ReturnEnemyPosition()) &&
 				Mathf.Abs(PlayerPoint.position.y
-				       - listEnemy[i].ReturnEnemyPosition().y) < 2));
+					   - listEnemy[i].ReturnEnemyPosition().y) < 2));
 		}
 
 		/// <summary>
@@ -173,7 +173,7 @@ namespace PlayerBehaviour
 		/// <returns></returns>
 		public Vector3 GetPlayerPoint() // возвращает точки персонажа игрока
 		{
-            return PlayerPoint.position;
+			return PlayerPoint.position;
 		}
 
 		/// <summary>

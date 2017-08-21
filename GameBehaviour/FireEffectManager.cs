@@ -33,7 +33,7 @@ namespace GameBehaviour
 
         private void FireAudio()
         {
-            AbstractSoundStorage.WorkWithBurn(audioSourceOfFire);
+            AbstractSoundStorage.PlayBurnAudio(audioSourceOfFire);
         }
 
         public void RestartFire()
@@ -88,7 +88,7 @@ namespace GameBehaviour
 
             particleSystem.gameObject.SetActive(true);
             particleSystem.Play();
-            AbstractSoundStorage.WorkWithBurning(audioSourceOfBurning);
+            AbstractSoundStorage.PlayBurningAudio(audioSourceOfBurning);
             audioSourceOfBurning.Play();
 
             while (i < maxI)

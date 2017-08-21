@@ -50,17 +50,17 @@ namespace CraftSystem
 		GameObject weapon;
 
 		[SerializeField]
-		GameObject damage;
+		GameObject NewDamage;
 		[SerializeField]
-		GameObject armor;
+		GameObject NewArmor;
 		[SerializeField]
-		GameObject weight;
+		GameObject NewWeight;
 		[SerializeField]
-		GameObject gemTape;
+		GameObject NewGemType;
 		[SerializeField]
-		GameObject gemPuwer;
+		GameObject NewGemPuwer;
 		[SerializeField]
-		GameObject crit;
+		GameObject NewCrit;
 
 		// Для наконечников
 		float critChance;
@@ -97,12 +97,12 @@ namespace CraftSystem
 		/// </summary>
 		private void PredPageLoad()
 		{
-			damage.SetActive(false);
-			armor.SetActive(false);
-			gemTape.SetActive(false);
-			gemPuwer.SetActive(false);
-			crit.SetActive(false);
-			weight.SetActive(false);
+			NewDamage.SetActive(false);
+			NewArmor.SetActive(false);
+			NewGemType.SetActive(false);
+			NewGemPuwer.SetActive(false);
+			NewCrit.SetActive(false);
+			NewWeight.SetActive(false);
 		}
 
 		/// <summary>
@@ -111,10 +111,10 @@ namespace CraftSystem
 		public void WeaponPage()
 		{
 			PredPageLoad();
-			damage.SetActive(true);
-			crit.SetActive(true);
-			gemPuwer.SetActive(true);
-			gemTape.SetActive(true);
+			NewDamage.SetActive(true);
+			NewCrit.SetActive(true);
+			NewGemPuwer.SetActive(true);
+			NewGemType.SetActive(true);
 		}
 
 		/// <summary>
@@ -123,8 +123,8 @@ namespace CraftSystem
 		public void ArmorPage()
 		{
 			PredPageLoad();
-			armor.SetActive(true);
-			weight.SetActive(true);
+			NewArmor.SetActive(true);
+			NewWeight.SetActive(true);
 		}
 
 		public float CuirassArmor
@@ -378,7 +378,7 @@ namespace CraftSystem
 			critChaceText.text = CritChance.ToString();
 
 			// Crit Chance
-			if (newCritChance >= critChance && crit.activeInHierarchy)
+			if (newCritChance >= critChance && NewCrit.activeInHierarchy)
 			{
 				newCritChaceText.text = "+(" + Mathf.Abs(newCritChance - critChance) + ")";
 				newCritChaceText.color = green;
@@ -426,12 +426,12 @@ namespace CraftSystem
 			}
 
 			// Head Damage
-			if (newHeadDamage >= headDamage && damage.activeInHierarchy)
+			if (newHeadDamage >= headDamage && NewDamage.activeInHierarchy)
 			{
 				newDamageText.text = "+(" + Mathf.Abs(newHeadDamage - headDamage).ToString() + ")";
 				newDamageText.color = green;
 			}
-			else if (damage.activeInHierarchy)
+			else if (NewDamage.activeInHierarchy)
 			{
 				newDamageText.text = "-(" + Mathf.Abs(newHeadDamage - headDamage).ToString() + ")";
 				newDamageText.color = red;

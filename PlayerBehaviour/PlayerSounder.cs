@@ -287,7 +287,7 @@ namespace PlayerBehaviour
         {
             if (!playerComponentsControl.PlayerConditions.IsFallingDead)
             {
-                WorkWithSoundsBodyFall(audioSourceLegs);
+                PlayBodyFallAudio(audioSourceLegs);
             }
         }
 

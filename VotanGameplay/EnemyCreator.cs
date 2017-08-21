@@ -364,7 +364,7 @@ namespace VotanGameplay
                     StaticStorageWithEnemies.ListEnemy[number]
                         .GetComponent<IEnemyBehaviour>().EnemyConditions.SetHealthParameter
                         (LibraryStaticFunctions.GetRangeValue
-                        (SetParameterOfEnemy(1000,hardcoreMultiplier), 0.05f)); // Установить жизни мобу
+                        (SetParameterOfEnemy(15,hardcoreMultiplier), 0.05f)); // Установить жизни мобу
 
                     StaticStorageWithEnemies.ListEnemy[number]
                         .GetComponent<IEnemyBehaviour>().EnemyConditions.PhysicResistance = 

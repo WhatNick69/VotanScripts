@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using VotanInterfaces;
+using System;
 
 namespace GameBehaviour
 {
@@ -16,10 +17,14 @@ namespace GameBehaviour
         : MonoBehaviour, IItem
     {
         #region Переменные
+        [SerializeField, Tooltip("Качество предмета")]
+        private ItemQuality itemQuality;
+        [SerializeField, Tooltip("Тип предмета")]
+        private ItemType itemType;
         [SerializeField, Tooltip("Изображение предмета")]
         private Image itemImage;
         private Image parentImage;
-        [SerializeField, Tooltip("Величина бонуса к скорости"), Range(0.1f, 2)]
+        [SerializeField, Tooltip("Величина бонуса к скорости"), Range(0.1f, 0.7f)]
         private float speedBonus;
         [SerializeField, Tooltip("Время перезарядки"), Range(1, 120)]
         private int secondsForTimer;
@@ -90,19 +95,60 @@ namespace GameBehaviour
                 itemNumberPosition = value;
             }
         }
+
+        public int SecondsForTimer
+        {
+            get
+            {
+                return secondsForTimer;
+            }
+
+            set
+            {
+                secondsForTimer = value;
+            }
+        }
+
+        public float ItemStrenght
+        {
+            get
+            {
+                return speedBonus;
+            }
+
+            set
+            {
+                speedBonus = value;
+            }
+        }
+
+        public ItemType ItemType
+        {
+            get
+            {
+                return itemType;
+            }
+        }
+
+        public ItemQuality ItemQuality
+        {
+            get
+            {
+                return itemQuality;
+            }
+        }
         #endregion
 
         /// <summary>
         /// Инициализация
         /// </summary>
-        public void Start()
+        public void Starter(int number)
         {
             isContainsItem = true;
             parentImage = transform.GetComponentInParent<Image>();
             fonNonActiveColor = new Color(1, 1, 1, 0.2f);
 
-            itemNumberPosition = playerComponentsControlInstance.PlayerHUDManager
-                .InitialisationThisItemToInventory(this);
+            itemNumberPosition = number;
             playerComponentsControlInstance.PlayerHUDManager.
                 SetPositionToLeftIndicator(itemNumberPosition);
             playerComponentsControlInstance.PlayerHUDManager.
@@ -140,6 +186,7 @@ namespace GameBehaviour
                 ItemCount--;
                 playerComponentsControlInstance.PlayerHUDManager.
                     TellItemIndicator(itemNumberPosition, false);
+                playerComponentsControlInstance.PlayerVisualEffects.PlaySpeedEffectBoots();
                 Timing.RunCoroutine(CoroutineForSpeedItem());
                 Timing.RunCoroutine(CoroutineTimer());
             }
@@ -161,6 +208,14 @@ namespace GameBehaviour
             playerComponentsControlInstance.PlayerController.
                 OverridePlayerControllerParametersDependenceArmoryWeight();
 
+            if (ItemCount <= 0)
+            {
+                transform.parent = null;
+                playerComponentsControlInstance.
+                    PlayerHUDManager.DeleteItemInterfaceReference(itemNumberPosition);
+                playerComponentsControlInstance.PlayerHUDManager.RefreshInventory();
+            }
+
             yield return Timing.WaitForSeconds(10);
 
             float partSpeed = speedBonus / 20;
@@ -174,9 +229,17 @@ namespace GameBehaviour
                     OverridePlayerControllerParametersDependenceArmoryWeight();
                 yield return Timing.WaitForSeconds(0.05f);
             }
+            playerComponentsControlInstance.PlayerVisualEffects.StopSpeedEffectBoots();
 
-            isEffecting = false;
-            EnableItem();
+            if (ItemCount <= 0)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                isEffecting = false;
+                EnableItem();
+            }
         }
 
         /// <summary>

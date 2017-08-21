@@ -147,10 +147,13 @@ namespace PlayerBehaviour
         /// Добавить силу отталкивания по врагу.
         /// </summary>
         /// <param name="position"></param>
-        public void AddDamageForceToPlayer(Vector3 position)
+        public void AddDamageForceToPlayer(Vector3 position,bool isOnly2D=false)
         {
             position *= addForceValue;
-            position.y *= 1.05f;
+            if (!isOnly2D)
+            {          
+                position.y *= 1.05f;
+            }
             PlayerRGB.AddForce(position,ForceMode.Impulse);
         }
 

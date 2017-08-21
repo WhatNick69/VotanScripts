@@ -117,14 +117,14 @@ namespace GameBehaviour
                 {
                     isActiveSound = true;
                     audioSource.loop = false;
-                    AbstractSoundStorage.WorkWithIce
+                    AbstractSoundStorage.PlayIceAudio
                         (isStart, iceSoundVolume / 2.5f, audioSource);
                     audioSource.loop = false;
                 }
                 else if (isActiveSound)
                 {
                     audioSource.loop = true;
-                    AbstractSoundStorage.WorkWithIce
+                    AbstractSoundStorage.PlayIceAudio
                         (isStart, iceSoundVolume, audioSource);
                     audioSource.loop = true;
                 }

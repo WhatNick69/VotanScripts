@@ -14,6 +14,10 @@ namespace GameBehaviour
         : MonoBehaviour, IItem
     {
         #region Переменные
+        [SerializeField, Tooltip("Тип предмета")]
+        private ItemType itemType;
+        [SerializeField, Tooltip("Качество предмета")]
+        private ItemQuality itemQuality;
         [SerializeField, Tooltip("Изображение предмета")]
         private Image itemImage;
         private Image parentImage;
@@ -86,23 +90,64 @@ namespace GameBehaviour
                 itemNumberPosition = value;
             }
         }
+
+        public int SecondsForTimer
+        {
+            get
+            {
+                return secondsForTimer;
+            }
+
+            set
+            {
+                secondsForTimer = value;
+            }
+        }
+
+        public float ItemStrenght
+        {
+            get
+            {
+                return healthUPValue;
+            }
+
+            set
+            {
+                healthUPValue = value;
+            }
+        }
+
+        public ItemType ItemType
+        {
+            get
+            {
+                return itemType;
+            }
+        }
+
+        public ItemQuality ItemQuality
+        {
+            get
+            {
+                return itemQuality;
+            }
+        }
         #endregion
 
         /// <summary>
         /// Инициализация
         /// </summary>
-        public void Start()
+        public void Starter(int number)
         {
             isContainsItem = true;
             parentImage = transform.GetComponentInParent<Image>();
             fonNonActiveColor = new Color(1, 1, 1, 0.2f);
 
-            itemNumberPosition = playerComponentsControlInstance.PlayerHUDManager
-                .InitialisationThisItemToInventory(this);
+            itemNumberPosition = number;
             playerComponentsControlInstance.PlayerHUDManager.
                 SetPositionToLeftIndicator(itemNumberPosition);
             playerComponentsControlInstance.PlayerHUDManager.
-                TellItemIndicator(itemNumberPosition, false);
+                TellItemIndicator(itemNumberPosition, true);
 
             Timing.RunCoroutine(CoroutineForCheckHealth());
         }
@@ -138,6 +183,7 @@ namespace GameBehaviour
                 playerComponentsControlInstance.PlayerHUDAudioStorage.PlaySoundItemClick();
                 playerComponentsControlInstance.PlayerHUDManager.
                     TellItemIndicator(itemNumberPosition, false);
+                playerComponentsControlInstance.PlayerVisualEffects.PlayHealthEffect();
                 ItemCount--;
                 Timing.RunCoroutine(CoroutineHealthEffect());
                 Timing.RunCoroutine(CoroutineTimer());
@@ -159,6 +205,19 @@ namespace GameBehaviour
             {
                 playerComponentsControlInstance.PlayerConditions.HealthValue += healthBonusPart;
                 yield return Timing.WaitForSeconds(0.05f);
+            }
+            playerComponentsControlInstance.PlayerVisualEffects.StopHealthEffect();
+            if (ItemCount <= 0)
+            {
+                transform.parent = null;
+                playerComponentsControlInstance.
+                    PlayerHUDManager.DeleteItemInterfaceReference(itemNumberPosition);
+                playerComponentsControlInstance.PlayerHUDManager.RefreshInventory();
+                Destroy(gameObject);
+            }
+            else
+            {
+                EnableItem();
             }
         }
 

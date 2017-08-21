@@ -79,14 +79,13 @@ namespace GameBehaviour
         /// <summary>
         /// Инициализация
         /// </summary>
-        public void Start()
+        public void Starter(int number)
         {
             parentImage = transform.GetComponentInParent<Image>();
             fonNonActiveColor = new Color(1, 1, 1, 0.2f);
             isMayToFire = true;
 
-            itemNumberPosition = playerComponentsControlInstance.PlayerHUDManager
-                .InitialisationThisSkillToInventory(this);
+            itemNumberPosition = number;
             playerComponentsControlInstance.PlayerHUDManager.
                 SetPositionToRightIndicator(itemNumberPosition);
             playerComponentsControlInstance.PlayerHUDManager.

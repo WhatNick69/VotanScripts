@@ -4,6 +4,7 @@ using MovementEffects;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using VotanGameplay;
 using VotanInterfaces;
 using VotanLibraries;
 
@@ -17,31 +18,26 @@ namespace EnemyBehaviour
         : KnightEnemy
     {
         #region Переменные
-        [SerializeField, Tooltip("Время обновления дистанции между врагом и игроком")
-            ,Range(0.05f,0.5f)]
-        private float timeForAttackStatesUpdate;
+        IFirstBossMove iFirstBossMove;
         FirstBossAttack firstBossAttack;
         private float distanceForFirstAttack;
-        private float distanceForLongAttack;
+        private float distanceForKneeAttack;
         private float distanceForSamuraAttack;
         private float distanceForGolfAttack;
         private float tempDistance;
+
         private int currentAttackState;
 
-        private bool isAttackSeted;
-        #endregion
-
-        #region Свойства
-        public bool IsAttackSeted
+        public IFirstBossMove IFirstBossMove
         {
             get
             {
-                return isAttackSeted;
+                return iFirstBossMove;
             }
 
             set
             {
-                isAttackSeted = value;
+                iFirstBossMove = value;
             }
         }
         #endregion
@@ -64,6 +60,8 @@ namespace EnemyBehaviour
                 GetComponent<EnemyConditions>();
             EnemyMove =
                 GetComponent<EnemyMove>();
+            IFirstBossMove =
+                GetComponent<IFirstBossMove>();
             DownInterfaceRotater =
                 GetComponent<DownInterfaceRotater>();
 
@@ -98,13 +96,16 @@ namespace EnemyBehaviour
             enemyAnimationsController.RestartEnemyAnimationsController(); // рестарт аниматора
 
             distanceForFirstAttack = enemyMove.Agent.stoppingDistance;
+            distanceForKneeAttack = distanceForFirstAttack / 2;
             distanceForGolfAttack = distanceForFirstAttack / 3;
+            distanceForSamuraAttack = distanceForFirstAttack / 1.25f;
+
             movingSpeed = EnemyMove.AgentSpeed / 5;
 
             FireEffect.RestartFire();
 
             Timing.RunCoroutine(UpdateAttackState());
-            //Timing.RunCoroutine(UpdateDistanceBetweenThisAndPlayer());
+            DynamicGameobjectsManager.FireEventDynamicObject(0);
         }
 
         /// <summary>
@@ -113,40 +114,29 @@ namespace EnemyBehaviour
         /// <returns></returns>
         private void UpdateDistanceBetweenThisAndPlayer()
         {
-            //while (EnemyConditions.IsAlive)
-            //{
-                if (EnemyMove.PlayerObjectTransformForFollow
-                    && !isAttackSeted)
+            if (EnemyMove.PlayerObjectTransformForFollow 
+            && enemyAttack.IsMayToPlayAttackAnimation)
+            {
+                EnemyAnimationsController.DisableAllStates();
+                tempDistance = Vector3.Distance
+                    (transform.position, EnemyMove.PlayerObjectTransformForFollow.position);
+                if (tempDistance <= distanceForGolfAttack)
                 {
-                    tempDistance = Vector3.Distance
-                        (transform.position, EnemyMove.PlayerObjectTransformForFollow.position);
-                    if (tempDistance <= distanceForGolfAttack)
-                    {
-                        Debug.Log("state 0");
-                    isAttackSeted = true;
                     currentAttackState = 0;
-                    }
-                    else if (tempDistance <= distanceForSamuraAttack)
-                    {
-                        Debug.Log("state 1");
-                    isAttackSeted = true;
-                    currentAttackState = 1;
-                    }
-                    else if (tempDistance <= distanceForFirstAttack)
-                    {
-                        Debug.Log("state 2");
-                    isAttackSeted = true;
-                    currentAttackState = 2;
-                    }
-                    else if (tempDistance <= distanceForLongAttack)
-                    {
-                        Debug.Log("state 3");
-                    isAttackSeted = true;
-                        currentAttackState = 3;
-                    }
                 }
-               // yield return Timing.WaitForSeconds(timeForAttackStatesUpdate);
-            //}
+                else if (tempDistance <= distanceForKneeAttack)
+                {
+                    currentAttackState = 1;
+                }
+                else if (tempDistance <= distanceForSamuraAttack)
+                {
+                    currentAttackState = 2;
+                }
+                else if (tempDistance <= distanceForFirstAttack)
+                {
+                    currentAttackState = 3;
+                }
+            }
         }
 
         /// <summary>
@@ -155,7 +145,7 @@ namespace EnemyBehaviour
         private void FirstAttackMethod()
         {
             firstBossAttack.EventStartAttackAnimation(true);
-            if (EnemyAttack.AttackToPlayer())
+            if (firstBossAttack.AttackToPlayer(true))
             {
                 AbstractObjectSounder.PlayWeaponHitAudio
                     (EnemyOpponentChoiser.PlayerConditionsTarget.
@@ -173,9 +163,24 @@ namespace EnemyBehaviour
         /// Длинная атака. 
         /// Со спадом на колено.
         /// </summary>
-        private void NockbackAttackMethod()
+        private void KneeAttackMethod()
         {
             firstBossAttack.EventStartNockbackAnimation(true);
+            if (firstBossAttack.AttackToPlayer(false))
+            {
+                AbstractObjectSounder.PlayWeaponHitAudio
+                    (EnemyOpponentChoiser.PlayerConditionsTarget.
+                    GetDamage(EnemyAttack.DmgEnemy));
+
+                EnemyMove.PlayerCollisionComponent.AddDamageForceToPlayer
+                    (firstBossAttack.StartKneePoint.forward,true);
+                EnemyAnimationsController.DisableAllStates();
+                EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
+            }
+            else
+            {
+                EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.1f);
+            }
         }
 
         /// <summary>
@@ -184,6 +189,18 @@ namespace EnemyBehaviour
         private void SamuraAttackMethod()
         {
             firstBossAttack.EventStartSamuraAnimation(true);
+            if (firstBossAttack.AttackToPlayer(true))
+            {
+                AbstractObjectSounder.PlayWeaponHitAudio
+                    (EnemyOpponentChoiser.PlayerConditionsTarget.
+                    GetDamage(EnemyAttack.DmgEnemy));
+                EnemyAnimationsController.DisableAllStates();
+                EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
+            }
+            else
+            {
+                EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.1f);
+            }
         }
 
         /// <summary>
@@ -192,7 +209,7 @@ namespace EnemyBehaviour
         private void GolfAttackMethod()
         {
             firstBossAttack.EventStartGolfAnimation(true);
-            if (firstBossAttack.AttackToPlayer())
+            if (firstBossAttack.AttackToPlayer(true))
             {
                 AbstractObjectSounder.PlayWeaponHitAudio
                     (EnemyOpponentChoiser.PlayerConditionsTarget.
@@ -229,20 +246,20 @@ namespace EnemyBehaviour
                                 GolfAttackMethod();
                                 break;
                             case 1:
-                                SamuraAttackMethod();
+                                KneeAttackMethod();
                                 break;
                             case 2:
-                                FirstAttackMethod();
+                                SamuraAttackMethod();
                                 break;
                             case 3:
-                                NockbackAttackMethod();
+                                FirstAttackMethod();
                                 break;
                         }
                     }
                     else
                     {
-                        EnemyAnimationsController.DisableAllStates();
-                        EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.1f);
+                       EnemyAnimationsController.DisableAllStates();
+                       EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.1f);
                     }
                 }
                 else
@@ -252,6 +269,8 @@ namespace EnemyBehaviour
                         EnemyAnimationsController.SetState(0, true);
                         EnemyAnimationsController.SetState(1, false);
                         EnemyAnimationsController.SetState(2, false);
+                        EnemyAnimationsController.SetState(3, false);
+                        EnemyAnimationsController.SetState(4, false);
 
                         if (!EnemyConditions.IsFrozen)
                             EnemyMove.DependenceAnimatorSpeedOfVelocity();

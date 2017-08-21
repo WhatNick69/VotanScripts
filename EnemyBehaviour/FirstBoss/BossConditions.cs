@@ -16,7 +16,10 @@ namespace EnemyBehaviour
 	{
 		#region Переменные 
 		private EnemyArmory enemyArmory;
+        IFirstBossMove iFirstBossMove;
 		private bool isBossAlive = true;
+        [SerializeField]
+        private bool isSetDestination;
 		#endregion
 
 		#region Свойства 
@@ -46,8 +49,14 @@ namespace EnemyBehaviour
                     }
                     else if (healthValue <= 0 && isAlive)
                     {
+                        Debug.Log(isSetDestination);
                         isAlive = false;
-                        Timing.RunCoroutine(DieState());
+                        //Timing.RunCoroutine(DieState());
+                        if (!isSetDestination)
+                            PreDeadWalk();
+                        else
+                            Timing.RunCoroutine(DieState());
+
                         healthValue = 0;
                         RefreshHealthCircle();
                     }
@@ -62,8 +71,19 @@ namespace EnemyBehaviour
         public override void Start()
 		{
 			base.Start();
-			enemyArmory = GetComponent<EnemyArmory>();
+            iFirstBossMove = GetComponent<IFirstBossMove>();
+            enemyArmory = GetComponent<EnemyArmory>();
 		}
+
+        /// <summary>
+        /// Предсмертная ходьба
+        /// </summary>
+        public void PreDeadWalk()
+        {
+            isSetDestination = true;
+            iFirstBossMove.SetDeadPosition();
+            MainBarCanvas.gameObject.SetActive(false);
+        }
 
 		/// <summary> 
 		/// Состояние смерти босса 
@@ -75,25 +95,19 @@ namespace EnemyBehaviour
 			isBossAlive = false;
 
 			enemyAbstract.AbstractObjectSounder.PlayDeadAudio();
-			//enemyAbstract.EnemyAnimationsController.DisableAllStates(); 
 			enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
-			enemyAbstract.EnemyAnimationsController.SetState(4, true);
-			enemyAbstract.EnemyAnimationsController.PlayDeadNormalizeCoroutine();
+			enemyAbstract.EnemyAnimationsController.SetState(8, true);
+            iFirstBossMove.GoOutEnemy();
+            enemyAbstract.EnemyAnimationsController.PlayDeadNormalizeCoroutine();
 			MainBarCanvas.gameObject.SetActive(false);
-			enemyAbstract.EnemyMove.Agent.enabled = false;
+            enemyAbstract.EnemyMove.DisableAgent();
 			GetComponent<BoxCollider>().enabled = false;
 
-			if (isFrozen)
-				yield return Timing.WaitForSeconds(5 + enemyAbstract.IceEffect.TimeToDisable);
-			else
-				yield return Timing.WaitForSeconds(5);
-
-			// Выключаем врага. Возвращаем в стек врагов. Почти, как если бы 
-			// мы его уничтожали. 
-			//enemyAbstract.EnemyAnimationsController.AnimatorOfObject.enabled = false; 
-			SendAllPlayerWinCall();
-			EnemyCreator.ReturnEnemyToStack(enemyAbstract.EnemyNumber);
-		}
+            while (!enemyAbstract.EnemyAnimationsController.IsDowner)
+                yield return Timing.WaitForSeconds(0.5f);
+            SendAllPlayerWinCall();
+            EnemyCreator.ReturnEnemyToStack(enemyAbstract.EnemyNumber);
+        }
 
 		/// <summary> 
 		/// Оповестить всех живых игроков о победе 
@@ -184,7 +198,6 @@ namespace EnemyBehaviour
 						dmg = GetDamageWithResistance(dmg, gemPower, weapon);
 						Timing.RunCoroutine(CoroutineForGetDamage(false, dmg));
 
-						if (HealthValue <= 0) return false;
 						HealthValue -=
 						LibraryStaticFunctions.GetRangeValue(dmg, 0.1f);
 						if (HealthValue <= 0)
@@ -224,10 +237,10 @@ namespace EnemyBehaviour
 			}
 
 			if (flag)
-				enemyAbstract.EnemyAnimationsController.SetState(3, true);
+				enemyAbstract.EnemyAnimationsController.SetState(5, true);
 			yield return Timing.WaitForSeconds(frequencyOfGetDamage);
 			if (flag)
-				enemyAbstract.EnemyAnimationsController.SetState(3, false);
+				enemyAbstract.EnemyAnimationsController.SetState(5, false);
 
 			if (!isLongAttack)
 				isMayGetDamage = true;

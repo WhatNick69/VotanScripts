@@ -5,7 +5,7 @@ namespace PlayerBehaviour
     /// <summary>
     /// Хранит звуки HUD для игркоа
     /// </summary>
-    class PlayerHUDAudioStorage
+    public class PlayerHUDAudioStorage
         : MonoBehaviour
     {
         #region Переменные
