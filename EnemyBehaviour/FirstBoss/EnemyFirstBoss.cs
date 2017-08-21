@@ -98,6 +98,7 @@ namespace EnemyBehaviour
             distanceForFirstAttack = enemyMove.Agent.stoppingDistance;
             distanceForKneeAttack = distanceForFirstAttack / 2;
             distanceForGolfAttack = distanceForFirstAttack / 3;
+
             distanceForSamuraAttack = distanceForFirstAttack / 1.25f;
 
             movingSpeed = EnemyMove.AgentSpeed / 5;

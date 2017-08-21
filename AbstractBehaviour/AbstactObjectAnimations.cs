@@ -57,6 +57,7 @@ namespace AbstractBehaviour
         protected StructStatesNames structStatesnames;
         [SerializeField]
         private Transform transformForDeadYNormalizing;
+        private bool isDowner;
         #endregion
 
         #region Свойства
@@ -96,6 +97,19 @@ namespace AbstractBehaviour
             set
             {
                 transformForDeadYNormalizing = value;
+            }
+        }
+
+        public bool IsDowner
+        {
+            get
+            {
+                return isDowner;
+            }
+
+            set
+            {
+                isDowner = value;
             }
         }
         #endregion
@@ -170,6 +184,8 @@ namespace AbstractBehaviour
         {
             for (byte i = 0; i < structStatesnames.StructureCount-1; i++)
                 animatorOfObject.SetBool(StructStatesNames.GetState(i), false);
+
+            Debug.Log("DISABLED_ALL_STATES");
         }
 
         /// <summary>

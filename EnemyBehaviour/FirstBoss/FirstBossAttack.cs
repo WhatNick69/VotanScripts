@@ -63,6 +63,9 @@ namespace EnemyBehaviour
             if (isStop)
                 enemyAbstract.EnemyMove.DisableAgent();
             enemyAbstract.EnemyAnimationsController.SetState(0, false);
+            enemyAbstract.EnemyAnimationsController.SetState(2, false);
+            enemyAbstract.EnemyAnimationsController.SetState(3, false);
+            enemyAbstract.EnemyAnimationsController.SetState(4, false);
             enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
             enemyAbstract.EnemyAnimationsController.SetState(1, true);
             yield return Timing.WaitForSeconds(attackLatency);
@@ -92,6 +95,9 @@ namespace EnemyBehaviour
             if (isStop)
                 enemyAbstract.EnemyMove.DisableAgent();
             enemyAbstract.EnemyAnimationsController.SetState(0, false);
+            enemyAbstract.EnemyAnimationsController.SetState(1, false);
+            enemyAbstract.EnemyAnimationsController.SetState(3, false);
+            enemyAbstract.EnemyAnimationsController.SetState(4, false);
             enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
             enemyAbstract.EnemyAnimationsController.SetState(2, true);
             yield return Timing.WaitForSeconds(attackLatency);
@@ -121,6 +127,9 @@ namespace EnemyBehaviour
             if (isStop)
                 enemyAbstract.EnemyMove.DisableAgent();
             enemyAbstract.EnemyAnimationsController.SetState(0, false);
+            enemyAbstract.EnemyAnimationsController.SetState(1, false);
+            enemyAbstract.EnemyAnimationsController.SetState(2, false);
+            enemyAbstract.EnemyAnimationsController.SetState(4, false);
             enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
             enemyAbstract.EnemyAnimationsController.SetState(3, true);
             yield return Timing.WaitForSeconds(attackLatency);
@@ -150,6 +159,9 @@ namespace EnemyBehaviour
             if (isStop)
                 enemyAbstract.EnemyMove.DisableAgent();
             enemyAbstract.EnemyAnimationsController.SetState(0, false);
+            enemyAbstract.EnemyAnimationsController.SetState(1, false);
+            enemyAbstract.EnemyAnimationsController.SetState(2, false);
+            enemyAbstract.EnemyAnimationsController.SetState(3, false);
             enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
             enemyAbstract.EnemyAnimationsController.SetState(4, true);
             yield return Timing.WaitForSeconds(attackLatency);
