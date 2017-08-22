@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VotanLibraries;
 using MovementEffects;
+using System;
 
 namespace PlayerBehaviour
 {
@@ -17,8 +18,13 @@ namespace PlayerBehaviour
         protected static AudioClip[] audioDead; // Звуки смерти персонажа
         protected static AudioClip[] audioSteps; // Звуки шагов
         protected static AudioClip[] audioDestroyArmory; // Звуки ломающейся брони
+        private static AudioClip[] audioPhysicDefenceBonus;
         private static AudioClip[] audioSpin; // Звуки вращения оружия
         private static AudioClip[] audioRoar;
+
+        private static AudioClip[] audioSpeedEffect;
+        private static AudioClip[] audioPowerEffect;
+        private static AudioClip[] audioHealthEffect;
 
         private bool isMayToPlayWeaponAudio;
         [SerializeField]
@@ -41,6 +47,50 @@ namespace PlayerBehaviour
             InitialisationDeadSounds();
             InitialisationDestroyArmorySounds();
             InitialisationsRoarSounds();
+            InitialisationSpeedEffectSounds();
+            InitialisationPowerEffectSounds();
+            InitialisationHealthEffectSounds();
+            InitialisationPhysicDefenceBonusSounds();
+        }
+
+        private void InitialisationPhysicDefenceBonusSounds()
+        {
+            tempAudioList = Resources.LoadAll("Sounds/Effects/Physic");
+            audioPhysicDefenceBonus = new AudioClip[tempAudioList.Length];
+            for (int i = 0; i < tempAudioList.Length; i++)
+            {
+                audioPhysicDefenceBonus[i] = (AudioClip)tempAudioList[i];
+            }
+        }
+
+        private void InitialisationPowerEffectSounds()
+        {
+            tempAudioList = Resources.LoadAll("Sounds/PlayerMale/VisualEffects/Power");
+            audioPowerEffect = new AudioClip[tempAudioList.Length];
+            for (int i = 0; i < tempAudioList.Length; i++)
+            {
+                audioPowerEffect[i] = (AudioClip)tempAudioList[i];
+            }
+        }
+
+        private void InitialisationHealthEffectSounds()
+        {
+            tempAudioList = Resources.LoadAll("Sounds/PlayerMale/VisualEffects/Health");
+            audioHealthEffect = new AudioClip[tempAudioList.Length];
+            for (int i = 0; i < tempAudioList.Length; i++)
+            {
+                audioHealthEffect[i] = (AudioClip)tempAudioList[i];
+            }
+        }
+
+        private void InitialisationSpeedEffectSounds()
+        {
+            tempAudioList = Resources.LoadAll("Sounds/PlayerMale/VisualEffects/Speed");
+            audioSpeedEffect = new AudioClip[tempAudioList.Length];
+            for (int i = 0; i < tempAudioList.Length; i++)
+            {
+                audioSpeedEffect[i] = (AudioClip)tempAudioList[i];
+            }
         }
 
         /// <summary>
@@ -291,6 +341,15 @@ namespace PlayerBehaviour
             }
         }
 
+        public void PlayPhysicDefenceBonus()
+        {
+            audioSourceObject.clip =
+                audioPhysicDefenceBonus[UnityEngine.Random.Range(0, 
+                audioPhysicDefenceBonus.Length)];
+            audioSourceObject.pitch = LibraryStaticFunctions.GetRangeValue(0.75f, 0.1f);
+            audioSourceObject.Play();
+        }
+
         /// <summary>
         /// Звук атакующего рывка оружием
         /// </summary>
@@ -300,6 +359,48 @@ namespace PlayerBehaviour
                 audioSpin[audioSpin.Length-1];
             audioSourceWeapon.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.05f);
             audioSourceWeapon.Play();
+        }
+
+        public void PlaySpeedEffectAudio(AudioSource aS,bool isStart)
+        {
+            if (isStart)
+            {
+                aS.clip =
+                    audioSpeedEffect[UnityEngine.Random.Range(0, audioSpeedEffect.Length - 1)];
+            }
+            else
+            {
+                aS.clip =
+                    audioSpeedEffect[audioSpeedEffect.Length - 1];
+            }
+
+            aS.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
+            aS.Play();
+        }
+
+        public void PlayHealthStartEffectAudio(AudioSource aS)
+        {
+            aS.clip =
+                audioHealthEffect[UnityEngine.Random.Range(0, audioHealthEffect.Length)];
+            aS.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
+            aS.Play();
+        }
+
+        public void PlayPowerEffectAudio(AudioSource aS, bool isStart)
+        {
+            if (isStart)
+            {
+                aS.clip =
+                    audioPowerEffect[audioPowerEffect.Length - 1];
+            }
+            else
+            {
+                aS.clip =
+                    audioPowerEffect[UnityEngine.Random.Range(0, audioPowerEffect.Length - 1)];
+            }
+
+            aS.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
+            aS.Play();
         }
 
         /// <summary>

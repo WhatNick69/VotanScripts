@@ -13,6 +13,12 @@ namespace PlayerBehaviour
         : MonoBehaviour
     {
         #region Переменные и ссылки
+        [Header("Общее")]
+        [SerializeField, Tooltip("Звук-компонент для старта эффекта")]
+        private AudioSource audioSourceStartEffect;
+        [SerializeField, Tooltip("Звук-компонент для действия эффекта")]
+        private AudioSource audioSourceActionEffect;
+
         [Header("Эффект молнии")]
         [SerializeField, Tooltip("Изображение для грозы")]
         private Image lightingImage;
@@ -91,6 +97,46 @@ namespace PlayerBehaviour
             PowerWeaponEffectInitialisation();
             SpeedBootsEffectInitialisation();
             HealthEffectInitialisation();
+        }
+
+
+        /// <summary>
+        /// Запустить, либо остановить звук.
+        /// state 0: скорость,
+        /// state 1: сила,
+        /// state 2: здоровье.
+        /// </summary>
+        /// <param name="isEnable"></param>
+        /// <param name="state"></param>
+        private void PlayOrDisableAudio(int state = -1, bool isEnable = false)
+        {
+            if (isEnable)
+            {
+                switch (state)
+                {
+                    case 0:
+                        playerComponentsControl.PlayerSounder.
+                            PlaySpeedEffectAudio(audioSourceStartEffect,true);
+                        playerComponentsControl.PlayerSounder.
+                            PlaySpeedEffectAudio(audioSourceActionEffect, false);
+                        break;
+                    case 1:
+                        playerComponentsControl.PlayerSounder.
+                            PlayPowerEffectAudio(audioSourceStartEffect, true);
+                        playerComponentsControl.PlayerSounder.
+                            PlayPowerEffectAudio(audioSourceActionEffect, false);
+                        break;
+                    case 2:
+                        playerComponentsControl.PlayerSounder.
+                            PlayHealthStartEffectAudio(audioSourceStartEffect);
+                        break;
+                }
+            }
+            else
+            {
+                audioSourceActionEffect.Stop();
+                audioSourceStartEffect.Stop();
+            }
         }
 
         #region Эффект кровавого экрана
@@ -184,7 +230,7 @@ namespace PlayerBehaviour
             if (!isHealthEffectEnabled)
             {
                 isHealthEffectEnabled = true;
-
+                PlayOrDisableAudio(2, true);
                 StartHealthTrails();
 
                 Timing.RunCoroutine(CoroutineForMoveHealthTrailsEffect());
@@ -197,6 +243,7 @@ namespace PlayerBehaviour
         public void StopHealthEffect()
         {
             isHealthEffectEnabled = false;
+            PlayOrDisableAudio();
             Timing.RunCoroutine(CoroutineForLerpDisableHealthEffect());
         }
 
@@ -306,6 +353,7 @@ namespace PlayerBehaviour
             if (!isSpeedEffectEnabled)
             {
                 isSpeedEffectEnabled = true;
+                PlayOrDisableAudio(0,true);
 
                 StartSpeedTrails();
 
@@ -320,6 +368,8 @@ namespace PlayerBehaviour
         public void StopSpeedEffectBoots()
         {
             isSpeedEffectEnabled = false;
+            PlayOrDisableAudio();
+
             Timing.RunCoroutine(CoroutineForLerpDisableSpeedEffect());
         }
 
@@ -422,6 +472,7 @@ namespace PlayerBehaviour
         public void StopPowerEffectWeapon()
         {
             isPowerEffectEnabled = false;
+            PlayOrDisableAudio();
             Timing.RunCoroutine(CoroutineForLerpDisablePowerEffect());
         }
 
@@ -434,7 +485,7 @@ namespace PlayerBehaviour
             {
                 isPowerEffectEnabled = true;
                 SetTrailsColor();
-
+                PlayOrDisableAudio(1, true);
                 StartPowerTrails();
 
                 Timing.RunCoroutine(CoroutineForMoveWeaponPowerTrail(powerEffectTrailFirst,false));

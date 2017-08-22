@@ -158,6 +158,8 @@ namespace GameBehaviour
                 yield return Timing.WaitForSeconds(updateFrequency);
             }
             weapon.AddTempPhysicDefence(weapon.GemPower / 10);
+            weapon.GetPlayer.PlayerSounder.PlayPhysicDefenceBonus();
+
             yield return Timing.WaitForSeconds(0.25f);
             trailRenderer.gameObject.SetActive(false);
             isStillTrailMoving = false;
