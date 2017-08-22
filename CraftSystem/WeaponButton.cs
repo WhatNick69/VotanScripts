@@ -32,7 +32,7 @@ namespace CraftSystem
 
         public void GetNumber()
         {
-            wepCraft.SetHeadItemNumber(numberButton);
+            wepCraft.SetWeaponItemNumber(numberButton);
         }
 
         public void SetWeaponCraft(WeaponCraft WP)

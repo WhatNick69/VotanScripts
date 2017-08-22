@@ -62,6 +62,20 @@ namespace CraftSystem
 		[SerializeField]
 		GameObject NewCrit;
 
+		[SerializeField]
+		GameObject skillOne;
+		[SerializeField]
+		GameObject skillTwo;
+		[SerializeField]
+		GameObject skillThree;
+
+		[SerializeField]
+		GameObject itemOne;
+		[SerializeField]
+		GameObject itemTwo;
+		[SerializeField]
+		GameObject itemThree;
+
 		// Для наконечников
 		float critChance;
 		float headDamage;
@@ -125,6 +139,28 @@ namespace CraftSystem
 			PredPageLoad();
 			NewArmor.SetActive(true);
 			NewWeight.SetActive(true);
+		}
+
+		/// <summary>
+		/// Вызывать при открытие листа со скилами
+		/// </summary>
+		public void SkillPage()
+		{
+			PredPageLoad();
+			skillOne.SetActive(true);
+			skillTwo.SetActive(true);
+			skillThree.SetActive(true);
+		}
+
+		/// <summary>
+		/// Вызывать при открытие листа с итемами
+		/// </summary>
+		public void ItemPage()
+		{
+			PredPageLoad();
+			itemOne.SetActive(true);
+			itemTwo.SetActive(true);
+			itemThree.SetActive(true);
 		}
 
 		public float CuirassArmor
@@ -370,7 +406,7 @@ namespace CraftSystem
 		public void NewStats()
 		{
 			leveTextl.text = PlayerPrefs.GetInt("level").ToString();
-			hpText.text = "HP: " + ((PlayerPrefs.GetInt("level") + 10) * 2);
+			hpText.text = ((PlayerPrefs.GetInt("level") + 10) * 2).ToString();
 			armorText.text = (cuirassArmor + shieldArmor + helmetArmor).ToString();
 			WeightText.text = (cuirassWeight + helmetWeight + shieldWeight).ToString();
 			damageText.text = headDamage.ToString();
@@ -393,12 +429,12 @@ namespace CraftSystem
 			if (newCuirassWeight >= cuirassWeight && cuirass.activeInHierarchy)
 			{
 				newWeightText.text = "+(" + Mathf.Abs(newCuirassWeight - cuirassWeight) + ")";
-				newWeightText.color = green;
+				newWeightText.color = red;
 			}
 			else if (cuirass.activeInHierarchy)
 			{
 				newWeightText.text = "-(" + Mathf.Abs(newCuirassWeight - cuirassWeight) + ")";
-				newWeightText.color = red;
+				newWeightText.color = green;
 			}
 
 			// Helmet Weight

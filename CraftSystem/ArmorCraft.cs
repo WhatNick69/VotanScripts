@@ -122,6 +122,7 @@ namespace CraftSystem
 			shieldWindow.SetActive(false);
 			cuirassWindow.SetActive(false);
 			helmetWindow.SetActive(true);
+			PStats.ArmorPage();
             scrollRectHelmetRepository.horizontalNormalizedPosition = 0;
         }
 
@@ -133,7 +134,8 @@ namespace CraftSystem
 			shieldWindow.SetActive(false);
 			helmetWindow.SetActive(false);
 			cuirassWindow.SetActive(true);
-            scrollRectCuirasseRepository.horizontalNormalizedPosition = 0;
+			PStats.ArmorPage();
+			scrollRectCuirasseRepository.horizontalNormalizedPosition = 0;
         }
 
 		/// <summary>
@@ -144,7 +146,8 @@ namespace CraftSystem
 			helmetWindow.SetActive(false);
 			cuirassWindow.SetActive(false);
 			shieldWindow.SetActive(true);
-            scrollRectShieldRepository.horizontalNormalizedPosition = 0;
+			PStats.ArmorPage();
+			scrollRectShieldRepository.horizontalNormalizedPosition = 0;
         }
 
 		public GameObject GetCuirassPrafab()

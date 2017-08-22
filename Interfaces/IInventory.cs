@@ -96,10 +96,20 @@ namespace VotanInterfaces
     /// </summary>
     public interface ISkill
     {
-        /// <summary>
-        /// Можно ли запустить умение
-        /// </summary>
-        bool IsMayToFire { get; set; }
+		/// <summary>
+		/// Название умения
+		/// </summary>
+		string SkillName { get; }
+
+		/// <summary>
+		/// Описание умения
+		/// </summary>
+		string SkillTutorial { get; }
+
+		/// <summary>
+		/// Можно ли запустить умение
+		/// </summary>
+		bool IsMayToFire { get; set; }
 
         /// <summary>
         /// Нажать по предмету

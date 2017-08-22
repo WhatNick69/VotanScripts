@@ -44,7 +44,7 @@ namespace CraftSystem
         {
             if (weaponCraftComponent == null) Start();
 
-            weaponCraftComponent.HeadWindow();
+            weaponCraftComponent.WeaponWindow();
         }
     }
 }

@@ -7,14 +7,14 @@ public class PlayerData : MonoBehaviour {
 	{
 		for (int i = 0; i < 4; i++)
 		{
-			if (PlayerPrefs.GetInt("shieldLevel_" + i) >= 1)
+			if (PlayerPrefs.GetInt("shieldLevel_" + i) >= 0)
 			{ }
 			else
 			{
 				PlayerPrefs.SetInt("shieldLevel_" + i, 0);
 			}
 		}
-
+		
 		if (PlayerPrefs.GetInt("metal") >= 0)
 		{ }
 		else

@@ -21,6 +21,10 @@ namespace GameBehaviour
         private int secondsForTimer;
         [SerializeField, Tooltip("Хранитель компонентов игрока")]
         private PlayerComponentsControl playerComponentsControlInstance;
+        [SerializeField, Tooltip("Низвание умения")]
+        private string skillName;
+        [SerializeField, Tooltip("Описание умения")]
+        private string skillTutorial;
 
         private Color fonNonActiveColor;
         private int itemNumberPosition;
@@ -72,6 +76,22 @@ namespace GameBehaviour
             set
             {
                 isMayToFire = value;
+            }
+        }
+
+        public string SkillName
+        {
+            get
+            {
+                return skillName;
+            }
+        }
+
+        public string SkillTutorial
+        {
+            get
+            {
+                return skillTutorial;
             }
         }
         #endregion
