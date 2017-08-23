@@ -208,38 +208,8 @@ namespace GameBehaviour
         /// <returns></returns>
         private int PlayerMayGetItem(PlayerComponentsControl plComponents)
         {
-            IItem interfaceItem;
-            if (plComponents.PlayerHUDManager.FirstItem != null)
-            {
-                interfaceItem = plComponents.PlayerHUDManager.FirstItem;
-                if (interfaceItem.ItemType == iItem.ItemType
-                    && interfaceItem.ItemQuality == iItem.ItemQuality)
-                {
-                    interfaceItem.ItemCount += iItem.ItemCount;
-                    return 1;
-                }
-            }
-            if (plComponents.PlayerHUDManager.SecondItem != null)
-            {
-                interfaceItem = plComponents.PlayerHUDManager.SecondItem;
-                if (interfaceItem.ItemType == iItem.ItemType
-                    && interfaceItem.ItemQuality == iItem.ItemQuality)
-                {
-                    interfaceItem.ItemCount += iItem.ItemCount;
-                    return 1;
-                }
-            }
-
-            if (plComponents.PlayerHUDManager.ThirdItem != null)
-            {
-                interfaceItem = plComponents.PlayerHUDManager.ThirdItem;
-                if (interfaceItem.ItemType == iItem.ItemType
-                    && interfaceItem.ItemQuality == iItem.ItemQuality)
-                {
-                    interfaceItem.ItemCount += iItem.ItemCount;
-                    return 1;
-                }
-            }
+            if (plComponents.PlayerHUDManager.MethodForChecking(iItem))
+                return 1;
 
             if (plComponents.PlayerHUDManager.GetCountOfItems() != 3)
             {
@@ -259,10 +229,12 @@ namespace GameBehaviour
         {       
             iItem.PlayerComponentsControlInstance = plComponents; // инициализируем компонент-ссылку
             GameObject objectNew = Instantiate(item);
-            objectNew.transform.SetParent(plComponents.PlayerHUDManager.LeftItemsParent); // даем родителя
+
+            // даем родителя
+            objectNew.transform.SetParent(plComponents.PlayerHUDManager.LeftItemsParent); 
             objectNew.transform.localPosition = Vector3.zero;  // обнуляем позицию
 
-            plComponents.PlayerHUDManager.RefreshInventory();
+            plComponents.PlayerHUDManager.AddItem(objectNew);
             plComponents.PlayerHUDManager.EnableLeftIndicators();
         }
 

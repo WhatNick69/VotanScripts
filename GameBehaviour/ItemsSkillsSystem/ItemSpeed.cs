@@ -212,8 +212,7 @@ namespace GameBehaviour
             {
                 transform.parent = null;
                 playerComponentsControlInstance.
-                    PlayerHUDManager.DeleteItemInterfaceReference(itemNumberPosition);
-                playerComponentsControlInstance.PlayerHUDManager.RefreshInventory();
+                    PlayerHUDManager.DeleteItemInterfaceReference(this);
             }
 
             yield return Timing.WaitForSeconds(10);
@@ -269,6 +268,8 @@ namespace GameBehaviour
 
                 isContainsItem = true;
                 EnableItem();
+                //playerComponentsControlInstance.PlayerHUDManager.
+                //    RefreshInventory();
             }
         }
 
@@ -277,7 +278,7 @@ namespace GameBehaviour
         /// </summary>
         public void OnClickFireItem()
         {
-            playerComponentsControlInstance.PlayerHUDManager.FireItem(itemNumberPosition);
+            playerComponentsControlInstance.PlayerHUDManager.FireItem(this);
         }
 
         /// <summary>

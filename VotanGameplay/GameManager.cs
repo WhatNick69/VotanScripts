@@ -61,8 +61,6 @@ namespace VotanGameplay
             for (int i = 0; i < deadPointsForEnemy.Length; i++)
                 deadPointsForEnemy[i] = transform.Find("DeadPoints").
                     GetChild(i).GetComponent<Transform>();
-
-            Debug.Log(deadPointsForEnemy.Length);
         }
 
         /// <summary>

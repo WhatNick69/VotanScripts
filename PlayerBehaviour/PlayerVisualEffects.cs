@@ -259,7 +259,6 @@ namespace PlayerBehaviour
             float x = 0;
             while (isHealthEffectEnabled)
             {
-                Debug.Log("CAL");
                 angle += Time.deltaTime;
                 x = Mathf.Cos(angle * healthSpeed) * healthRadius;
                 y = Mathf.Sin(angle * healthSpeed) * healthRadius;

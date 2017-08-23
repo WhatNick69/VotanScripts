@@ -61,7 +61,7 @@ namespace GameBehaviour
         {
             get
             {
-                return IsContainsItem;
+                return isContainsItem;
             }
         }
 
@@ -211,8 +211,7 @@ namespace GameBehaviour
             {
                 transform.parent = null;
                 playerComponentsControlInstance.
-                    PlayerHUDManager.DeleteItemInterfaceReference(itemNumberPosition);
-                playerComponentsControlInstance.PlayerHUDManager.RefreshInventory();
+                    PlayerHUDManager.DeleteItemInterfaceReference(this);
                 Destroy(gameObject);
             }
             else
@@ -246,8 +245,11 @@ namespace GameBehaviour
                     yield return Timing.WaitForSeconds(0.05f);
                 }
 
-                EnableItem();
                 isContainsItem = true;
+
+                EnableItem();
+                //playerComponentsControlInstance.PlayerHUDManager.
+                //    RefreshInventory();
             }
         }
 
@@ -256,7 +258,7 @@ namespace GameBehaviour
         /// </summary>
         public void OnClickFireItem()
         {
-            playerComponentsControlInstance.PlayerHUDManager.FireItem(itemNumberPosition);
+            playerComponentsControlInstance.PlayerHUDManager.FireItem(this);
         }
 
         /// <summary>
@@ -264,7 +266,8 @@ namespace GameBehaviour
         /// </summary>
         public void EnableItem()
         {
-            if (!playerComponentsControlInstance.PlayerConditions.IsMaxHealth())
+            if (!playerComponentsControlInstance.PlayerConditions.IsMaxHealth()
+                && isContainsItem)
             {
                 itemImage.fillAmount = 1;
                 parentImage.color = Color.white;
