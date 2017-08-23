@@ -45,8 +45,7 @@ namespace PlayerBehaviour
         [SerializeField, Tooltip("Правые индикаторы")]
         private RectTransform rightIndicators;
         private RectTransform[] arrayPositionsForSkills;
-        private Button[] arrayButtonSkills;
-        private RectTransform[] arraySkills;
+        private RectTransform[] arraySkillTransform;
         private Image[] arrayRightIndicators;
 
         private Coroutine rightCoroutine;
@@ -58,7 +57,7 @@ namespace PlayerBehaviour
 
         #region Содержимое инвентаря
         private IItem[] itemsList;
-        private ISkill firstSkill, secondSkill, thirdSkill;
+        private ISkill[] skillsList;
         private PlayerComponentsControl playerComponentsControl;
         private bool isActiveItemButton = true;
         private bool isActiveSkillButton = true;
@@ -68,46 +67,6 @@ namespace PlayerBehaviour
         #endregion
 
         #region Свойства
-       
-        public ISkill FirstSkill
-        {
-            get
-            {
-                return firstSkill;
-            }
-
-            set
-            {
-                firstSkill = value;
-            }
-        }
-
-        public ISkill SecondSkill
-        {
-            get
-            {
-                return secondSkill;
-            }
-
-            set
-            {
-                secondSkill = value;
-            }
-        }
-
-        public ISkill ThirdSkill
-        {
-            get
-            {
-                return thirdSkill;
-            }
-
-            set
-            {
-                thirdSkill = value;
-            }
-        }
-
         public RectTransform LeftItemsParent
         {
             get
@@ -146,15 +105,19 @@ namespace PlayerBehaviour
             InitialisationRightInventory();
         }
 
+        /// <summary>
+        /// Инициализация начальных массивов со ссылками
+        /// </summary>
         private void InitialisationStartArrays()
         {
             animationIndicator = "HUDIndicatorEnabled";
             alphaColor = new Color(0.5f, 0.5f, 0.5f, 0);
 
             InitialisationAllIndicators();
-            InitialisationAllPositionsAndButtons();
+            InitialisationAllPositions();
         }
 
+        #region Левый инвентарь: предметы
         /// <summary>
         /// Удалить ссылку на интерфейс предмета из инвентаря.
         /// </summary>
@@ -174,27 +137,8 @@ namespace PlayerBehaviour
         }
 
         /// <summary>
-        /// Удалить ссылку на интерфейс умения из инвентаря.
-        /// </summary>
-        /// <param name="number"></param>
-        public void DeleteSkillInterfaceReference(int number)
-        {
-            switch (number)
-            {
-                case 0:
-                    firstSkill = null;
-                    break;
-                case 1:
-                    secondSkill = null;
-                    break;
-                case 2:
-                    thirdSkill = null;
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Возвращает число ненулевых элементов в инвентаре предметов
+        /// Возвращает число ненулевых 
+        /// элементов в инвентаре предметов
         /// </summary>
         /// <returns></returns>
         public int GetCountOfItems()
@@ -206,7 +150,31 @@ namespace PlayerBehaviour
             return counter;
         }
 
-        #region Левый инвентарь: предметы
+        /// <summary>
+        /// Метод для проверки, содержится ли данный
+        /// предмет в левом инвентаре и в случае положительного
+        /// результата - мы повышаем его количество на величину,
+        /// которая содержится в передаваемом предмете
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool EqualsItemInLeftInventory(IItem item)
+        {
+            for (int i = 0; i < itemsList.Length; i++)
+            {
+                if (itemsList[i] != null)
+                {
+                    if (itemsList[i].ItemType == item.ItemType
+                        && itemsList[i].ItemQuality == item.ItemQuality)
+                    {
+                        itemsList[i].ItemCount += item.ItemCount;
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         /// <summary>
         /// Добавить предмет в инвентарь
         /// </summary>
@@ -220,22 +188,45 @@ namespace PlayerBehaviour
                     itemsList[i] = item.GetComponent<IItem>();
                     arrayItemTransform[i] = item.GetComponent<RectTransform>();
                     itemsList[i].Starter(i);
+                    RefreshVisibleItemsInLeftInventory(i);
                     return;
                 }
             }
         }
 
-        private void InitialisationAllPositionsAndButtons()
+        /// <summary>
+        /// Если открыто окно и у нас появился 
+        /// новый предмет в левом инвентаре -  
+        /// незамедлительно отображаем его.
+        /// </summary>
+        /// <param name="numberInLeftInventory"></param>
+        private void RefreshVisibleItemsInLeftInventory(int numberInLeftInventory)
         {
-            arrayPositionsForItems = new RectTransform[leftPositionsParent.transform.childCount];
-            for (int i = 0; i < arrayPositionsForItems.Length; i++)
-                arrayPositionsForItems[i] =
-                    leftPositionsParent.GetChild(i).GetComponent<RectTransform>();
+            if (isLeftInventoryOpen)
+            {
+                arrayItemTransform[numberInLeftInventory].localScale 
+                    = new Vector3(1, 1, 1);
+                arrayItemTransform[numberInLeftInventory].anchoredPosition =
+                    arrayPositionsForItems[numberInLeftInventory].anchoredPosition;
+            }
+        }
 
-            arrayPositionsForSkills = new RectTransform[rightPositionsParent.transform.childCount];
-            for (int i = 0; i < arrayPositionsForSkills.Length; i++)
-                arrayPositionsForSkills[i] = 
-                    rightPositionsParent.GetChild(i).GetComponent<RectTransform>();
+        /// <summary>
+        /// Добавить умение в инвентарь
+        /// </summary>
+        /// <param name="skill"></param>
+        public void AddSkill(GameObject skill)
+        {
+            for (int i = 0; i < skillsList.Length; i++)
+            {
+                if (skillsList[i] == null)
+                {
+                    skillsList[i] = skill.GetComponent<ISkill>();
+                    arraySkillTransform[i] = skill.GetComponent<RectTransform>();
+                    skillsList[i].Starter(i);
+                    return;
+                }
+            }
         }
 
         /// <summary>
@@ -255,7 +246,7 @@ namespace PlayerBehaviour
                     arrayItemTransform[i] = leftItemsParent.GetChild(i).GetComponent<RectTransform>();
                 }
             }
-            Debug.Log(GetCountOfItems());
+
             if (GetCountOfItems()==0) isLeftInventoryOpen = false;
         }
 
@@ -334,6 +325,10 @@ namespace PlayerBehaviour
                         StartCoroutine(CoroutineForMoveInventoryWindow(true, false));
                 }
             }
+            else
+            {
+                playerComponentsControl.PlayerHUDAudioStorage.PlaySoundImpossibleClick();
+            }
         }
 
         /// <summary>
@@ -383,79 +378,58 @@ namespace PlayerBehaviour
 
         #region Правый инвентарь: умения
         /// <summary>
+        /// Удалить ссылку на интерфейс умения из инвентаря.
+        /// </summary>
+        /// <param name="number"></param>
+        public void DeleteSkillInterfaceReference(ISkill skill)
+        {
+            for (int i = 0; i < skillsList.Length; i++)
+            {
+                if (skill == skillsList[i])
+                {
+                    skillsList[i] = null;
+                    arraySkillTransform[i] = null;
+                    arrayRightIndicators[i].color = alphaColor;
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Возвращает число ненулевых 
+        /// элементов в инвентаре умений
+        /// </summary>
+        /// <returns></returns>
+        public int GetCountOfSkills()
+        {
+            int counter = 0;
+            for (int i = 0; i < skillsList.Length; i++)
+                if (skillsList[i] != null) counter++;
+
+            return counter;
+        }
+
+        /// <summary>
         /// Инициализация правого инвентаря
         /// </summary>
         private void InitialisationRightInventory()
         {
-            arraySkills = new RectTransform[arrayRightIndicators.Length];
-            arrayButtonSkills = new Button[arraySkills.Length];
+            skillsList = new ISkill[arrayRightIndicators.Length];
+            arraySkillTransform = new RectTransform[skillsList.Length];
 
-            for (int i = 0; i < arraySkills.Length; i++)
+            for (int i = 0; i < skillsList.Length; i++)
             {
                 if (rightSkillsParent.childCount > i)
                 {
-                    arraySkills[i] = rightSkillsParent.GetChild(i).GetComponent<RectTransform>();
-                    arrayButtonSkills[i] = arraySkills[i].GetComponent<Button>();
+                    skillsList[i] = rightSkillsParent.GetChild(i).GetComponent<ISkill>();
+                    skillsList[i].Starter(i);
+                    arraySkillTransform[i] = rightSkillsParent.GetChild(i).GetComponent<RectTransform>();
                 }
             }
 
-            if (arraySkills.Length == 0) isRightInventoryOpen = false;
-            //InitialisationReferencesToSkills();
+            if (GetCountOfSkills()==0) isRightInventoryOpen = false;
         }
-
-        /// <summary>
-        /// Присвоить ссылки на предметы.
-        /// </summary>
-        private void InitialisationReferencesToSkills()
-        {
-            if (firstSkill == null && arraySkills.Length >= 1)
-            {
-                firstSkill = arraySkills[0].GetComponent<ISkill>();
-                firstSkill.Starter(0);
-            }
-            if (secondSkill == null && arraySkills.Length >= 2)
-            {
-                secondSkill = arraySkills[1].GetComponent<ISkill>();
-                secondSkill.Starter(1);
-            }
-            if (thirdSkill == null && arraySkills.Length >= 3)
-            {
-                thirdSkill = arraySkills[2].GetComponent<ISkill>();
-                thirdSkill.Starter(2);
-            }
-        }
-  
-        /// <summary>
-        /// Инициализация умения в инвентарь
-        /// </summary>
-        /// <param name="thisSkill"></param>
-        /// <returns></returns>
-        public int InitialisationThisSkillToInventory(ISkill thisSkill)
-        {
-            if (firstSkill == null)
-            {
-                firstSkill = thisSkill;
-                TellSkillIndicator(0, true);
-                return 0;
-            }
-            else if (secondSkill == null)
-            {
-                secondSkill = thisSkill;
-                TellSkillIndicator(1, true);
-                return 1;
-            }
-            else if (thirdSkill == null)
-            {
-                thirdSkill = thisSkill;
-                TellSkillIndicator(2, true);
-                return 2;
-            }
-            else
-            {
-                return -1;
-            }
-        }
-
+ 
         /// <summary>
         /// Установить позицию правому индикатору
         /// </summary>
@@ -501,7 +475,7 @@ namespace PlayerBehaviour
             if (rightCoroutine != null)
                 StopCoroutine(rightCoroutine);
 
-            if (arraySkills.Length > 0)
+            if (GetCountOfSkills() > 0)
             {
                 if (!isRightInventoryOpen)
                 {
@@ -518,31 +492,26 @@ namespace PlayerBehaviour
                         StartCoroutine(CoroutineForMoveInventoryWindow(false, false));
                 }
             }
+            else
+            {
+                playerComponentsControl.PlayerHUDAudioStorage.PlaySoundImpossibleClick();
+            }
         }
 
         /// <summary>
         /// Зажечь событие кнопки инвентаря умений
         /// </summary>
         /// <param name="numberButton"></param>
-        public void FireSkill(int numberButton)
+        public void FireSkill(ISkill skill)
         {
-            switch (numberButton)
+            for (int i = 0; i < skillsList.Length; i++)
             {
-                case 0:
-                    if (firstSkill.PlayerComponentsControlInstance == null)
-                        firstSkill.PlayerComponentsControlInstance = playerComponentsControl;
-                    firstSkill.FireEventSkill();
-                    break;
-                case 1:
-                    if (secondSkill.PlayerComponentsControlInstance == null)
-                        secondSkill.PlayerComponentsControlInstance = playerComponentsControl;
-                    secondSkill.FireEventSkill();
-                    break;
-                case 2:
-                    if (thirdSkill.PlayerComponentsControlInstance == null)
-                        thirdSkill.PlayerComponentsControlInstance = playerComponentsControl;
-                    thirdSkill.FireEventSkill();
-                    break;
+                if (skillsList[i] == skill)
+                {
+                    if (skillsList[i].PlayerComponentsControlInstance == null)
+                        skillsList[i].PlayerComponentsControlInstance = playerComponentsControl;
+                    skillsList[i].FireEventSkill();
+                }
             }
         }
 
@@ -564,9 +533,12 @@ namespace PlayerBehaviour
         /// <param name="active"></param>
         private void SetActiveForRightButtons(bool active)
         {
-            for (int i = 0; i < arrayButtonSkills.Length; i++)
+            for (int i = 0; i < arraySkillTransform.Length; i++)
             {
-                arrayButtonSkills[i].enabled = active;
+                if (arraySkillTransform[i] != null)
+                {
+                    arraySkillTransform[i].GetComponent<Button>().enabled = active;
+                }
             }
         }
         #endregion
@@ -587,16 +559,20 @@ namespace PlayerBehaviour
             }
         }
 
-        private void UnshowLeftIndicators()
+        /// <summary>
+        /// Инициализация всех позиций
+        /// </summary>
+        private void InitialisationAllPositions()
         {
-            for (int i = 0;i<arrayLeftIndicators.Length;i++)
-            {
-                if (itemsList[i]==null)
-                {
-                    arrayLeftIndicators[i].GetComponent<Animation>().enabled = false;
-                    arrayLeftIndicators[i].color = alphaColor;
-                }
-            }
+            arrayPositionsForItems = new RectTransform[leftPositionsParent.transform.childCount];
+            for (int i = 0; i < arrayPositionsForItems.Length; i++)
+                arrayPositionsForItems[i] =
+                    leftPositionsParent.GetChild(i).GetComponent<RectTransform>();
+
+            arrayPositionsForSkills = new RectTransform[rightPositionsParent.transform.childCount];
+            for (int i = 0; i < arrayPositionsForSkills.Length; i++)
+                arrayPositionsForSkills[i] =
+                    rightPositionsParent.GetChild(i).GetComponent<RectTransform>();
         }
 
         /// <summary>
@@ -614,7 +590,7 @@ namespace PlayerBehaviour
 
             if (isLeftInventory)
             {
-                Transform cashedTransformItem = arrayItemTransform[i].transform;
+                Transform cashedTransformItem = arrayItemTransform[i];
                 if (isOpen)
                 {
                     Vector2 cashedTransformPosition = arrayPositionsForItems[i].transform.position;
@@ -671,26 +647,30 @@ namespace PlayerBehaviour
             }
             else
             {
-                Transform cashedTransformItem = arraySkills[i];
+                Transform cashedTransformItem = arraySkillTransform[i];
                 if (isOpen)
                 {
                     Vector2 cashedTransformPosition = arrayPositionsForSkills[i].transform.position;
                     Vector3 scaleVector = new Vector3(1, 1, 1);
 
                     SetActiveForRightIndicators(false);
-                    while (Mathf.Abs(Vector2.Distance(cashedTransformItem.position, cashedTransformPosition)) >= 1)
+                    while (Mathf.Abs(Vector2.Distance
+                        (cashedTransformItem.position, cashedTransformPosition)) >= 1)
                     {
                         i++;
                         cachedTime = Time.deltaTime * i;
-                        for (iterations = 0; iterations < arraySkills.Length; iterations++)
+                        for (iterations = 0; iterations < arraySkillTransform.Length; iterations++)
                         {
-                            arraySkills[iterations].localScale =
-                                Vector3.Lerp(arraySkills[iterations].localScale,
+                            if (arraySkillTransform[iterations] != null)
+                            {
+                                arraySkillTransform[iterations].localScale =
+                                Vector3.Lerp(arraySkillTransform[iterations].localScale,
                                 scaleVector, cachedTime);
 
-                            arraySkills[iterations].anchoredPosition =
-                                Vector2.Lerp(arraySkills[iterations].anchoredPosition,
-                                arrayPositionsForSkills[iterations].anchoredPosition, cachedTime);
+                                arraySkillTransform[iterations].anchoredPosition =
+                                    Vector2.Lerp(arraySkillTransform[iterations].anchoredPosition,
+                                    arrayPositionsForSkills[iterations].anchoredPosition, cachedTime);
+                            }
                         }
                         yield return Timing.WaitForOneFrame;
                     }
@@ -701,19 +681,23 @@ namespace PlayerBehaviour
                     Vector2 cashedTransformPosition = rightSkillsParent.transform.position;
 
                     SetActiveForRightButtons(false);
-                    while (Mathf.Abs(Vector2.Distance(cashedTransformItem.position, cashedTransformPosition)) >= 3)
+                    while (Mathf.Abs(Vector2.Distance
+                        (cashedTransformItem.position, cashedTransformPosition)) >= 3)
                     {
                         i++;
                         cachedTime = Time.deltaTime * i;
-                        for (iterations = 0; iterations < arraySkills.Length; iterations++)
+                        for (iterations = 0; iterations < arraySkillTransform.Length; iterations++)
                         {
-                            arraySkills[iterations].localScale =
-                                Vector3.Lerp(arraySkills[iterations].localScale,
+                            if (arraySkillTransform[iterations] != null)
+                            {
+                                arraySkillTransform[iterations].localScale =
+                                Vector3.Lerp(arraySkillTransform[iterations].localScale,
                                 Vector3.zero, cachedTime);
 
-                            arraySkills[iterations].anchoredPosition =
-                                Vector2.Lerp(arraySkills[iterations].anchoredPosition,
-                                Vector2.zero, cachedTime);
+                                arraySkillTransform[iterations].anchoredPosition =
+                                    Vector2.Lerp(arraySkillTransform[iterations].anchoredPosition,
+                                    Vector2.zero, cachedTime);
+                            }
                         }
                         yield return Timing.WaitForOneFrame;
                     }
@@ -749,7 +733,7 @@ namespace PlayerBehaviour
                 if (rightCoroutine != null)
                     StopCoroutine(rightCoroutine);
 
-                if (arraySkills.Length > 0)
+                if (GetCountOfSkills() > 0)
                 {
                     isRightInventoryOpen = false;
                     rightCoroutine =
@@ -775,23 +759,6 @@ namespace PlayerBehaviour
                 }
                 yield return Timing.WaitForSeconds(1);
             }
-        }
-
-        public bool MethodForChecking(IItem item)
-        {
-            for (int i = 0;i<itemsList.Length;i++)
-            {
-                if (itemsList[i] != null)
-                {
-                    if (itemsList[i].ItemType == item.ItemType
-                        && itemsList[i].ItemQuality == item.ItemQuality)
-                    {
-                        itemsList[i].ItemCount += item.ItemCount;
-                        return true;
-                    }
-                }
-            }
-            return false;
         }
         #endregion
     }

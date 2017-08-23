@@ -52,17 +52,14 @@ namespace GameBehaviour
             switch (itemType)
             {
                 case ItemType.HealthItem:
-                    Debug.Log("Prefabs/Items/Health/" + prefixHealthItem + itemQuality);
                     item = (GameObject)Resources.Load
                         ("Prefabs/Items/Health/"+prefixHealthItem+itemQuality);
                     break;
                 case ItemType.SpeedItem:
-                    Debug.Log("Prefabs/Items/Speed/" + prefixSpeedItem + itemQuality);
                     item = (GameObject)Resources.Load
                         ("Prefabs/Items/Speed/" + prefixSpeedItem + itemQuality);
                     break;
                 case ItemType.PowerItem:
-                    Debug.Log("Prefabs/Items/Power/" + prefixPowerItem + itemQuality);
                     item = (GameObject)Resources.Load
                         ("Prefabs/Items/Power/" + prefixPowerItem + itemQuality);
                     break;
@@ -208,7 +205,7 @@ namespace GameBehaviour
         /// <returns></returns>
         private int PlayerMayGetItem(PlayerComponentsControl plComponents)
         {
-            if (plComponents.PlayerHUDManager.MethodForChecking(iItem))
+            if (plComponents.PlayerHUDManager.EqualsItemInLeftInventory(iItem))
                 return 1;
 
             if (plComponents.PlayerHUDManager.GetCountOfItems() != 3)

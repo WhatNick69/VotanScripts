@@ -149,7 +149,7 @@ namespace GameBehaviour
         /// </summary>
         public void OnClickFireSkill()
         {
-            playerComponentsControlInstance.PlayerHUDManager.FireSkill(itemNumberPosition);
+            playerComponentsControlInstance.PlayerHUDManager.FireSkill(this);
         }
 
         /// <summary>
