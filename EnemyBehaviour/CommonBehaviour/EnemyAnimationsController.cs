@@ -20,21 +20,6 @@ namespace EnemyBehaviour
 
         private IEnemyConditions enemyConditions;
         private IEnemyBehaviour enemyBehaviour;
-
-        private bool isDowner;
-
-        public bool IsDowner
-        {
-            get
-            {
-                return isDowner;
-            }
-
-            set
-            {
-                isDowner = value;
-            }
-        }
         #endregion
 
         /// <summary>

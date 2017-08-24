@@ -15,8 +15,10 @@ namespace VotanGameplay
         /// Лист с игроками
         /// </summary>
         private static List<GameObject> playerList;
+        private static List<PlayerComponentsControl> playerComponentsList;
         #endregion
 
+        #region Свойства
         /// <summary>
         /// Свойство для получения ссылки на лист с игроками
         /// </summary>
@@ -33,12 +35,37 @@ namespace VotanGameplay
             }
         }
 
+        public static List<PlayerComponentsControl> PlayerComponentsList
+        {
+            get
+            {
+                return playerComponentsList;
+            }
+
+            set
+            {
+                playerComponentsList = value;
+            }
+        }
+
+        /// <summary>
+        /// Вернуть компонент игрока через индекс
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public static PlayerComponentsControl GetPlayerComponents(int index)
+        {
+            return playerComponentsList[index];
+        }
+        #endregion
+
         /// <summary>
         /// Инициализация
         /// </summary>
         private void Awake()
         {
             playerList = new List<GameObject>();
+            playerComponentsList = new List<PlayerComponentsControl>();
         }
 
         /// <summary>
@@ -48,18 +75,8 @@ namespace VotanGameplay
         public static void AddPlayerToPlayerList(GameObject player)
         {
             playerList.Add(player);
-        }
-
-        //[Command]
-        public static void CmdAddEnemyToList(GameObject enemy)
-        {
-            RpcAddEnemyToList(enemy);
-        }
-
-        //[ClientRpc]
-        private static void RpcAddEnemyToList(GameObject enemy)
-        {
-            //StaticStorageWithEnemies.AddToList(enemy.GetComponent<AbstractEnemy>());
+            playerComponentsList.Add
+                (player.GetComponent<PlayerComponentsControl>());
         }
 
         /// <summary>
@@ -67,10 +84,14 @@ namespace VotanGameplay
         /// </summary>
         public static void CheckList()
         {
-            for (int i = 0;i<playerList.Count;i++)
-                if (!playerList[i].GetComponent<PlayerConditions>().IsAlive)
+            for (int i = 0; i < playerList.Count; i++)
+            {
+                if (!playerComponentsList[i].PlayerConditions.IsAlive)
+                {
                     playerList.Remove(playerList[i]);
-
+                    playerComponentsList.Remove(playerComponentsList[i]);
+                }
+            }
             CheckByGameOver();
         }
 
@@ -81,8 +102,7 @@ namespace VotanGameplay
         {
             for (int i = 0;i<playerList.Count;i++)
             {
-                if (playerList[i].
-                    GetComponent<PlayerConditions>().IsAlive) return;
+                if (playerComponentsList[i].PlayerConditions.IsAlive) return;
             }
 
             GameManager.IsGameOver = true;
@@ -95,8 +115,7 @@ namespace VotanGameplay
         {
             for (int i = 0; i < playerList.Count; i++)
             {
-                playerList[i].GetComponent<PlayerComponentsControl>()
-                    .PlayerVisualEffects.FireLightingEffect();
+                playerComponentsList[i].PlayerVisualEffects.FireLightingEffect();
             }
         }
     }

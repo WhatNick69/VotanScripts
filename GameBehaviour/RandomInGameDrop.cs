@@ -47,7 +47,6 @@ namespace GameBehaviour
             itemType = (ItemType)UnityEngine.Random.Range
                 (0, Enum.GetNames(typeof(ItemType)).Length);
             itemQuality = LibraryStaticFunctions.RandomDropItemQuality();
-            Debug.Log(itemType + " " + itemQuality);
 
             switch (itemType)
             {
@@ -172,8 +171,7 @@ namespace GameBehaviour
 
                 for (int i = 0;i<AllPlayerManager.PlayerList.Count;i++)
                 {
-                    tempComponentsControl = AllPlayerManager.PlayerList[i].
-                        GetComponent<PlayerComponentsControl>();
+                    tempComponentsControl = AllPlayerManager.GetPlayerComponents(i);
                     if (Vector3.Distance(transform.position,
                         tempComponentsControl.PlayerModel.position) < 2)
                     {

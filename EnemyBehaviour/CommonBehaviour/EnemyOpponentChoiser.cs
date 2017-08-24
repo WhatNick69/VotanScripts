@@ -34,8 +34,8 @@ namespace EnemyBehaviour
             GameObject obj;
             if (CheckListOfPlayer())
             {
-                    obj = AllPlayerManager.PlayerList[Random.Range
-                        (0, AllPlayerManager.PlayerList.Count)];
+                obj = AllPlayerManager.PlayerList[Random.Range
+                    (0, AllPlayerManager.PlayerList.Count)];
                 playerConditionsTarget = 
                     obj.GetComponent<PlayerConditions>();
                 return obj.transform;
@@ -54,10 +54,9 @@ namespace EnemyBehaviour
         /// <returns></returns>
         private bool CheckListOfPlayer()
         {
-            foreach (GameObject player in AllPlayerManager.PlayerList)
-            {
-                if (player.GetComponent<PlayerConditions>().IsAlive) return true;
-            }
+            for (int i = 0; i < AllPlayerManager.PlayerComponentsList.Count; i++)
+                if (AllPlayerManager.PlayerComponentsList[i]
+                    .PlayerConditions.IsAlive) return true;
 
             return false;
         }

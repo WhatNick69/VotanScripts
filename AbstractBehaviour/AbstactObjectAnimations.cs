@@ -184,8 +184,6 @@ namespace AbstractBehaviour
         {
             for (byte i = 0; i < structStatesnames.StructureCount-1; i++)
                 animatorOfObject.SetBool(StructStatesNames.GetState(i), false);
-
-            Debug.Log("DISABLED_ALL_STATES");
         }
 
         /// <summary>

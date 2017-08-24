@@ -182,10 +182,10 @@ namespace VotanGameplay
         /// </summary>
         private void GiveEnemyArrayReferenceToAllPlayers()
         {
-            for (int i = 0; i < AllPlayerManager.PlayerList.Count; i++)
+            for (int i = 0; i < AllPlayerManager.PlayerComponentsList.Count; i++)
             {
-                AllPlayerManager.PlayerList[i].
-                    GetComponent<PlayerComponentsControl>().PlayerAttack.GetReferenceToEnemyArray();
+                AllPlayerManager.PlayerComponentsList[i]
+                    .PlayerAttack.GetReferenceToEnemyArray();
             }
         }
 
@@ -250,9 +250,9 @@ namespace VotanGameplay
         public static void SendToPlayersCallOfWin()
         {
             GameManager.IsWin = true;
-            foreach (GameObject player in AllPlayerManager.PlayerList)
+            for (int i = 0;i< AllPlayerManager.PlayerComponentsList.Count;i++)
             {
-                player.GetComponent<PlayerUI>().EventWin();
+                AllPlayerManager.PlayerComponentsList[i].PlayerUI.EventWin();
             }
         }
 
@@ -281,35 +281,29 @@ namespace VotanGameplay
         /// <param name="number">Номер противника в стэке</param>
         private void SetEnemyParameters(int number)
         {
-            switch (StaticStorageWithEnemies.ListEnemy[number].EnemyType)
+            IEnemyBehaviour enemyBehaviour = 
+                StaticStorageWithEnemies.ListEnemy[number].GetComponent<IEnemyBehaviour>();
+            switch (enemyBehaviour.EnemyType)
             {
                 // ОБЫЧНЫЙ РЫЦАРЬ
                 case EnemyType.Knight:
-                    StaticStorageWithEnemies.ListEnemy[number]
-                        .GetComponent<IEnemyBehaviour>().EnemyMove.AgentSpeed =
+                    enemyBehaviour.EnemyMove.AgentSpeed =
                         SetParameterOfEnemy(2.5f,hardcoreMultiplier); // Скорость передвижения моба
-                    StaticStorageWithEnemies.ListEnemy[number]
-                        .GetComponent<IEnemyBehaviour>().EnemyAttack.DmgEnemy =
+                    enemyBehaviour.EnemyAttack.DmgEnemy =
                         SetParameterOfEnemy(20,hardcoreMultiplier); // Урон моба
-                    StaticStorageWithEnemies.ListEnemy[number]
-                        .GetComponent<IEnemyBehaviour>().EnemyConditions.SetHealthParameter
+                    enemyBehaviour.EnemyConditions.SetHealthParameter
                         (LibraryStaticFunctions.GetRangeValue
                         (SetParameterOfEnemy(200,hardcoreMultiplier), 0.1f)); // Установить жизни мобу
 
-                    StaticStorageWithEnemies.ListEnemy[number]
-               .        GetComponent<IEnemyBehaviour>().EnemyConditions.PhysicResistance = 
+                    enemyBehaviour.EnemyConditions.PhysicResistance = 
                         LibraryStaticFunctions.GetRangeValue
                         (SetParameterOfEnemy(0.1f,hardcoreMultiplier), 0.2f); // Сопротивление к физической атаке (от 0 до 1)
-                    StaticStorageWithEnemies.ListEnemy[number]
-                        .GetComponent<IEnemyBehaviour>().EnemyConditions.FireResistance = 0; // Сопротивление к огненной атаке (от 0 до 1)
-                    StaticStorageWithEnemies.ListEnemy[number]
-                        .GetComponent<IEnemyBehaviour>().EnemyConditions.ElectricResistance = 0; // Сопротивление к электрической атаке
-                    StaticStorageWithEnemies.ListEnemy[number].
-                        GetComponent<IEnemyBehaviour>().EnemyConditions.FrostResistance = 0; // Сопротивление к ледяной атаке
+                    enemyBehaviour.EnemyConditions.FireResistance = 0; // Сопротивление к огненной атаке (от 0 до 1)
+                    enemyBehaviour.EnemyConditions.ElectricResistance = 0; // Сопротивление к электрической атаке
+                    enemyBehaviour.EnemyConditions.FrostResistance = 0; // Сопротивление к ледяной атаке
 
-                    StaticStorageWithEnemies.ListEnemy[number].
-                        GetComponent<IEnemyBehaviour>().ScoreAddingEffect.ScoreBonus = 
-                        (int)SetParameterOfEnemy(400,hardcoreMultiplier*2); // задаем количество очков
+                    enemyBehaviour.ScoreAddingEffect.ScoreBonus = 
+                        (int)SetParameterOfEnemy(150,hardcoreMultiplier*2); // задаем количество очков
                     break;
 
                 // БЕШЕНЫЙ РЫЦАРЬ
@@ -317,69 +311,53 @@ namespace VotanGameplay
                     StaticStorageWithEnemies.ListEnemy[number].GetComponent<CrazyEnemy>().
                         FightRotatingSpeed = 
                         SetParameterOfEnemy(800,hardcoreMultiplier); // Скорость вращения поехавшего
-                    StaticStorageWithEnemies.ListEnemy[number].GetComponent<IEnemyBehaviour>().
-                        EnemyMove.PreDistanceForAttack = 1.5f;  // Предупредительная дистанция для атаки)
-                    StaticStorageWithEnemies.ListEnemy[number]
-                        .GetComponent<IEnemyBehaviour>().EnemyMove.AgentSpeed = 
+                    // Предупредительная дистанция для атаки
+                    enemyBehaviour.EnemyMove.PreDistanceForAttack = 1.5f;
+                    enemyBehaviour.EnemyMove.AgentSpeed = 
                         SetParameterOfEnemy(3,hardcoreMultiplier); // Скорость передвижения моба
-                    StaticStorageWithEnemies.ListEnemy[number]
-                        .GetComponent<IEnemyBehaviour>().EnemyAttack.DmgEnemy =
+                    enemyBehaviour.EnemyAttack.DmgEnemy =
                         SetParameterOfEnemy(10,hardcoreMultiplier); // Урон моба
-                    StaticStorageWithEnemies.ListEnemy[number]
-                        .GetComponent<IEnemyBehaviour>().EnemyConditions.SetHealthParameter
+                    enemyBehaviour.EnemyConditions.SetHealthParameter
                         (LibraryStaticFunctions.GetRangeValue
-                        (SetParameterOfEnemy(300,hardcoreMultiplier), 0.1f)); // Установить жизни мобу
+                        (SetParameterOfEnemy(100,hardcoreMultiplier), 0.1f)); // Установить жизни мобу
 
-                    StaticStorageWithEnemies.ListEnemy[number]
-                        .GetComponent<IEnemyBehaviour>().EnemyConditions.PhysicResistance =
+                    enemyBehaviour.EnemyConditions.PhysicResistance =
                         LibraryStaticFunctions.GetRangeValue
                         (SetParameterOfEnemy(0.1f,hardcoreMultiplier), 0.2f); // Сопротивление к физической атаке (от 0 до 1)
-                    StaticStorageWithEnemies.ListEnemy[number]
-                        .GetComponent<IEnemyBehaviour>().EnemyConditions.FireResistance =
+                    enemyBehaviour.EnemyConditions.FireResistance =
                         LibraryStaticFunctions.GetRangeValue
                         (SetParameterOfEnemy(0.1f, hardcoreMultiplier), 0.2f);  // Сопротивление к огненной атаке (от 0 до 1)
-                    StaticStorageWithEnemies.ListEnemy[number]
-                        .GetComponent<IEnemyBehaviour>().EnemyConditions.ElectricResistance =
+                    enemyBehaviour.EnemyConditions.ElectricResistance =
                         LibraryStaticFunctions.GetRangeValue
                         (SetParameterOfEnemy(0.1f, hardcoreMultiplier), 0.2f); // Сопротивление к электрической атаке
-                    StaticStorageWithEnemies.ListEnemy[number].
-                        GetComponent<IEnemyBehaviour>().EnemyConditions.FrostResistance =
+                    enemyBehaviour.EnemyConditions.FrostResistance =
                         LibraryStaticFunctions.GetRangeValue
                         (SetParameterOfEnemy(0.1f, hardcoreMultiplier), 0.2f);  // Сопротивление к ледяной атаке
 
-                    StaticStorageWithEnemies.ListEnemy[number].
-                        GetComponent<IEnemyBehaviour>().ScoreAddingEffect.ScoreBonus = 
+                    enemyBehaviour.ScoreAddingEffect.ScoreBonus = 
                         (int)SetParameterOfEnemy(600, hardcoreMultiplier*2); // задаем количество очков
                     break;
 
                 // ПЕРВЫЙ БОСС
                 case EnemyType.FirstBoss:
                     // Скорость передвижения моба
-                    StaticStorageWithEnemies.ListEnemy[number]
-                        .GetComponent<IEnemyBehaviour>().EnemyMove.AgentSpeed =
+                    enemyBehaviour.EnemyMove.AgentSpeed =
                         SetParameterOfEnemy(2, hardcoreMultiplier);
-                    StaticStorageWithEnemies.ListEnemy[number]
-                        .GetComponent<IEnemyBehaviour>().EnemyAttack.DmgEnemy =
+                    enemyBehaviour.EnemyAttack.DmgEnemy =
                         SetParameterOfEnemy(40,hardcoreMultiplier); // Урон моба
-                    StaticStorageWithEnemies.ListEnemy[number]
-                        .GetComponent<IEnemyBehaviour>().EnemyConditions.SetHealthParameter
+                    enemyBehaviour.EnemyConditions.SetHealthParameter
                         (LibraryStaticFunctions.GetRangeValue
-                        (SetParameterOfEnemy(15,hardcoreMultiplier), 0.05f)); // Установить жизни мобу
+                        (SetParameterOfEnemy(300,hardcoreMultiplier), 0.05f)); // Установить жизни мобу
 
-                    StaticStorageWithEnemies.ListEnemy[number]
-                        .GetComponent<IEnemyBehaviour>().EnemyConditions.PhysicResistance = 
+                    enemyBehaviour.EnemyConditions.PhysicResistance = 
                         SetParameterOfEnemy(0.3f,hardcoreMultiplier);
-                    StaticStorageWithEnemies.ListEnemy[number]
-                        .GetComponent<IEnemyBehaviour>().EnemyConditions.FireResistance =
+                    enemyBehaviour.EnemyConditions.FireResistance =
                         SetParameterOfEnemy(0.3f, hardcoreMultiplier);
-                    StaticStorageWithEnemies.ListEnemy[number]
-                        .GetComponent<IEnemyBehaviour>().EnemyConditions.ElectricResistance = 
-                        SetParameterOfEnemy(0.3f, hardcoreMultiplier); 
-                    StaticStorageWithEnemies.ListEnemy[number]
-                        .GetComponent<IEnemyBehaviour>().EnemyConditions.FrostResistance = 
+                    enemyBehaviour.EnemyConditions.ElectricResistance = 
                         SetParameterOfEnemy(0.3f, hardcoreMultiplier);
-                    StaticStorageWithEnemies.ListEnemy[number]
-                        .GetComponent<IEnemyBehaviour>().ScoreAddingEffect.ScoreBonus = 
+                    enemyBehaviour.EnemyConditions.FrostResistance = 
+                        SetParameterOfEnemy(0.3f, hardcoreMultiplier);
+                    enemyBehaviour.ScoreAddingEffect.ScoreBonus = 
                         (int)SetParameterOfEnemy(3000, hardcoreMultiplier*2); 
                     break;
             }
