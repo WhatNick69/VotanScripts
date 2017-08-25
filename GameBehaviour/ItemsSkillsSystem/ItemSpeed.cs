@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using VotanInterfaces;
-using System;
 
 namespace GameBehaviour
 {
@@ -16,17 +15,22 @@ namespace GameBehaviour
     public class ItemSpeed
         : MonoBehaviour, IItem
     {
-        #region Переменные
-        [SerializeField, Tooltip("Качество предмета")]
+		#region Переменные
+		[SerializeField]
+		private string itemName;
+		[SerializeField]
+		private string itemTutorial;
+		[SerializeField, Tooltip("Стоимость итема в золоте"), Range(1, 100000)]
+		public int priceGold;
+		[SerializeField, Tooltip("Качество предмета")]
         private ItemQuality itemQuality;
         [SerializeField, Tooltip("Тип предмета")]
         private ItemType itemType;
         [SerializeField, Tooltip("Изображение предмета")]
         private Image itemImage;
         private Image parentImage;
-        [SerializeField, Tooltip("Величина бонуса к скорости"), Range(0.1f, 0.7f)]
         private float speedBonus;
-        [SerializeField, Tooltip("Время перезарядки"), Range(1, 120)]
+        [SerializeField, Tooltip("Время перезарядки"), Range(1, 15)]
         private int secondsForTimer;
         [SerializeField, Tooltip("Количество предметов данного класса"), Range(0, 10)]
         private int itemCount;
@@ -109,19 +113,6 @@ namespace GameBehaviour
             }
         }
 
-        public float ItemStrenght
-        {
-            get
-            {
-                return speedBonus;
-            }
-
-            set
-            {
-                speedBonus = value;
-            }
-        }
-
         public ItemType ItemType
         {
             get
@@ -137,12 +128,46 @@ namespace GameBehaviour
                 return itemQuality;
             }
         }
-        #endregion
 
-        /// <summary>
-        /// Инициализация
-        /// </summary>
-        public void Starter(int number)
+		public int PriceGold
+		{
+			get
+			{
+				return priceGold;
+			}
+		}
+
+		public string ItemName
+		{
+			get
+			{
+				return itemName;
+			}
+
+			set
+			{
+				itemName = value;
+			}
+		}
+
+		public string ItemTutorial
+		{
+			get
+			{
+				return itemTutorial;
+			}
+
+			set
+			{
+				itemTutorial = value;
+			}
+		}
+		#endregion
+
+		/// <summary>
+		/// Инициализация
+		/// </summary>
+		public void Starter(int number)
         {
             isContainsItem = true;
             parentImage = transform.GetComponentInParent<Image>();
@@ -156,19 +181,23 @@ namespace GameBehaviour
         }
 
         /// <summary>
-        /// Инициализация предмета
+        /// Установить величину прироста к скорости
+        /// бега персонажа в зависимости от качества предмета
         /// </summary>
-        /// <param name="itemImage">Изображение предмета</param>
-        /// <param name="speedBonus">Бонук к скорости от предмета</param>
-        /// <param name="itemCount">Количество предметов данного класса</param>
-        /// <param name="secondsForTimer">Время перезарядки предмета</param>
-        public void InitialisationItem
-            (Image itemImage, float speedBonus, int itemCount, int secondsForTimer)
+        public void SetItemStrenghtDependenceItemQuality()
         {
-            this.itemImage = itemImage;
-            this.speedBonus = speedBonus;
-            this.itemCount = itemCount;
-            this.secondsForTimer = secondsForTimer;
+            switch (itemQuality)
+            {
+                case ItemQuality.Lite:
+                    speedBonus = 0.15f;
+                    break;
+                case ItemQuality.Medium:
+                    speedBonus = 0.4f;
+                    break;
+                case ItemQuality.Strong:
+                    speedBonus = 0.7f;
+                    break;
+            }
         }
 
         /// <summary>
@@ -180,6 +209,8 @@ namespace GameBehaviour
                 && isContainsItem
                     && !isEffecting)
             {
+                SetItemStrenghtDependenceItemQuality();
+
                 parentImage.color = fonNonActiveColor;
 
                 playerComponentsControlInstance.PlayerHUDAudioStorage.PlaySoundItemClick();
@@ -193,6 +224,28 @@ namespace GameBehaviour
             else
             {
                 playerComponentsControlInstance.PlayerHUDAudioStorage.PlaySoundImpossibleClick();
+            }
+        }
+
+        /// <summary>
+        /// Нажать на предмет
+        /// </summary>
+        public void OnClickFireItem()
+        {
+            playerComponentsControlInstance.PlayerHUDManager.FireItem(this);
+        }
+
+        /// <summary>
+        /// Включить предмет
+        /// </summary>
+        public void EnableItem()
+        {
+            if (!isEffecting && isContainsItem)
+            {
+                itemImage.fillAmount = 1;
+                parentImage.color = Color.white;
+                playerComponentsControlInstance.PlayerHUDManager.
+                    TellItemIndicator(itemNumberPosition, true);
             }
         }
 
@@ -218,7 +271,7 @@ namespace GameBehaviour
             yield return Timing.WaitForSeconds(10);
 
             float partSpeed = speedBonus / 20;
-            for (int i = 0;i<20;i++)
+            for (int i = 0; i < 20; i++)
             {
                 playerComponentsControlInstance.PlayerController.SpeedItemBonus -= partSpeed;
                 if (playerComponentsControlInstance.PlayerController.SpeedItemBonus < 0)
@@ -268,30 +321,6 @@ namespace GameBehaviour
 
                 isContainsItem = true;
                 EnableItem();
-                //playerComponentsControlInstance.PlayerHUDManager.
-                //    RefreshInventory();
-            }
-        }
-
-        /// <summary>
-        /// Нажать на предмет
-        /// </summary>
-        public void OnClickFireItem()
-        {
-            playerComponentsControlInstance.PlayerHUDManager.FireItem(this);
-        }
-
-        /// <summary>
-        /// Включить предмет
-        /// </summary>
-        public void EnableItem()
-        {
-            if (!isEffecting && isContainsItem)
-            {
-                itemImage.fillAmount = 1;
-                parentImage.color = Color.white;
-                playerComponentsControlInstance.PlayerHUDManager.
-                    TellItemIndicator(itemNumberPosition, true);
             }
         }
     }

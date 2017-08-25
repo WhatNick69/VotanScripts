@@ -9,10 +9,25 @@ namespace VotanInterfaces
     /// </summary>
     public interface IItem
     {
-        /// <summary>
-        /// Тип предмета (здоровье, сила, скорость)
-        /// </summary>
-        ItemType ItemType { get; }
+		/// <summary>
+		/// Сколько голд стоит итем
+		/// </summary>
+		int PriceGold { get; }
+
+		/// <summary>
+		/// Название итема
+		/// </summary>
+		string ItemName { get; }
+
+		/// <summary>
+		/// Описание итема
+		/// </summary>
+		string ItemTutorial { get; }
+
+		/// <summary>
+		/// Тип предмета (здоровье, сила, скорость)
+		/// </summary>
+		ItemType ItemType { get; }
 
         /// <summary>
         /// Качество предмета
@@ -25,14 +40,14 @@ namespace VotanInterfaces
         int SecondsForTimer { get; set; }
 
         /// <summary>
-        /// Величина силы предмета
-        /// </summary>
-        float ItemStrenght { get; set; }
-
-        /// <summary>
         /// Выполнение условий, приводящих к включению кнопки
         /// </summary>
         void EnableItem();
+
+        /// <summary>
+        /// Установить силу восстанавливаемого предмета в зависимости от его качества
+        /// </summary>
+        void SetItemStrenghtDependenceItemQuality();
 
         /// <summary>
         /// Нажать по предмету
@@ -48,15 +63,6 @@ namespace VotanInterfaces
         /// Экземпляр хранителя компонентов игрока
         /// </summary>
         PlayerComponentsControl PlayerComponentsControlInstance { get; set; }
-
-        /// <summary>
-        /// Инициализация предмета
-        /// </summary>
-        /// <param name="itemImage">Изображение предмета</param>
-        /// <param name="bonusValue">Бонусная величина</param>
-        /// <param name="itemCount">Количество предметов</param>
-        /// <param name="secondsForTimer">Время перезарядки</param>
-        void InitialisationItem(Image itemImage, float bonusValue, int itemCount, int secondsForTimer);
 
         /// <summary>
         /// Инициализация
@@ -96,6 +102,11 @@ namespace VotanInterfaces
     /// </summary>
     public interface ISkill
     {
+		/// <summary>
+		/// Сколько опыта стоит скилл
+		/// </summary>
+		int PriceExp { get; }
+
 		/// <summary>
 		/// Название умения
 		/// </summary>
@@ -170,12 +181,8 @@ namespace VotanInterfaces
     /// </summary>
     public enum ItemQuality
     {
-        VeryLite = 0,
-        Lite = 1,
-        Medium = 2,
-        UpMedium = 3,
-        Strong = 4,
-        UpStrong = 5,
-        Ultimate = 6
+        Lite,
+        Medium,
+        Strong
     }
 }

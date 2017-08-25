@@ -31,8 +31,8 @@ namespace PlayerBehaviour
         private PlayerWeapon playerWeapon;
         [SerializeField, Tooltip("Плавный поворот камеры")]
         private PlayerCameraSmooth playerCameraSmooth;
-        [SerializeField, Tooltip("Менеджер очков игрока")]
-        private PlayerScore playerScore;
+        [SerializeField, Tooltip("Менеджер ресурсов игрока")]
+        private PlayerResources playerResources;
         [SerializeField, Tooltip("Аниматор игрока")]
         private PlayerAnimationsController playerAnimationsController;
         [SerializeField, Tooltip("Звуковой компонент игрока")]
@@ -225,19 +225,6 @@ namespace PlayerBehaviour
             }
         }
 
-        public PlayerScore PlayerScore
-        {
-            get
-            {
-                return playerScore;
-            }
-
-            set
-            {
-                playerScore = value;
-            }
-        }
-
         public PlayerSounder PlayerSounder
         {
             get
@@ -313,6 +300,19 @@ namespace PlayerBehaviour
             set
             {
                 playerHUDManager = value;
+            }
+        }
+
+        public PlayerResources PlayerResources
+        {
+            get
+            {
+                return playerResources;
+            }
+
+            set
+            {
+                playerResources = value;
             }
         }
         #endregion

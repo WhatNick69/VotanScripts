@@ -46,7 +46,7 @@ namespace VotanInterfaces
 
         PlayerCameraSmooth PlayerCameraSmooth { get; set; }
 
-        PlayerScore PlayerScore { get; set; }
+        PlayerResources PlayerResources { get; set; }
 
         PlayerAnimationsController PlayerAnimationsController { get; set; }
 

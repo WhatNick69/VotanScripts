@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using VotanGameplay;
+using VotanLibraries;
 
 namespace PlayerBehaviour
 {
@@ -24,8 +25,14 @@ namespace PlayerBehaviour
         private GameObject pauseButton;
         [SerializeField, Tooltip("Очки на интерфейсе")]
         private GameObject scoreInterface;
-        [SerializeField, Tooltip("Очки при выигрыше")]
-        private GameObject scores;
+        [SerializeField, Tooltip("Очки-объект")]
+        private GameObject scoresObject;
+        [SerializeField, Tooltip("Железо-объект")]
+        private GameObject steelObject;
+        [SerializeField, Tooltip("Дерево-объект")]
+        private GameObject woodObject;
+        [SerializeField, Tooltip("Гемы-объект")]
+        private GameObject gemObject;
         [SerializeField, Tooltip("Стики")]
         private Transform sticks;
         [SerializeField, Tooltip("Инвентарь")]
@@ -68,6 +75,77 @@ namespace PlayerBehaviour
         }
 
         /// <summary>
+        /// Установить количество железа, дерева и гемов 
+        /// исходя из количества очков после окончания игры
+        /// </summary>
+        private bool SetTotalResourcesAfterGame(bool isWin)
+        {
+            if (!isWin) playerComponentsControl.PlayerResources.ScoreValue /= 4;
+
+            LibraryStaticFunctions.ConvertScoreToResources
+                (playerComponentsControl.PlayerResources);
+
+            Timing.RunCoroutine(CoroutineForSlowmotionAddingScore
+                (scoresObject.transform.GetComponentInChildren<Text>(),
+                "Score: ", 1, playerComponentsControl.PlayerResources.ScoreValue, 50));
+            Timing.RunCoroutine(CoroutineForSlowmotionAddingScore
+                (woodObject.transform.GetComponentInChildren<Text>(),
+                "Wood: ",1, playerComponentsControl.PlayerResources.WoodResource, 1));
+            Timing.RunCoroutine(CoroutineForSlowmotionAddingScore
+                (steelObject.transform.GetComponentInChildren<Text>(),
+                "Steel: ", 1, playerComponentsControl.PlayerResources.SteelResource, 1));
+
+            if (playerComponentsControl.PlayerResources.Gems > 0)
+            {
+                if (isWin)
+                {
+                    gemObject.transform.GetComponentInChildren<Text>().text =
+                        "Gems: " + playerComponentsControl.PlayerResources.Gems;
+                    return true;
+                }
+                else
+                {
+                    playerComponentsControl.PlayerResources.Gems = 0;
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Корутина для плавного достижение 
+        /// определенного числового значения
+        /// </summary>
+        /// <param name="addScoreValue"></param>
+        /// <returns></returns>
+        private IEnumerator<float> CoroutineForSlowmotionAddingScore
+            (Text textElement, string prefix, float latency, long destinationValue, int incrementValue)
+        {
+            yield return Timing.WaitForSeconds(latency);
+
+            long tempValue = destinationValue;
+            int value = 0;
+            while (tempValue > 0)
+            {
+                if (tempValue / incrementValue >= 1)
+                {
+                    tempValue -= incrementValue;
+                    value += incrementValue;
+                }
+                else
+                {
+                    tempValue--;
+                    value++;
+                }
+                textElement.text = prefix + value;
+                yield return Timing.WaitForOneFrame;
+            }
+        }
+
+        /// <summary>
         /// Событие победы
         /// </summary>
         public void EventWin()
@@ -77,11 +155,11 @@ namespace PlayerBehaviour
 
             pauseButton.SetActive(false);
             scoreInterface.SetActive(false);
-            scores.SetActive(true);
+            scoresObject.SetActive(true);
+            woodObject.SetActive(true);
+            steelObject.SetActive(true);
+            gemObject.SetActive(SetTotalResourcesAfterGame(true));
 
-            long score = playerComponentsControl.PlayerScore.ScoreValue;
-            scores.transform.GetComponentInChildren<Text>().text = "Scores: "
-                + score;
             Timing.RunCoroutine(CoroutineForVisibleGameOverWindow(0.3f));
         }
 
@@ -94,12 +172,13 @@ namespace PlayerBehaviour
             SetActiveOfPlayerInterface(inventory, false);
 
             scoreInterface.SetActive(false);
-            scores.SetActive(true);
+            scoresObject.SetActive(true);
+            woodObject.SetActive(true);
+            steelObject.SetActive(true);
+            gemObject.SetActive(SetTotalResourcesAfterGame(false));
 
             pauseButton.SetActive(false);
-            long score = playerComponentsControl.PlayerScore.ScoreValue/4;
-            scores.transform.GetComponentInChildren<Text>().text = "Scores: "
-                + score;
+
             Timing.RunCoroutine(CoroutineForVisibleGameOverWindow(1));
         }
 

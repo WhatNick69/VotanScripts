@@ -45,6 +45,11 @@ namespace CraftSystem
 		private List<PartArmoryInformation> cuirassList;
 		private List<PartArmoryInformation> helmetList;
 		private List<PartArmoryInformation> shieldList;
+
+		private GameObject[] shieldArray;
+		private GameObject[] cuirassdArray;
+		private GameObject[] heimetArray;
+
 		[SerializeField]
 		private int cuirassItemNumber;
 		[SerializeField]
@@ -219,7 +224,7 @@ namespace CraftSystem
 	        
             AP.Cuirass = (GameObject)Resources.Load(cuirassPrefix + cuirassItemNumber + cuirassPostfix);
 			AP.Helmet = (GameObject)Resources.Load(helmetPrefix + helmetItemNumber + helmetPostfix);
-			AP.Shield = (GameObject)Resources.Load(shieldPrefix + shieldItemNumber + shieldPostfix);
+			AP.Shield = shieldArray[shieldItemNumber];
 		}
 
 		private void Awake() // ____________start__________
@@ -229,6 +234,9 @@ namespace CraftSystem
 			cuirassList = new List<PartArmoryInformation>();
 			helmetList = new List<PartArmoryInformation>();
 			shieldList = new List<PartArmoryInformation>();
+			shieldArray = new GameObject[Resources.LoadAll("Prefabs/Armor/Shield").Length];
+			cuirassdArray = new GameObject[Resources.LoadAll("Prefabs/Armor/Cuirass").Length];
+			heimetArray = new GameObject[Resources.LoadAll("Prefabs/Armor/Helmet").Length];
 
 			Timing.RunCoroutine(ShieldCorutine());
 			Timing.RunCoroutine(HelmetCorutine());
@@ -252,7 +260,8 @@ namespace CraftSystem
 				if (Resources.Load(shieldPrefix + i + shieldPostfix))
 				{
 					GameObject gemGgamObj = (GameObject)Resources.Load(shieldPrefix + i + shieldPostfix);
-					shieldList.Add(gemGgamObj.GetComponent<ArmorMeneger>().GetShield(0).GetComponent<PartArmoryInformation>());
+					shieldArray[i] = gemGgamObj.GetComponent<LevelManager>().GetItemLevel(PlayerPrefs.GetInt("shieldLevel_" + i));
+					shieldList.Add(shieldArray[i].GetComponent<PartArmoryInformation>());
 					GameObject item = Instantiate(itemArmor);
 					ArmorButton button = item.GetComponent<ArmorButton>();
 					button.SetArmorCraft(AC);

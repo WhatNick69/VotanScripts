@@ -12,25 +12,6 @@ namespace VotanLibraries
 	: MonoBehaviour
 	{
 		/// <summary> 
-		/// Глубокий поиск объекта во всей иерархии 
-		/// </summary> 
-		/// <param name="target"></param> 
-		/// <param name="name"></param> 
-		/// <returns></returns> 
-		public static Transform DeepFind(Transform target, string name)
-		{
-			if (target.name.Equals(name)) return target;
-
-			for (int i = 0; i < target.childCount; ++i)
-			{
-				var result = DeepFind(target.GetChild(i), name);
-
-				if (result != null) return result;
-			}
-			return null;
-		}
-
-		/// <summary> 
 		/// В указанном диапазоне возвращает значение. 
 		/// 
 		/// Текущая реализация: если dmg=10, а range=0.1, то 
@@ -206,33 +187,17 @@ namespace VotanLibraries
         public static ItemQuality RandomDropItemQuality()
         {
             float randomValue = UnityEngine.Random.RandomRange(0, 1f);
-            if (randomValue >= 0.99f)
-            {
-                return ItemQuality.Ultimate;
-            }
-            else if (randomValue >= 0.97f)
-            {
-                return ItemQuality.UpStrong;
-            }
-            else if (randomValue >= 0.95f)
+            if (randomValue >= 0.9f)
             {
                 return ItemQuality.Strong;
             }
-            else if (randomValue >= 0.9f)
-            {
-                return ItemQuality.UpMedium;
-            }
-            else if (randomValue >= 0.85f)
+            else if (randomValue >= 0.6f)
             {
                 return ItemQuality.Medium;
             }
-            else if (randomValue >= 0.75f)
-            {
-                return ItemQuality.Lite;
-            }
             else 
             {
-                return ItemQuality.VeryLite;
+                return ItemQuality.Lite;
             }
         }
 
@@ -344,7 +309,6 @@ namespace VotanLibraries
 			return damage * (critPercentages / 100);
 		}
 
-
 		/// <summary> 
 		/// Рассчет урона при атаке по врагу атакующим рывком 
 		/// 
@@ -420,18 +384,22 @@ namespace VotanLibraries
 			{
 				case GemType.Electric:
 					return new Color((gemPower * 2.55f) * 0.003921f, 0, 1);
+
 				case GemType.Fire:
 					float g = gemPower / 100;
 					return g >= 0.647f ?
-					new Color(1 - ((gemPower / 100) - 0.647f), 0, 0) :
-					new Color(1, 0.647f - g, 0);
+					    new Color(1 - ((gemPower / 100) - 0.647f), 0, 0) :
+					    new Color(1, 0.647f - g, 0);
+
 				case GemType.Frozen:
 					return new Color(1 - (0.21569f + (gemPower * 2) * 0.0039f), 1, 1);
+
 				case GemType.Powerful:
 					return new Color(0.803f - gemPower * 0.002f,
 					0.5215f + gemPower * 0.0028f, 0.247f - gemPower * 0.0005f);
+
 				default:
-					return Color.black;
+					return Color.white;
 			}
 		}
 
@@ -449,5 +417,44 @@ namespace VotanLibraries
 			return Quaternion.FromToRotation(Vector3.forward,
 			to - from).eulerAngles.y;
 		}
-	}
+
+
+        /// <summary>
+        /// Конвертатор очков в ресурсы (железо, дерево и гемы)
+        /// </summary>
+        /// <param name="playerResources"></param>
+        public static void ConvertScoreToResources(PlayerResources playerResources)
+        {
+            long playerScore = playerResources.ScoreValue;
+            playerScore /= 100;
+            playerResources.SteelResource = (long)(playerScore * 0.3f);
+            playerResources.WoodResource = (long)(playerScore * 0.7f);
+            playerResources.Gems = GetRandomGemRes();
+        }
+
+        /// <summary>
+        /// Вернуть случайное количество гемов (от 0 до 3)
+        /// </summary>
+        /// <returns></returns>
+        private static long GetRandomGemRes()
+        {
+            float gems = UnityEngine.Random.RandomRange(0, 1f);
+            if (gems >= 0.99f)
+            {
+                return 3;
+            }
+            else if (gems >= 0.93f)
+            {
+                return 2;
+            }
+            else if (gems >= 0.9f)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
 }

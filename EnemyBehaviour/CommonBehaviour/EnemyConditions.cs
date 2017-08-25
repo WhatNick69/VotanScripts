@@ -328,9 +328,10 @@ namespace EnemyBehaviour
                 case GemType.Powerful:
                     RunCoroutineForPhysicDamage(weapon);
                 return dmg * (1 - physicResistance);
-            }
 
-            return dmg;
+                default:
+                    return dmg * (1 - physicResistance);
+            }
         }
 
         /// <summary>
@@ -360,7 +361,7 @@ namespace EnemyBehaviour
                     return dmg * (1 - physicResistance);
 
                 default:
-                    return dmg;
+                    return dmg * (1 - physicResistance);
             }
         }
 

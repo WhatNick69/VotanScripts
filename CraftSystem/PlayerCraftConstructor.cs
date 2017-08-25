@@ -155,7 +155,7 @@ namespace CraftSystem
         {
 			// На месте 0 в GetShield(0) должен стоять уровень щита
 			shieldArmoryInformation = Instantiate(GameObject.Find("GetPrefabs").
-				GetComponent<ArmorPrefabs>().Shield.GetComponent<ArmorMeneger>().GetShield(0).GetComponent<PartArmoryInformation>()); 
+				GetComponent<ArmorPrefabs>().Shield.GetComponent<PartArmoryInformation>()); 
 			cuirassArmoryInformation =  Instantiate(GameObject.Find("GetPrefabs").
                 GetComponent<ArmorPrefabs>().Cuirass.GetComponent<PartArmoryInformation>());
             helmetArmoryInformation = Instantiate(GameObject.Find("GetPrefabs").

@@ -61,19 +61,19 @@ namespace EnemyBehaviour
                 GetComponent<DownInterfaceRotater>();
 
             IceEffect =
-                LibraryStaticFunctions.DeepFind(transform, "IceStack")
+                LibraryObjectsWorker.DeepFind(transform, "IceStack")
                 .GetComponent<IIceEffect>();
             ElectricEffect =
-                LibraryStaticFunctions.DeepFind(transform,"ElectricStack")
+                LibraryObjectsWorker.DeepFind(transform,"ElectricStack")
                 .GetComponent<IElectricEffect>();
             Physicffect =
-                LibraryStaticFunctions.DeepFind(transform, "PhysicStack")
+                LibraryObjectsWorker.DeepFind(transform, "PhysicStack")
                 .GetComponent<IPhysicEffect>();
             ScoreAddingEffect =
-                LibraryStaticFunctions.DeepFind(transform, "ScoreStack")
+                LibraryObjectsWorker.DeepFind(transform, "ScoreStack")
                 .GetComponent<IScoreAddingEffect>();
             FireEffect =
-                LibraryStaticFunctions.DeepFind(transform, "FireStack")
+                LibraryObjectsWorker.DeepFind(transform, "FireStack")
                 .GetComponent<IFireEffect>();
 
             frequencyOfFightRotating = 0.025f;

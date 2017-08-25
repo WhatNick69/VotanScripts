@@ -13,17 +13,22 @@ namespace GameBehaviour
     public class ItemHealth
         : MonoBehaviour, IItem
     {
-        #region Переменные
-        [SerializeField, Tooltip("Тип предмета")]
+		#region Переменные
+		[SerializeField]
+		private string itemName;
+		[SerializeField]
+		private string itemTutorial;
+		[SerializeField, Tooltip("Стоимость итема в золоте"), Range(1, 100000)]
+		public int priceGold;
+		[SerializeField, Tooltip("Тип предмета")]
         private ItemType itemType;
         [SerializeField, Tooltip("Качество предмета")]
         private ItemQuality itemQuality;
         [SerializeField, Tooltip("Изображение предмета")]
         private Image itemImage;
         private Image parentImage;
-        [SerializeField, Tooltip("Величина восстанавливаемого здоровья"), Range(10, 1000)]
         private float healthUPValue;
-        [SerializeField, Tooltip("Время между приемами предмета"), Range(1, 120)]
+        [SerializeField, Tooltip("Время между приемами предмета"), Range(1, 15)]
         private int secondsForTimer;
         [SerializeField, Tooltip("Количество предметов данного класса"), Range(0, 10)]
         private int itemCount;
@@ -104,19 +109,6 @@ namespace GameBehaviour
             }
         }
 
-        public float ItemStrenght
-        {
-            get
-            {
-                return healthUPValue;
-            }
-
-            set
-            {
-                healthUPValue = value;
-            }
-        }
-
         public ItemType ItemType
         {
             get
@@ -132,12 +124,46 @@ namespace GameBehaviour
                 return itemQuality;
             }
         }
-        #endregion
 
-        /// <summary>
-        /// Инициализация
-        /// </summary>
-        public void Starter(int number)
+		public int PriceGold
+		{
+			get
+			{
+				return priceGold;
+			}
+		}
+
+		public string ItemName
+		{
+			get
+			{
+				return itemName;
+			}
+
+			set
+			{
+				itemName = value;
+			}
+		}
+
+		public string ItemTutorial
+		{
+			get
+			{
+				return itemTutorial;
+			}
+
+			set
+			{
+				itemTutorial = value;
+			}
+		}
+		#endregion
+
+		/// <summary>
+		/// Инициализация
+		/// </summary>
+		public void Starter(int number)
         {
             isContainsItem = true;
             parentImage = transform.GetComponentInParent<Image>();
@@ -151,21 +177,31 @@ namespace GameBehaviour
 
             Timing.RunCoroutine(CoroutineForCheckHealth());
         }
-    
+
         /// <summary>
-        /// Ручная инициализация предмета, который восстанавливает здоровье
+        /// Установить силу восстанавливаемого здоровья 
+        /// персонажа в зависимости от качества предмета
         /// </summary>
-        /// <param name="itemImage">Изображение предмета</param>
-        /// <param name="healthUPValue">Величина восстанавливаемого здоровья</param>
-        /// <param name="itemCount">Количество предметов</param>
-        /// <param name="secondsForTimer">Время перезарядки предмета</param>
-        public void InitialisationItem
-            (Image itemImage, float healthUPValue, int itemCount, int secondsForTimer)
+        public void SetItemStrenghtDependenceItemQuality()
         {
-            this.itemImage = itemImage;
-            this.healthUPValue = healthUPValue;
-            this.itemCount = itemCount;
-            this.secondsForTimer = secondsForTimer;
+            switch (itemQuality)
+            {
+                case ItemQuality.Lite:
+                    healthUPValue = 
+                        playerComponentsControlInstance.PlayerConditions
+                        .InitialisatedHealthValue * 0.3f;
+                    break;
+                case ItemQuality.Medium:
+                    healthUPValue =
+                        playerComponentsControlInstance.PlayerConditions
+                        .InitialisatedHealthValue * 0.6f;
+                    break;
+                case ItemQuality.Strong:
+                    healthUPValue =
+                        playerComponentsControlInstance.PlayerConditions
+                        .InitialisatedHealthValue;
+                    break;
+            }
         }
 
         /// <summary>
@@ -178,6 +214,8 @@ namespace GameBehaviour
                 && isContainsItem
                     && !playerComponentsControlInstance.PlayerConditions.IsMaxHealth())
             {
+                SetItemStrenghtDependenceItemQuality();
+
                 parentImage.color = fonNonActiveColor;
 
                 playerComponentsControlInstance.PlayerHUDAudioStorage.PlaySoundItemClick();
@@ -195,13 +233,58 @@ namespace GameBehaviour
         }
 
         /// <summary>
+        /// Нажать на предмет
+        /// </summary>
+        public void OnClickFireItem()
+        {
+            playerComponentsControlInstance.PlayerHUDManager.FireItem(this);
+        }
+
+        /// <summary>
+        /// Включить предмет
+        /// </summary>
+        public void EnableItem()
+        {
+            if (!playerComponentsControlInstance.PlayerConditions.IsMaxHealth()
+                && isContainsItem)
+            {
+                itemImage.fillAmount = 1;
+                parentImage.color = Color.white;
+                playerComponentsControlInstance.PlayerHUDManager.
+                    TellItemIndicator(itemNumberPosition, true);
+            }
+        }
+
+        /// <summary>
+        /// Корутинан на проверку максимального здоровья персонажа
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator<float> CoroutineForCheckHealth()
+        {
+            while (true)
+            {
+                if (playerComponentsControlInstance.PlayerConditions.IsMaxHealth())
+                {
+                    parentImage.color = fonNonActiveColor;
+                    playerComponentsControlInstance.PlayerHUDManager.
+                        TellItemIndicator(itemNumberPosition, false);
+                }
+                else if (isContainsItem)
+                {
+                    EnableItem();
+                }
+                yield return Timing.WaitForSeconds(0.5f);
+            }
+        }
+
+        /// <summary>
         /// Корутина на плавное восстановление жизней
         /// </summary>
         /// <returns></returns>
         private IEnumerator<float> CoroutineHealthEffect()
         {
             float healthBonusPart = healthUPValue / 20;
-            for (int i = 0;i<20;i++)
+            for (int i = 0; i < 20; i++)
             {
                 playerComponentsControlInstance.PlayerConditions.HealthValue += healthBonusPart;
                 yield return Timing.WaitForSeconds(0.05f);
@@ -248,49 +331,6 @@ namespace GameBehaviour
                 isContainsItem = true;
 
                 EnableItem();
-                //playerComponentsControlInstance.PlayerHUDManager.
-                //    RefreshInventory();
-            }
-        }
-
-        /// <summary>
-        /// Нажать на предмет
-        /// </summary>
-        public void OnClickFireItem()
-        {
-            playerComponentsControlInstance.PlayerHUDManager.FireItem(this);
-        }
-
-        /// <summary>
-        /// Включить предмет
-        /// </summary>
-        public void EnableItem()
-        {
-            if (!playerComponentsControlInstance.PlayerConditions.IsMaxHealth()
-                && isContainsItem)
-            {
-                itemImage.fillAmount = 1;
-                parentImage.color = Color.white;
-                playerComponentsControlInstance.PlayerHUDManager.
-                    TellItemIndicator(itemNumberPosition, true);
-            }
-        }
-
-        private IEnumerator<float> CoroutineForCheckHealth()
-        {
-            while (true)
-            {
-                if (playerComponentsControlInstance.PlayerConditions.IsMaxHealth())
-                {
-                    parentImage.color = fonNonActiveColor;
-                    playerComponentsControlInstance.PlayerHUDManager.
-                        TellItemIndicator(itemNumberPosition, false);
-                }
-                else if (isContainsItem)
-                {
-                    EnableItem();
-                }
-                yield return Timing.WaitForSeconds(0.5f);
             }
         }
     }

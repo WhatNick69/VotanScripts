@@ -23,7 +23,7 @@ namespace GameBehaviour
         private float updateFrequency;
 
         private Transform playerTransform;
-        private PlayerScore playerScore;
+        private PlayerResources playerResources;
         #endregion
 
         #region Свойства
@@ -64,7 +64,7 @@ namespace GameBehaviour
                 (int)LibraryStaticFunctions.GetRangeValue(scoreBonus, 0.1f);
             playerTransform = 
                 weapon.GetPlayer.PlayerWeapon.transform;
-            playerScore = weapon.GetPlayer.PlayerScore;
+            playerResources = weapon.GetPlayer.PlayerResources;
             trailBonus.GetComponent<TrailRenderer>().startColor = 
                 weapon.TrailRenderer.startColor;
             trailBonus.GetComponent<TrailRenderer>().endColor = 
@@ -86,7 +86,7 @@ namespace GameBehaviour
                 trailBonus.Translate(trailBonus.forward,Space.World);
                 yield return Timing.WaitForSeconds(updateFrequency);
             }
-            playerScore.AddScore(scoreBonus);
+            playerResources.AddScore(scoreBonus);
             trailBonus.gameObject.SetActive(false);
         }
     }

@@ -474,7 +474,7 @@ namespace PlayerBehaviour
 		public void SetColorTrailWeapon()
 		{
 			Color color = LibraryStaticFunctions.GetColorFromGemPower(GemPower, gemType);
-			if (color == Color.black)
+			if (color == Color.white)
 			{
 				TrailRenderer.enabled = false;
 				return;
@@ -540,7 +540,7 @@ namespace PlayerBehaviour
 	/// </summary>
 	public enum GemType
 	{
-		Frozen, Fire, Powerful, Electric
+		None, Frozen, Fire, Powerful, Electric
 	}
 
 	/// <summary>

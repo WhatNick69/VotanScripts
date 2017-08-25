@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using VotanInterfaces;
 using MovementEffects;
+using System;
 
 namespace GameBehaviour
 {
@@ -19,7 +20,9 @@ namespace GameBehaviour
         private Image parentImage;
         [SerializeField, Tooltip("Время между приемами предмета"), Range(1, 120)]
         private int secondsForTimer;
-        [SerializeField, Tooltip("Хранитель компонентов игрока")]
+		[SerializeField, Tooltip("Цена скила в опыте"), Range(1, 100000)]
+		private int priceExp;
+		[SerializeField, Tooltip("Хранитель компонентов игрока")]
         private PlayerComponentsControl playerComponentsControlInstance;
         [SerializeField, Tooltip("Низвание умения")]
         private string skillName;
@@ -94,12 +97,20 @@ namespace GameBehaviour
                 return skillTutorial;
             }
         }
-        #endregion
 
-        /// <summary>
-        /// Инициализация
-        /// </summary>
-        public void Starter(int number)
+		public int PriceExp
+		{
+			get
+			{
+				return priceExp;
+			}
+		}
+		#endregion
+
+		/// <summary>
+		/// Инициализация
+		/// </summary>
+		public void Starter(int number)
         {
             parentImage = transform.GetComponentInParent<Image>();
             fonNonActiveColor = new Color(1, 1, 1, 0.2f);

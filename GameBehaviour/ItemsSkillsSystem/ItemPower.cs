@@ -14,17 +14,22 @@ namespace GameBehaviour
     public class ItemPower
         : MonoBehaviour, IItem
     {
-        #region Переменные
-        [SerializeField, Tooltip("Тип предмета")]
+		#region Переменные
+		[SerializeField]
+		private string itemName;
+		[SerializeField]
+		private string itemTutorial;
+		[SerializeField, Tooltip("Стоимость итема в золоте"), Range(1, 100000)]
+		public int priceGold;
+		[SerializeField, Tooltip("Тип предмета")]
         private ItemType itemType;
         [SerializeField, Tooltip("Качество предмета")]
         private ItemQuality itemQuality;
         [SerializeField, Tooltip("Изображение предмета")]
         private Image itemImage;
         private Image parentImage;
-        [SerializeField, Tooltip("Величина бонуса к мощности игрока"), Range(10, 1000)]
         private float powerValue;
-        [SerializeField, Tooltip("Время между приемами предмета"), Range(1, 120)]
+        [SerializeField, Tooltip("Время между приемами предмета"), Range(1, 15)]
         private int secondsForTimer;
         [SerializeField, Tooltip("Количество предметов данного класса"), Range(0, 10)]
         private int itemCount;
@@ -107,19 +112,6 @@ namespace GameBehaviour
             }
         }
 
-        public float ItemStrenght
-        {
-            get
-            {
-                return powerValue;
-            }
-
-            set
-            {
-                powerValue = value;
-            }
-        }
-
         public ItemType ItemType
         {
             get
@@ -135,6 +127,40 @@ namespace GameBehaviour
                 return itemQuality;
             }
         }
+
+		public int PriceGold
+		{
+			get
+			{
+				return priceGold;
+			}
+		}
+
+		public string ItemName
+		{
+			get
+			{
+				return itemName;
+			}
+
+			set
+			{
+				itemName = value;
+			}
+		}
+
+		public string ItemTutorial
+		{
+			get
+			{
+				return itemTutorial;
+			}
+
+			set
+			{
+				itemTutorial = value;
+			}
+		}
         #endregion
 
         /// <summary>
@@ -154,19 +180,28 @@ namespace GameBehaviour
         }
 
         /// <summary>
-        /// Инициализация предмета
+        /// Установить силу атаки в 
+        /// зависимости от качества предмета
         /// </summary>
-        /// <param name="itemImage">Изображение предмета</param>
-        /// <param name="powerValue">Бонус к атаке</param>
-        /// <param name="itemCount">Количество предметов данного класса</param>
-        /// <param name="secondsForTimer">Время перезарядки предмета</param>
-        public void InitialisationItem
-            (Image itemImage, float powerValue, int itemCount, int secondsForTimer)
+        public void SetItemStrenghtDependenceItemQuality()
         {
-            this.itemImage = itemImage;
-            this.powerValue = powerValue;
-            this.itemCount = itemCount;
-            this.secondsForTimer = secondsForTimer;
+            switch (itemQuality)
+            {
+                case ItemQuality.Lite:
+                    powerValue =
+                        playerComponentsControlInstance.PlayerWeapon
+                        .Damage * 0.5f;
+                    break;
+                case ItemQuality.Medium:
+                    powerValue =
+                        playerComponentsControlInstance.PlayerWeapon
+                        .Damage;
+                    break;
+                case ItemQuality.Strong:
+                    powerValue =
+                        playerComponentsControlInstance.PlayerWeapon.Damage*2;
+                    break;
+            }
         }
 
         /// <summary>
@@ -178,6 +213,8 @@ namespace GameBehaviour
                 && isContainsItem
                     && !isEffecting)
             {
+                SetItemStrenghtDependenceItemQuality();
+
                 parentImage.color = fonNonActiveColor;
 
                 playerComponentsControlInstance.PlayerHUDAudioStorage.PlaySoundItemClick();
@@ -190,6 +227,28 @@ namespace GameBehaviour
             else
             {
                 playerComponentsControlInstance.PlayerHUDAudioStorage.PlaySoundImpossibleClick();
+            }
+        }
+
+        /// <summary>
+        /// Нажать на предмет
+        /// </summary>
+        public void OnClickFireItem()
+        {
+            playerComponentsControlInstance.PlayerHUDManager.FireItem(this);
+        }
+
+        /// <summary>
+        /// Включить предмет
+        /// </summary>
+        public void EnableItem()
+        {
+            if (!isEffecting && isContainsItem)
+            {
+                itemImage.fillAmount = 1;
+                parentImage.color = Color.white;
+                playerComponentsControlInstance.PlayerHUDManager.
+                    TellItemIndicator(itemNumberPosition, true);
             }
         }
 
@@ -253,28 +312,6 @@ namespace GameBehaviour
             {
                 isEffecting = false;
                 EnableItem();
-            }
-        }
-
-        /// <summary>
-        /// Нажать на предмет
-        /// </summary>
-        public void OnClickFireItem()
-        {
-            playerComponentsControlInstance.PlayerHUDManager.FireItem(this);
-        }
-
-        /// <summary>
-        /// Включить предмет
-        /// </summary>
-        public void EnableItem()
-        {
-            if (!isEffecting && isContainsItem)
-            {
-                itemImage.fillAmount = 1;
-                parentImage.color = Color.white;
-                playerComponentsControlInstance.PlayerHUDManager.
-                    TellItemIndicator(itemNumberPosition, true);
             }
         }
     }

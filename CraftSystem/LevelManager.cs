@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace CraftSystem
-	{
-	public class ArmorMeneger : MonoBehaviour {
+{
+    public class LevelManager 
+        : MonoBehaviour {
 
 		[SerializeField]
 		GameObject level_1;
@@ -15,7 +14,7 @@ namespace CraftSystem
 		[SerializeField]
 		GameObject level_4;
 
-		public GameObject GetShield(int level)
+		public GameObject GetItemLevel(int level)
 		{
 			switch (level)
 			{

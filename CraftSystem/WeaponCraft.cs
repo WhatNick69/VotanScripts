@@ -5,6 +5,8 @@ using VotanUI;
 using UnityEngine.UI;
 using GameBehaviour;
 using VotanInterfaces;
+using VotanLibraries;
+using PlayerBehaviour;
 
 namespace CraftSystem
 {
@@ -21,22 +23,27 @@ namespace CraftSystem
 		private GameObject itemRepository;
 		[SerializeField]
 		private GameObject skillsRepository;
-		[SerializeField]
+
+		[SerializeField, Tooltip("кнопка оружия")]
 		private GameObject itemWeapon;
-		[SerializeField]
+		[SerializeField, Tooltip("кнопка скила")]
 		private GameObject itemSkill;
-		[SerializeField]
+		[SerializeField, Tooltip("кнопка итема")]
 		private GameObject itemItm;
+
 		[SerializeField]
 		GameObject weaponWindow;
+		[SerializeField]
+		GameObject weaponUpadate; // Отображать вместе с weaponWindow
 		[SerializeField]
 		GameObject skillWindow;
 		[SerializeField]
 		GameObject itemWindow;
+
 		private GameObject weapon;
-		GameObject weaponGamObj;
-		GameObject skillGamObj;
-		GameObject itemGamObj;
+		private GameObject weaponGamObj;
+		private GameObject skillGamObj;
+		private GameObject itemGamObj;
 
 
 		string headPrefix = "Prefabs/Weapon/Weapon_";
@@ -46,8 +53,12 @@ namespace CraftSystem
 		private List<ISkill> skillList;
 		private List<IItem> itemList;
 		private List<Weapon> weaponList;
+		private GameObject[] weaponArray;
+		private int[] weaponStats;
 
-		
+		[SerializeField, Tooltip("Закинуть сюда все зелья")]
+		private List<GameObject> itemArray;
+
 		private int weaponItemNumber;
 
 		private int itemItemNumberOne;
@@ -75,13 +86,14 @@ namespace CraftSystem
 
 		#region Свойства
 		/// <summary>
-		/// Вызывать для открытия окна с наконечниками
+		/// Вызывать для открытия окна с оружием
 		/// </summary>
 		public void WeaponWindow()
 		{
 			skillWindow.SetActive(false);
 			itemWindow.SetActive(false);
 			weaponWindow.SetActive(true);
+			weaponUpadate.SetActive(true);
 			PStats.WeaponPage();
 			scrollRectWeaponRepository.horizontalNormalizedPosition = 0;
         }
@@ -94,6 +106,7 @@ namespace CraftSystem
 			skillWindow.SetActive(true);
 			itemWindow.SetActive(false);
 			weaponWindow.SetActive(false);
+			weaponUpadate.SetActive(false);
 			PStats.SkillPage();
 			scrollRectWeaponRepository.horizontalNormalizedPosition = 0;
 		}
@@ -106,6 +119,7 @@ namespace CraftSystem
 			skillWindow.SetActive(false);
 			itemWindow.SetActive(true);
 			weaponWindow.SetActive(false);
+			weaponUpadate.SetActive(false);
 			PStats.SkillPage();
 			scrollRectWeaponRepository.horizontalNormalizedPosition = 0;
 		}
@@ -142,6 +156,21 @@ namespace CraftSystem
 			else
 			{
 				//
+			}
+		}
+
+		/// <summary>
+		/// Улучшает выбранное оружие
+		/// </summary>
+		public void UpdateItem()
+		{
+			weaponStats = LibraryObjectsWorker.StringSplitter(PlayerPrefs.GetString("weapon_" + weaponItemNumber), '_');
+			if (weaponStats[0] < 3)
+			{
+				weaponStats[0] = weaponStats[0] + 1;
+				PlayerPrefs.SetString("weapon_" + weaponItemNumber, 
+					(weaponStats[0] + "_" + weaponStats[1] + "_" + weaponStats[2]).ToString());
+				PlayerPrefs.Save();
 			}
 		}
 
@@ -207,10 +236,13 @@ namespace CraftSystem
             if (WP == null)
                 WP = GameObject.Find("GetPrefabs").GetComponent<WeaponPrefabs>();
 
-			WP.Weapon = (GameObject)Resources.Load(headPrefix + weaponItemNumber);
+			WP.Weapon = weaponArray[weaponItemNumber];
 			ItemSkillPef.FirstSkill = (GameObject)Resources.Load(skillPrefix + skillItemNumberOne);
 			ItemSkillPef.SecondSkill = (GameObject)Resources.Load(skillPrefix + skillItemNumberTwo);
 			ItemSkillPef.ThirdSkill = (GameObject)Resources.Load(skillPrefix + skillItemNumberThree);
+			ItemSkillPef.FirstItem = itemArray[itemItemNumberOne];
+			ItemSkillPef.SecondItem = itemArray[itemItemNumberTwo];
+			ItemSkillPef.ThirdItem = itemArray[itemItemNumberThree];
 		}
 
 		private void Awake() // ____________start__________
@@ -221,6 +253,8 @@ namespace CraftSystem
 			weaponList = new List<Weapon>();
 			skillList = new List<ISkill>();
 			itemList = new List<IItem>();
+			weaponArray = new GameObject[Resources.LoadAll("Prefabs/Weapon").Length];
+			weaponStats = new int[3];
 
 			skillItemNumberOne = -1;
 			skillItemNumberTwo = -1;
@@ -228,6 +262,7 @@ namespace CraftSystem
 
 			Timing.RunCoroutine(WeaponCorutine());
 			Timing.RunCoroutine(SkillCorutine());
+			Timing.RunCoroutine(ItemsCorutine());
 		}
 
 		private void FixedUpdate()
@@ -242,23 +277,31 @@ namespace CraftSystem
 		private IEnumerator<float> WeaponCorutine()
 		{
 			int count = Resources.LoadAll("Prefabs/Weapon").Length;
-
 			for (int i = 0; i < count; i++)
 			{
 				if (Resources.Load(headPrefix + i.ToString()))
 				{
-					weaponGamObj = (GameObject)Resources.Load(headPrefix + i.ToString());
-					weaponList.Add(weaponGamObj.GetComponent<Weapon>());
+					weaponGamObj =(GameObject) Resources.Load(headPrefix + i.ToString());
+                    weaponStats = LibraryObjectsWorker.StringSplitter
+                        (PlayerPrefs.GetString("weapon_" + i), '_');
+
+					//  weaponStats[0] - уровень
+					//  weaponStats[1] - тип камня (использовать как перечислитель)
+					//  weaponStats[2] - сила камня (1 - 100)
+					weaponArray[i] = weaponGamObj.GetComponent<LevelManager>().GetItemLevel(weaponStats[0]);
+					weaponList.Add(weaponArray[i].GetComponent<Weapon>());
 					GameObject item = Instantiate(itemWeapon);
 					WeaponButton button = item.GetComponent<WeaponButton>();
 					button.SetWeaponCraft(WC);
 					button.SetNumber(i);
-					button.SetName(weaponList[i].HeadName);
+					button.SetName(weaponList[i].HeadName); 
 					button.SetLogo (weaponList[i].ItemImage);
+					button.SetGemType((GemType)weaponStats[1]);
 					item.transform.SetParent(weaponRepository.transform, false);
 
 				}
 			}
+
             scrollRectWeaponRepository =
                 weaponRepository.transform.parent.GetComponent<ScrollRect>();
             yield return 0;
@@ -272,7 +315,7 @@ namespace CraftSystem
 			{
 				if (Resources.Load(skillPrefix + i.ToString()))
 				{
-					GameObject skillGamObj = (GameObject)Resources.Load(skillPrefix + i.ToString());
+                    GameObject skillGamObj = (GameObject)Resources.Load(skillPrefix + i.ToString());
 					skillList.Add(skillGamObj.GetComponent<ISkill>());
 					GameObject item = Instantiate(itemSkill);
 					ItemOrSkillButton button = item.GetComponent<ItemOrSkillButton>();
@@ -292,24 +335,19 @@ namespace CraftSystem
 
 		private IEnumerator<float>ItemsCorutine()
 		{
-			int count = Resources.LoadAll("Prefabs/Item").Length;
-
+			int count = itemArray.Count;
 			for (int i = 0; i < count; i++)
 			{
-				if (Resources.Load(itemPrefix + i.ToString()))
-				{
-					GameObject itemGamObj = (GameObject)Resources.Load(itemPrefix + i.ToString());
-					itemList.Add(itemGamObj.GetComponent<IItem>());
-					GameObject item = Instantiate(itemItm);
-					ItemOrSkillButton button = item.GetComponent<ItemOrSkillButton>();
-					button.SetWeaponCraft(WC);
-					button.SetNumber(i);
-					button.NameSkill.text = skillList[i].SkillName;
-					button.TutorialSkill.text = skillList[i].SkillTutorial;
+                GameObject itemGamObj = itemArray[i];
+				itemList.Add(itemGamObj.GetComponent<IItem>());
+				GameObject item = Instantiate(itemItm);
+				ItemOrSkillButton button = item.GetComponent<ItemOrSkillButton>();
+				button.SetWeaponCraft(WC);
+				button.SetNumber(i);
+				button.NameSkill.text = itemList[i].ItemName;
+				button.TutorialSkill.text = itemList[i].ItemTutorial;
 
-					item.transform.SetParent(skillsRepository.transform, false);
-
-				}
+				item.transform.SetParent(itemRepository.transform, false);
 			}
 			scrollRectSkillRepository =
 				skillsRepository.transform.parent.GetComponent<ScrollRect>();
