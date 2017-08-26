@@ -29,6 +29,8 @@ namespace EnemyBehaviour
         protected float speedCoefficient;
         [SerializeField, Tooltip("Коэффициент поворота при остановке"), Range(1, 10)]
         protected float angularBooster;
+        [SerializeField, Tooltip("Враг никогда не останавливается?")]
+        protected bool isAlwaysMoving;
         [SerializeField, Tooltip("Предупредительная дистанция для атаки"), Range(0,100)]
         protected float preDistanceForAttack;
         [SerializeField, Tooltip("Враг")]
@@ -351,7 +353,12 @@ namespace EnemyBehaviour
                     {
                         if (isStopped && isLookingAtPlayer)
                         {
+                            if (!isAlwaysMoving) agent.speed = 0;
                             LookAtPlayerObject();
+                        }
+                        else
+                        {
+                            agent.speed = agentSpeed;
                         }
                         if (agent.enabled) // идем за игроком
                             agent.SetDestination
@@ -464,6 +471,7 @@ namespace EnemyBehaviour
         {
             if (agent != null && agent.enabled)
             {
+                agent.speed = agentSpeed;
                 abstractEnemy.EnemyAnimationsController.DisableAllStates();
                 abstractEnemy.EnemyAnimationsController.SetState(0, true);
                 abstractEnemy.EnemyAttack.IsMayToPlayAttackAnimation = false;

@@ -102,7 +102,7 @@ namespace EnemyBehaviour
                     }
                     else
                     {
-                        EnemyAnimationsController.LowSpeedAnimation();
+                        //EnemyAnimationsController.LowSpeedAnimation();
                         EnemyAnimationsController.SetState(0, false);
                     }
                 }

@@ -113,6 +113,7 @@ namespace EnemyBehaviour
             audioSourceLegs.clip =
                 audioSteps[UnityEngine.Random.Range(0, audioSteps.Length)];
             audioSourceLegs.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
+            audioSourceLegs.volume = volumeStep;
             audioSourceLegs.Play();
         }
 

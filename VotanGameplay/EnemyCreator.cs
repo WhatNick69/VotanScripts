@@ -286,13 +286,14 @@ namespace VotanGameplay
             {
                 // ОБЫЧНЫЙ РЫЦАРЬ
                 case EnemyType.Knight:
+                    enemyBehaviour.EnemyMove.PreDistanceForAttack = 0.1f;
                     enemyBehaviour.EnemyMove.AgentSpeed =
                         SetParameterOfEnemy(2.5f,hardcoreMultiplier); // Скорость передвижения моба
                     enemyBehaviour.EnemyAttack.DmgEnemy =
-                        SetParameterOfEnemy(20,hardcoreMultiplier); // Урон моба
+                        SetParameterOfEnemy(10,hardcoreMultiplier); // Урон моба
                     enemyBehaviour.EnemyConditions.SetHealthParameter
                         (LibraryStaticFunctions.GetRangeValue
-                        (SetParameterOfEnemy(200,hardcoreMultiplier), 0.1f)); // Установить жизни мобу
+                        (SetParameterOfEnemy(100,hardcoreMultiplier), 0.1f)); // Установить жизни мобу
 
                     enemyBehaviour.EnemyConditions.PhysicResistance = 
                         LibraryStaticFunctions.GetRangeValue
@@ -302,7 +303,7 @@ namespace VotanGameplay
                     enemyBehaviour.EnemyConditions.FrostResistance = 0; // Сопротивление к ледяной атаке
 
                     enemyBehaviour.ScoreAddingEffect.ScoreBonus = 
-                        (int)SetParameterOfEnemy(150,hardcoreMultiplier*2); // задаем количество очков
+                        (int)SetParameterOfEnemy(200,hardcoreMultiplier*2); // задаем количество очков
                     break;
 
                 // БЕШЕНЫЙ РЫЦАРЬ
@@ -315,14 +316,43 @@ namespace VotanGameplay
                     enemyBehaviour.EnemyMove.AgentSpeed = 
                         SetParameterOfEnemy(3,hardcoreMultiplier); // Скорость передвижения моба
                     enemyBehaviour.EnemyAttack.DmgEnemy =
-                        SetParameterOfEnemy(10,hardcoreMultiplier); // Урон моба
+                        SetParameterOfEnemy(5,hardcoreMultiplier); // Урон моба
                     enemyBehaviour.EnemyConditions.SetHealthParameter
                         (LibraryStaticFunctions.GetRangeValue
-                        (SetParameterOfEnemy(100,hardcoreMultiplier), 0.1f)); // Установить жизни мобу
+                        (SetParameterOfEnemy(150,hardcoreMultiplier), 0.1f)); // Установить жизни мобу
 
                     enemyBehaviour.EnemyConditions.PhysicResistance =
                         LibraryStaticFunctions.GetRangeValue
-                        (SetParameterOfEnemy(0.1f,hardcoreMultiplier), 0.2f); // Сопротивление к физической атаке (от 0 до 1)
+                        (SetParameterOfEnemy(0.1f,hardcoreMultiplier), 0.15f); // Сопротивление к физической атаке (от 0 до 1)
+                    enemyBehaviour.EnemyConditions.FireResistance =
+                        LibraryStaticFunctions.GetRangeValue
+                        (SetParameterOfEnemy(0.1f, hardcoreMultiplier), 0.1f);  // Сопротивление к огненной атаке (от 0 до 1)
+                    enemyBehaviour.EnemyConditions.ElectricResistance =
+                        LibraryStaticFunctions.GetRangeValue
+                        (SetParameterOfEnemy(0.1f, hardcoreMultiplier), 0.05f); // Сопротивление к электрической атаке
+                    enemyBehaviour.EnemyConditions.FrostResistance =
+                        LibraryStaticFunctions.GetRangeValue
+                        (SetParameterOfEnemy(0.1f, hardcoreMultiplier), 0.1f);  // Сопротивление к ледяной атаке
+
+                    enemyBehaviour.ScoreAddingEffect.ScoreBonus = 
+                        (int)SetParameterOfEnemy(400, hardcoreMultiplier*2); // задаем количество очков
+                    break;
+
+                // АЛЕБАРДИЙЩИК
+                case EnemyType.Halberdier:
+                    // Предупредительная дистанция для атаки
+                    enemyBehaviour.EnemyMove.PreDistanceForAttack = 2;
+                    enemyBehaviour.EnemyMove.AgentSpeed =
+                        SetParameterOfEnemy(2.5f, hardcoreMultiplier); // Скорость передвижения моба
+                    enemyBehaviour.EnemyAttack.DmgEnemy =
+                        SetParameterOfEnemy(20, hardcoreMultiplier); // Урон моба
+                    enemyBehaviour.EnemyConditions.SetHealthParameter
+                        (LibraryStaticFunctions.GetRangeValue
+                        (SetParameterOfEnemy(200, hardcoreMultiplier), 0.1f)); // Установить жизни мобу
+
+                    enemyBehaviour.EnemyConditions.PhysicResistance =
+                        LibraryStaticFunctions.GetRangeValue
+                        (SetParameterOfEnemy(0.1f, hardcoreMultiplier), 0.2f); // Сопротивление к физической атаке (от 0 до 1)
                     enemyBehaviour.EnemyConditions.FireResistance =
                         LibraryStaticFunctions.GetRangeValue
                         (SetParameterOfEnemy(0.1f, hardcoreMultiplier), 0.2f);  // Сопротивление к огненной атаке (от 0 до 1)
@@ -333,8 +363,8 @@ namespace VotanGameplay
                         LibraryStaticFunctions.GetRangeValue
                         (SetParameterOfEnemy(0.1f, hardcoreMultiplier), 0.2f);  // Сопротивление к ледяной атаке
 
-                    enemyBehaviour.ScoreAddingEffect.ScoreBonus = 
-                        (int)SetParameterOfEnemy(600, hardcoreMultiplier*2); // задаем количество очков
+                    enemyBehaviour.ScoreAddingEffect.ScoreBonus =
+                        (int)SetParameterOfEnemy(600, hardcoreMultiplier * 2); // задаем количество очков
                     break;
 
                 // ПЕРВЫЙ БОСС
