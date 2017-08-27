@@ -47,6 +47,8 @@ namespace GameBehaviour
             itemType = (ItemType)UnityEngine.Random.Range
                 (0, Enum.GetNames(typeof(ItemType)).Length);
             itemQuality = LibraryStaticFunctions.RandomDropItemQuality();
+            itemType = ItemType.HealthItem;
+            itemQuality = ItemQuality.Lite;
 
             switch (itemType)
             {
@@ -181,10 +183,12 @@ namespace GameBehaviour
                             isItemActive = false;
                             ProcedureForPlayerItem(tempComponentsControl);
                         }
-                        else if (tempCallback == 1)
-                        {
-                            isItemActive = false;
-                        }
+                        // Раскомментировать на случай использования 
+                        // количества для каждого предмета
+                        //else if (tempCallback == 1)
+                        //{
+                        //    isItemActive = false;
+                        //}
                     }
                 }
             }
@@ -203,8 +207,9 @@ namespace GameBehaviour
         /// <returns></returns>
         private int PlayerMayGetItem(PlayerComponentsControl plComponents)
         {
-            if (plComponents.PlayerHUDManager.EqualsItemInLeftInventory(iItem))
-                return 1;
+            // Раскомментировать на случай использования количества для каждого предмета
+            //if (plComponents.PlayerHUDManager.EqualsItemInLeftInventory(iItem))
+            //    return 1;
 
             if (plComponents.PlayerHUDManager.GetCountOfItems() != 3)
             {
