@@ -8,11 +8,11 @@ public class PlayerData : MonoBehaviour {
 	{
 		for (int i = 0; i < 4; i++) // сколько щитов, до стольки и считаем
 		{
-			if (PlayerPrefs.GetInt("shieldLevel_" + i) >= 0)
+			if (PlayerPrefs.GetInt("shield_" + i) >= 0)
 			{ }
 			else
 			{
-				PlayerPrefs.SetInt("shieldLevel_" + i, 0);
+				PlayerPrefs.SetInt("shield_" + i, 0);
 			}
 		}
 

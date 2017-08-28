@@ -17,17 +17,10 @@ namespace CraftSystem
 		[SerializeField]
 		Text tutorialSkill;
 
-		public Image Logo
-		{
-			get
-			{
-				return logo;
-			}
 
-			set
-			{
-				logo = value;
-			}
+		public void SetImage(Sprite img)
+		{
+			logo.sprite = img;
 		}
 
 		public Text NameSkill
@@ -61,9 +54,14 @@ namespace CraftSystem
 			numberButton = x;
 		}
 
-		public void GetNumber()
+		public void GetNumberSkill()
 		{
 			wepCraft.SetSkillItemNumber(numberButton);
+		}
+
+		public void GetNumberItem()
+		{
+			wepCraft.SetItemNumber(numberButton);
 		}
 
 		public void SetWeaponCraft(WeaponCraft WP)

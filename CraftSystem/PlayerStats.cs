@@ -65,16 +65,30 @@ namespace CraftSystem
 		[SerializeField]
 		GameObject skillOne;
 		[SerializeField]
+		Image skillOneImg;
+		[SerializeField]
 		GameObject skillTwo;
 		[SerializeField]
+		Image skillTwoImg;
+		[SerializeField]
 		GameObject skillThree;
+		[SerializeField]
+		Image skillThreeImg;
 
 		[SerializeField]
 		GameObject itemOne;
 		[SerializeField]
+		Image itemOneImg;
+		[SerializeField]
 		GameObject itemTwo;
 		[SerializeField]
+		Image itemTwoImg;
+		[SerializeField]
 		GameObject itemThree;
+		[SerializeField]
+		Image itemThreeImg;
+		[SerializeField]
+		Sprite voidSprite;
 
 		// Для наконечников
 		float critChance;
@@ -117,6 +131,12 @@ namespace CraftSystem
 			NewGemPuwer.SetActive(false);
 			NewCrit.SetActive(false);
 			NewWeight.SetActive(false);
+			itemOne.SetActive(false);
+			itemTwo.SetActive(false);
+			itemThree.SetActive(false);
+			skillOne.SetActive(false); 
+			skillTwo.SetActive(false);
+			skillThree.SetActive(false);
 		}
 
 		/// <summary>
@@ -161,6 +181,90 @@ namespace CraftSystem
 			itemOne.SetActive(true);
 			itemTwo.SetActive(true);
 			itemThree.SetActive(true);
+		}
+
+		/// <summary>
+		/// Задать изображение кнопке выбранного в бой скила
+		/// </summary>
+		/// <param name="spr"> Изображение скила </param>
+		/// <param name="index"> </param>
+		public void SetSkillImg(Sprite spr, int index)
+		{
+			switch(index)
+			{
+				case 0:
+					skillOneImg.sprite = spr;
+					break;
+				case 1:
+					skillTwoImg.sprite = spr;
+					break;
+				case 2:
+					skillThreeImg.sprite = spr;
+					break;
+			}
+		}
+
+		/// <summary>
+		/// Перегрузка функции SetSkillImg для очистки 
+		/// изображения кнопки выбранного в бой скила
+		/// </summary>
+		/// <param name="index"></param>
+		public void SetSkillImg(int index)
+		{
+			switch (index)
+			{
+				case 0:
+					skillOneImg.sprite = voidSprite;
+					break;
+				case 1:
+					skillTwoImg.sprite = voidSprite;
+					break;
+				case 2:
+					skillThreeImg.sprite = voidSprite;
+					break;
+			}
+		}
+
+		/// <summary>
+		/// Задать изображение кнопке выбранного в бой зелья
+		/// </summary>
+		/// <param name="spr"> Изображения зелья </param>
+		/// <param name="index"> </param>
+		public void SetItemImg(Sprite spr, int index)
+		{
+			switch (index)
+			{
+				case 0:
+					itemOneImg.sprite = spr;
+					break;
+				case 1:
+					itemTwoImg.sprite = spr;
+					break;
+				case 2:
+					itemThreeImg.sprite = spr;
+					break;
+			}
+		}
+
+		/// <summary>
+		/// Перегрузка функции SetItemImg для очистки 
+		/// изображения кнопки выбранного в бой зелья
+		/// </summary>
+		/// <param name="index"></param>
+		public void SetItemImg(int index)
+		{
+			switch (index)
+			{
+				case 0:
+					itemOneImg.sprite = voidSprite;
+					break;
+				case 1:
+					itemTwoImg.sprite = voidSprite;
+					break;
+				case 2:
+					itemThreeImg.sprite = voidSprite;
+					break;
+			}
 		}
 
 		public float CuirassArmor

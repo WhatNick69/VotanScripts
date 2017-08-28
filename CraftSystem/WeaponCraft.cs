@@ -34,7 +34,7 @@ namespace CraftSystem
 		[SerializeField]
 		GameObject weaponWindow;
 		[SerializeField]
-		GameObject weaponUpadate; // Отображать вместе с weaponWindow
+		GameObject weaponUpadateButton; // Отображать вместе с weaponWindow
 		[SerializeField]
 		GameObject skillWindow;
 		[SerializeField]
@@ -82,9 +82,20 @@ namespace CraftSystem
 
 		float intemNumbWeapon;
 		float normPosWeapon;
+
+		List<int> arrayBoughtWeapon;
 		#endregion
 
 		#region Свойства
+		private void CloseAllWindows()
+		{
+			skillWindow.SetActive(false);
+			itemWindow.SetActive(false);
+			weaponWindow.SetActive(false);
+			weaponUpadateButton.SetActive(false);
+
+		}
+
 		/// <summary>
 		/// Вызывать для открытия окна с оружием
 		/// </summary>
@@ -93,7 +104,8 @@ namespace CraftSystem
 			skillWindow.SetActive(false);
 			itemWindow.SetActive(false);
 			weaponWindow.SetActive(true);
-			weaponUpadate.SetActive(true);
+			weaponUpadateButton.SetActive(true);
+
 			PStats.WeaponPage();
 			scrollRectWeaponRepository.horizontalNormalizedPosition = 0;
         }
@@ -106,7 +118,7 @@ namespace CraftSystem
 			skillWindow.SetActive(true);
 			itemWindow.SetActive(false);
 			weaponWindow.SetActive(false);
-			weaponUpadate.SetActive(false);
+			weaponUpadateButton.SetActive(false);
 			PStats.SkillPage();
 			scrollRectWeaponRepository.horizontalNormalizedPosition = 0;
 		}
@@ -119,7 +131,7 @@ namespace CraftSystem
 			skillWindow.SetActive(false);
 			itemWindow.SetActive(true);
 			weaponWindow.SetActive(false);
-			weaponUpadate.SetActive(false);
+			weaponUpadateButton.SetActive(false);
 			PStats.SkillPage();
 			scrollRectWeaponRepository.horizontalNormalizedPosition = 0;
 		}
@@ -142,16 +154,45 @@ namespace CraftSystem
 			{
 				MenuSoundManager.PlaySoundStatic(1);
 				skillItemNumberOne = numberButton;
+				PStats.SetSkillImg(skillList[numberButton].SkillImage.sprite, 0);
 			}
 			else if (skillItemNumberTwo == -1)
 			{
 				MenuSoundManager.PlaySoundStatic(1);
 				skillItemNumberTwo = numberButton;
+				PStats.SetSkillImg(skillList[numberButton].SkillImage.sprite, 1);
 			}
 			else if (skillItemNumberThree == -1)
 			{
 				MenuSoundManager.PlaySoundStatic(1);
 				skillItemNumberThree = numberButton;
+				PStats.SetSkillImg(skillList[numberButton].SkillImage.sprite, 2);
+			}
+			else
+			{
+				//
+			}
+		}
+
+		public void SetItemNumber(int numberButton)
+		{
+			if (itemItemNumberOne == -1)
+			{
+				MenuSoundManager.PlaySoundStatic(1);
+				itemItemNumberOne = numberButton;
+				PStats.SetItemImg(itemList[numberButton].ItemImage.sprite, 0);
+			}
+			else if (itemItemNumberTwo == -1)
+			{
+				MenuSoundManager.PlaySoundStatic(1);
+				itemItemNumberTwo = numberButton;
+				PStats.SetItemImg(itemList[numberButton].ItemImage.sprite, 1);
+			}
+			else if (itemItemNumberThree == -1)
+			{
+				MenuSoundManager.PlaySoundStatic(1);
+				itemItemNumberThree = numberButton;
+				PStats.SetItemImg(itemList[numberButton].ItemImage.sprite, 2);
 			}
 			else
 			{
@@ -162,7 +203,7 @@ namespace CraftSystem
 		/// <summary>
 		/// Улучшает выбранное оружие
 		/// </summary>
-		public void UpdateItem()
+		public void UpdateWeapon()
 		{
 			weaponStats = LibraryObjectsWorker.StringSplitter(PlayerPrefs.GetString("weapon_" + weaponItemNumber), '_');
 			if (weaponStats[0] < 3)
@@ -180,6 +221,7 @@ namespace CraftSystem
 		public void RemoveSkillOne()
 		{
 			skillItemNumberOne = -1;
+			PStats.SetSkillImg(0);
 		}
 
 		/// <summary>
@@ -188,6 +230,7 @@ namespace CraftSystem
 		public void RemoveSkillTwo()
 		{
 			skillItemNumberTwo = -1;
+			PStats.SetSkillImg(1);
 		}
 
 		/// <summary>
@@ -196,6 +239,34 @@ namespace CraftSystem
 		public void RemoveSkillThree()
 		{
 			skillItemNumberThree = -1;
+			PStats.SetSkillImg(2);
+		}
+
+		/// <summary>
+		///  Вызывать для удаления зелья из 1й ячейки 
+		/// </summary>
+		public void RemoveItemOne()
+		{
+			itemItemNumberOne = -1;
+			PStats.SetItemImg(0);
+		}
+
+		/// <summary>
+		///  Вызывать для удаления зелья из 2й ячейки 
+		/// </summary>
+		public void RemoveItemTwo()
+		{
+			itemItemNumberTwo = -1;
+			PStats.SetItemImg(1);
+		}
+
+		/// <summary>
+		/// Вызывать для удаления зелья из 3й ячейки 
+		/// </summary>
+		public void RemoveItemThree()
+		{
+			itemItemNumberThree = -1;
+			PStats.SetItemImg(2);
 		}
 
 		/// <summary>
@@ -237,15 +308,21 @@ namespace CraftSystem
                 WP = GameObject.Find("GetPrefabs").GetComponent<WeaponPrefabs>();
 
 			WP.Weapon = weaponArray[weaponItemNumber];
-			ItemSkillPef.FirstSkill = (GameObject)Resources.Load(skillPrefix + skillItemNumberOne);
-			ItemSkillPef.SecondSkill = (GameObject)Resources.Load(skillPrefix + skillItemNumberTwo);
-			ItemSkillPef.ThirdSkill = (GameObject)Resources.Load(skillPrefix + skillItemNumberThree);
-			ItemSkillPef.FirstItem = itemArray[itemItemNumberOne];
-			ItemSkillPef.SecondItem = itemArray[itemItemNumberTwo];
-			ItemSkillPef.ThirdItem = itemArray[itemItemNumberThree];
+			if (skillItemNumberOne >= 0)
+				ItemSkillPef.FirstSkill = (GameObject)Resources.Load(skillPrefix + skillItemNumberOne);
+			if(skillItemNumberTwo >= 0)
+				ItemSkillPef.SecondSkill = (GameObject)Resources.Load(skillPrefix + skillItemNumberTwo);
+			if (skillItemNumberThree >= 0)
+				ItemSkillPef.ThirdSkill = (GameObject)Resources.Load(skillPrefix + skillItemNumberThree);
+			if (itemItemNumberOne >= 0)
+				ItemSkillPef.FirstItem = itemArray[itemItemNumberOne];
+			if (itemItemNumberTwo >= 0)
+				ItemSkillPef.SecondItem = itemArray[itemItemNumberTwo];
+			if (itemItemNumberThree >= 0)
+				ItemSkillPef.ThirdItem = itemArray[itemItemNumberThree];
 		}
 
-		private void Awake() // ____________start__________
+		private void Start() // ____________start__________
 		{
 			PStats = GetComponent<PlayerStats>();
 			WC = GetComponent<WeaponCraft>();
@@ -255,10 +332,13 @@ namespace CraftSystem
 			itemList = new List<IItem>();
 			weaponArray = new GameObject[Resources.LoadAll("Prefabs/Weapon").Length];
 			weaponStats = new int[3];
-
+			arrayBoughtWeapon = new List<int>();
 			skillItemNumberOne = -1;
 			skillItemNumberTwo = -1;
 			skillItemNumberThree = -1;
+			itemItemNumberOne = -1;
+			itemItemNumberTwo = -1;
+			itemItemNumberThree = -1;
 
 			Timing.RunCoroutine(WeaponCorutine());
 			Timing.RunCoroutine(SkillCorutine());
@@ -276,15 +356,21 @@ namespace CraftSystem
 		/// <returns></returns>
 		private IEnumerator<float> WeaponCorutine()
 		{
-			int count = Resources.LoadAll("Prefabs/Weapon").Length;
-			for (int i = 0; i < count; i++)
+			int k = LibraryObjectsWorker.StringSplitter
+							(PlayerPrefs.GetString("weaponArray"), '_').Length;
+			for (int i = 0; i < k; i++)
+			{
+				arrayBoughtWeapon.Add(LibraryObjectsWorker.StringSplitter
+							(PlayerPrefs.GetString("weaponArray"), '_')[i]);
+			}
+
+			for (int i = 0; i < k; i++)
 			{
 				if (Resources.Load(headPrefix + i.ToString()))
 				{
-					weaponGamObj =(GameObject) Resources.Load(headPrefix + i.ToString());
+					weaponGamObj =(GameObject) Resources.Load(headPrefix + arrayBoughtWeapon[i]);
                     weaponStats = LibraryObjectsWorker.StringSplitter
-                        (PlayerPrefs.GetString("weapon_" + i), '_');
-
+                        (PlayerPrefs.GetString("weapon_" + arrayBoughtWeapon[i]), '_');
 					//  weaponStats[0] - уровень
 					//  weaponStats[1] - тип камня (использовать как перечислитель)
 					//  weaponStats[2] - сила камня (1 - 100)
@@ -323,7 +409,7 @@ namespace CraftSystem
 					button.SetNumber(i);
 					button.NameSkill.text = skillList[i].SkillName;
 					button.TutorialSkill.text = skillList[i].SkillTutorial;
-					
+					button.SetImage(skillList[i].SkillImage.sprite);
 					item.transform.SetParent(skillsRepository.transform, false);
 
 				}
@@ -336,6 +422,7 @@ namespace CraftSystem
 		private IEnumerator<float>ItemsCorutine()
 		{
 			int count = itemArray.Count;
+
 			for (int i = 0; i < count; i++)
 			{
                 GameObject itemGamObj = itemArray[i];
@@ -346,7 +433,7 @@ namespace CraftSystem
 				button.SetNumber(i);
 				button.NameSkill.text = itemList[i].ItemName;
 				button.TutorialSkill.text = itemList[i].ItemTutorial;
-
+				button.SetImage (itemList[i].ItemImage.sprite);
 				item.transform.SetParent(itemRepository.transform, false);
 			}
 			scrollRectSkillRepository =

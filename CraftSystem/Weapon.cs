@@ -1,6 +1,5 @@
 ﻿using PlayerBehaviour;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace CraftSystem
 {
@@ -13,7 +12,7 @@ namespace CraftSystem
         #region Переменные
         [SerializeField, Tooltip("Изображение оружия")]
         private Sprite imageHead;
-        [SerializeField, Range(1, 100f), Tooltip("Базовое значение урона оружием")]
+        [SerializeField, Range(1, 1000f), Tooltip("Базовое значение урона оружием")]
         private float damageBase;
         [SerializeField, Range(100, 999), Tooltip("Величина критического умножение урона в процентах")]
         private float criticalChance;
@@ -26,17 +25,10 @@ namespace CraftSystem
         [SerializeField, Range(1, 100f), Tooltip("Сила камня")]
         private float gemPower;
         private string prefabName;
-        private string linkPrefab = "Prefabs/Weapon/Grip/"; // изменить адрес и папки
         #endregion
 
         #region Свойства
-        public string PrefabName
-        {
-            get
-            {
-                return prefabName + linkPrefab;
-            }
-        }
+       
         public string HeadName
         {
             get
@@ -122,6 +114,6 @@ namespace CraftSystem
                 gemPower = value;
             }
         }
-        #endregion
-    }
+		#endregion
+	}
 }

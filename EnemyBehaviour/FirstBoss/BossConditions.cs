@@ -49,9 +49,7 @@ namespace EnemyBehaviour
                     }
                     else if (healthValue <= 0 && isAlive)
                     {
-                        Debug.Log(isSetDestination);
                         isAlive = false;
-                        //Timing.RunCoroutine(DieState());
                         if (!isSetDestination)
                             PreDeadWalk();
                         else
@@ -95,10 +93,8 @@ namespace EnemyBehaviour
 			isBossAlive = false;
 
 			enemyAbstract.AbstractObjectSounder.PlayDeadAudio();
-			enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
+			enemyAbstract.EnemyAnimationsController.HighSpeedAnimation();
 			enemyAbstract.EnemyAnimationsController.SetState(8, true);
-            iFirstBossMove.GoOutEnemy();
-            enemyAbstract.EnemyAnimationsController.PlayDeadNormalizeCoroutine();
 			MainBarCanvas.gameObject.SetActive(false);
             enemyAbstract.EnemyMove.DisableAgent();
 			GetComponent<BoxCollider>().enabled = false;

@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using VotanGameplay;
 using VotanLibraries;
+using UnityStandardAssets.CrossPlatformInput;
 
 namespace PlayerBehaviour
 {
@@ -159,6 +160,8 @@ namespace PlayerBehaviour
             woodObject.SetActive(true);
             steelObject.SetActive(true);
             gemObject.SetActive(SetTotalResourcesAfterGame(true));
+
+            Joystick.IsGameOver = true;
 
             Timing.RunCoroutine(CoroutineForVisibleGameOverWindow(0.3f));
         }

@@ -45,7 +45,9 @@ namespace GameBehaviour
         private bool isOneCoroutine;
         private float damage;
         private bool isActiveSound;
+        #endregion
 
+        #region Свойства
         public float TimeToDisable
         {
             get

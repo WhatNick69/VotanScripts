@@ -117,6 +117,7 @@ namespace EnemyBehaviour
             {
                 while (i < 17)
                 {
+                    Debug.Log("HMMMMM");
                     i++;
                     TransformForDeadYNormalizing.Translate(0, -0.035f, 0);
                     yield return Timing.WaitForSeconds(0.01f);
@@ -128,6 +129,7 @@ namespace EnemyBehaviour
             while (i < 100)
             {
                 i++;
+                Debug.Log("HMMMMM");
                 TransformForDeadYNormalizing.Translate(0, -0.05f, 0);
                 yield return Timing.WaitForSeconds(0.01f);
             }

@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using PlayerBehaviour;
 using VotanUI;
+using ShopSystem;
 
 namespace CraftSystem
 {
@@ -11,14 +12,16 @@ namespace CraftSystem
 		[SerializeField]
 		Image logo;
 		ArmorCraft armCraft;
+		Shop shop;
 		[SerializeField]
 		Text nameWeapon;
 		[SerializeField]
 		Text armor;
 		string weight;
         ArmoryClass armoryClass;
+		ArmoryClass armoryClassShop;
 
-        public ArmoryClass ArmoryClass
+		public ArmoryClass ArmoryClass
         {
             get
             {
@@ -44,14 +47,32 @@ namespace CraftSystem
 			}
 		}
 
+		public ArmoryClass ArmoryClassShop
+		{
+			get
+			{
+				return armoryClassShop;
+			}
+
+			set
+			{
+				armoryClassShop = value;
+			}
+		}
+
 		public void SetNumber(int x)
 		{
 			numberButton = x;
 		}
 
-        public void SetArmorCraft(ArmorCraft AC)
+		public void SetArmorCraft(ArmorCraft AC)
 		{
 			armCraft = AC;
+		}
+
+		public void SetShop(Shop sh)
+		{
+			shop = sh;
 		}
 
 		public void SetName(string str)
@@ -85,5 +106,22 @@ namespace CraftSystem
                     break;
             }
         }
+
+		public void SetNumberItemShop()
+		{
+			MenuSoundManager.PlaySoundStatic(1);
+			switch (armoryClassShop)
+			{
+				case ArmoryClass.Cuirass:
+					shop.CuirassItemNumber = numberButton;
+					break;
+				case ArmoryClass.Helmet:
+					shop.HelmetItemNumber = numberButton;
+					break;
+				case ArmoryClass.Shield:
+					shop.ShieldItemNumber = numberButton;
+					break;
+			}
+		}
 	}
 }

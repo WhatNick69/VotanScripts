@@ -52,6 +52,7 @@ namespace EnemyBehaviour
         protected Vector3 randomPosition;
 
         protected EnemyConditions enemyConditions;
+        protected EnemyAttack enemyAttack;
         protected NavMeshAgent agent;
 
         protected Transform playerObjectTransformForFollow;
@@ -322,8 +323,12 @@ namespace EnemyBehaviour
         /// </summary>
         public virtual void RestartEnemyMove()
         {
-            if (enemyConditions == null)
+            if (enemyConditions == null
+                || enemyAttack == null)
+            {
+                enemyAttack = abstractEnemy.EnemyAttack;
                 enemyConditions = abstractEnemy.EnemyConditions;
+            }
 
             GetPlayerAndComponent();
             RandomSpeedSet();
@@ -360,9 +365,25 @@ namespace EnemyBehaviour
                         {
                             agent.speed = agentSpeed;
                         }
-                        if (agent.enabled) // идем за игроком
-                            agent.SetDestination
-                                (playerObjectTransformForFollow.position);
+
+                        // идем за игроком
+                        if (!enemyConditions.IsFrozen
+                            && agent.enabled)
+                        {
+                            if (!isAlwaysMoving)
+                            {
+                                if (!enemyAttack.IsMayToDamage)
+                                {
+                                    agent.SetDestination
+                                            (playerObjectTransformForFollow.position);
+                                }
+                            }
+                            else
+                            {
+                                agent.SetDestination
+                                    (playerObjectTransformForFollow.position);
+                            }
+                        }
                         yield return Timing.WaitForSeconds(frequencySearching);
                     }
                     else

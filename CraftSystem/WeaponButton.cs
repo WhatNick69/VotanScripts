@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using PlayerBehaviour;
+using ShopSystem;
 
 namespace CraftSystem
 {
@@ -11,6 +12,7 @@ namespace CraftSystem
         [SerializeField]
         Image logo;
         WeaponCraft wepCraft;
+		Shop shop;
         [SerializeField]
         Text nameWeapon;
         [SerializeField]
@@ -35,12 +37,22 @@ namespace CraftSystem
             wepCraft.SetWeaponItemNumber(numberButton);
         }
 
+		public void GetNumberShop()
+		{
+			shop.WeaponItemNumber = numberButton;
+		}
+
         public void SetWeaponCraft(WeaponCraft WP)
         {
             wepCraft = WP;
         }
 
-        public void SetName(string str)
+		public void SetShop(Shop sh)
+		{
+			shop = sh;
+		}
+
+		public void SetName(string str)
         {
             nameWeapon.text = str;
         }

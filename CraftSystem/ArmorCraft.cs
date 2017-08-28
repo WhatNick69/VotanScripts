@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using VotanLibraries;
 
 namespace CraftSystem
 {
@@ -27,9 +28,19 @@ namespace CraftSystem
 		[SerializeField]
 		GameObject helmetWindow;
 		[SerializeField]
+		GameObject helmetUpadateButton; 
+		[SerializeField]
 		GameObject cuirassWindow;
 		[SerializeField]
+		GameObject cuirassUpadateButton; 
+		[SerializeField]
 		GameObject shieldWindow;
+		[SerializeField]
+		GameObject shieldUpadateButton;
+		[SerializeField]
+		GameObject upadatePanel;
+		[SerializeField]
+		GameObject updateButton;
 
 		private GameObject cuirass;
 		private GameObject helmet;
@@ -47,8 +58,8 @@ namespace CraftSystem
 		private List<PartArmoryInformation> shieldList;
 
 		private GameObject[] shieldArray;
-		private GameObject[] cuirassdArray;
-		private GameObject[] heimetArray;
+		private GameObject[] cuirassArray;
+		private GameObject[] helmetArray;
 
 		[SerializeField]
 		private int cuirassItemNumber;
@@ -71,6 +82,10 @@ namespace CraftSystem
 		float normPosCuirass;
 		float normPosHelmet;
 		float normPosShield;
+
+		List<int> arrayBoughtCuirass;
+		List<int> arrayBoughtHelmet;
+		List<int> arrayBoughtShield;
 		#endregion
 
 		#region Свойства
@@ -127,6 +142,7 @@ namespace CraftSystem
 			shieldWindow.SetActive(false);
 			cuirassWindow.SetActive(false);
 			helmetWindow.SetActive(true);
+
 			PStats.ArmorPage();
             scrollRectHelmetRepository.horizontalNormalizedPosition = 0;
         }
@@ -139,6 +155,7 @@ namespace CraftSystem
 			shieldWindow.SetActive(false);
 			helmetWindow.SetActive(false);
 			cuirassWindow.SetActive(true);
+
 			PStats.ArmorPage();
 			scrollRectCuirasseRepository.horizontalNormalizedPosition = 0;
         }
@@ -151,9 +168,40 @@ namespace CraftSystem
 			helmetWindow.SetActive(false);
 			cuirassWindow.SetActive(false);
 			shieldWindow.SetActive(true);
+
 			PStats.ArmorPage();
 			scrollRectShieldRepository.horizontalNormalizedPosition = 0;
         }
+
+		public void UpdateWindow()
+		{
+			if (cuirassWindow.activeSelf)
+			{
+				upadatePanel.SetActive(true);
+				cuirassUpadateButton.SetActive(true);
+				helmetUpadateButton.SetActive(false);
+				shieldUpadateButton.SetActive(false);
+			}
+			else if (helmetWindow.activeSelf)
+			{
+				upadatePanel.SetActive(true);
+				helmetUpadateButton.SetActive(true);
+				shieldUpadateButton.SetActive(false);
+				cuirassUpadateButton.SetActive(false);
+			}
+			else
+			{
+				upadatePanel.SetActive(true);
+				shieldUpadateButton.SetActive(true);
+				cuirassUpadateButton.SetActive(false);
+				helmetUpadateButton.SetActive(false);
+			}
+		}
+
+		public void CloseUpdateWindow()
+		{
+			upadatePanel.SetActive(false);
+		}
 
 		public GameObject GetCuirassPrafab()
 		{
@@ -168,6 +216,51 @@ namespace CraftSystem
 		public GameObject GetGemPrafab()
 		{
 			return shield;
+		}
+
+		/// <summary>
+		/// Улучшает выбранную кирасу
+		/// </summary>
+		public void UpdateCuirass()
+		{
+			int level = PlayerPrefs.GetInt("cuirass_" + cuirassItemNumber);
+			if (level < 3)
+			{
+				PlayerPrefs.SetInt(("cuirass_" + cuirassItemNumber), level + 1);
+				Debug.Log(level+1);
+				PlayerPrefs.Save();
+			}
+			upadatePanel.SetActive(false);
+		}
+
+		/// <summary>
+		/// Улучшает выбранный щит
+		/// </summary>
+		public void UpdateShield()
+		{
+			int level = PlayerPrefs.GetInt("shield_" + shieldItemNumber);
+			if (level < 3)
+			{
+				PlayerPrefs.SetInt(("shield_" + shieldItemNumber), level + 1);
+				Debug.Log(level + 1);
+				PlayerPrefs.Save();
+			}
+			upadatePanel.SetActive(false);
+		}
+
+		/// <summary>
+		/// Улучшает выбранный шлем
+		/// </summary>
+		public void UpdateHelmet()
+		{
+			int level = PlayerPrefs.GetInt("helmet_" + helmetItemNumber);
+			if (level < 3)
+			{
+				PlayerPrefs.SetInt(("helmet_" + helmetItemNumber), level + 1);
+				Debug.Log(level + 1);
+				PlayerPrefs.Save();
+			}
+			upadatePanel.SetActive(false);
 		}
 
 		/// <summary>
@@ -222,12 +315,12 @@ namespace CraftSystem
             if (AP == null)
                 AP = GameObject.Find("GetPrefabs").GetComponent<ArmorPrefabs>();
 	        
-            AP.Cuirass = (GameObject)Resources.Load(cuirassPrefix + cuirassItemNumber + cuirassPostfix);
-			AP.Helmet = (GameObject)Resources.Load(helmetPrefix + helmetItemNumber + helmetPostfix);
+            AP.Cuirass = cuirassArray[cuirassItemNumber];
+			AP.Helmet = helmetArray[helmetItemNumber];
 			AP.Shield = shieldArray[shieldItemNumber];
 		}
 
-		private void Awake() // ____________start__________
+		private void Start() // ____________start__________
 		{
 			PStats = GetComponent<PlayerStats>();
 			AC = GetComponent<ArmorCraft>();
@@ -235,8 +328,12 @@ namespace CraftSystem
 			helmetList = new List<PartArmoryInformation>();
 			shieldList = new List<PartArmoryInformation>();
 			shieldArray = new GameObject[Resources.LoadAll("Prefabs/Armor/Shield").Length];
-			cuirassdArray = new GameObject[Resources.LoadAll("Prefabs/Armor/Cuirass").Length];
-			heimetArray = new GameObject[Resources.LoadAll("Prefabs/Armor/Helmet").Length];
+			cuirassArray = new GameObject[Resources.LoadAll("Prefabs/Armor/Cuirass").Length];
+			helmetArray = new GameObject[Resources.LoadAll("Prefabs/Armor/Helmet").Length];
+
+			arrayBoughtCuirass = new List<int>();
+			arrayBoughtHelmet = new List<int>();
+			arrayBoughtShield = new List<int>();
 
 			Timing.RunCoroutine(ShieldCorutine());
 			Timing.RunCoroutine(HelmetCorutine());
@@ -254,13 +351,21 @@ namespace CraftSystem
 		/// <returns></returns>
 		private IEnumerator<float> ShieldCorutine()
 		{
-			int count = Resources.LoadAll("Prefabs/Armor/Shield").Length;
-			for (int i = 0; i < count; i++)
+			int k = LibraryObjectsWorker.StringSplitter
+							(PlayerPrefs.GetString("shieldArray"), '_').Length;
+			for (int i = 0; i < k; i++)
+			{
+				arrayBoughtShield.Add(LibraryObjectsWorker.StringSplitter
+							(PlayerPrefs.GetString("shieldArray"), '_')[i]);
+			}
+
+			for (int i = 0; i < k; i++)
 			{
 				if (Resources.Load(shieldPrefix + i + shieldPostfix))
 				{
-					GameObject gemGgamObj = (GameObject)Resources.Load(shieldPrefix + i + shieldPostfix);
-					shieldArray[i] = gemGgamObj.GetComponent<LevelManager>().GetItemLevel(PlayerPrefs.GetInt("shieldLevel_" + i));
+					GameObject gemGgamObj = (GameObject)Resources.Load(shieldPrefix + arrayBoughtShield[i] + shieldPostfix);
+					shieldArray[i] = gemGgamObj.GetComponent<LevelManager>().GetItemLevel(PlayerPrefs.
+						GetInt("shield_" + arrayBoughtShield[i]));
 					shieldList.Add(shieldArray[i].GetComponent<PartArmoryInformation>());
 					GameObject item = Instantiate(itemArmor);
 					ArmorButton button = item.GetComponent<ArmorButton>();
@@ -285,13 +390,22 @@ namespace CraftSystem
 		/// <returns></returns>
 		private IEnumerator<float> CuirassCorutine()
 		{
-			int count = Resources.LoadAll("Prefabs/Armor/Cuirass").Length;
-			for (int i = 0; i < count; i++)
+			int k = LibraryObjectsWorker.StringSplitter
+							(PlayerPrefs.GetString("cuirassArray"), '_').Length;
+			for (int i = 0; i < k; i++)
+			{
+				arrayBoughtCuirass.Add(LibraryObjectsWorker.StringSplitter
+							(PlayerPrefs.GetString("cuirassArray"), '_')[i]);
+			}
+
+			for (int i = 0; i < k; i++)
 			{
 				if (Resources.Load(cuirassPrefix + i + cuirassPostfix))
 				{
-					GameObject gemGgamObj = (GameObject)Resources.Load(cuirassPrefix + i + cuirassPostfix);
-					cuirassList.Add(gemGgamObj.GetComponent<PartArmoryInformation>());
+					GameObject gemGgamObj = (GameObject)Resources.Load(cuirassPrefix + arrayBoughtCuirass[i] + cuirassPostfix);
+					cuirassArray[i] = gemGgamObj.GetComponent<LevelManager>().GetItemLevel(PlayerPrefs.
+						GetInt("cuirass_" + arrayBoughtCuirass[i]));
+					cuirassList.Add(cuirassArray[i].GetComponent<PartArmoryInformation>());
 					GameObject item = Instantiate(itemArmor);
 					ArmorButton button = item.GetComponent<ArmorButton>();
 					button.SetArmorCraft(AC);
@@ -315,14 +429,22 @@ namespace CraftSystem
 		/// <returns></returns>
 		private IEnumerator<float> HelmetCorutine()
 		{
-			int count = Resources.LoadAll("Prefabs/Armor/Helmet").Length;
-			
-			for (int i = 0; i < count; i++)
+			int k = LibraryObjectsWorker.StringSplitter
+							(PlayerPrefs.GetString("helmetArray"), '_').Length;
+			for (int i = 0; i < k; i++)
+			{
+				arrayBoughtHelmet.Add(LibraryObjectsWorker.StringSplitter
+							(PlayerPrefs.GetString("helmetArray"), '_')[i]);
+			}
+
+			for (int i = 0; i < k; i++)
 			{
 				if (Resources.Load(helmetPrefix + i + helmetPostfix))
 				{
-					GameObject gemGgamObj = (GameObject)Resources.Load(helmetPrefix + i + helmetPostfix);
-					helmetList.Add(gemGgamObj.GetComponent<PartArmoryInformation>());
+					GameObject gemGgamObj = (GameObject)Resources.Load(helmetPrefix + arrayBoughtHelmet[i] + helmetPostfix);
+					helmetArray[i] = gemGgamObj.GetComponent<LevelManager>().GetItemLevel(PlayerPrefs.
+						GetInt("helmet_" + arrayBoughtHelmet[i]));
+					helmetList.Add(helmetArray[i].GetComponent<PartArmoryInformation>());
 					GameObject item = Instantiate(itemArmor);
 					ArmorButton button = item.GetComponent<ArmorButton>();
 					button.SetArmorCraft(AC);

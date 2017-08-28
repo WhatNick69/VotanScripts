@@ -26,6 +26,8 @@ namespace VotanUI
 		GameObject selectArenaPage;
 		[SerializeField]
 		GameObject Settings;
+		[SerializeField]
+		GameObject Shop;
 
         [SerializeField]
         private Image imageFromLoadingFone;
@@ -36,6 +38,10 @@ namespace VotanUI
 			onMenu(inventoryMenuPage);
         }
 
+		public void ShopPageLoad()
+		{
+			onMenu(Shop);
+		}
 
 		public void WeaponMenuLoad()
 		{

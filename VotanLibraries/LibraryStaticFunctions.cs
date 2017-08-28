@@ -145,15 +145,16 @@ namespace VotanLibraries
 		/// <summary> 
 		/// Рассчитать силу замедления вращения оружия при попадании по врагу. 
 		/// 
-		/// Текущая реализация: ОРИГ._СКОР._ВРАЩЕНИЯ * (0.5 - (ВЕС_БРОНИ/200)). 
-		/// Диапазон значений: ~0 - 50. 
+        /// Чем меньше множитель - тем меньше замедление
+		/// Текущая реализация: ОРИГ._СКОР._ВРАЩЕНИЯ * (0.4 - (ВЕС_БРОНИ/400)). 
+		/// Диапазон значений: ~0 - 25. 
 		/// </summary> 
 		/// <param name="originalSpinSpeed"></param> 
 		/// <param name="armoryWeight"></param> 
 		/// <returns></returns> 
 		public static float CalculateSpinSpeedSlowMotionValue(float originalSpinSpeed, float armoryWeight)
 		{
-			return originalSpinSpeed * (0.5f - (armoryWeight / 200));
+			return originalSpinSpeed * (0.2f - (armoryWeight / 500));
 		}
 
 		/// <summary> 

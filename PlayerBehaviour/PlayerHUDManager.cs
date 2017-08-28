@@ -270,8 +270,8 @@ namespace PlayerBehaviour
         {
             if (arrayLeftIndicators == null) InitialisationStartArrays();
 
-            arrayLeftIndicators[indicatorPosition].GetComponent<RectTransform>().anchoredPosition =
-                new Vector2(0, -35 + (35 * indicatorPosition));
+           //arrayLeftIndicators[indicatorPosition].GetComponent<RectTransform>().anchoredPosition =
+           //    new Vector2(0, -35 + (35 * indicatorPosition));
         }
 
         /// <summary>
@@ -300,13 +300,12 @@ namespace PlayerBehaviour
             }
         }
 
-        /// <summary>
-        /// Открыть левый инвентарь
-        /// </summary>
-        public void OnClickOpenLeftInventory()
+        public void OnClickOpenAllInventories()
         {
             if (leftCoroutine != null)
                 StopCoroutine(leftCoroutine);
+            if (rightCoroutine != null)
+                StopCoroutine(rightCoroutine);
 
             if (GetCountOfItems() > 0)
             {
@@ -325,10 +324,26 @@ namespace PlayerBehaviour
                         StartCoroutine(CoroutineForMoveInventoryWindow(true, false));
                 }
             }
-            else
+            if (GetCountOfSkills() > 0)
             {
-                playerComponentsControl.PlayerHUDAudioStorage.PlaySoundImpossibleClick();
+                if (!isRightInventoryOpen)
+                {
+                    playerComponentsControl.PlayerHUDAudioStorage.PlaySoundSwipeInventory(true);
+                    isRightInventoryOpen = true;
+                    rightCoroutine =
+                        StartCoroutine(CoroutineForMoveInventoryWindow(false, true));
+                }
+                else
+                {
+                    playerComponentsControl.PlayerHUDAudioStorage.PlaySoundSwipeInventory(false);
+                    isRightInventoryOpen = false;
+                    rightCoroutine =
+                        StartCoroutine(CoroutineForMoveInventoryWindow(false, false));
+                }
             }
+
+            if (GetCountOfSkills() == 0 && GetCountOfItems() == 0)
+                playerComponentsControl.PlayerHUDAudioStorage.PlaySoundImpossibleClick();
         }
 
         /// <summary>
@@ -438,8 +453,8 @@ namespace PlayerBehaviour
         {
             if (arrayRightIndicators == null) InitialisationStartArrays();
 
-            arrayRightIndicators[indicatorPosition].GetComponent<RectTransform>().anchoredPosition =
-                new Vector2(0, -35 + (35 * indicatorPosition));
+            //arrayRightIndicators[indicatorPosition].GetComponent<RectTransform>().anchoredPosition =
+            //    new Vector2(0, -35 + (35 * indicatorPosition));
         }
 
         /// <summary>
@@ -464,37 +479,6 @@ namespace PlayerBehaviour
                     arrayRightIndicators[indicatorPosition].color = unActiveIndicatorColor;
                     arrayRightIndicators[indicatorPosition].GetComponent<Animation>().enabled = false;
                 }
-            }
-        }
-
-        /// <summary>
-        /// Открыть правый инвентарь
-        /// </summary>
-        public void OnClickOpenRightInventory()
-        {
-            if (rightCoroutine != null)
-                StopCoroutine(rightCoroutine);
-
-            if (GetCountOfSkills() > 0)
-            {
-                if (!isRightInventoryOpen)
-                {
-                    playerComponentsControl.PlayerHUDAudioStorage.PlaySoundSwipeInventory(true);
-                    isRightInventoryOpen = true;
-                    rightCoroutine =
-                        StartCoroutine(CoroutineForMoveInventoryWindow(false, true));
-                }
-                else
-                {
-                    playerComponentsControl.PlayerHUDAudioStorage.PlaySoundSwipeInventory(false);
-                    isRightInventoryOpen = false;
-                    rightCoroutine =
-                        StartCoroutine(CoroutineForMoveInventoryWindow(false, false));
-                }
-            }
-            else
-            {
-                playerComponentsControl.PlayerHUDAudioStorage.PlaySoundImpossibleClick();
             }
         }
 

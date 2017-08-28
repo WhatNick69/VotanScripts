@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using VotanGameplay;
 using VotanInterfaces;
-using System;
 
 namespace EnemyBehaviour
 {
@@ -36,24 +35,23 @@ namespace EnemyBehaviour
         /// Корутина, которая выкидывает босса за пределы башни.
         /// </summary>
         /// <returns></returns>
-        public IEnumerator<float> CoroutineForFlyBoss()
+        public IEnumerator<float> CoroutineForFinalDeadTranslate()
         {
-            yield return Timing.WaitForSeconds(3.5f);
+            Vector3 downVector = new Vector3(0, -1, 0);
             for (int i = 0;i<100;i++)
             {
-                transform.Translate((playerObjectTransformForFollow.forward-
-                    transform.forward)*0.1f);
+                transform.Translate(downVector);
                 yield return Timing.WaitForSeconds(Time.deltaTime);
             }
+            abstractEnemy.EnemyAnimationsController.IsDowner = true;
         }
 
         /// <summary>
         /// Выкинуть босса за пределы башни.
         /// </summary>
-        public void GoOutEnemy()
+        public void PlayCoroutineForFinalDead()
         {
-            DisableAgent();
-            Timing.RunCoroutine(CoroutineForFlyBoss());
+            Timing.RunCoroutine(CoroutineForFinalDeadTranslate());
         }
 
         /// <summary>
@@ -61,7 +59,6 @@ namespace EnemyBehaviour
         /// </summary>
         public void SetDeadPosition()
         {
-
             EnableAgent();
             abstractEnemy.EnemyAnimationsController.DisableAllStates();
             abstractEnemy.EnemyAnimationsController.SetState(6, true);
@@ -70,6 +67,7 @@ namespace EnemyBehaviour
                 GameManager.GetClosestDeadPositionForEnemy(transform.position);
 
             agent.stoppingDistance = 0;
+            agent.speed = agentSpeed;
             agent.speed /= 2;
             Timing.RunCoroutine(CoroutineForMoveToDeadPosition());
         }
@@ -84,8 +82,9 @@ namespace EnemyBehaviour
                 playerObjectTransformForFollow.position) > 1)
             {
                 abstractEnemy.EnemyAnimationsController.SetState(6, true);
-                agent.SetDestination
-                    (playerObjectTransformForFollow.position);
+                if (agent.enabled)
+                    agent.SetDestination
+                        (playerObjectTransformForFollow.position);
                 yield return Timing.WaitForSeconds(frequencySearching);
             }
             DeadPositionDestination();
@@ -96,6 +95,7 @@ namespace EnemyBehaviour
         /// </summary>
         public void DeadPositionDestination()
         {
+            DisableAgent();
             abstractEnemy.EnemyConditions.IsAlive = true;
             abstractEnemy.EnemyAnimationsController.DisableAllStates();
             abstractEnemy.EnemyAnimationsController.SetState(7, true);

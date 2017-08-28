@@ -164,11 +164,11 @@ namespace VotanInterfaces
         /// башни (выкидывает его).
         /// </summary>
         /// <returns></returns>
-        IEnumerator<float> CoroutineForFlyBoss();
+        IEnumerator<float> CoroutineForFinalDeadTranslate();
 
         /// <summary>
         /// Метод, который запускает корутину CoroutineForFlyBoss()
         /// </summary>
-        void GoOutEnemy();
+        void PlayCoroutineForFinalDead();
     }
 }

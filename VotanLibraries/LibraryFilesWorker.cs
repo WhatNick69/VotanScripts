@@ -45,13 +45,16 @@ namespace VotanLibraries
 			for (int i = 0; i < tempArray.Length; i++)
 				if (!Regex.IsMatch(tempArray[i], "[a-z]"))
 				{
+					if(tempArray[i] != "")
 					destArray.Add(Convert.ToInt32(tempArray[i]));
 				}
 			//вывод
 			int[] resArray = new int[destArray.Count];
-            for (int i = 0; i < destArray.Count; i++)
-                resArray[i] = destArray[i];
-
+			for (int i = 0; i < destArray.Count; i++)
+			{
+				resArray[i] = destArray[i];
+			}
+			
             return resArray;
         }
     }

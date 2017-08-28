@@ -44,7 +44,7 @@ namespace CraftSystem
 
             set
             {
-                secondItem = value;
+				secondItem = value;
             }
         }
 
@@ -57,7 +57,7 @@ namespace CraftSystem
 
             set
             {
-                thirdItem = value;
+				thirdItem = value;
             }
         }
 

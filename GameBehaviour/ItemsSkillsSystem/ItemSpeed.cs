@@ -41,7 +41,7 @@ namespace GameBehaviour
         private Color fonNonActiveColor;
         private int itemNumberPosition;
 
-        private bool isEffecting;
+        private static bool isEffecting;
         #endregion
 
         #region Свойства
@@ -285,6 +285,7 @@ namespace GameBehaviour
 
             if (ItemCount <= 0)
             {
+                isEffecting = false;
                 Destroy(gameObject);
             }
             else

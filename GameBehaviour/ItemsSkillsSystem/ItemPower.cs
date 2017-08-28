@@ -40,7 +40,7 @@ namespace GameBehaviour
         private Color fonNonActiveColor;
         private int itemNumberPosition;
 
-        private bool isEffecting;
+        private static bool isEffecting;
         #endregion
 
         #region Свойства
@@ -279,8 +279,6 @@ namespace GameBehaviour
 
                 isContainsItem = true;
                 EnableItem();
-                //playerComponentsControlInstance.PlayerHUDManager.
-                //    RefreshInventory();
             }
         }
 
@@ -306,6 +304,7 @@ namespace GameBehaviour
             playerComponentsControlInstance.PlayerVisualEffects.StopPowerEffectWeapon();
             if (ItemCount <= 0)
             {
+                isEffecting = false;
                 Destroy(gameObject);
             }
             else
