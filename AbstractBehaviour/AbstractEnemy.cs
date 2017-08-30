@@ -2,7 +2,6 @@
 using UnityEngine;
 using VotanInterfaces;
 using GameBehaviour;
-using System;
 
 namespace AbstractBehaviour
 {
@@ -16,7 +15,7 @@ namespace AbstractBehaviour
     {
         #region Переменные
         [SerializeField, Tooltip("Точка в центре врага")]
-        private Transform centerOfEnemy;
+        protected Transform centerOfEnemy;
         [SerializeField,Tooltip("Класс врага")]
         private EnemyType enemyType;
         [SerializeField,Tooltip("Номер противника в стеке")]

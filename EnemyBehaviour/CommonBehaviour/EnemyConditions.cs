@@ -43,7 +43,7 @@ namespace EnemyBehaviour
 
         private Transform cameraTransform;
 
-        private IAIMoving enemyMove;
+        protected IAIMoving enemyMove;
         protected IEnemyBehaviour enemyAbstract;
 
         protected bool isMayGetDamage = true;
@@ -520,7 +520,7 @@ namespace EnemyBehaviour
         /// Замедление врага от холода
         /// </summary>
         /// <returns></returns>
-        public IEnumerator<float> CoroutineForFrozenDamage(float damage,IWeapon weapon)
+        public virtual IEnumerator<float> CoroutineForFrozenDamage(float damage,IWeapon weapon)
         {
             enemyAbstract.EnemyAnimationsController.SetState(2, true);
             enemyMove.SetNewSpeedOfNavMeshAgent(0, 0);

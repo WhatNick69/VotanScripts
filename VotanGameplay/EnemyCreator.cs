@@ -256,6 +256,18 @@ namespace VotanGameplay
         }
 
         /// <summary>
+        /// Послать всем игрокам сигнал о том, что на арене
+        /// появился босс
+        /// </summary>
+        public static void SendToPlayersCallBossCame(Transform boss,float timeToFocus)
+        {
+            for (int i = 0; i < AllPlayerManager.PlayerComponentsList.Count; i++)
+            {
+                AllPlayerManager.PlayerComponentsList[i].PlayerCameraSmooth.FocusToBoss(boss, timeToFocus);
+            }
+        }
+
+        /// <summary>
         /// Увеличиваем количество противников для следующей волны
         /// </summary>
         private void GrowNumberOfEnemiesForNextWave()
@@ -390,8 +402,18 @@ namespace VotanGameplay
                         (int)SetParameterOfEnemy(3000, hardcoreMultiplier*2); 
                     break;
             }
-            StaticStorageWithEnemies.ListEnemy[number]
-                .GetComponent<IEnemyInStack>().RestartEnemy();
+            if (number == StaticStorageWithEnemies.ListEnemy.Length - 1)
+            {
+                StaticStorageWithEnemies.ListEnemy[number]
+                    .GetComponent<IBoss>().PlayIntro();
+            }
+            else
+            {
+                StaticStorageWithEnemies.ListEnemy[number]
+                    .GetComponent<IEnemyInStack>().RestartEnemy();
+            }
+            //StaticStorageWithEnemies.ListEnemy[number]
+            //    .GetComponent<IBoss>().PlayIntro();
         }
     }
 }

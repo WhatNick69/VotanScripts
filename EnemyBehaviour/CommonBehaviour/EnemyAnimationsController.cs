@@ -35,12 +35,16 @@ namespace EnemyBehaviour
         /// <summary>
         /// Рестарт анимации врага
         /// </summary>
-        public void RestartEnemyAnimationsController()
+        public void RestartEnemyAnimationsController(bool isNeedToRebind=true)
         {
             IsDowner = false;
             animatorOfObject.enabled = true;
+            HighSpeedAnimation();
             TransformForDeadYNormalizing.localPosition = Vector3.zero;
-            animatorOfObject.Rebind();
+            DisableAllStates();
+
+            if (isNeedToRebind)
+                animatorOfObject.Rebind();
         }
 
         /// <summary>
@@ -117,7 +121,6 @@ namespace EnemyBehaviour
             {
                 while (i < 17)
                 {
-                    Debug.Log("HMMMMM");
                     i++;
                     TransformForDeadYNormalizing.Translate(0, -0.035f, 0);
                     yield return Timing.WaitForSeconds(0.01f);
@@ -129,7 +132,6 @@ namespace EnemyBehaviour
             while (i < 100)
             {
                 i++;
-                Debug.Log("HMMMMM");
                 TransformForDeadYNormalizing.Translate(0, -0.05f, 0);
                 yield return Timing.WaitForSeconds(0.01f);
             }

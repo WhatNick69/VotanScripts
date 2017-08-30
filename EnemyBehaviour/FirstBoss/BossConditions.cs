@@ -16,8 +16,8 @@ namespace EnemyBehaviour
 	{
 		#region Переменные 
 		private EnemyArmory enemyArmory;
-        IFirstBossMove iFirstBossMove;
-		private bool isBossAlive = true;
+        private IFirstBossMove iFirstBossMove;
+        private bool isBossAlive = true;
         [SerializeField]
         private bool isSetDestination;
 		#endregion
@@ -29,6 +29,10 @@ namespace EnemyBehaviour
 			{
 				return isBossAlive;
 			}
+            set
+            {
+                isBossAlive = value;
+            }
 		}
 
         public override float HealthValue
@@ -81,28 +85,6 @@ namespace EnemyBehaviour
             isSetDestination = true;
             iFirstBossMove.SetDeadPosition();
             MainBarCanvas.gameObject.SetActive(false);
-        }
-
-		/// <summary> 
-		/// Состояние смерти босса 
-		/// </summary> 
-		/// <returns></returns> 
-		public override IEnumerator<float> DieState()
-		{
-			IsAlive = false;
-			isBossAlive = false;
-
-			enemyAbstract.AbstractObjectSounder.PlayDeadAudio();
-			enemyAbstract.EnemyAnimationsController.HighSpeedAnimation();
-			enemyAbstract.EnemyAnimationsController.SetState(8, true);
-			MainBarCanvas.gameObject.SetActive(false);
-            enemyAbstract.EnemyMove.DisableAgent();
-			GetComponent<BoxCollider>().enabled = false;
-
-            while (!enemyAbstract.EnemyAnimationsController.IsDowner)
-                yield return Timing.WaitForSeconds(0.5f);
-            SendAllPlayerWinCall();
-            EnemyCreator.ReturnEnemyToStack(enemyAbstract.EnemyNumber);
         }
 
 		/// <summary> 
@@ -191,8 +173,12 @@ namespace EnemyBehaviour
 						if (weapon.GemType == GemType.Electric)
 							enemyAbstract.Physicffect.EventEffectWithoutDefenceBonus(weapon);
 
-						dmg = GetDamageWithResistance(dmg, gemPower, weapon);
-						Timing.RunCoroutine(CoroutineForGetDamage(false, dmg));
+                        if (isBossAlive)
+                            dmg = GetDamageWithResistance(dmg, gemPower, weapon);
+                        else
+                            dmg = GetDamageWithResistanceWithoutEffect(dmg, weapon);
+
+                        Timing.RunCoroutine(CoroutineForGetDamage(false, dmg));
 
 						HealthValue -=
 						LibraryStaticFunctions.GetRangeValue(dmg, 0.1f);
@@ -207,15 +193,37 @@ namespace EnemyBehaviour
 			return false;
 		}
 
-		/// <summary> 
-		/// Корутина на получения урона и воспроизведения анимации. 
-		/// Если получаемый урон больше, либо равен четверти здоровья врага 
-		/// то мы воспроизводим анимацию 
-		/// </summary> 
-		/// <param name="isLongAttack"></param> 
-		/// <param name="dmg"></param> 
-		/// <returns></returns> 
-		public override IEnumerator<float> CoroutineForGetDamage(bool isLongAttack = false, float dmg = 0)
+        /// <summary> 
+        /// Состояние смерти босса 
+        /// </summary> 
+        /// <returns></returns> 
+        public override IEnumerator<float> DieState()
+        {
+            IsAlive = false;
+            isBossAlive = false;
+
+            enemyAbstract.AbstractObjectSounder.PlayDeadAudio();
+            enemyAbstract.EnemyAnimationsController.HighSpeedAnimation();
+            enemyAbstract.EnemyAnimationsController.SetState(9, true);
+            MainBarCanvas.gameObject.SetActive(false);
+            enemyAbstract.EnemyMove.DisableAgent();
+            GetComponent<BoxCollider>().enabled = false;
+
+            while (!enemyAbstract.EnemyAnimationsController.IsDowner)
+                yield return Timing.WaitForSeconds(0.5f);
+            SendAllPlayerWinCall();
+            EnemyCreator.ReturnEnemyToStack(enemyAbstract.EnemyNumber);
+        }
+
+        /// <summary> 
+        /// Корутина на получения урона и воспроизведения анимации. 
+        /// Если получаемый урон больше, либо равен четверти здоровья врага 
+        /// то мы воспроизводим анимацию 
+        /// </summary> 
+        /// <param name="isLongAttack"></param> 
+        /// <param name="dmg"></param> 
+        /// <returns></returns> 
+        public override IEnumerator<float> CoroutineForGetDamage(bool isLongAttack = false, float dmg = 0)
 		{
 			if (!isLongAttack)
 				isMayGetDamage = false;
@@ -241,5 +249,39 @@ namespace EnemyBehaviour
 			if (!isLongAttack)
 				isMayGetDamage = true;
 		}
-	}
+
+        /// <summary>
+        /// Корутина для ледяной атаки
+        /// </summary>
+        /// <param name="damage"></param>
+        /// <param name="weapon"></param>
+        /// <returns></returns>
+        public override IEnumerator<float> CoroutineForFrozenDamage(float damage, IWeapon weapon)
+        {
+            enemyAbstract.EnemyAnimationsController.SetState(2, true);
+            enemyMove.SetNewSpeedOfNavMeshAgent(0, 0);
+            enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0);
+            float time = enemyAbstract.IceEffect.EventEffect(damage, weapon);
+            enemyAbstract.EnemyMove.DisableAgent();
+
+            IsFrozen = true;
+            yield return Timing.WaitForSeconds(time);
+            IsFrozen = false;
+
+            if (IsAlive)
+            {
+                enemyMove.SetNewSpeedOfNavMeshAgent(enemyMove.AgentSpeed,
+                    enemyMove.RotationSpeed);
+                enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
+                enemyAbstract.EnemyMove.Agent.enabled = true;
+                enemyAbstract.EnemyAnimationsController.SetState(2, false);
+            }
+            else
+            {
+                enemyAbstract.EnemyAnimationsController.DisableAllStates();
+                enemyAbstract.EnemyAnimationsController.SetState(3, true);
+                enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
+            }
+        }
+    }
 }

@@ -1,7 +1,6 @@
 ﻿using MovementEffects;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 using VotanLibraries;
 
 namespace EnemyBehaviour
@@ -21,6 +20,8 @@ namespace EnemyBehaviour
         private Transform startKneePoint;
         [SerializeField, Tooltip("Конечная точка колена")]
         private Transform finishKneePoint;
+        [SerializeField, Tooltip("Компонента магического оружия врага")]
+        private MagicSwordEffect magicSwordEffect;
         #endregion
 
         #region Свойства
@@ -58,6 +59,7 @@ namespace EnemyBehaviour
         /// <returns></returns>
         public override IEnumerator<float> CoroutineForAttack(bool isStop)
         {
+            magicSwordEffect.PlayPowerEffectWeapon();
             isMayToPlayAttackAnimation = false;
 
             if (isStop)
@@ -71,6 +73,7 @@ namespace EnemyBehaviour
             yield return Timing.WaitForSeconds(attackLatency);
 
             isMayToPlayAttackAnimation = true;
+            magicSwordEffect.StopPowerEffectWeapon();
         }
 
         /// <summary>
@@ -90,6 +93,7 @@ namespace EnemyBehaviour
         /// <returns></returns>
         private IEnumerator<float> CoroutineForGolfAttack(bool isStop)
         {
+            magicSwordEffect.PlayPowerEffectWeapon();
             isMayToPlayAttackAnimation = false;
 
             if (isStop)
@@ -103,6 +107,7 @@ namespace EnemyBehaviour
             yield return Timing.WaitForSeconds(attackLatency);
 
             isMayToPlayAttackAnimation = true;
+            magicSwordEffect.StopPowerEffectWeapon();
         }
 
         /// <summary>
@@ -122,6 +127,7 @@ namespace EnemyBehaviour
         /// <returns></returns>
         private IEnumerator<float> CoroutineForSamuraAttack(bool isStop)
         {
+            magicSwordEffect.PlayPowerEffectWeapon();
             isMayToPlayAttackAnimation = false;
 
             if (isStop)
@@ -135,6 +141,7 @@ namespace EnemyBehaviour
             yield return Timing.WaitForSeconds(attackLatency);
 
             isMayToPlayAttackAnimation = true;
+            magicSwordEffect.StopPowerEffectWeapon();
         }
 
         /// <summary>
@@ -169,6 +176,11 @@ namespace EnemyBehaviour
             isMayToPlayAttackAnimation = true;
         }
 
+        /// <summary>
+        /// Атака по врагу
+        /// </summary>
+        /// <param name="isAttackWithGun"></param>
+        /// <returns></returns>
         public bool AttackToPlayer(bool isAttackWithGun)
         {
             if (isAttackWithGun)
@@ -197,7 +209,6 @@ namespace EnemyBehaviour
                     return false;
                 }
             }
-
         }
     }
 }

@@ -69,14 +69,22 @@ namespace VotanGameplay
                     (frequencyOfLighting, 0.9f)));
                 if (!isLight)
                 {
-                    RandomPositionOfLighting();
-                    NullPositions();
-                    RandomerScalerAndWidther();
-
-                    Timing.RunCoroutine(CoroutineForMoveTrails());
-                    Timing.RunCoroutine(CoroutineForSound());
+                    FireLighting();
                 }
             }
+        }
+
+        /// <summary>
+        /// Зажечь молнию
+        /// </summary>
+        public void FireLighting()
+        {
+            RandomPositionOfLighting();
+            NullPositions();
+            RandomerScalerAndWidther();
+
+            Timing.RunCoroutine(CoroutineForMoveTrails());
+            Timing.RunCoroutine(CoroutineForSound());
         }
 
         /// <summary>

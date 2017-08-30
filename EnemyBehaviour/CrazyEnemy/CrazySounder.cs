@@ -10,13 +10,16 @@ namespace EnemyBehaviour
     public class CrazySounder
         : AbstractSoundStorage
     {
+        #region Переменные, ссылки и массивы
         protected static AudioClip[] audioHurt; // Звуки повреждений по телу
         protected static AudioClip[] audioDead; // Звуки смерти персонажа
         protected static AudioClip[] audioSteps; // Звуки шагов
-        private static AudioClip[] audioSpin; // Звуки вращения оружия
-        private float spinRotating;
-        private bool isMayToPlayWeaponAudio;
+        protected static AudioClip[] audioSpin; // Звуки вращения оружия
+        protected float spinRotating;
+        protected bool isMayToPlayWeaponAudio;
+        #endregion
 
+        #region Инициализация
         /// <summary>
         /// Инициализация
         /// </summary>
@@ -36,11 +39,14 @@ namespace EnemyBehaviour
         /// </summary>
         protected override void InitialisationDeadSounds()
         {
-            tempAudioList = Resources.LoadAll("Sounds/Mobs/LiveEnemies/Dead");
-            audioDead = new AudioClip[tempAudioList.Length];
-            for (int i = 0; i < tempAudioList.Length; i++)
+            if (audioDead == null)
             {
-                audioDead[i] = (AudioClip)tempAudioList[i];
+                tempAudioList = Resources.LoadAll("Sounds/Mobs/LiveEnemies/Dead");
+                audioDead = new AudioClip[tempAudioList.Length];
+                for (int i = 0; i < tempAudioList.Length; i++)
+                {
+                    audioDead[i] = (AudioClip)tempAudioList[i];
+                }
             }
         }
 
@@ -49,11 +55,14 @@ namespace EnemyBehaviour
         /// </summary>
         protected override void InitialisationHurtSounds()
         {
-            tempAudioList = Resources.LoadAll("Sounds/Mobs/LiveEnemies/GetDamage");
-            audioHurt = new AudioClip[tempAudioList.Length];
-            for (int i = 0; i < tempAudioList.Length; i++)
+            if (audioHurt == null)
             {
-                audioHurt[i] = (AudioClip)tempAudioList[i];
+                tempAudioList = Resources.LoadAll("Sounds/Mobs/LiveEnemies/GetDamage");
+                audioHurt = new AudioClip[tempAudioList.Length];
+                for (int i = 0; i < tempAudioList.Length; i++)
+                {
+                    audioHurt[i] = (AudioClip)tempAudioList[i];
+                }
             }
         }
 
@@ -62,13 +71,50 @@ namespace EnemyBehaviour
         /// </summary>
         protected override void InitialisationStepsSounds()
         {
-            tempAudioList = Resources.LoadAll("Sounds/PlayerMale/Steps");
-            audioSteps = new AudioClip[tempAudioList.Length];
-            for (int i = 0; i < tempAudioList.Length; i++)
+            if (audioSteps == null)
             {
-                audioSteps[i] = (AudioClip)tempAudioList[i];
+                tempAudioList = Resources.LoadAll("Sounds/PlayerMale/Steps");
+                audioSteps = new AudioClip[tempAudioList.Length];
+                for (int i = 0; i < tempAudioList.Length; i++)
+                {
+                    audioSteps[i] = (AudioClip)tempAudioList[i];
+                }
             }
         }
+
+
+        /// <summary>
+        /// Удар по броне
+        /// </summary>
+        private void InitialisationHitToArmorySounds()
+        {
+            if (audioHitArmory == null)
+            {
+                tempAudioList = Resources.LoadAll("Sounds/Common/Weapon/Cutting");
+                audioHitArmory = new AudioClip[tempAudioList.Length];
+                for (int i = 0; i < tempAudioList.Length; i++)
+                {
+                    audioHitArmory[i] = (AudioClip)tempAudioList[i];
+                }
+            }
+        }
+
+        /// <summary>
+        /// Взмах оружия
+        /// </summary>
+        private void InitialisationSpinSounds()
+        {
+            if (audioSpin == null)
+            {
+                tempAudioList = Resources.LoadAll("Sounds/Mobs/Common/Swipe");
+                audioSpin = new AudioClip[tempAudioList.Length];
+                for (int i = 0; i < tempAudioList.Length; i++)
+                {
+                    audioSpin[i] = (AudioClip)tempAudioList[i];
+                }
+            }
+        }
+        #endregion
 
         /// <summary>
         /// Получение урона
@@ -99,32 +145,6 @@ namespace EnemyBehaviour
         }
 
         /// <summary>
-        /// Удар по броне
-        /// </summary>
-        private void InitialisationHitToArmorySounds()
-        {
-            tempAudioList = Resources.LoadAll("Sounds/Common/Weapon/Cutting");
-            audioHitArmory = new AudioClip[tempAudioList.Length];
-            for (int i = 0; i < tempAudioList.Length; i++)
-            {
-                audioHitArmory[i] = (AudioClip)tempAudioList[i];
-            }
-        }
-
-        /// <summary>
-        /// Взмах оружия
-        /// </summary>
-        private void InitialisationSpinSounds()
-        {
-            tempAudioList = Resources.LoadAll("Sounds/Mobs/Common/Swipe");
-            audioSpin = new AudioClip[tempAudioList.Length];
-            for (int i = 0; i < tempAudioList.Length; i++)
-            {
-                audioSpin[i] = (AudioClip)tempAudioList[i];
-            }
-        }
-
-        /// <summary>
         /// Звук вращения клинком
         /// </summary>
         public override void PlaySpinAudio(float value)
@@ -139,11 +159,10 @@ namespace EnemyBehaviour
             audioSourceWeapon.Play();
         }
 
-        public override void PlaySpinAudio(float speed, bool value = false)
-        {
-            // Пустая реализация
-        }
-
+        /// <summary>
+        /// Проиграть звук удара
+        /// </summary>
+        /// <param name="value"></param>
         public override void PlayWeaponHitAudio(int value)
         {
             if (value == 2)
@@ -165,11 +184,17 @@ namespace EnemyBehaviour
             }
         }
 
+        /// <summary>
+        /// Проиграть звук падения тела на землю после смерти
+        /// </summary>
         public override void FallObject()
         {
             PlayBodyFallAudio(audioSourceLegs);
         }
 
+        /// <summary>
+        /// Проиграть звук шагов
+        /// </summary>
         public override void PlayStepAudio()
         {
             audioSourceLegs.clip =
@@ -177,6 +202,16 @@ namespace EnemyBehaviour
             audioSourceLegs.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
             audioSourceLegs.volume = volumeStep;
             audioSourceLegs.Play();
+        }
+
+        /// <summary>
+        /// Пустая реализация звука вращения оружием
+        /// </summary>
+        /// <param name="speed"></param>
+        /// <param name="value"></param>
+        public override void PlaySpinAudio(float speed, bool value = false)
+        {
+            // Пустая реализация
         }
     }
 }

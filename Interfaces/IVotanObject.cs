@@ -2,24 +2,40 @@
 using EnemyBehaviour;
 using GameBehaviour;
 using PlayerBehaviour;
+using System.Collections.Generic;
 using UnityEngine;
 
 /*
  * Интерфейсы данного скрипта реализуют 
- * общую логику поведения
- * таких объектов, как общий объект, что 
- * является родителей для
- * таких потомков, как игрок, либо враг.
+ * Логику поведения врага, босса, врага
+ * для инстанса, игрока и обычного объекта.
  */
 namespace VotanInterfaces
 {
     /// <summary>
-    /// Интерфейс для реализации общего 
-    /// поведения объекта
+    /// Интерфейс для реализации поведения босса в общем виде
     /// </summary>
-    public interface IVotanObjectBehaviour
+    public interface IBoss
     {
+        /// <summary>
+        /// Корутина для интро босса
+        /// </summary>
+        IEnumerator<float> CoroutineForBossIntro();
 
+        /// <summary>
+        /// Запустить корутину интро босса
+        /// </summary>
+        void PlayIntro();
+
+        /// <summary>
+        /// Закончилось ли интро
+        /// </summary>
+        bool IsIntroEnded { get; set; }
+
+        /// <summary>
+        /// Отключить интро
+        /// </summary>
+        void DisableIntro();
     }
 
     /// <summary>

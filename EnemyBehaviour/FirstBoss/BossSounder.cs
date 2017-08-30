@@ -1,4 +1,5 @@
-﻿using AbstractBehaviour;
+﻿
+using AbstractBehaviour;
 using UnityEngine;
 using VotanLibraries;
 
@@ -14,10 +15,11 @@ namespace EnemyBehaviour
         protected static AudioClip[] audioHurt; // Звуки повреждений по телу
         protected static AudioClip[] audioDead; // Звуки смерти персонажа
         protected static AudioClip[] audioSteps; // Звуки шагов
-        private static AudioClip[] audioSpin; // Звуки вращения оружия
-        private static AudioClip[] audioRoarAttack; // Звуки вращения оружия
-        private static AudioClip[] audioBreath;
-        private bool isMayToPlayWeaponAudio;
+        protected static AudioClip[] audioSpin; // Звуки вращения оружия
+        protected static AudioClip[] audioRoarAttack; // Звуки вращения оружия
+        protected static AudioClip[] audioBreath;
+        protected static AudioClip[] audioIntroBoss;
+        protected bool isMayToPlayWeaponAudio;
         #endregion
 
         #region Инициализация
@@ -35,6 +37,23 @@ namespace EnemyBehaviour
             InitialisationHitToArmorySounds();
             InitialisationRoarAttackSounds();
             InitialisationBreathAudio();
+            InitialisationIntroAudio();
+        }
+
+        /// <summary>
+        /// Инициализация звуков интро
+        /// </summary>
+        private void InitialisationIntroAudio()
+        {
+            if (audioIntroBoss == null)
+            {
+                tempAudioList = Resources.LoadAll("Sounds/Mobs/FirstBoss/Intro");
+                audioIntroBoss = new AudioClip[tempAudioList.Length];
+                for (int i = 0; i < tempAudioList.Length; i++)
+                {
+                    audioIntroBoss[i] = (AudioClip)tempAudioList[i];
+                }
+            }
         }
 
         /// <summary>
@@ -42,11 +61,14 @@ namespace EnemyBehaviour
         /// </summary>
         private void InitialisationBreathAudio()
         {
-            tempAudioList = Resources.LoadAll("Sounds/Mobs/FirstBoss/Breath");
-            audioBreath = new AudioClip[tempAudioList.Length];
-            for (int i = 0; i < tempAudioList.Length; i++)
+            if (audioBreath == null)
             {
-                audioBreath[i] = (AudioClip)tempAudioList[i];
+                tempAudioList = Resources.LoadAll("Sounds/Mobs/FirstBoss/Breath");
+                audioBreath = new AudioClip[tempAudioList.Length];
+                for (int i = 0; i < tempAudioList.Length; i++)
+                {
+                    audioBreath[i] = (AudioClip)tempAudioList[i];
+                }
             }
         }
 
@@ -55,11 +77,14 @@ namespace EnemyBehaviour
         /// </summary>
         protected override void InitialisationStepsSounds()
         {
-            tempAudioList = Resources.LoadAll("Sounds/PlayerMale/Steps");
-            audioSteps = new AudioClip[tempAudioList.Length];
-            for (int i = 0; i < tempAudioList.Length; i++)
+            if (audioSteps == null)
             {
-                audioSteps[i] = (AudioClip)tempAudioList[i];
+                tempAudioList = Resources.LoadAll("Sounds/PlayerMale/Steps");
+                audioSteps = new AudioClip[tempAudioList.Length];
+                for (int i = 0; i < tempAudioList.Length; i++)
+                {
+                    audioSteps[i] = (AudioClip)tempAudioList[i];
+                }
             }
         }
 
@@ -68,11 +93,14 @@ namespace EnemyBehaviour
         /// </summary>
         protected void InitialisationRoarAttackSounds()
         {
-            tempAudioList = Resources.LoadAll("Sounds/Mobs/FirstBoss/Attack");
-            audioRoarAttack = new AudioClip[tempAudioList.Length];
-            for (int i = 0; i < tempAudioList.Length; i++)
+            if (audioRoarAttack == null)
             {
-                audioRoarAttack[i] = (AudioClip)tempAudioList[i];
+                tempAudioList = Resources.LoadAll("Sounds/Mobs/FirstBoss/Attack");
+                audioRoarAttack = new AudioClip[tempAudioList.Length];
+                for (int i = 0; i < tempAudioList.Length; i++)
+                {
+                    audioRoarAttack[i] = (AudioClip)tempAudioList[i];
+                }
             }
         }
 
@@ -81,11 +109,14 @@ namespace EnemyBehaviour
         /// </summary>
         private void InitialisationSpinSounds()
         {
-            tempAudioList = Resources.LoadAll("Sounds/PlayerMale/Attack");
-            audioSpin = new AudioClip[tempAudioList.Length];
-            for (int i = 0; i < tempAudioList.Length; i++)
+            if (audioSpin == null)
             {
-                audioSpin[i] = (AudioClip)tempAudioList[i];
+                tempAudioList = Resources.LoadAll("Sounds/PlayerMale/Attack");
+                audioSpin = new AudioClip[tempAudioList.Length];
+                for (int i = 0; i < tempAudioList.Length; i++)
+                {
+                    audioSpin[i] = (AudioClip)tempAudioList[i];
+                }
             }
         }
 
@@ -94,11 +125,14 @@ namespace EnemyBehaviour
         /// </summary>
         private void InitialisationHitToArmorySounds()
         {
-            tempAudioList = Resources.LoadAll("Sounds/Common/Weapon/Cutting");
-            audioHitArmory = new AudioClip[tempAudioList.Length];
-            for (int i = 0; i < tempAudioList.Length; i++)
+            if (audioHitArmory == null)
             {
-                audioHitArmory[i] = (AudioClip)tempAudioList[i];
+                tempAudioList = Resources.LoadAll("Sounds/Common/Weapon/Cutting");
+                audioHitArmory = new AudioClip[tempAudioList.Length];
+                for (int i = 0; i < tempAudioList.Length; i++)
+                {
+                    audioHitArmory[i] = (AudioClip)tempAudioList[i];
+                }
             }
         }
 
@@ -107,11 +141,14 @@ namespace EnemyBehaviour
         /// </summary>
         protected override void InitialisationHurtSounds()
         {
-            tempAudioList = Resources.LoadAll("Sounds/Mobs/FirstBoss/GetDamage");
-            audioHurt = new AudioClip[tempAudioList.Length];
-            for (int i = 0; i < tempAudioList.Length; i++)
+            if (audioHurt == null)
             {
-                audioHurt[i] = (AudioClip)tempAudioList[i];
+                tempAudioList = Resources.LoadAll("Sounds/Mobs/FirstBoss/GetDamage");
+                audioHurt = new AudioClip[tempAudioList.Length];
+                for (int i = 0; i < tempAudioList.Length; i++)
+                {
+                    audioHurt[i] = (AudioClip)tempAudioList[i];
+                }
             }
         }
 
@@ -120,11 +157,14 @@ namespace EnemyBehaviour
         /// </summary>
         protected override void InitialisationDeadSounds()
         {
-            tempAudioList = Resources.LoadAll("Sounds/Mobs/FirstBoss/Dead");
-            audioDead = new AudioClip[tempAudioList.Length];
-            for (int i = 0; i < tempAudioList.Length; i++)
+            if (audioDead == null)
             {
-                audioDead[i] = (AudioClip)tempAudioList[i];
+                tempAudioList = Resources.LoadAll("Sounds/Mobs/FirstBoss/Dead");
+                audioDead = new AudioClip[tempAudioList.Length];
+                for (int i = 0; i < tempAudioList.Length; i++)
+                {
+                    audioDead[i] = (AudioClip)tempAudioList[i];
+                }
             }
         }
         #endregion
@@ -249,6 +289,18 @@ namespace EnemyBehaviour
             audioSourceWeapon.pitch =
                 LibraryStaticFunctions.GetRangeValue(1, 0.1f);
             audioSourceWeapon.Play();
+        }
+
+        /// <summary>
+        /// Проиграть звук интро босса
+        /// </summary>
+        public virtual void PlayIntroSound()
+        {
+            audioSourceObject.clip =
+                audioIntroBoss[Random.Range(0, audioBreath.Length)];
+            audioSourceObject.pitch =
+                LibraryStaticFunctions.GetRangeValue(1, 0.1f);
+            audioSourceObject.Play();
         }
 
         /// <summary>

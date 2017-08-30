@@ -37,7 +37,21 @@ namespace GameBehaviour
         [SerializeField]
         private GameObject item;
         IItem iItem;
+        private Vector3 localComponentStartRotation;
         #endregion
+
+        /// <summary>
+        /// Инициализация
+        /// </summary>
+        private void Start()
+        {
+            rendering = GetComponent<SpriteRenderer>();
+            isItemActive = true;
+            boxCollider = GetComponent<BoxCollider>();
+            localComponentStartRotation = transform.localEulerAngles;
+
+            RandomChoice();
+        }
 
         /// <summary>
         /// Случайный дроп
@@ -132,6 +146,8 @@ namespace GameBehaviour
         {
             Vector3 localScaleVector = new Vector3(0.75f, 0.75f, 0.75f);
             Vector3 translateVector = new Vector3(0, 0.5f, 0);
+            transform.localEulerAngles = localComponentStartRotation;
+
             int i = 0;
             while (this != null
                 && transform.localScale.x <= 0.7f
@@ -143,18 +159,6 @@ namespace GameBehaviour
                 transform.Translate(translateVector*Time.deltaTime * i);
                 yield return Timing.WaitForSeconds(0.05f);
             }
-        }
-
-        /// <summary>
-        /// Инициализация
-        /// </summary>
-        private void Start()
-        {
-            rendering = GetComponent<SpriteRenderer>();
-            isItemActive = true;
-            boxCollider = GetComponent<BoxCollider>();
-
-            RandomChoice();
         }
 
         /// <summary>

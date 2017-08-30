@@ -151,8 +151,7 @@ namespace PlayerBehaviour
         /// </summary>
         public void EventWin()
         {
-            SetActiveOfPlayerInterface(sticks,false);
-            SetActiveOfPlayerInterface(inventory, false);
+            ShowHUD(false);
 
             pauseButton.SetActive(false);
             scoreInterface.SetActive(false);
@@ -161,7 +160,7 @@ namespace PlayerBehaviour
             steelObject.SetActive(true);
             gemObject.SetActive(SetTotalResourcesAfterGame(true));
 
-            Joystick.IsGameOver = true;
+            Joystick.IsDragPause = true;
 
             Timing.RunCoroutine(CoroutineForVisibleGameOverWindow(0.3f));
         }
@@ -171,8 +170,7 @@ namespace PlayerBehaviour
         /// </summary>
         public void EventGameOver()
         {
-            SetActiveOfPlayerInterface(sticks,false);
-            SetActiveOfPlayerInterface(inventory, false);
+            ShowHUD(false);
 
             scoreInterface.SetActive(false);
             scoresObject.SetActive(true);
@@ -211,8 +209,7 @@ namespace PlayerBehaviour
         public void ExitToMenu()
         {
             Time.timeScale = 1;
-            SetActiveOfPlayerInterface(sticks,true);
-            SetActiveOfPlayerInterface(inventory, true);
+            ShowHUD(true);
 
             Timing.KillCoroutines();
             DeleteAll();
@@ -236,8 +233,7 @@ namespace PlayerBehaviour
         /// </summary>
         public void PauseGame()
         {
-            SetActiveOfPlayerInterface(sticks, false);
-            SetActiveOfPlayerInterface(inventory, false);
+            ShowHUD(false);
 
             gameoverWindow.SetActive(true);
             continuePlayButton.SetActive(true);
@@ -248,14 +244,23 @@ namespace PlayerBehaviour
         }
 
         /// <summary>
+        /// Показать, либо скрыть весь HUD игрока
+        /// </summary>
+        /// <param name="flag"></param>
+        public void ShowHUD(bool flag)
+        {
+            SetActiveOfPlayerInterface(sticks, flag);
+            SetActiveOfPlayerInterface(inventory, flag);
+        }
+
+        /// <summary>
         /// Продолжить игру
         /// </summary>
         public void ContinuePlay()
         {
             Time.timeScale = 1;
 
-            SetActiveOfPlayerInterface(sticks, true);
-            SetActiveOfPlayerInterface(inventory, true);
+            ShowHUD(true);
 
             gameoverWindow.SetActive(false);
             continuePlayButton.SetActive(false);
@@ -275,6 +280,5 @@ namespace PlayerBehaviour
             gameoverWindow.SetActive(true);
             CallGameOverWindow(false);
         }
-
     }
 }

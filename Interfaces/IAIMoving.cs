@@ -82,7 +82,7 @@ namespace VotanInterfaces
         /// Зависимость скорости воспроизведения 
         /// анимации врага от его скорости движения
         /// </summary>
-        void DependenceAnimatorSpeedOfVelocity();
+        void DependenceAnimatorSpeedOfVelocity(bool value=false);
 
         /// <summary>
         /// Проверить, достиг ли враг точки назначения 

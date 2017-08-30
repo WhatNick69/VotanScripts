@@ -200,11 +200,14 @@ namespace AbstractBehaviour
         /// </summary>
         private void InitialisationCutToBodySounds()
         {
-            tempAudioList = Resources.LoadAll("Sounds/Common/Weapon/CuttingMeat");
-            audioCutBody = new AudioClip[tempAudioList.Length];
-            for (int i = 0; i < tempAudioList.Length; i++)
+            if (audioCutBody == null)
             {
-                audioCutBody[i] = (AudioClip)tempAudioList[i];
+                tempAudioList = Resources.LoadAll("Sounds/Common/Weapon/CuttingMeat");
+                audioCutBody = new AudioClip[tempAudioList.Length];
+                for (int i = 0; i < tempAudioList.Length; i++)
+                {
+                    audioCutBody[i] = (AudioClip)tempAudioList[i];
+                }
             }
         }
 
@@ -213,11 +216,14 @@ namespace AbstractBehaviour
         /// </summary>
         private void InitialisationHitToBodySounds()
         {
-            tempAudioList = Resources.LoadAll("Sounds/Common/Weapon/Crushing");
-            audioHitBody = new AudioClip[tempAudioList.Length];
-            for (int i = 0; i < tempAudioList.Length; i++)
+            if (audioHitBody == null)
             {
-                audioHitBody[i] = (AudioClip)tempAudioList[i];
+                tempAudioList = Resources.LoadAll("Sounds/Common/Weapon/Crushing");
+                audioHitBody = new AudioClip[tempAudioList.Length];
+                for (int i = 0; i < tempAudioList.Length; i++)
+                {
+                    audioHitBody[i] = (AudioClip)tempAudioList[i];
+                }
             }
         }
 

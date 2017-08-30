@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using VotanGameplay;
 using VotanInterfaces;
 using VotanLibraries;
 
@@ -53,11 +52,13 @@ namespace EnemyBehaviour
 
         protected EnemyConditions enemyConditions;
         protected EnemyAttack enemyAttack;
+        protected EnemyAnimationsController enemyAnimationsController;
         protected NavMeshAgent agent;
 
         protected Transform playerObjectTransformForFollow;
         protected PlayerConditions playerConditionsComponent;
         protected PlayerCollision playerCollisionComponent;
+        private float tempSpeed;
         #endregion
 
         #region Свойства
@@ -126,7 +127,7 @@ namespace EnemyBehaviour
                 if (!playerObjectTransformForFollow)
                 {
                     isStopped = true;
-                    abstractEnemy.EnemyAnimationsController.DisableAllStates();
+                    enemyAnimationsController.DisableAllStates();
                 }
             }
         }
@@ -219,15 +220,34 @@ namespace EnemyBehaviour
         /// Зависимость скорости воспроизведения 
         /// анимации врага от скорости его движения
         /// </summary>
-        public void DependenceAnimatorSpeedOfVelocity()
+        public void DependenceAnimatorSpeedOfVelocity(bool ourValue=false)
         {
             if (!isStopped)
             {
-               currentVector = transform.position;
-               abstractEnemy.EnemyAnimationsController
-                   .SetSpeedAnimationByRunSpeed(Vector3.Distance
-                   (currentVector,tempVector)* speedCoefficient);
-               tempVector = currentVector;
+                currentVector = transform.position;
+                if (ourValue)
+                {
+                    tempSpeed = Vector3.Distance
+                        (currentVector, tempVector) / 2;
+                    if (tempSpeed > 1)
+                        enemyAnimationsController.HighSpeedAnimation();
+                    else if (tempSpeed < 0.1f)
+                        enemyAnimationsController.SetSpeedAnimationByRunSpeed(0.1f);
+                    else
+                        enemyAnimationsController.SetSpeedAnimationByRunSpeed(tempSpeed);
+                }
+                else
+                {
+                    tempSpeed = Vector3.Distance
+                        (currentVector, tempVector) * speedCoefficient;
+                    if (tempSpeed > 1)
+                        enemyAnimationsController.HighSpeedAnimation();
+                    else if (tempSpeed < 0.1f)
+                        enemyAnimationsController.SetSpeedAnimationByRunSpeed(0.1f);
+                    else
+                        enemyAnimationsController.SetSpeedAnimationByRunSpeed(tempSpeed);
+                }
+                tempVector = currentVector;
             }
         }
 
@@ -304,6 +324,7 @@ namespace EnemyBehaviour
             else
             {
                 abstractEnemy.EnemyAttack.InFightMode = false;
+                enemyAnimationsController.DisableAllStates();
                 return false;
             }
         }
@@ -313,6 +334,10 @@ namespace EnemyBehaviour
         /// </summary>
         public void Start()
         {
+            enemyAttack = abstractEnemy.EnemyAttack;
+            enemyConditions = abstractEnemy.EnemyConditions;
+            enemyAnimationsController = abstractEnemy.EnemyAnimationsController;
+
             agent = GetComponent<NavMeshAgent>();
             angularLookSpeed = Time.deltaTime * agent.angularSpeed/100;
             randomPosition.y = 3;
@@ -324,10 +349,12 @@ namespace EnemyBehaviour
         public virtual void RestartEnemyMove()
         {
             if (enemyConditions == null
-                || enemyAttack == null)
+                || enemyAttack == null
+                    || enemyAnimationsController == null)
             {
                 enemyAttack = abstractEnemy.EnemyAttack;
                 enemyConditions = abstractEnemy.EnemyConditions;
+                enemyAnimationsController = abstractEnemy.EnemyAnimationsController;
             }
 
             GetPlayerAndComponent();
@@ -349,6 +376,7 @@ namespace EnemyBehaviour
             while (enemyConditions.IsAlive)
             {
                 if (agent == null) yield break; // если игрок удален
+
 
                 if (playerObjectTransformForFollow)
                 {
@@ -388,6 +416,7 @@ namespace EnemyBehaviour
                     }
                     else
                     {
+                        agent.speed = agentSpeed;
                         if (!GetPlayerAndComponent())
                         {
                             SetRandomPosition();
@@ -403,8 +432,8 @@ namespace EnemyBehaviour
                 }
                 else
                 {
-                    CheckStopped(true);
                     SetRandomPosition();
+                    CheckStopped(true);
                     yield return Timing.WaitForSeconds
                         (UnityEngine.Random.Range(0, 1f)
                         * 10 + 10);
@@ -490,20 +519,29 @@ namespace EnemyBehaviour
         /// </summary>
         public void SetRandomPosition()
         {
-            if (agent != null && agent.enabled)
+            if (agent != null)
             {
-                agent.speed = agentSpeed;
-                abstractEnemy.EnemyAnimationsController.DisableAllStates();
-                abstractEnemy.EnemyAnimationsController.SetState(0, true);
-                abstractEnemy.EnemyAttack.IsMayToPlayAttackAnimation = false;
-                abstractEnemy.EnemyAnimationsController.
-                    SetSpeedAnimationByRunSpeed(AgentSpeed/3);
-                randomPosition.x = LibraryStaticFunctions.
-                    GetPlusMinusValue(randomRadius);
-                randomPosition.z = LibraryStaticFunctions.GetPlusMinusValue
-                    (randomRadius - Math.Abs(randomPosition.x));
-                agent.SetDestination(randomPosition);
+                if (!agent.enabled) agent.enabled = true;
             }
+            else
+            {
+                return;
+            }
+
+            agent.speed = agentSpeed;
+            enemyAnimationsController.DisableAllStates();
+            enemyAnimationsController.SetState(0, true);
+            enemyAttack.IsMayToPlayAttackAnimation = false;
+            enemyAnimationsController.SetSpeedAnimationByRunSpeed(agentSpeed / 3);
+
+            randomPosition.x = LibraryStaticFunctions.
+                GetPlusMinusValue(randomRadius);
+            randomPosition.z = LibraryStaticFunctions.GetPlusMinusValue
+                (randomRadius - Math.Abs(randomPosition.x));
+
+            if (Vector3.Distance(transform.position, randomPosition) <= 5)
+                SetRandomPosition();
+            agent.SetDestination(randomPosition);
         }
     }
 }

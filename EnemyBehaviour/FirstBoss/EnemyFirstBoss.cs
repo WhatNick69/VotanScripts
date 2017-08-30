@@ -15,9 +15,14 @@ namespace EnemyBehaviour
     /// </summary>
     [RequireComponent(typeof(NavMeshAgent))]
     public class EnemyFirstBoss
-        : KnightEnemy
+        : KnightEnemy, IBoss
     {
         #region Переменные
+        [SerializeField,Tooltip("Дистанция для интро"),Range(0,10)]
+        private float distanceToIntro;
+        [SerializeField, Tooltip("Время фокуса камеры на боссе"), Range(0, 10)]
+        private float timeToFocus;
+
         IFirstBossMove iFirstBossMove;
         FirstBossAttack firstBossAttack;
         private float distanceForFirstAttack;
@@ -27,7 +32,10 @@ namespace EnemyBehaviour
         private float tempDistance;
 
         private int currentAttackState;
+        private bool isIntroEnded;
+        #endregion
 
+        #region Свойства
         public IFirstBossMove IFirstBossMove
         {
             get
@@ -38,6 +46,19 @@ namespace EnemyBehaviour
             set
             {
                 iFirstBossMove = value;
+            }
+        }
+
+        public bool IsIntroEnded
+        {
+            get
+            {
+                return isIntroEnded;
+            }
+
+            set
+            {
+                isIntroEnded = value;
             }
         }
         #endregion
@@ -106,7 +127,64 @@ namespace EnemyBehaviour
             FireEffect.RestartFire();
 
             Timing.RunCoroutine(UpdateAttackState());
-            DynamicGameobjectsManager.FireEventDynamicObject(0);
+        }
+
+        /// <summary>
+        /// Отключить инто
+        /// </summary>
+        public void DisableIntro()
+        {
+            isIntroEnded = true;
+        }
+
+        /// <summary>
+        /// Проиграть корутину для босса
+        /// </summary>
+        public void PlayIntro()
+        {
+            Timing.RunCoroutine(CoroutineForBossIntro());
+        }
+    
+        /// <summary>
+        /// Корутина для интро босса
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerator<float> CoroutineForBossIntro()
+        {
+            yield return Timing.WaitForSeconds(0.1f);
+            EnemyAnimationsController.SetState(8, true);
+
+            Vector3 destVector = GameObject.FindGameObjectWithTag("Player").transform.position;
+            transform.localPosition = new Vector3(transform.localPosition.x, -0.259f, transform.localPosition.z);
+            destVector.y = transform.position.y;
+            Vector3 doorPosition = DynamicGameobjectsManager.GetObjectTransform("Door").position;
+            NavMeshAgent navMesh = GetComponent<NavMeshAgent>();
+            bool isFired = false;
+
+            EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.1f);
+     
+            while (!isIntroEnded)
+            {
+                transform.position = Vector3.Lerp(transform.position, destVector, Time.deltaTime/2);
+                if (navMesh.enabled)
+                    navMesh.enabled = false;
+                if (!isFired)
+                {
+                    if (Vector3.Distance(centerOfEnemy.position, doorPosition) < distanceToIntro)
+                    {
+                        DynamicGameobjectsManager.FireEventDynamicObject("Door");
+                        isFired = true;
+                        EnemyAnimationsController.DisableAllStates();
+                    }
+                }
+                yield return Timing.WaitForSeconds(Time.deltaTime);
+            }
+            DynamicGameobjectsManager.FireEventDynamicObject("Box");
+
+            GameLightingManager.FireSomeLights(10);
+            EnemyCreator.SendToPlayersCallBossCame(transform,timeToFocus);
+            yield return Timing.WaitForSeconds(timeToFocus+1);
+            RestartEnemy();
         }
 
         /// <summary>
@@ -233,7 +311,7 @@ namespace EnemyBehaviour
         /// <returns></returns>
         public override IEnumerator<float> UpdateAttackState()
         {
-            yield return Timing.WaitForSeconds(1);
+            //yield return Timing.WaitForSeconds(1);
             while (EnemyConditions.IsAlive)
             {
                 if (EnemyMove.IsStopped)

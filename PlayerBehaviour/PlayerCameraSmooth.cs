@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using VotanLibraries;
+using System;
+using UnityStandardAssets.CrossPlatformInput;
+using VotanGameplay;
 
 namespace PlayerBehaviour
 {
@@ -46,6 +49,7 @@ namespace PlayerBehaviour
 
         [SerializeField]
         private float multiplierNoise;
+        private bool isFocused;
         #endregion
 
         #region Свойства
@@ -248,6 +252,48 @@ namespace PlayerBehaviour
         }
 
         /// <summary>
+        /// Фокус камеры на боссе
+        /// </summary>
+        /// <param name="boss"></param>
+        public void FocusToBoss(Transform boss,float timeToFocus)
+        {
+            isFocused = true;
+            Joystick.IsDragPause = true;
+            GameManager.BossMusicWork(true);
+            playerComponentsControl.PlayerUI.ShowHUD(false);
+
+            Timing.RunCoroutine(CoroutineForFocusOnBoss(boss, timeToFocus));
+        }
+
+        /// <summary>
+        /// Корутина для фокусировки камеры на персонаже
+        /// </summary>
+        /// <param name="boss"></param>
+        /// <param name="timeToFocus"></param>
+        /// <returns></returns>
+        private IEnumerator<float> CoroutineForFocusOnBoss(Transform boss, float timeToFocus)
+        {
+            Vector3 tempPosition = targetPosition;
+            Quaternion tempRotation = targetRotation;
+            targetRotation = Quaternion.LookRotation(boss.position - cameraTransform.position);
+            targetPosition = boss.position + standartVectorForCamera;
+
+            for (int i = 0;i<timeToFocus/0.05f;i++)
+            {
+                targetRotation = Quaternion.LookRotation(boss.position - cameraTransform.position);
+                targetPosition = boss.position + standartVectorForCamera;
+                yield return Timing.WaitForSeconds(0.05f);
+            }
+
+            targetRotation = tempRotation;
+            targetPosition = tempPosition;
+            playerComponentsControl.PlayerUI.ShowHUD(true);
+            isFocused = false;
+            Joystick.IsDragPause = false;
+            GameManager.BossMusicWork(false);
+        }
+
+        /// <summary>
         /// Корутин на обновление позиции
         /// </summary>
         /// <returns></returns>
@@ -263,11 +309,15 @@ namespace PlayerBehaviour
                     isNormalized = true;
                 }
 
-                targetRotation =
-                    Quaternion.LookRotation(playerObjectTransform.position - 
-                    cameraTransform.position);
-                targetPosition =
-                    playerObjectTransform.position + standartVectorForCamera;
+                if (!isFocused)
+                {
+                    targetRotation =
+                        Quaternion.LookRotation(playerObjectTransform.position -
+                        cameraTransform.position);
+                    targetPosition =
+                        playerObjectTransform.position + standartVectorForCamera;
+                }
+
                 if (Quaternion.Angle(cameraTransform.rotation, targetRotation) >= 3
                     || Vector3.Distance(cameraTransform.position,targetPosition) >= distanceBetweenDestAndPers)
                     isUpdating = true;

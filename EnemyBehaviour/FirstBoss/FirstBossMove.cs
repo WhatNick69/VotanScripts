@@ -63,6 +63,7 @@ namespace EnemyBehaviour
             abstractEnemy.EnemyAnimationsController.DisableAllStates();
             abstractEnemy.EnemyAnimationsController.SetState(6, true);
             abstractEnemy.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
+            GetComponent<IBossConditions>().IsBossAlive = false;
             playerObjectTransformForFollow =
                 GameManager.GetClosestDeadPositionForEnemy(transform.position);
 
@@ -96,6 +97,7 @@ namespace EnemyBehaviour
         public void DeadPositionDestination()
         {
             DisableAgent();
+            GetComponent<BoxCollider>().enabled = false;
             abstractEnemy.EnemyConditions.IsAlive = true;
             abstractEnemy.EnemyAnimationsController.DisableAllStates();
             abstractEnemy.EnemyAnimationsController.SetState(7, true);

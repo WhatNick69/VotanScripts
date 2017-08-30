@@ -43,7 +43,7 @@ namespace VotanInterfaces
         /// <summary>
         /// Жив ли босс?
         /// </summary>
-        bool IsBossAlive { get; }
+        bool IsBossAlive { get; set; }
 
         /// <summary>
         /// Оповестить всех живых игроков о победе

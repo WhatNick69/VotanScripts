@@ -18,7 +18,10 @@ namespace AbstractBehaviour
         {
             get
             {
-                return states.Count;
+                if (states == null)
+                    return -1;
+                else
+                    return states.Count;
             }
         }
 
@@ -54,7 +57,7 @@ namespace AbstractBehaviour
         #region Переменные
         [SerializeField, Tooltip("Аниматор объекта")]
         protected Animator animatorOfObject;
-        protected StructStatesNames structStatesnames;
+        protected StructStatesNames structStatesNames;
         [SerializeField]
         private Transform transformForDeadYNormalizing;
         private bool isDowner;
@@ -78,12 +81,12 @@ namespace AbstractBehaviour
         {
             get
             {
-                return structStatesnames;
+                return structStatesNames;
             }
 
             set
             {
-                structStatesnames = value;
+                structStatesNames = value;
             }
         }
 
@@ -133,7 +136,7 @@ namespace AbstractBehaviour
         public bool GetBoolFromState(byte state)
         {
             return animatorOfObject.
-                GetBool(structStatesnames.GetState(state));
+                GetBool(structStatesNames.GetState(state));
         }
 
         /// <summary>
@@ -152,7 +155,7 @@ namespace AbstractBehaviour
         /// <returns></returns>
         public virtual bool IsFalseAllStates()
         {
-            for (byte i = 0; i < structStatesnames.StructureCount; i++)
+            for (byte i = 0; i < structStatesNames.StructureCount; i++)
                 if (GetBoolFromState(i)) return false;
 
             return true;
@@ -182,8 +185,10 @@ namespace AbstractBehaviour
         /// </summary>
         public virtual void DisableAllStates()
         {
-            for (byte i = 0; i < structStatesnames.StructureCount-1; i++)
-                animatorOfObject.SetBool(StructStatesNames.GetState(i), false);
+            if (structStatesNames.StructureCount == -1) return;
+            else
+                for (byte i = 0; i < structStatesNames.StructureCount-1; i++)
+                    animatorOfObject.SetBool(StructStatesNames.GetState(i), false);
         }
 
         /// <summary>
