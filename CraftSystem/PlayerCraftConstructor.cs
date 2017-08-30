@@ -74,7 +74,7 @@ namespace CraftSystem
 			weaponObj.transform.localPosition = Vector3.zero;
 			weaponObj.transform.localScale = new Vector3(1, 1, 1);
 			weaponObj.transform.localEulerAngles = new Vector3(50, 180, 0);
-			plComponents.PlayerAttack.SetPlayerGunLocalPoint(new Vector3(-60,0,0));
+			plComponents.PlayerAttack.SetPlayerGunLocalPoint(-weaponClass.AttackPoint.localPosition);
             SetWeaponStats();
 		}
 

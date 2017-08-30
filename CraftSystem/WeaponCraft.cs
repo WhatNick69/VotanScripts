@@ -322,7 +322,7 @@ namespace CraftSystem
 				ItemSkillPef.ThirdItem = itemArray[itemItemNumberThree];
 		}
 
-		private void Start() // ____________start__________
+		private void Awake() // ____________start__________
 		{
 			PStats = GetComponent<PlayerStats>();
 			WC = GetComponent<WeaponCraft>();

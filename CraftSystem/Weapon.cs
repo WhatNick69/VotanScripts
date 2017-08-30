@@ -24,6 +24,8 @@ namespace CraftSystem
         private GemType damageTypeGem;
         [SerializeField, Range(1, 100f), Tooltip("Сила камня")]
         private float gemPower;
+		[SerializeField]
+		Transform attackPoint;
         private string prefabName;
         #endregion
 
@@ -114,6 +116,19 @@ namespace CraftSystem
                 gemPower = value;
             }
         }
+
+		public Transform AttackPoint
+		{
+			get
+			{
+				return attackPoint;
+			}
+
+			set
+			{
+				attackPoint = value;
+			}
+		}
 		#endregion
 	}
 }

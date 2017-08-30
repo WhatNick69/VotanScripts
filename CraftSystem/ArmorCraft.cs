@@ -320,7 +320,7 @@ namespace CraftSystem
 			AP.Shield = shieldArray[shieldItemNumber];
 		}
 
-		private void Start() // ____________start__________
+		private void Awake() // ____________start__________
 		{
 			PStats = GetComponent<PlayerStats>();
 			AC = GetComponent<ArmorCraft>();
@@ -459,6 +459,7 @@ namespace CraftSystem
 			}
             scrollRectHelmetRepository =
                 helmetRepository.transform.parent.GetComponent<ScrollRect>();
+			Debug.Log(scrollRectHelmetRepository);
 
             yield return 0;
 		}
