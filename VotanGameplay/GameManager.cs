@@ -131,7 +131,8 @@ namespace VotanGameplay
         /// <param name="myPositionNumber"></param>
         public static void OpenPosition(int myPositionNumber)
         {
-            sniperPointsForEnemyBool[myPositionNumber] = false;
+            if (myPositionNumber >= 0 && myPositionNumber < sniperPointsForEnemyBool.Length)
+                sniperPointsForEnemyBool[myPositionNumber] = false;
         }
 
         /// <summary>

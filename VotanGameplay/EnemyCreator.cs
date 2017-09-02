@@ -32,9 +32,9 @@ namespace VotanGameplay
         private float timeToInstantiate;
         [SerializeField, Tooltip("Random радиус"), Range(3, 25)]
         private float randomRadius;
-        [SerializeField, Tooltip("Количество одновременных противников"), Range(5, 50)]
+        [SerializeField, Tooltip("Количество одновременных противников"), Range(5, 500)]
         private int oneTimeEnemies;
-        [SerializeField, Tooltip("Максимальное количество снайперов"), Range(0, 50)]
+        [SerializeField, Tooltip("Максимальное количество снайперов"), Range(0, 500)]
         private int maxSnipersCount;
         [SerializeField,Tooltip("Точка респауна врагов")]
         private Transform respawnPoint;

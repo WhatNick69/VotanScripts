@@ -498,7 +498,7 @@ namespace PlayerBehaviour
                     playerAnimationsController.SetState(1, true);
                     playerAnimationsController.SetState(0, false);
 
-                    yield return Timing.WaitForSeconds(updateFrequency);
+                    yield return Timing.WaitForOneFrame;
                 }
                 else
                 {
