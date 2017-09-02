@@ -1,5 +1,4 @@
-﻿using System;
-using PlayerBehaviour;
+﻿using PlayerBehaviour;
 using UnityEngine;
 using VotanLibraries;
 using VotanInterfaces;
@@ -132,7 +131,7 @@ namespace CraftSystem
         {
             IItem iItem = gO.GetComponent<IItem>(); // получаем интерфейс
             iItem.PlayerComponentsControlInstance = plComponents; // инициализируем компонент-ссылку
-            gO.transform.SetParent(plComponents.PlayerHUDManager.LeftItemsParent); // даем родителя
+            gO.transform.SetParent(plComponents.PlayerHUDManager.ItemsParent); // даем родителя
             gO.transform.localPosition = Vector3.zero;  // обнуляем позицию
         }
 
@@ -144,7 +143,7 @@ namespace CraftSystem
         {
             ISkill iSkill = gO.GetComponent<ISkill>(); // получаем интерфейс
             iSkill.PlayerComponentsControlInstance = plComponents; // инициализируем компонент-ссылку
-            gO.transform.SetParent(plComponents.PlayerHUDManager.RightSkillsParent); // даем родителя
+            gO.transform.SetParent(plComponents.PlayerHUDManager.SkillsParent); // даем родителя
             gO.transform.localPosition = Vector3.zero; // обнуляем позицию
         }
 

@@ -118,8 +118,6 @@ namespace GameBehaviour
 
             itemNumberPosition = number;
             playerComponentsControlInstance.PlayerHUDManager.
-                SetPositionToRightIndicator(itemNumberPosition);
-            playerComponentsControlInstance.PlayerHUDManager.
                 TellSkillIndicator(itemNumberPosition, true);
         }
 

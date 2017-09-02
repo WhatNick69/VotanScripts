@@ -174,8 +174,6 @@ namespace GameBehaviour
 
             itemNumberPosition = number;
             playerComponentsControlInstance.PlayerHUDManager.
-                SetPositionToLeftIndicator(itemNumberPosition);
-            playerComponentsControlInstance.PlayerHUDManager.
                 TellItemIndicator(itemNumberPosition, true);
         }
 

@@ -14,6 +14,7 @@ namespace AbstractBehaviour
         #region Переменные и ссылки
         protected static AudioClip[] audioCutBody; // Звуки лязга колющего оружия
         protected static AudioClip[] audioHitBody; // Звуки лязка дробящего оружия
+        protected static AudioClip[] audioHitArrow; // Звук попадания стрелы по объекту
         protected static AudioClip[] audioCollisionMetalThings;
         protected static AudioClip[] audioCollisionWoodenThings;
         protected static AudioClip[] audioIce;
@@ -53,6 +54,23 @@ namespace AbstractBehaviour
         {
             InitialisationCutToBodySounds();
             InitialisationHitToBodySounds();
+            InitialisationArrowHitSounds();
+        }
+
+        /// <summary>
+        /// Инициализация звуков попадания стрелы по объекту
+        /// </summary>
+        private void InitialisationArrowHitSounds()
+        {
+            if (audioHitArrow == null)
+            {
+                tempAudioList = Resources.LoadAll("Sounds/Common/Weapon/ShootingHits");
+                audioHitArrow = new AudioClip[tempAudioList.Length];
+                for (int i = 0; i < tempAudioList.Length; i++)
+                {
+                    audioHitArrow[i] = (AudioClip)tempAudioList[i];
+                }
+            }
         }
 
         /// <summary>
@@ -384,6 +402,18 @@ namespace AbstractBehaviour
             audioSource.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
             audioSource.volume = LibraryStaticFunctions.GetRangeValue(volumeFall, 0.1f);
             audioSource.Play();
+        }
+
+        /// <summary>
+        /// Проиграть звук попадания стрелы по объекту
+        /// </summary>
+        /// <param name="auSo"></param>
+        public static void PlayArrowHitAudio(AudioSource auSo)
+        {
+            auSo.clip =
+               audioHitArrow[Random.Range(0, audioHitArrow.Length)];
+            auSo.pitch = LibraryStaticFunctions.GetRangeValue(1, 0.1f);
+            auSo.Play();
         }
 
         /// <summary>

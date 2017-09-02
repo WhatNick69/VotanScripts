@@ -15,7 +15,8 @@ namespace PlayerBehaviour
 	public class PlayerAttack
 		: AbstractAttack, IPlayerAttack
 	{
-		[SerializeField, Tooltip("Хранитель компонентов")]
+        #region Переменные и ссылки
+        [SerializeField, Tooltip("Хранитель компонентов")]
 		private PlayerComponentsControl playerComponentsControl;
 		[SerializeField, Tooltip("Частота обновления листа с врагами"), Range(0.05f, 0.5f)]
 		private float updateListFrequency;
@@ -28,11 +29,12 @@ namespace PlayerBehaviour
 		private PlayerWeapon playerWeapon;
 		private PlayerFight playerFight;
 		private int isCuttingWeapon;
+        #endregion
 
-		/// <summary>
-		/// Инициализация
-		/// </summary>
-		public void Start()
+        /// <summary>
+        /// Инициализация
+        /// </summary>
+        public void Start()
 		{
 			transformOfPlayer = playerComponentsControl.PlayerObject;
 			playerWeapon = playerComponentsControl.PlayerWeapon;

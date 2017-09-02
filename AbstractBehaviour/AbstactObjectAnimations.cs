@@ -44,7 +44,10 @@ namespace AbstractBehaviour
         /// <returns></returns>
         public string GetState(byte state)
         {
-            return states[state];
+            if (states == null)
+                return null;
+            else
+                return states[state];
         }
     }
 

@@ -66,6 +66,8 @@ namespace VotanInterfaces
 
         PlayerAnimationsController PlayerAnimationsController { get; set; }
 
+        PlayerBonesManager PlayerBonesManager { get; set; }
+
         PlayerSounder PlayerSounder { get; set; }
 
         DownInterfaceRotater DownInterfaceRotater { get; set; }

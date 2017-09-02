@@ -20,8 +20,7 @@ namespace EnemyBehaviour
         protected PlayerAttack playerTarget;
         protected IEnemyBehaviour enemyAbstract;
         private bool inFightMode;
-        [SerializeField]
-        protected bool isMayToPlayAttackAnimation = true;
+        public bool isMayToPlayAttackAnimation = true;
         #endregion
 
         #region Свойства
@@ -81,7 +80,7 @@ namespace EnemyBehaviour
         /// <summary>
         /// Инициализация
         /// </summary>
-        public void Start()
+        public virtual void Start()
         {
             enemyAbstract = GetComponent<AbstractEnemy>();       
         }
@@ -115,7 +114,7 @@ namespace EnemyBehaviour
         /// во время атаки, либо нет.
         /// </summary>
         /// <param name="isStop">Неолбходимо останавливаться?</param>
-        public void EventStartAttackAnimation(bool isStop)
+        public virtual void EventStartAttackAnimation(bool isStop)
         {
             if (!isMayToPlayAttackAnimation) return;
             Timing.RunCoroutine(CoroutineForAttack(isStop));

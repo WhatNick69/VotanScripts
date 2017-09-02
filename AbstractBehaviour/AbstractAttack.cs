@@ -16,11 +16,11 @@ namespace AbstractBehaviour
         [SerializeField] // точки персонажа
         private Transform playerPoint;
         [SerializeField] // точки оружия врага
-        protected Transform startGunPoint, finishGunPoint; 
+        protected Transform startGunPoint, finishGunPoint;
         [SerializeField, Tooltip("Как часто объект может бить/стрелять")]
         protected float attackLatency;
-		
-		protected Vector3 oldFinishGunPoint; // сохраняю коардинаты оружия из прошлого кадра
+
+        protected Vector3 oldFinishGunPoint; // сохраняю коардинаты оружия из прошлого кадра
 		protected bool onLevelOne = true;
 		protected bool onLevelTwo = false;
 
@@ -84,13 +84,26 @@ namespace AbstractBehaviour
                 playerPoint = value;
             }
         }
+
+        public float AttackLatency
+        {
+            get
+            {
+                return attackLatency;
+            }
+
+            set
+            {
+                attackLatency = value;
+            }
+        }
         #endregion
 
-		/// <summary>
-		/// Задать новую длинну оружия 
-		/// </summary>
-		/// <param name="newPoint"></param>
-		public void SetPlayerGunLocalPoint(Vector3 newPoint)
+        /// <summary>
+        /// Задать новую длинну оружия 
+        /// </summary>
+        /// <param name="newPoint"></param>
+        public void SetPlayerGunLocalPoint(Vector3 newPoint)
 		{
 			finishGunPoint.localPosition = newPoint;
 		}

@@ -4,6 +4,7 @@ using MovementEffects;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityStandardAssets.CrossPlatformInput;
 using VotanGameplay;
 using VotanInterfaces;
 using VotanLibraries;
@@ -13,7 +14,6 @@ namespace EnemyBehaviour
     /// <summary>
     /// Описывает поведение босса с первой локации
     /// </summary>
-    [RequireComponent(typeof(NavMeshAgent))]
     public class EnemyFirstBoss
         : KnightEnemy, IBoss
     {
@@ -154,8 +154,10 @@ namespace EnemyBehaviour
             yield return Timing.WaitForSeconds(0.1f);
             EnemyAnimationsController.SetState(8, true);
 
+            Joystick.IsBlock = false;
             Vector3 destVector = GameObject.FindGameObjectWithTag("Player").transform.position;
             transform.localPosition = new Vector3(transform.localPosition.x, -0.259f, transform.localPosition.z);
+            transform.localEulerAngles = new Vector3(0, 180, 0);
             destVector.y = transform.position.y;
             Vector3 doorPosition = DynamicGameobjectsManager.GetObjectTransform("Door").position;
             NavMeshAgent navMesh = GetComponent<NavMeshAgent>();

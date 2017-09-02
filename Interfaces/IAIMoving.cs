@@ -11,6 +11,11 @@ namespace VotanInterfaces
     public interface IAIMoving
     {
         /// <summary>
+        /// Допустимый радиус, для случайного блуждания
+        /// </summary>
+        float RadiusForRandomWalk { get; set; }
+
+        /// <summary>
         /// Рестартировать компонент, отвеющий за способность противника двигаться
         /// </summary>
         void RestartEnemyMove();

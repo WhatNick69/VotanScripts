@@ -142,17 +142,17 @@ namespace VotanLibraries
 			return isSuperAttack ? 3 + (weapon.GetPlayer.PlayerArmory.ArmoryWeight / 100) : 2 + (weapon.GemPower / 100);
 		}
 
-		/// <summary> 
-		/// Рассчитать силу замедления вращения оружия при попадании по врагу. 
-		/// 
+        /// <summary> 
+        /// Рассчитать силу замедления вращения оружия при попадании по врагу. 
+        /// 
         /// Чем меньше множитель - тем меньше замедление
-		/// Текущая реализация: ОРИГ._СКОР._ВРАЩЕНИЯ * (0.4 - (ВЕС_БРОНИ/400)). 
-		/// Диапазон значений: ~0 - 25. 
-		/// </summary> 
-		/// <param name="originalSpinSpeed"></param> 
-		/// <param name="armoryWeight"></param> 
-		/// <returns></returns> 
-		public static float CalculateSpinSpeedSlowMotionValue(float originalSpinSpeed, float armoryWeight)
+        /// Текущая реализация: ОРИГ._СКОР._ВРАЩЕНИЯ * (0.4 - (ВЕС_БРОНИ/400)). 
+        /// Диапазон значений: ~0 - 25. 
+        /// </summary> 
+        /// <param name="originalSpinSpeed"></param> 
+        /// <param name="armoryWeight"></param> 
+        /// <returns></returns> 
+        public static float CalculateSpinSpeedSlowMotionValue(float originalSpinSpeed, float armoryWeight)
 		{
 			return originalSpinSpeed * (0.2f - (armoryWeight / 500));
 		}

@@ -13,8 +13,9 @@ namespace VotanGameplay
         : MonoBehaviour
     {
         #region Переменные
-        [SerializeField, Tooltip("Точки смерти для врага")]
         private static Transform[] deadPointsForEnemy;
+        private static Transform[] sniperPointsForEnemy;
+        private static bool[] sniperPointsForEnemyBool;
 
         private static AudioSource gameAudioSource;
         private static bool isGameOver;
@@ -61,12 +62,16 @@ namespace VotanGameplay
         {
             isGameOver = false;
             isWin = false;
+            gameMusicCachedPitch = 1;
 
             gameAudioSource =
                 GetComponent<AudioSource>();
             gameAudioSource.clip = null;
             gameAudioSource.playOnAwake = false;
+
             GetAllDeadPoints();
+            GetAllSniperPoints();
+
             AbstractSoundStorage.LoadAllStaticSounds();
             Timing.RunCoroutine(CoroutineForCheckIfMusicIsEnded());
         }
@@ -76,9 +81,23 @@ namespace VotanGameplay
         /// </summary>
         private void GetAllDeadPoints()
         {
-            deadPointsForEnemy = new Transform[transform.Find("DeadPoints").GetChildCount()];
+            Transform deadPointsParent = transform.Find("DeadPoints");
+            deadPointsForEnemy = new Transform[deadPointsParent.childCount];
             for (int i = 0; i < deadPointsForEnemy.Length; i++)
-                deadPointsForEnemy[i] = transform.Find("DeadPoints").
+                deadPointsForEnemy[i] = deadPointsParent.
+                    GetChild(i).GetComponent<Transform>();
+        }
+
+        /// <summary>
+        /// Получить все снайперские позиции для врагов-снайперов
+        /// </summary>
+        private void GetAllSniperPoints()
+        {
+            Transform sniperPointsParent = transform.Find("SniperPoints");
+            sniperPointsForEnemy = new Transform[sniperPointsParent.childCount];
+            sniperPointsForEnemyBool = new bool[sniperPointsParent.childCount];
+            for (int i = 0; i < sniperPointsForEnemy.Length; i++)
+                sniperPointsForEnemy[i] = sniperPointsParent.
                     GetChild(i).GetComponent<Transform>();
         }
 
@@ -103,6 +122,75 @@ namespace VotanGameplay
                     closestPosition = deadPointsForEnemy[i];
                 }
             }
+            return closestPosition;
+        }
+
+        /// <summary>
+        /// Освободить точку стрельбы
+        /// </summary>
+        /// <param name="myPositionNumber"></param>
+        public static void OpenPosition(int myPositionNumber)
+        {
+            sniperPointsForEnemyBool[myPositionNumber] = false;
+        }
+
+        /// <summary>
+        /// Получить ближайшую позицию для стрельбы, между игроком и врагом
+        /// </summary>
+        /// <param name="enemyPosition">Позиция врага</param>
+        /// <param name="playerPosition">Позиция игрока</param>
+        /// <param name="minDistanceBetweenPositionAndPlayer">Минимальная дистанция между игроком и позицией</param>
+        /// <param name="maxDistanceBetweenPlayerAndEnemy">Максимальная дистанция между игроком и врагом</param>
+        /// <param name="myPositionNumber">Номер текущей моей занятой позиции</param>
+        /// <returns></returns>
+        public static Vector3 GetClosestSniperPositionForEnemy
+            (Vector3 enemyPosition, Vector3 playerPosition, float minDistanceBetweenPositionAndPlayer, float maxDistanceBetweenPlayerAndEnemy, ref int myPositionNumber)
+        {
+            int tempNumber = 0;
+            float distance = float.MaxValue;
+            float tempDistanceBetweenEnemyAndPosition = 0;
+            float tempDistanceBetweenPlayerAndPosition = 0;
+            Vector3 closestPosition = Vector3.zero;
+
+            for (int i = 0; i < sniperPointsForEnemy.Length; i++)
+            {
+                // если позиция свободна
+                tempDistanceBetweenPlayerAndPosition = Vector3.Distance
+                    (playerPosition, sniperPointsForEnemy[i].position);
+
+                // если расстояние до позиции больше минимума и меньше максимума
+                if (tempDistanceBetweenPlayerAndPosition >= minDistanceBetweenPositionAndPlayer
+                    && tempDistanceBetweenPlayerAndPosition <= maxDistanceBetweenPlayerAndEnemy)
+                {
+                    tempDistanceBetweenEnemyAndPosition = Vector3.Distance
+                        (enemyPosition, sniperPointsForEnemy[i].position);
+
+                    // ищем минимальный путь 
+                    if (tempDistanceBetweenEnemyAndPosition < distance
+                        && (!sniperPointsForEnemyBool[i] || (myPositionNumber == i 
+                        && sniperPointsForEnemyBool[myPositionNumber])))
+                    {
+                        distance = tempDistanceBetweenEnemyAndPosition;
+                        closestPosition = sniperPointsForEnemy[i].position;
+                        tempNumber = i;
+                    }
+                }
+            }
+
+            if (closestPosition != Vector3.zero)
+                sniperPointsForEnemyBool[tempNumber] = true;
+
+            if (myPositionNumber != tempNumber)
+            {
+                if (myPositionNumber > -1)
+                    sniperPointsForEnemyBool[myPositionNumber] = false;
+
+                if (closestPosition == Vector3.zero)
+                    myPositionNumber = -1;
+                else
+                    myPositionNumber = tempNumber;
+            }
+
             return closestPosition;
         }
 

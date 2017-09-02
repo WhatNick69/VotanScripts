@@ -17,6 +17,11 @@ namespace VotanInterfaces
     public interface IVotanObjectAttack
     {
         /// <summary>
+        /// Частота атаки
+        /// </summary>
+        float AttackLatency { get; set; }
+
+        /// <summary>
         /// Возвращает позиции персонажа
         /// </summary>
         /// <param name="index"></param>

@@ -70,17 +70,52 @@ namespace VotanGameplay
         #endregion
 
         /// <summary>
+        /// Возможность спауна определенного класса противника
+        /// </summary>
+        /// <param name="enemyType"></param>
+        /// <param name="maxCount"></param>
+        /// <returns></returns>
+        public static bool MayableToSpawnClassEnemy(EnemyType enemyType, int maxCount)
+        {
+            int count = 0;
+            for (int i = 0;i< listEnemy.Length;i++)
+            {
+                if (listEnemy[i].gameObject.activeSelf
+                    && listEnemy[i].EnemyType == enemyType)
+                {
+                    count++;
+                    if (count >= maxCount)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
         /// Получить число врагов, которые готовы сражаться
         /// </summary>
         /// <returns></returns>
-        public static int GetNumberOfEmptyEnemy()
+        public static int GetNumberOfEmptyEnemy(EnemyType enemyType, int maxClassCount=0)
         {
-            for (int i = 0;i<countOfEnemies;i++)
+            bool flag = MayableToSpawnClassEnemy(enemyType, maxClassCount);
+
+            for (int i = 0; i < listEnemy.Length-1; i++)
             {
                 if (!listEnemy[i].gameObject.activeSelf)
-                    return i;
+                {
+                    if (!flag)
+                    {
+                        if (listEnemy[i].EnemyType != enemyType) return i;
+                    }
+                    else
+                    {
+                        return i;
+                    }
+                }
             }
-            return countOfEnemies;
+            return -1;
         }
 
         /// <summary>

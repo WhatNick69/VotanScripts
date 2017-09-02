@@ -35,6 +35,8 @@ namespace PlayerBehaviour
         private PlayerResources playerResources;
         [SerializeField, Tooltip("Аниматор игрока")]
         private PlayerAnimationsController playerAnimationsController;
+        [SerializeField, Tooltip("менеджер костей игрока")]
+        private PlayerBonesManager playerBonesManager;
         [SerializeField, Tooltip("Звуковой компонент игрока")]
         private PlayerSounder playerSounder;
         [SerializeField, Tooltip("Эффект грозы у игрока")]
@@ -313,6 +315,19 @@ namespace PlayerBehaviour
             set
             {
                 playerResources = value;
+            }
+        }
+
+        public PlayerBonesManager PlayerBonesManager
+        {
+            get
+            {
+                return playerBonesManager;
+            }
+
+            set
+            {
+                playerBonesManager = value;
             }
         }
         #endregion

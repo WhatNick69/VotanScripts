@@ -235,11 +235,11 @@ namespace GameBehaviour
             GameObject objectNew = Instantiate(item);
 
             // даем родителя
-            objectNew.transform.SetParent(plComponents.PlayerHUDManager.LeftItemsParent); 
+            objectNew.transform.SetParent(plComponents.PlayerHUDManager.ItemsParent); 
             objectNew.transform.localPosition = Vector3.zero;  // обнуляем позицию
 
             plComponents.PlayerHUDManager.AddItem(objectNew);
-            plComponents.PlayerHUDManager.EnableLeftIndicators();
+            plComponents.PlayerHUDManager.EnableItemIndicators();
         }
 
         /// <summary>

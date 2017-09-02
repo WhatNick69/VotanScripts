@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using VotanLibraries;
 using VotanInterfaces;
 using VotanGameplay;
+using UnityStandardAssets.CrossPlatformInput;
 
 namespace PlayerBehaviour
 {
@@ -217,54 +218,57 @@ namespace PlayerBehaviour
         /// <param name="damageValue"></param>
         public int GetDamage(float damageValue)
         {
-            if (mayToGetDamage)
+            if (isAlive)
             {
-                damageValue = LibraryStaticFunctions.
-                    DamageFromTempPhysicDefence(damageValue,playerComponentsControl.PlayerWeapon);
-
-                playerComponentsControl.PlayerCameraSmooth.GetNoizeGamage(damageValue / initialisatedHealthValue);
-                if (!playerComponentsControl.PlayerArmory.IsAlive)
+                if (mayToGetDamage)
                 {
-                    // проиграть звук получения урона по телу
-                    playerComponentsControl.PlayerSounder.PlayGetDamageAudio(false);
+                    damageValue = LibraryStaticFunctions.
+                        DamageFromTempPhysicDefence(damageValue, playerComponentsControl.PlayerWeapon);
 
-                    playerComponentsControl.PlayerVisualEffects.
-                        EventBloodEyesEffect(healthValue/ initialisatedHealthValue);
-                    if (playerComponentsControl.PlayerFight.IsDefensing)
+                    playerComponentsControl.PlayerCameraSmooth.GetNoizeGamage(damageValue / initialisatedHealthValue);
+                    if (!playerComponentsControl.PlayerArmory.IsAlive)
                     {
-                        HealthValue -= LibraryStaticFunctions.
-                            GetRangeValue(damageValue, 0.1f) * 0.5f;
-                        CoroutineForIsMayGetDamage();
+                        // проиграть звук получения урона по телу
+                        playerComponentsControl.PlayerSounder.PlayGetDamageAudio(false);
+
+                        playerComponentsControl.PlayerVisualEffects.
+                            EventBloodEyesEffect(healthValue / initialisatedHealthValue);
+                        if (playerComponentsControl.PlayerFight.IsDefensing)
+                        {
+                            HealthValue -= LibraryStaticFunctions.
+                                GetRangeValue(damageValue, 0.1f) * 0.5f;
+                            CoroutineForIsMayGetDamage();
+                        }
+                        else
+                        {
+                            HealthValue -= LibraryStaticFunctions.
+                                GetRangeValue(damageValue, 0.1f);
+                            CoroutineForIsMayGetDamage();
+                        }
+
+                        return 1;
                     }
                     else
                     {
-                        HealthValue -= LibraryStaticFunctions.
-                            GetRangeValue(damageValue, 0.1f);
-                        CoroutineForIsMayGetDamage();
-                    }
+                        // проиграть звук получения урона по броне
+                        playerComponentsControl.PlayerSounder.PlayGetDamageAudio(true);
 
-                    return 1;
-                }
-                else
-                {
-                    // проиграть звук получения урона по броне
-                    playerComponentsControl.PlayerSounder.PlayGetDamageAudio(true); 
-
-                    if (playerComponentsControl.PlayerFight.IsDefensing)
-                    {
-                        playerComponentsControl.PlayerArmory
-                            .DecreaseArmoryLevel(-LibraryStaticFunctions.
-                            GetRangeValue(damageValue, 0.1f) * 0.5f);
-                        CoroutineForIsMayGetDamage();
+                        if (playerComponentsControl.PlayerFight.IsDefensing)
+                        {
+                            playerComponentsControl.PlayerArmory
+                                .DecreaseArmoryLevel(-LibraryStaticFunctions.
+                                GetRangeValue(damageValue, 0.1f) * 0.5f);
+                            CoroutineForIsMayGetDamage();
+                        }
+                        else
+                        {
+                            playerComponentsControl.PlayerArmory
+                                .DecreaseArmoryLevel(-
+                           LibraryStaticFunctions.GetRangeValue(damageValue, 0.1f));
+                            CoroutineForIsMayGetDamage();
+                        }
+                        return 2;
                     }
-                    else
-                    {
-                        playerComponentsControl.PlayerArmory
-                            .DecreaseArmoryLevel(-
-                       LibraryStaticFunctions.GetRangeValue(damageValue, 0.1f));
-                        CoroutineForIsMayGetDamage();
-                    }
-                    return 2;
                 }
             }
             return 0;
@@ -344,6 +348,7 @@ namespace PlayerBehaviour
             IsAlive = false;
             HealthValue = 0;
             AllPlayerManager.CheckList();
+            Joystick.IsBlock = false;
 
             GetComponent<PlayerController>().IsAliveFromConditions = false;
             playerComponentsControl.PlayerAnimationsController
