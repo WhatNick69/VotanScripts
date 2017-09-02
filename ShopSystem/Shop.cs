@@ -31,9 +31,9 @@ namespace ShopSystem
 		[SerializeField]
 		private GameObject weaponRepository;
 
-		[SerializeField, Tooltip("кнопка брони")]
+		[SerializeField, Tooltip("элемент брони")]
 		private GameObject itemArmor;
-		[SerializeField, Tooltip("кнопка оружия")]
+		[SerializeField, Tooltip("элемент оружия")]
 		private GameObject itemWeapon;
 
 		[SerializeField]
@@ -85,6 +85,10 @@ namespace ShopSystem
 
 		ArmorPrefabs AP;
 		Shop SHP;
+		[SerializeField]
+		WeaponCraft WC;
+		[SerializeField]
+		ArmorCraft AC;
 
 		ScrollRect scrollRectHelmetRepository;
 		ScrollRect scrollRectShieldRepository;

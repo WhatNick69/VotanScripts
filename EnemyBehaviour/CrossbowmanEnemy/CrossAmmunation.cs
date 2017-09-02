@@ -33,6 +33,7 @@ namespace EnemyBehaviour
         private Vector3 startPosition;
         private Vector3 moveVector;
         private Vector3 ourRandomPositionInPlayerBody;
+        private Vector3 myLocalScale;
 
         private Transform playerModel;
         private Transform startParent;
@@ -110,6 +111,7 @@ namespace EnemyBehaviour
             startPosition = transform.localPosition;
             startRotation = transform.localEulerAngles;
             moveVector = new Vector3(0, 0, 1);
+            myLocalScale = transform.localScale;
             trailRender = GetComponentInChildren<TrailRenderer>(true);
             auSource = GetComponent<AudioSource>();
 
@@ -132,7 +134,7 @@ namespace EnemyBehaviour
                 isDestinationed = false;
                 isRestarted = false;
                 transform.SetParent(null);
-                ActiveForTrailRender(true);
+                ActiveForTrailRender(true,0);
                 transform.gameObject.SetActive(true);
 
                 playerBonesManager = playerComponentsControl.PlayerBonesManager;
@@ -144,7 +146,6 @@ namespace EnemyBehaviour
 
                 Timing.RunCoroutine(CoroutineForMovingAmmoObject());
                 Timing.RunCoroutine(CoroutineForCheckInPlayerPenetration());
-                Timing.RunCoroutine(CoroutineForRestartTimer());
             }
         }
 
@@ -158,10 +159,58 @@ namespace EnemyBehaviour
             isRestarted = true;
 
             transform.SetParent(startParent);
-            ActiveForTrailRender(false);
+            ActiveForTrailRender(false,0);
             transform.gameObject.SetActive(false);
             transform.localPosition = startPosition;
             transform.localEulerAngles = startRotation;
+        }
+
+        /// <summary>
+        /// Задать точность
+        /// </summary>
+        private void SetAccurate()
+        {
+            Quaternion lerpRotationQuar = Quaternion.LookRotation
+                (playerModel.position - transform.position);
+
+            lerpRotationQuar.eulerAngles =
+                new Vector3(lerpRotationQuar.eulerAngles.x + LibraryStaticFunctions.GetPlusMinusValue(2),
+                lerpRotationQuar.eulerAngles.y + LibraryStaticFunctions.GetPlusMinusValue(2),
+                lerpRotationQuar.eulerAngles.z);
+            transform.rotation = lerpRotationQuar;
+        }
+
+        /// <summary>
+        /// Активация трэила
+        /// </summary>
+        /// <param name="flag"></param>
+        public void ActiveForTrailRender(bool flag,float time)
+        {
+            if (flag)
+                trailRender.enabled = flag;
+            else
+                Timing.RunCoroutine(CoroutineForDisableTrailRender(false,time));
+        }
+
+        /// <summary>
+        /// Отключение трэила
+        /// </summary>
+        /// <param name="flag"></param>
+        /// <returns></returns>
+        private IEnumerator<float> CoroutineForDisableTrailRender(bool flag, float time)
+        {
+            yield return Timing.WaitForSeconds(time);
+            trailRender.enabled = flag;
+        }
+
+        /// <summary>
+        /// Корутина на перезапуск снаряда
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerator<float> CoroutineForRestartTimer()
+        {
+            yield return Timing.WaitForSeconds(timeToRestart);
+            RestartAmmo();
         }
 
         /// <summary>
@@ -183,14 +232,18 @@ namespace EnemyBehaviour
                         AbstractSoundStorage.PlayArrowHitAudio(auSource);
                         transform.SetParent(tempTransform);
                         transform.localPosition = ourRandomPositionInPlayerBody;
-                        ActiveForTrailRender(false);
+                        transform.localScale = myLocalScale;
+                        ActiveForTrailRender(false, 1);
                         isDestinationed = true;
+                        Timing.RunCoroutine(CoroutineForRestartTimer());
                         yield break;
                     }
                     yield return Timing.WaitForOneFrame;
                 }
                 else
                 {
+                    if (Vector3.Distance(transform.position, Vector3.zero) > 20)
+                        RestartAmmo();
                     yield return Timing.WaitForSeconds(checkLatency);
                 }
             }
@@ -208,72 +261,6 @@ namespace EnemyBehaviour
                 transform.Translate(moveVector * Time.deltaTime * moveSpeed);
                 yield return Timing.WaitForOneFrame;
             }
-        }
-
-        /// <summary>
-        /// Задать точность
-        /// </summary>
-        private void SetAccurate()
-        {
-            Quaternion lerpRotationQuar = Quaternion.LookRotation
-                (playerModel.position - transform.position);
-
-            lerpRotationQuar.eulerAngles =
-                new Vector3(lerpRotationQuar.eulerAngles.x + LibraryStaticFunctions.GetPlusMinusValue(2),
-                lerpRotationQuar.eulerAngles.y + LibraryStaticFunctions.GetPlusMinusValue(2),
-                lerpRotationQuar.eulerAngles.z);
-            transform.rotation = lerpRotationQuar;
-        }
-
-        /// <summary>
-        /// Корутина на перезапуск снаряда
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerator<float> CoroutineForRestartTimer()
-        {
-            int iterations = (int)((timeToRestart+1)/0.5f);
-            bool isDes = false;
-            for (int i = 0;i< iterations;i++)
-            {
-                if (isDestinationed)
-                {
-                    isDes = true;
-                }
-                yield return Timing.WaitForSeconds(0.5f);
-            }
-
-            if (isDes)
-            {
-                yield return Timing.WaitForSeconds(timeToRestart);
-                RestartAmmo();
-            }
-            else
-            {
-                RestartAmmo();
-            }
-        }
-
-        /// <summary>
-        /// Активация трэила
-        /// </summary>
-        /// <param name="flag"></param>
-        public void ActiveForTrailRender(bool flag)
-        {
-            if (flag)
-                trailRender.enabled = flag;
-            else
-                Timing.RunCoroutine(CoroutineForDisableTrailRender(false));
-        }
-
-        /// <summary>
-        /// Отключение трэила
-        /// </summary>
-        /// <param name="flag"></param>
-        /// <returns></returns>
-        private IEnumerator<float> CoroutineForDisableTrailRender(bool flag)
-        {
-            yield return Timing.WaitForSeconds(1);
-            trailRender.enabled = flag;
         }
     }
 }

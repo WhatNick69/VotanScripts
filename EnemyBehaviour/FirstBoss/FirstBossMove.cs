@@ -69,7 +69,7 @@ namespace EnemyBehaviour
 
             agent.stoppingDistance = 0;
             agent.speed = agentSpeed;
-            agent.speed /= 2;
+            agent.speed = agent.speed*0.75f;
             Timing.RunCoroutine(CoroutineForMoveToDeadPosition());
         }
 

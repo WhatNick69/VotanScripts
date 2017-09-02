@@ -218,6 +218,67 @@ namespace CraftSystem
 			return shield;
 		}
 
+
+		/// <summary>
+		/// Обновляет окно шлемов. Вызывать при покупке
+		/// </summary>
+		public void RestartHelmetWindow()
+		{
+			int k = LibraryObjectsWorker.StringSplitter
+							(PlayerPrefs.GetString("helmetArray"), '_').Length - 1;
+
+			for (int i = 0; i < k; i++)
+			{
+				GameObject d = helmetRepository.transform.GetChild(0).gameObject;
+				helmetRepository.transform.GetChild(0).SetParent(null);
+				Destroy(d);
+				helmetArray[i] = null;
+				helmetList.RemoveAt(0);
+				arrayBoughtHelmet.RemoveAt(0);
+			}
+			Timing.RunCoroutine(HelmetCorutine());
+		}
+
+		/// <summary>
+		/// Обновляет окно кирас. Вызывать при покупке
+		/// </summary>
+		public void RestartCuirassWindow()
+		{
+			int k = LibraryObjectsWorker.StringSplitter
+							(PlayerPrefs.GetString("cuirassArray"), '_').Length - 1;
+
+			for (int i = 0; i < k; i++)
+			{
+				GameObject d = cuirassRepository.transform.GetChild(0).gameObject;
+				cuirassRepository.transform.GetChild(0).SetParent(null);
+				Destroy(d);
+				cuirassArray[i] = null;
+				cuirassList.RemoveAt(0);
+				arrayBoughtCuirass.RemoveAt(0);
+			}
+			Timing.RunCoroutine(CuirassCorutine());
+		}
+
+		/// <summary>
+		/// Обновляет окно щитов. Вызывать при покупке
+		/// </summary>
+		public void RestartShieldWindow()
+		{
+			int k = LibraryObjectsWorker.StringSplitter
+							(PlayerPrefs.GetString("shieldArray"), '_').Length - 1;
+
+			for (int i = 0; i < k; i++)
+			{
+				GameObject d = shieldRepository.transform.GetChild(0).gameObject;
+				shieldRepository.transform.GetChild(0).SetParent(null);
+				Destroy(d);
+				shieldArray[i] = null;
+				shieldList.RemoveAt(0);
+				arrayBoughtShield.RemoveAt(0);
+			}
+			Timing.RunCoroutine(ShieldCorutine());
+		}
+
 		/// <summary>
 		/// Улучшает выбранную кирасу
 		/// </summary>
@@ -381,7 +442,7 @@ namespace CraftSystem
 			}
             scrollRectShieldRepository = 
                 shieldRepository.transform.parent.GetComponent<ScrollRect>();
-            yield return 0;
+			yield return 0.02f;
 		}
 
 		/// <summary>
@@ -420,7 +481,7 @@ namespace CraftSystem
 			}
             scrollRectCuirasseRepository =
                 cuirassRepository.transform.parent.GetComponent<ScrollRect>();
-            yield return 0;
+			yield return 0.02f;
 		}
 
 		/// <summary>
@@ -459,9 +520,8 @@ namespace CraftSystem
 			}
             scrollRectHelmetRepository =
                 helmetRepository.transform.parent.GetComponent<ScrollRect>();
-			Debug.Log(scrollRectHelmetRepository);
 
-            yield return 0;
+            yield return 0.02f;
 		}
 	}
 }

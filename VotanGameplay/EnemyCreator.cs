@@ -393,7 +393,7 @@ namespace VotanGameplay
                         (LibraryStaticFunctions.GetRangeValue
                         (SetParameterOfEnemy(20, hardcoreMultiplier),0.1f)); // Предупредительная дистанция для атаки
                     enemyBehaviour.EnemyMove.AgentSpeed =
-                        SetParameterOfEnemy(1.5f, hardcoreMultiplier); // Скорость передвижения моба
+                        SetParameterOfEnemy(2, hardcoreMultiplier); // Скорость передвижения моба
                     enemyBehaviour.EnemyAttack.DmgEnemy =
                         SetParameterOfEnemy(20, hardcoreMultiplier); // Урон моба
                     enemyBehaviour.EnemyConditions.SetHealthParameter

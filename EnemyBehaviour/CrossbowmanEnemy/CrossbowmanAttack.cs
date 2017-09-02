@@ -108,6 +108,18 @@ namespace EnemyBehaviour
             {
                 isReloaded = false;
                 crossbowWeapon.Fire();
+                CheckAmmunationIncrossbow();
+            }
+        }
+
+        /// <summary>
+        /// Проверить боезапас
+        /// </summary>
+        private void CheckAmmunationIncrossbow()
+        {
+            if (!crossbowWeapon.IsNotEmptyAmmunation())
+            {
+                enemyAbstract.EnemyAnimationsController.DisableAllStates();
             }
         }
 

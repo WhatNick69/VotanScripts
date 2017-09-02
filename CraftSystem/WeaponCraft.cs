@@ -270,6 +270,31 @@ namespace CraftSystem
 		}
 
 		/// <summary>
+		/// Обновляет окно оружия. Вызывать при покупке
+		/// </summary>
+		public void RestartWeaponWindow()
+		{
+			int k = LibraryObjectsWorker.StringSplitter
+							(PlayerPrefs.GetString("weaponArray"), '_').Length - 1;
+
+			for (int i = 0; i < k; i++)
+			{
+				GameObject d = weaponRepository.transform.GetChild(0).gameObject;
+				weaponRepository.transform.GetChild(0).SetParent(null);
+				Destroy(d);
+				weaponArray[i] = null;
+				weaponList.RemoveAt(0);
+				arrayBoughtWeapon.RemoveAt(0);
+			}
+			Timing.RunCoroutine(WeaponCorutine());
+		}
+
+		public void SellWeapon()
+		{
+			
+		}
+
+		/// <summary>
 		/// 1. Двинул ли игрок ленту с элементаи оружия
 		/// 2. Сменился элемент на следующий или нет? Если да, то меняет номер элемента
 		/// кторый отправится в таблицу с характеристиками
@@ -368,7 +393,7 @@ namespace CraftSystem
 			{
 				if (Resources.Load(headPrefix + i.ToString()))
 				{
-					weaponGamObj =(GameObject) Resources.Load(headPrefix + arrayBoughtWeapon[i]);
+					weaponGamObj = (GameObject) Resources.Load(headPrefix + arrayBoughtWeapon[i]);
                     weaponStats = LibraryObjectsWorker.StringSplitter
                         (PlayerPrefs.GetString("weapon_" + arrayBoughtWeapon[i]), '_');
 					//  weaponStats[0] - уровень
@@ -384,13 +409,12 @@ namespace CraftSystem
 					button.SetLogo (weaponList[i].ItemImage);
 					button.SetGemType((GemType)weaponStats[1]);
 					item.transform.SetParent(weaponRepository.transform, false);
-
 				}
 			}
 
             scrollRectWeaponRepository =
                 weaponRepository.transform.parent.GetComponent<ScrollRect>();
-            yield return 0;
+			yield return 0.02f;
 		}
 
 		private IEnumerator<float> SkillCorutine()
@@ -411,12 +435,11 @@ namespace CraftSystem
 					button.TutorialSkill.text = skillList[i].SkillTutorial;
 					button.SetImage(skillList[i].SkillImage.sprite);
 					item.transform.SetParent(skillsRepository.transform, false);
-
 				}
 			}
 			scrollRectSkillRepository =
 				skillsRepository.transform.parent.GetComponent<ScrollRect>();
-			yield return 0;
+			yield return 0.02f;
 		}
 
 		private IEnumerator<float>ItemsCorutine()
@@ -438,7 +461,7 @@ namespace CraftSystem
 			}
 			scrollRectSkillRepository =
 				skillsRepository.transform.parent.GetComponent<ScrollRect>();
-			yield return 0;
+			yield return 0.02f;
 		}
 	}
 }

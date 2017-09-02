@@ -17,10 +17,13 @@ namespace VotanUI
         [SerializeField]
         GameObject arenaButton;
         [SerializeField, Tooltip("Арены")]
-        private List<SceneScript> sceneList;
-        private Scene arena;
-        string arenaPrefix = "Scenes/Arena/Arena_";
+        private List<GameObject> sceneList;
+
+		private List<SceneScript> sceneArray;
         int arenaNumber;
+
+		[SerializeField]
+		MainWindow MW;
         SelectArena SA;
 
         public int ArenaNumber
@@ -32,7 +35,7 @@ namespace VotanUI
         void Start()
         {
             SA = GetComponent<SelectArena>();
-            sceneList = new List<SceneScript>();
+			sceneArray = new List<SceneScript>();
             StartCoroutine(arenaLoad());
         }
 
@@ -41,9 +44,9 @@ namespace VotanUI
             int count = Resources.LoadAll("Scenes/Arena").Length;
             for (int i = 0; i < count; i++)
             {
-                GameObject ar = (GameObject)Resources.Load(arenaPrefix + (i + 1));
+				GameObject ar = sceneList[i];
                 GameObject arena = Instantiate(arenaButton);
-                sceneList.Add(ar.GetComponent<SceneScript>());
+                sceneArray.Add(ar.GetComponent<SceneScript>());
 
 
                 arena.transform.SetParent(arenaRepository, false);

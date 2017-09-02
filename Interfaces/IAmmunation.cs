@@ -13,7 +13,8 @@ namespace VotanInterfaces
         /// Включить/выключить трэил снаряда
         /// </summary>
         /// <param name="flag"></param>
-        void ActiveForTrailRender(bool flag);
+        /// <param name="time"></param>
+        void ActiveForTrailRender(bool flag,float time);
 
         /// <summary>
         /// Готов ли снаряд к повторному использованию

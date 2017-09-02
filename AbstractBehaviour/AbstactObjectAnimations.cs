@@ -188,10 +188,20 @@ namespace AbstractBehaviour
         /// </summary>
         public virtual void DisableAllStates()
         {
-            if (structStatesNames.StructureCount == -1) return;
+            if (structStatesNames.StructureCount == -1)
+            {
+                return;
+            }
             else
-                for (byte i = 0; i < structStatesNames.StructureCount-1; i++)
-                    animatorOfObject.SetBool(StructStatesNames.GetState(i), false);
+            {
+                for (byte i = 0; i < structStatesNames.StructureCount - 1; i++)
+                {
+                    if (animatorOfObject.gameObject.activeSelf)
+                        animatorOfObject.SetBool(StructStatesNames.GetState(i), false);
+                    else
+                        return;
+                }
+            }
         }
 
         /// <summary>

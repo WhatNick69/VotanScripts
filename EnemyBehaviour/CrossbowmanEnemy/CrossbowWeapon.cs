@@ -96,6 +96,10 @@ namespace EnemyBehaviour
             return false;
         }
 
+        /// <summary>
+        /// Не пустая ли аммуниция
+        /// </summary>
+        /// <returns></returns>
         public bool IsNotEmptyAmmunation()
         {
             for (int i = 0; i < ammunationInterfaces.Length; i++)
