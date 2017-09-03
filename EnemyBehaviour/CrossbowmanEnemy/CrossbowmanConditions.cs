@@ -56,7 +56,7 @@ namespace EnemyBehaviour
             IsAlive = false;
             enemyAbstract.AbstractObjectSounder.PlayDeadAudio();
             //enemyAbstract.EnemyAnimationsController.DisableAllStates();
-            enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(0.5f);
+            enemyAbstract.EnemyAnimationsController.SetSpeedAnimationByRunSpeed(1);
             enemyAbstract.EnemyAnimationsController.SetState(4, true);
             enemyAbstract.EnemyAnimationsController.PlayDeadNormalizeCoroutine();
             MainBarCanvas.gameObject.SetActive(false);
