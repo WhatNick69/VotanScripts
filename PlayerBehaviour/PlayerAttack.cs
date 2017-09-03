@@ -36,6 +36,7 @@ namespace PlayerBehaviour
         /// </summary>
         public void Start()
 		{
+            //Debug.Log("START");
 			transformOfPlayer = playerComponentsControl.PlayerObject;
 			playerWeapon = playerComponentsControl.PlayerWeapon;
 			playerFight = playerComponentsControl.PlayerFight;
@@ -79,7 +80,8 @@ namespace PlayerBehaviour
 		/// <returns></returns>
 		public IEnumerator<float> CoroutineForAttackUpdate()
 		{
-			while (playerComponentsControl.PlayerConditions.IsAlive)
+            yield return Timing.WaitForSeconds(updateAttackFrequency);
+            while (playerComponentsControl.PlayerConditions.IsAlive)
 			{
 				yield return Timing.WaitForSeconds(updateAttackFrequency);
 				if (!playerFight.IsDefensing)

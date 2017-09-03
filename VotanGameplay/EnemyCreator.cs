@@ -60,8 +60,8 @@ namespace VotanGameplay
             stackLenght = (int)(oneTimeEnemies * 1.2f);
             StaticStorageWithEnemies.CountOfEnemies = 0;
             StaticStorageWithEnemies.ListEnemy = new AbstractEnemy[stackLenght];
-            //Timing.RunCoroutine(CoroutineInitialisationOfEnemies()); // первый шаг
-            CoroutineInitialisationOfEnemies(); // первый шаг
+
+            Timing.RunCoroutine(CoroutineInitialisationOfEnemies()); // первый шаг
         }
 
         /// <summary>
@@ -146,9 +146,9 @@ namespace VotanGameplay
         /// 
         /// Первый шаг
         /// </summary>
-        private void CoroutineInitialisationOfEnemies()
+        private IEnumerator<float> CoroutineInitialisationOfEnemies()
         {
-            DateTime timeStart = DateTime.Now;
+            yield return Timing.WaitForSeconds(1);
             for (int i = 0; i < stackLenght; i++)
             {
                 if (i == stackLenght - 1)
@@ -168,7 +168,6 @@ namespace VotanGameplay
                 }
                 StaticStorageWithEnemies.ListEnemy[i] = enemyObjNew.GetComponent<AbstractEnemy>();
             }
-            DateTime timeFinish = DateTime.Now;
             GiveEnemyArrayReferenceToAllPlayers(); 
             Timing.RunCoroutine(CoroutineEnemiesSpawn()); 
         }
@@ -180,6 +179,8 @@ namespace VotanGameplay
         /// </summary>
         private void GiveEnemyArrayReferenceToAllPlayers()
         {
+            Debug.Log("GiveEnemyArrayReferenceToAllPlayers" + " " + 
+                AllPlayerManager.PlayerComponentsList.Count);
             for (int i = 0; i < AllPlayerManager.PlayerComponentsList.Count; i++)
             {
                 AllPlayerManager.PlayerComponentsList[i]
