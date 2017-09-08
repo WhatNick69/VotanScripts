@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using MovementEffects;
 using ShopSystem;
-using CraftSystem;
 
 namespace VotanUI
 {
@@ -146,6 +145,9 @@ namespace VotanUI
             tBE.HighlightingControl(true);
         }
 
+        /// <summary>
+        /// Скрыть все тачи кнопок
+        /// </summary>
         public void UnshowAllTouchesForButtons()
         {
             for (int i = 0; i < shopTouchButtons.Length; i++)

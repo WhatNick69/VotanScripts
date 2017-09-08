@@ -283,7 +283,7 @@ namespace ShopSystem
         /// Отключить подсветку у всех элементов листа
         /// </summary>
         /// <param name="numberItemType"></param>
-        public void DisableListHighlightings(int numberItemType,bool isDisableAll=false)
+        public void DisableListHighlightingShop(int numberItemType,bool isDisableAll=false)
         {
             if (isDisableAll)
             {
@@ -371,6 +371,9 @@ namespace ShopSystem
             }
         }
 
+        /// <summary>
+        /// Скрыть все элементы UI в магазине
+        /// </summary>
         public void UnshowAllUIElementsInShop()
         {
             ShowNeedUIElements(0, false);

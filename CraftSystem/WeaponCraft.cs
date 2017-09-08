@@ -5,6 +5,7 @@ using VotanUI;
 using UnityEngine.UI;
 using VotanInterfaces;
 using VotanLibraries;
+using ShopSystem;
 
 namespace CraftSystem
 {
@@ -50,13 +51,16 @@ namespace CraftSystem
 		private List<ISkill> skillList;
 		private List<IItem> itemList;
 		private List<Weapon> weaponList;
-		private GameObject[] weaponArray;
+        private IRepositoryObject[] weaponInventoryElements;
+
+        private GameObject[] weaponArray;
 		private int[] weaponStats;
 
 		[SerializeField, Tooltip("Закинуть сюда все зелья")]
 		private List<GameObject> itemArray;
 
 		public int weaponItemNumber;
+        private int weaponItemNumberTemp = -1;
 
 		private int itemItemNumberOne;
 		private int itemItemNumberTwo;
@@ -71,6 +75,8 @@ namespace CraftSystem
 		[SerializeField]
 		ItemSkillPrefabs ItemSkillPef;
 		WeaponCraft WC;
+        [SerializeField]
+        Shop shop;
         ArmorCraft AC;
 		PlayerStats PStats;
 
@@ -80,10 +86,23 @@ namespace CraftSystem
 
 		float intemNumbWeapon;
 		float normPosWeapon;
-		#endregion
 
-		#region Свойства
-		public void CloseAllWindows()
+        public int WeaponItemNumberTemp
+        {
+            get
+            {
+                return weaponItemNumberTemp;
+            }
+
+            set
+            {
+                weaponItemNumberTemp = value;
+            }
+        }
+        #endregion
+
+        #region Свойства
+        public void CloseAllWindows()
 		{
 			skillWindow.SetActive(false);
 			itemWindow.SetActive(false);
@@ -150,6 +169,15 @@ namespace CraftSystem
 			PStats.HeadDamage = weaponList[x].DamageBase;
 			PStats.CritChance = weaponList[x].CriticalChance;
 		}
+
+        public void EquipWeapon()
+        {
+            if (weaponItemNumberTemp != -1)
+            {
+                SetWeaponItemNumber(weaponItemNumberTemp);
+                weaponItemNumberTemp = -1;
+            }
+        }
 
 		public void SetSkillItemNumber(int numberButton)
 		{
@@ -370,38 +398,48 @@ namespace CraftSystem
 			ChekScroll();
 		}
 
-		/// <summary>
-		/// Запускать для отображения элементов оружия в ленте
-		/// </summary>
-		/// <returns></returns>
-		private IEnumerator<float> WeaponCorutine()
+        /// <summary>
+        /// Отключить подсветку у элементов брони
+        /// </summary>
+        /// <param name="numberItemType"></param>
+        public void DisableListHighlightingInventory()
+        {
+            for (int i = 0; i < weaponInventoryElements.Length; i++)
+                weaponInventoryElements[i].HighlightingControl(false, false);
+        }
+
+        /// <summary>
+        /// Запускать для отображения элементов оружия в ленте
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator<float> WeaponCorutine()
 		{
             string str = PlayerPrefs.GetString("weaponArray");
             int[] elements = LibraryObjectsWorker.StringSplitter(str, '_');
             object[] tempObjects = new object[elements.Length];
-
+            weaponInventoryElements = new IRepositoryObject[tempObjects.Length];
             for (int i = 0; i < elements.Length; i++)
                 tempObjects[i] = Resources.Load(headPrefix + elements[i]);
 
             for (int i = 0; i < tempObjects.Length; i++)
 			{
-				if (Resources.Load(headPrefix + i.ToString()))
-				{
-					weaponGamObj = (GameObject)tempObjects[i];
+				weaponGamObj = (GameObject)tempObjects[i];
+				GameObject item = Instantiate(itemWeapon);
+				WeaponButton button = item.GetComponent<WeaponButton>();
 
-					weaponArray[i] = weaponGamObj;
-					weaponList.Add(weaponGamObj.GetComponent<Weapon>());
-					GameObject item = Instantiate(itemWeapon);
-					WeaponButton button = item.GetComponent<WeaponButton>();
-					button.SetWeaponCraft(this);
-					button.SetNumber(i);
+                weaponArray[i] = weaponGamObj;
+                weaponInventoryElements[i] = button;
+                weaponList.Add(weaponGamObj.GetComponent<Weapon>());
 
-					button.SetName(weaponList[i].HeadName);
-                    button.SetMoneyCost(weaponList[i].MoneyCost);
-                    button.SetLogo (weaponList[i].ItemImage);
+                button.SetWeaponCraft(this);
+                button.SetShop(shop);
+                button.SetNumber(i);
 
-					item.transform.SetParent(weaponRepository.transform, false);
-				}
+                button.SetName(weaponList[i].HeadName);
+                button.SetMoneyCost(weaponList[i].MoneyCost);
+                button.SetLogo (weaponList[i].ItemImage);
+
+				item.transform.SetParent(weaponRepository.transform, false);
 			}
 
             scrollRectWeaponRepository =

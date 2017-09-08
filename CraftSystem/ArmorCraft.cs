@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using VotanLibraries;
 using ShopSystem;
+using VotanUI;
 
 namespace CraftSystem
 {
@@ -55,14 +56,21 @@ namespace CraftSystem
 		private List<PartArmoryInformation> helmetList;
 		private List<PartArmoryInformation> shieldList;
 
-		[SerializeField]
+        private IRepositoryObject[] cuirassInventoryElements, 
+            helmetInventoryElements,
+            shieldInventoryElements;
+
+        [SerializeField]
 		private int cuirassItemNumber;
+        private int cuirassItemNumberTemp = -1;
 		[SerializeField]
 		private int helmetItemNumber;
-		[SerializeField]
+        private int helmetItemNumberTemp = -1;
+        [SerializeField]
 		private int shieldItemNumber;
+        private int shieldItemNumberTemp = -1;
 
-		ArmorPrefabs AP;
+        ArmorPrefabs AP;
 		PlayerStats PStats;
         WeaponCraft WC;
         [SerializeField]
@@ -125,8 +133,47 @@ namespace CraftSystem
 				PStats.ShieldWeight = shieldList[value].WeightArmory;
 			}
         }
-  
-		public GameObject GetCuirassPrafab()
+
+        public int CuirassItemNumberTemp
+        {
+            get
+            {
+                return cuirassItemNumberTemp;
+            }
+
+            set
+            {
+                cuirassItemNumberTemp = value;
+            }
+        }
+
+        public int ShieldItemNumberTemp
+        {
+            get
+            {
+                return shieldItemNumberTemp;
+            }
+
+            set
+            {
+                shieldItemNumberTemp = value;
+            }
+        }
+
+        public int HelmetItemNumberTemp
+        {
+            get
+            {
+                return helmetItemNumberTemp;
+            }
+
+            set
+            {
+                helmetItemNumberTemp = value;
+            }
+        }
+
+        public GameObject GetCuirassPrafab()
 		{
 			return cuirass;
 		}
@@ -178,6 +225,62 @@ namespace CraftSystem
             AP.Cuirass = cuirassList[cuirassItemNumber].gameObject;
             AP.Helmet = helmetList[helmetItemNumber].gameObject;
             AP.Shield = shieldList[shieldItemNumber].gameObject;
+        }
+
+        /// <summary>
+        /// Экипировать оружие
+        /// </summary>
+        public void EquipItem()
+        {
+            if (cuirassItemNumberTemp != -1)
+            {
+                CuirassItemNumber = cuirassItemNumberTemp;
+                cuirassItemNumberTemp = -1;
+                shieldItemNumberTemp = -1;
+                helmetItemNumberTemp = -1;
+                MenuSoundManager.PlaySoundStatic(1);
+            }
+            else if (helmetItemNumberTemp != -1)
+            {
+                HelmetItemNumber = helmetItemNumberTemp;
+                cuirassItemNumberTemp = -1;
+                shieldItemNumberTemp = -1;
+                helmetItemNumberTemp = -1;
+                MenuSoundManager.PlaySoundStatic(1);
+            }
+            else if (shieldItemNumberTemp != -1)
+            {
+                ShieldItemNumber = shieldItemNumberTemp;
+                cuirassItemNumberTemp = -1;
+                shieldItemNumberTemp = -1;
+                helmetItemNumberTemp = -1;
+                MenuSoundManager.PlaySoundStatic(1);
+            }
+        }
+
+        /// <summary>
+        /// Отключить подсветку у элементов брони
+        /// </summary>
+        /// <param name="numberItemType"></param>
+        public void DisableListHighlightingInventory(int numberItemType)
+        {
+            switch (numberItemType)
+            {
+                case 0: //c
+                    for (int i = 0; i < cuirassInventoryElements.Length; i++)
+                            cuirassInventoryElements[i].HighlightingControl(false,false);
+                    break;
+
+                case 1: //h
+                    for (int i = 0; i < helmetInventoryElements.Length; i++)
+                            helmetInventoryElements[i].HighlightingControl(false,false);
+                    break;
+
+                case 2: //s
+                    for (int i = 0; i < shieldInventoryElements.Length; i++)
+                            shieldInventoryElements[i].HighlightingControl(false,false);
+                    break;
+            }
         }
 
         /// <summary>
@@ -426,6 +529,7 @@ namespace CraftSystem
             string str = PlayerPrefs.GetString("shieldArray");
             int[] elements = LibraryObjectsWorker.StringSplitter(str, '_');
             object[] tempObjects = new object[elements.Length];
+            shieldInventoryElements = new IRepositoryObject[tempObjects.Length];
 
             for (int i = 0; i < elements.Length; i++)
                 tempObjects[i] = Resources.Load(shieldPrefix + elements[i] + shieldPostfix);
@@ -433,10 +537,12 @@ namespace CraftSystem
             for (int i = 0; i < tempObjects.Length; i++)
 			{
 				GameObject gemGgamObj = (GameObject)tempObjects[i];
-
-                shieldList.Add(gemGgamObj.GetComponent<PartArmoryInformation>());
 				GameObject item = Instantiate(itemArmor);
 				ArmorButton button = item.GetComponent<ArmorButton>();
+
+                shieldList.Add(gemGgamObj.GetComponent<PartArmoryInformation>());
+                shieldInventoryElements[i] = button;
+
                 button.SetShop(shop);
                 button.SetArmorCraft(this);
 				button.SetNumber(i);
@@ -463,6 +569,7 @@ namespace CraftSystem
             string str = PlayerPrefs.GetString("cuirassArray");
             int[] elements = LibraryObjectsWorker.StringSplitter(str, '_');
             object[] tempObjects = new object[elements.Length];
+            cuirassInventoryElements = new IRepositoryObject[tempObjects.Length];
 
             for (int i = 0; i < elements.Length; i++)
                 tempObjects[i] = Resources.Load(cuirassPrefix + elements[i] + cuirassPostfix);
@@ -470,10 +577,12 @@ namespace CraftSystem
             for (int i = 0; i < tempObjects.Length; i++)
 			{
 				GameObject gemGgamObj = (GameObject)tempObjects[i];
-
-				cuirassList.Add(gemGgamObj.GetComponent<PartArmoryInformation>());
 				GameObject item = Instantiate(itemArmor);
 				ArmorButton button = item.GetComponent<ArmorButton>();
+
+                cuirassInventoryElements[i] = button;
+                cuirassList.Add(gemGgamObj.GetComponent<PartArmoryInformation>());
+
                 button.SetShop(shop);
                 button.SetArmorCraft(this);
 				button.SetNumber(i);
@@ -500,17 +609,20 @@ namespace CraftSystem
             string str = PlayerPrefs.GetString("helmetArray");
             int[] elements = LibraryObjectsWorker.StringSplitter(str, '_');
             object[] tempObjects = new object[elements.Length];
+            helmetInventoryElements = new IRepositoryObject[tempObjects.Length];
 
-			for (int i = 0; i < elements.Length; i++)
+            for (int i = 0; i < elements.Length; i++)
                 tempObjects[i] = Resources.Load(helmetPrefix + elements[i] + helmetPostfix);
 
 			for (int i = 0; i < tempObjects.Length; i++)
 			{
 				GameObject gemGgamObj = (GameObject)tempObjects[i];
-
-				helmetList.Add(gemGgamObj.GetComponent<PartArmoryInformation>());
 				GameObject item = Instantiate(itemArmor);
 				ArmorButton button = item.GetComponent<ArmorButton>();
+
+                helmetInventoryElements[i] = button;
+                helmetList.Add(gemGgamObj.GetComponent<PartArmoryInformation>());
+
                 button.SetShop(shop);
                 button.SetArmorCraft(this);
 				button.SetNumber(i);

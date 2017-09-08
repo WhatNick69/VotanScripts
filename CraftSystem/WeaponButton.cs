@@ -47,6 +47,13 @@ namespace CraftSystem
             wepCraft.SetWeaponItemNumber(numberButton);
         }
 
+        public void GetNumberTemp()
+        {
+            wepCraft.WeaponItemNumberTemp = numberButton;
+            wepCraft.DisableListHighlightingInventory();
+            HighlightingControl(true,false);
+        }
+
         /// <summary>
         /// Установить номер предмета в магазине (нажать по предмету)
         /// </summary>
@@ -54,7 +61,7 @@ namespace CraftSystem
         {
             shop.WeaponItemNumber = numberButton;
             shop.ShowItemParameters(3);
-            shop.DisableListHighlightings(3);
+            shop.DisableListHighlightingShop(3);
             HighlightingControl(true);
             MenuSoundManager.PlaySoundStatic(1);
         }
@@ -80,24 +87,26 @@ namespace CraftSystem
             {
                 shop.WeaponItemNumber = numberButton;
                 shop.ShowItemParameters(3);
-                shop.DisableListHighlightings(3, false);
+                shop.DisableListHighlightingShop(3, false);
                 HighlightingControl(true);
             }
         }
 
-        public void HighlightingControl(bool flag)
+        public void HighlightingControl(bool flag,bool isHaveButton=true)
         {
             if (flag)
             {
                 squareItem.color = highlightingColor;
-                buttonImage.color = buttonActiveColor;
+                if (isHaveButton)
+                    buttonImage.color = buttonActiveColor;
                 highlighting.enabled = true;
                 isMayToBuy = true;
             }
             else
             {
                 squareItem.color = Color.white;
-                buttonImage.color = buttonDeactiveColor;
+                if (isHaveButton)
+                    buttonImage.color = buttonDeactiveColor;
                 highlighting.enabled = false;
                 isMayToBuy = false;
             }

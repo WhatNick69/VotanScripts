@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 namespace CraftSystem
 {
@@ -13,6 +14,9 @@ namespace CraftSystem
         private GameObject weapon;
         [SerializeField, Tooltip("Броня")]
         private GameObject armor;
+        [SerializeField, Tooltip("Кнопка экипировки")]
+        private Button equipButton;
+
         private ArmorCraft armorCraftComponent;
         private WeaponCraft weaponCraftComponent;
         #endregion

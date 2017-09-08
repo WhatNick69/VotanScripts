@@ -129,15 +129,44 @@ namespace CraftSystem
             {
                 case ArmoryClass.Cuirass:
                     armCraft.CuirassItemNumber = numberButton;
- 
                     break;
+
                 case ArmoryClass.Helmet:
                     armCraft.HelmetItemNumber = numberButton;
-
                     break;
+
                 case ArmoryClass.Shield:
                     armCraft.ShieldItemNumber = numberButton;
+                    break;
+            }
+        }
 
+        public void SetNumberTemp()
+        {
+            switch (armoryClass)
+            {
+                case ArmoryClass.Cuirass:
+                    armCraft.CuirassItemNumberTemp = numberButton;
+                    armCraft.HelmetItemNumberTemp = -1;
+                    armCraft.ShieldItemNumberTemp = -1;
+                    armCraft.DisableListHighlightingInventory(0);
+                    HighlightingControl(true,false);
+                    break;
+
+                case ArmoryClass.Helmet:
+                    armCraft.HelmetItemNumberTemp = numberButton;
+                    armCraft.CuirassItemNumberTemp = -1;
+                    armCraft.ShieldItemNumberTemp = -1;
+                    armCraft.DisableListHighlightingInventory(1);
+                    HighlightingControl(true,false);
+                    break;
+
+                case ArmoryClass.Shield:
+                    armCraft.ShieldItemNumberTemp = numberButton;
+                    armCraft.HelmetItemNumberTemp = -1;
+                    armCraft.CuirassItemNumberTemp = -1;
+                    armCraft.DisableListHighlightingInventory(2);
+                    HighlightingControl(true,false);
                     break;
             }
         }
@@ -152,7 +181,7 @@ namespace CraftSystem
                 case ArmoryClass.Cuirass:
                     shop.CuirassItemNumber = numberButton;
                     shop.ShowItemParameters(0);
-                    shop.DisableListHighlightings(0);
+                    shop.DisableListHighlightingShop(0);
                     HighlightingControl(true);
                     MenuSoundManager.PlaySoundStatic(1);
                     break;
@@ -160,7 +189,7 @@ namespace CraftSystem
                 case ArmoryClass.Helmet:
                     shop.HelmetItemNumber = numberButton;
                     shop.ShowItemParameters(1);
-                    shop.DisableListHighlightings(1);
+                    shop.DisableListHighlightingShop(1);
                     HighlightingControl(true);
                     MenuSoundManager.PlaySoundStatic(1);
                     break;
@@ -168,7 +197,7 @@ namespace CraftSystem
                 case ArmoryClass.Shield:
                     shop.ShieldItemNumber = numberButton;
                     shop.ShowItemParameters(2);
-                    shop.DisableListHighlightings(2);
+                    shop.DisableListHighlightingShop(2);
                     HighlightingControl(true);
                     MenuSoundManager.PlaySoundStatic(1);
                     break;
@@ -179,19 +208,21 @@ namespace CraftSystem
         /// Контроль подсветки
         /// </summary>
         /// <param name="flag"></param>
-        public void HighlightingControl(bool flag)
+        public void HighlightingControl(bool flag,bool isHaveButton=true)
         {
             if (flag)
             {
                 squareItem.color = highlightingColor;
-                buttonImage.color = buttonActiveColor;
+                if (isHaveButton)
+                    buttonImage.color = buttonActiveColor;
                 highlighting.enabled = true;
                 isMayToBuy = true;
             }
             else
             {
                 squareItem.color = Color.white;
-                buttonImage.color = buttonDeactiveColor;
+                if (isHaveButton)
+                    buttonImage.color = buttonDeactiveColor;
                 highlighting.enabled = false;
                 isMayToBuy = false;
             }
@@ -248,19 +279,19 @@ namespace CraftSystem
                     case ArmoryClass.Cuirass:
                         shop.CuirassItemNumber = numberButton;
                         shop.ShowItemParameters(0);
-                        shop.DisableListHighlightings(0, false);
+                        shop.DisableListHighlightingShop(0, false);
                         HighlightingControl(true);
                         break;
                     case ArmoryClass.Helmet:
                         shop.HelmetItemNumber = numberButton;
                         shop.ShowItemParameters(1);
-                        shop.DisableListHighlightings(1, false);
+                        shop.DisableListHighlightingShop(1, false);
                         HighlightingControl(true);
                         break;
                     case ArmoryClass.Shield:
                         shop.ShieldItemNumber = numberButton;
                         shop.ShowItemParameters(2);
-                        shop.DisableListHighlightings(2, false);
+                        shop.DisableListHighlightingShop(2, false);
                         HighlightingControl(true);
                         break;
                 }

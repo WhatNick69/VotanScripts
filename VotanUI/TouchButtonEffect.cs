@@ -17,7 +17,7 @@ namespace VotanUI
         /// Эффект подсветки
         /// </summary>
         /// <param name="flag"></param>
-        public void HighlightingControl(bool flag)
+        public void HighlightingControl(bool flag,bool isHaveButton=true)
         {
             if (flag)
             {

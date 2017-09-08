@@ -9,6 +9,6 @@
         /// <summary>
         /// Отключить выделение
         /// </summary>
-        void HighlightingControl(bool flag);
+        void HighlightingControl(bool flag,bool isHaveButton=true);
     }
 }
