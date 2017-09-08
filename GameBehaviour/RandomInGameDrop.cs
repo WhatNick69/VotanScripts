@@ -199,7 +199,8 @@ namespace GameBehaviour
             rendering.enabled = false;
             PlayPickUpSound();
             yield return Timing.WaitForSeconds(2);
-            Destroy(gameObject);
+            if (gameObject)
+                Destroy(gameObject);
         }
 
         /// <summary>

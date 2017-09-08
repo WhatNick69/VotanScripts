@@ -8,19 +8,16 @@ namespace CraftSystem
     public class Inventory 
         : MonoBehaviour
     {
+        #region Переменные
         [SerializeField, Tooltip("Оружие")]
         private GameObject weapon;
         [SerializeField, Tooltip("Броня")]
         private GameObject armor;
         private ArmorCraft armorCraftComponent;
         private WeaponCraft weaponCraftComponent;
+        #endregion
 
-        private void Start()
-        {
-            armorCraftComponent = GetComponent<ArmorCraft>();
-            weaponCraftComponent = GetComponent<WeaponCraft>();
-        }
-
+        #region Работа с окнами
         public void WeaponWindow()
         {
             armor.SetActive(false);
@@ -32,7 +29,20 @@ namespace CraftSystem
             weapon.SetActive(false);
             armor.SetActive(true);
         }
+        #endregion
 
+        /// <summary>
+        /// =================== Инициализация ===================
+        /// </summary>
+        private void Start()
+        {
+            armorCraftComponent = GetComponent<ArmorCraft>();
+            weaponCraftComponent = GetComponent<WeaponCraft>();
+        }
+
+        /// <summary>
+        /// Загрузить лист шлемов
+        /// </summary>
         public void LoadHelmetsList()
         {
             if (armorCraftComponent == null) Start();
@@ -40,6 +50,9 @@ namespace CraftSystem
             armorCraftComponent.HelmetWindow();
         }
 
+        /// <summary>
+        /// Загрузить лист оружия
+        /// </summary>
         public void LoadWeaponsList()
         {
             if (weaponCraftComponent == null) Start();

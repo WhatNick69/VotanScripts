@@ -3,13 +3,21 @@ using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using MovementEffects;
+using ShopSystem;
+using CraftSystem;
 
 namespace VotanUI
 {
+    /// <summary>
+    /// Главное меню
+    /// </summary>
     public class MainWindow 
         : MonoBehaviour
     {
-		SelectArena sceneSc;
+        #region Переменные и ссылки
+        [SerializeField]
+        private Shop shopComponent;
+        SelectArena sceneSc;
 
 		[SerializeField]
 		List<GameObject> allMenu;
@@ -32,8 +40,12 @@ namespace VotanUI
         [SerializeField]
         private Image imageFromLoadingFone;
 
-        #region
-		public void InventotyPageLoad()
+        [SerializeField]
+        private TouchButtonEffect[] shopTouchButtons;
+        #endregion
+
+        #region Свойства
+        public void InventotyPageLoad()
         {
 			onMenu(inventoryMenuPage);
         }
@@ -41,7 +53,9 @@ namespace VotanUI
 		public void ShopPageLoad()
 		{
 			onMenu(Shop);
-		}
+            shopComponent.CommonStoreWindow();
+
+        }
 
 		public void WeaponMenuLoad()
 		{
@@ -56,7 +70,7 @@ namespace VotanUI
 		public void MainMenuLoad()
 		{
 			onMenu(mMenuPage);
-		}
+        }
 
         public void InventoryMenuLoad()
         {
@@ -72,14 +86,21 @@ namespace VotanUI
 		{
 			onMenu(Settings);
 		}
+        #endregion
 
+        /// <summary>
+        /// Запуск арены
+        /// </summary>
         public void PlayArena()
         {
             Timing.RunCoroutine(CoroutineForLoadingScene());
         }
-        #endregion
 
-		private IEnumerator<float> CoroutineForLoadingScene()
+        /// <summary>
+        /// Корутина на загрузку сцены
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator<float> CoroutineForLoadingScene()
         {
             onMenu();
             MenuSoundManager.PlaySoundStatic(2);
@@ -113,10 +134,22 @@ namespace VotanUI
             MenuSoundManager.PlaySoundStatic();
             if (page) page.SetActive(true);
 		}
-		private void Start()
-		{
-			//sceneSc = new SelectArena();
-		}
 
+        /// <summary>
+        /// Скрыть тачи всех кнопок
+        /// </summary>
+        /// <param name="tBE"></param>
+        public void UnshowAllTouchesForButtons(TouchButtonEffect tBE)
+        {
+            for (int i = 0; i < shopTouchButtons.Length; i++)
+                shopTouchButtons[i].HighlightingControl(false);
+            tBE.HighlightingControl(true);
+        }
+
+        public void UnshowAllTouchesForButtons()
+        {
+            for (int i = 0; i < shopTouchButtons.Length; i++)
+                shopTouchButtons[i].HighlightingControl(false);
+        }
 	}
 }

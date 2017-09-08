@@ -10,6 +10,10 @@ namespace CraftSystem
         : MonoBehaviour
     {
         #region Переменные
+        [SerializeField, Tooltip("Стоимость брони в золоте")]
+        private long moneyCost;
+        [SerializeField, Tooltip("Стоимость брони в гемах")]
+        private long gemsCost;
         [SerializeField, Tooltip("Изображение оружия")]
         private Sprite imageHead;
         [SerializeField, Range(1, 1000f), Tooltip("Базовое значение урона оружием")]
@@ -129,6 +133,32 @@ namespace CraftSystem
 				attackPoint = value;
 			}
 		}
-		#endregion
-	}
+
+        public long GemsCost
+        {
+            get
+            {
+                return gemsCost;
+            }
+
+            set
+            {
+                gemsCost = value;
+            }
+        }
+
+        public long MoneyCost
+        {
+            get
+            {
+                return moneyCost;
+            }
+
+            set
+            {
+                moneyCost = value;
+            }
+        }
+        #endregion
+    }
 }

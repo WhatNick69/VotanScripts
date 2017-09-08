@@ -10,8 +10,12 @@ namespace CraftSystem
     public class PartArmoryInformation
 		: MonoBehaviour
 	{
-		#region Переменные
-		[SerializeField, Tooltip("Изображение части брони")]
+        #region Переменные
+        [SerializeField, Tooltip("Стоимость брони в золоте")]
+        private long moneyCost;
+        [SerializeField, Tooltip("Стоимость брони в гемах")]
+        private long gemsCost;
+        [SerializeField, Tooltip("Изображение части брони")]
 		private Sprite imageArmory;
 		[SerializeField, Tooltip("Тип брони")]
 		private ArmoryClass armoryType;
@@ -21,11 +25,11 @@ namespace CraftSystem
         private float weightArmory;
         [SerializeField, Tooltip("Название части брони")]
 		private string armoryName;
-		private PlayerComponentsControl playerComponentsControl;
-		#endregion
+        private PlayerComponentsControl playerComponentsControl;
+        #endregion
 
-		#region Свойства
-		public float ArmoryValue
+        #region Свойства
+        public float ArmoryValue
 		{
 			get
 			{
@@ -95,6 +99,32 @@ namespace CraftSystem
             set
             {
                 weightArmory = value;
+            }
+        }
+
+        public long MoneyCost
+        {
+            get
+            {
+                return moneyCost;
+            }
+
+            set
+            {
+                moneyCost = value;
+            }
+        }
+
+        public long GemsCost
+        {
+            get
+            {
+                return gemsCost;
+            }
+
+            set
+            {
+                gemsCost = value;
             }
         }
         #endregion

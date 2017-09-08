@@ -1,46 +1,113 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using PlayerBehaviour;
 using ShopSystem;
+using VotanUI;
+using System;
 
 namespace CraftSystem
 {
+    /// <summary>
+    /// Кнопка оружия
+    /// </summary>
     public class WeaponButton 
-        : MonoBehaviour
+        : MonoBehaviour, IRepositoryObject
     {
-        int numberButton;
-        [SerializeField]
+        #region Переменные
+        [SerializeField, Tooltip("Рамка предмета")]
+        Image squareItem;
+        [SerializeField, Tooltip("Кнопка предмета")]
+        Image buttonImage;
+        [SerializeField, Tooltip("Подсветка предмета")]
+        Image highlighting;
+        [SerializeField, Tooltip("Изображение предмета")]
         Image logo;
-        WeaponCraft wepCraft;
-		Shop shop;
-        [SerializeField]
+        [SerializeField, Tooltip("Название предмета")]
         Text nameWeapon;
-        [SerializeField]
-        Sprite fireLogo;
-        [SerializeField]
-        Sprite frostLogo;
-        [SerializeField]
-        Sprite electricLogo;
-        [SerializeField]
-        Sprite powerfulLogo;
-        [SerializeField]
-        Image gemTypeImg;
+        [SerializeField, Tooltip("Стоимость предмета в золоте")]
+        Text moneyCost;
+        [SerializeField, Tooltip("Стоимость предмета в гемах")]
+        Text gemsCost;
+
+        private int numberButton;
         string critChance;
+        Shop shop;
+        WeaponCraft wepCraft;
 
-        public void SetNumber(int x)
-        {
-            numberButton = x;
-        }
+        private static Color highlightingColor = new Color(0.352f, 1, 0.588f, 1);
+        private static Color buttonActiveColor = new Color(0.487f, 0.331f, 0, 1);
+        private static Color buttonDeactiveColor = new Color(0.487f, 0.331f, 0, 0.682f);
+        bool isMayToBuy;
+        #endregion
 
+        /// <summary>
+        /// Установить номер предмета в инвентаре (нажать по предмету)
+        /// </summary>
         public void GetNumber()
         {
             wepCraft.SetWeaponItemNumber(numberButton);
         }
 
-		public void GetNumberShop()
-		{
-			shop.WeaponItemNumber = numberButton;
-		}
+        /// <summary>
+        /// Установить номер предмета в магазине (нажать по предмету)
+        /// </summary>
+        public void SetNumberItemShop()
+        {
+            shop.WeaponItemNumber = numberButton;
+            shop.ShowItemParameters(3);
+            shop.DisableListHighlightings(3);
+            HighlightingControl(true);
+            MenuSoundManager.PlaySoundStatic(1);
+        }
+
+        /// <summary>
+        /// Купить выбранный предмет в магазине
+        /// </summary>
+        public void BuyNumberItemShop()
+        {
+            if (isMayToBuy)
+            {
+                shop.WeaponItemNumber = numberButton;
+                if (shop.IsEnoughUserResources(3)
+                    && shop.BuyWeapon())
+                {
+                    MenuSoundManager.PlaySoundStatic(1);
+                    HighlightingControl(false);
+                    shop.ShowNeedUIElements(0, false);
+                    wepCraft.RestartWeaponWindow();
+                }
+            }
+            else
+            {
+                shop.WeaponItemNumber = numberButton;
+                shop.ShowItemParameters(3);
+                shop.DisableListHighlightings(3, false);
+                HighlightingControl(true);
+            }
+        }
+
+        public void HighlightingControl(bool flag)
+        {
+            if (flag)
+            {
+                squareItem.color = highlightingColor;
+                buttonImage.color = buttonActiveColor;
+                highlighting.enabled = true;
+                isMayToBuy = true;
+            }
+            else
+            {
+                squareItem.color = Color.white;
+                buttonImage.color = buttonDeactiveColor;
+                highlighting.enabled = false;
+                isMayToBuy = false;
+            }
+        }
+
+        #region Какие-то методы
+        public void SetNumber(int x)
+        {
+            numberButton = x;
+        }
 
         public void SetWeaponCraft(WeaponCraft WP)
         {
@@ -62,27 +129,15 @@ namespace CraftSystem
             logo.sprite = sprt;
         }
 
-        public void SetGemType(GemType DT)
+        public void SetMoneyCost(long str)
         {
-            switch (DT)
-            {
-                case GemType.Electric:
-                    gemTypeImg.sprite = electricLogo;
-                    break;
-
-                case GemType.Fire:
-                    gemTypeImg.sprite = fireLogo;
-                    break;
-
-                case GemType.Frozen:
-                    gemTypeImg.sprite = frostLogo;
-                    break;
-
-                case GemType.Powerful:
-                    gemTypeImg.sprite = powerfulLogo;
-                    break;
-
-            }
+            moneyCost.text = str.ToString();
         }
+
+        public void SetGemsCost(long str)
+        {
+            gemsCost.text = str.ToString();
+        }
+        #endregion
     }
 }

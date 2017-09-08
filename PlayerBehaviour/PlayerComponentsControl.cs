@@ -1,4 +1,5 @@
 ﻿using GameBehaviour;
+using ShopSystem;
 using UnityEngine;
 using VotanGameplay;
 using VotanInterfaces;
@@ -55,6 +56,7 @@ namespace PlayerBehaviour
         private PlayerHUDAudioStorage playerHUDAudioStorage;
         [SerializeField, Tooltip("HUD компонент игрока")]
         private PlayerHUDManager playerHUDManager;
+        private UserResources userResources;
         #endregion
 
         #region Доступы к компонентам
@@ -330,6 +332,19 @@ namespace PlayerBehaviour
                 playerBonesManager = value;
             }
         }
+
+        public UserResources UserResources
+        {
+            get
+            {
+                return userResources;
+            }
+
+            set
+            {
+                userResources = value;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -339,6 +354,7 @@ namespace PlayerBehaviour
         {
             AllPlayerManager.AddPlayerToPlayerList(gameObject);
             DownInterfaceRotater.RestartDownInterfaceRotater();
+            userResources = GameObject.Find("GetPrefabs").GetComponent<UserResources>();
         }
     }
 }

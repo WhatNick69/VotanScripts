@@ -40,7 +40,8 @@ namespace CraftSystem
 
 			weaponGemType = weaponClass.DamageTypeGem;
 
-			plComponents.PlayerWeapon.SetWeaponParameters(weaponClass.DamageBase, 101, weaponGemType,
+			plComponents.PlayerWeapon.SetWeaponParameters(weaponClass.DamageBase, 
+                weaponClass.CriticalChance, weaponGemType,
 				weaponClass.TrailRenderer, weaponClass.GemPower);
 
 			plComponents.PlayerWeapon.SetSpinSpeed

@@ -96,9 +96,12 @@ namespace PlayerBehaviour
                 (steelObject.transform.GetComponentInChildren<Text>(),
                 "Steel: ", 1, playerComponentsControl.PlayerResources.SteelResource, 1));
 
-            if (playerComponentsControl.PlayerResources.Gems > 0)
+            if (isWin)
             {
-                if (isWin)
+                playerComponentsControl.UserResources.SaveUserResources
+                    (playerComponentsControl.PlayerResources.ScoreValue,
+                    playerComponentsControl.PlayerResources.Gems);
+                if (playerComponentsControl.PlayerResources.Gems > 0)
                 {
                     gemObject.transform.GetComponentInChildren<Text>().text =
                         "Gems: " + playerComponentsControl.PlayerResources.Gems;
@@ -106,12 +109,15 @@ namespace PlayerBehaviour
                 }
                 else
                 {
-                    playerComponentsControl.PlayerResources.Gems = 0;
                     return false;
                 }
             }
             else
             {
+                playerComponentsControl.PlayerResources.Gems = 0;
+                playerComponentsControl.UserResources.SaveUserResources
+                    (playerComponentsControl.PlayerResources.ScoreValue,
+                    playerComponentsControl.PlayerResources.Gems);
                 return false;
             }
         }
