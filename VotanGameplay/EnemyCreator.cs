@@ -311,7 +311,7 @@ namespace VotanGameplay
                         SetParameterOfEnemy(10,hardcoreMultiplier); // Урон моба
                     enemyBehaviour.EnemyConditions.SetHealthParameter
                         (LibraryStaticFunctions.GetRangeValue
-                        (SetParameterOfEnemy(100,hardcoreMultiplier), 0.1f)); // Установить жизни мобу
+                        (SetParameterOfEnemy(50,hardcoreMultiplier), 0.1f)); // Установить жизни мобу
 
                     enemyBehaviour.EnemyConditions.PhysicResistance = 
                         LibraryStaticFunctions.GetRangeValue
@@ -321,7 +321,7 @@ namespace VotanGameplay
                     enemyBehaviour.EnemyConditions.FrostResistance = 0; // Сопротивление к ледяной атаке
 
                     enemyBehaviour.ScoreAddingEffect.ScoreBonus = 
-                        (int)SetParameterOfEnemy(200,hardcoreMultiplier*2); // задаем количество очков
+                        (int)SetParameterOfEnemy(25,hardcoreMultiplier*2); // задаем количество очков
                     break;
 
                 // БЕШЕНЫЙ РЫЦАРЬ
@@ -337,7 +337,7 @@ namespace VotanGameplay
                         SetParameterOfEnemy(5,hardcoreMultiplier); // Урон моба
                     enemyBehaviour.EnemyConditions.SetHealthParameter
                         (LibraryStaticFunctions.GetRangeValue
-                        (SetParameterOfEnemy(150,hardcoreMultiplier), 0.1f)); // Установить жизни мобу
+                        (SetParameterOfEnemy(60,hardcoreMultiplier), 0.1f)); // Установить жизни мобу
 
                     enemyBehaviour.EnemyConditions.PhysicResistance =
                         LibraryStaticFunctions.GetRangeValue
@@ -353,7 +353,7 @@ namespace VotanGameplay
                         (SetParameterOfEnemy(0.1f, hardcoreMultiplier), 0.1f);  // Сопротивление к ледяной атаке
 
                     enemyBehaviour.ScoreAddingEffect.ScoreBonus = 
-                        (int)SetParameterOfEnemy(400, hardcoreMultiplier*2); // задаем количество очков
+                        (int)SetParameterOfEnemy(40, hardcoreMultiplier*2); // задаем количество очков
                     break;
 
                 // АЛЕБАРДИЙЩИК
@@ -366,7 +366,7 @@ namespace VotanGameplay
                         SetParameterOfEnemy(20, hardcoreMultiplier); // Урон моба
                     enemyBehaviour.EnemyConditions.SetHealthParameter
                         (LibraryStaticFunctions.GetRangeValue
-                        (SetParameterOfEnemy(200, hardcoreMultiplier), 0.1f)); // Установить жизни мобу
+                        (SetParameterOfEnemy(75, hardcoreMultiplier), 0.1f)); // Установить жизни мобу
 
                     enemyBehaviour.EnemyConditions.PhysicResistance =
                         LibraryStaticFunctions.GetRangeValue
@@ -382,7 +382,7 @@ namespace VotanGameplay
                         (SetParameterOfEnemy(0.1f, hardcoreMultiplier), 0.2f);  // Сопротивление к ледяной атаке
 
                     enemyBehaviour.ScoreAddingEffect.ScoreBonus =
-                        (int)SetParameterOfEnemy(600, hardcoreMultiplier * 2); // задаем количество очков
+                        (int)SetParameterOfEnemy(80, hardcoreMultiplier * 2); // задаем количество очков
                     break;
 
                 // Арбалетчик
@@ -399,7 +399,7 @@ namespace VotanGameplay
                         SetParameterOfEnemy(20, hardcoreMultiplier); // Урон моба
                     enemyBehaviour.EnemyConditions.SetHealthParameter
                         (LibraryStaticFunctions.GetRangeValue
-                        (SetParameterOfEnemy(100, hardcoreMultiplier), 0.1f)); // Установить жизни мобу
+                        (SetParameterOfEnemy(40, hardcoreMultiplier), 0.1f)); // Установить жизни мобу
 
                     enemyBehaviour.EnemyConditions.PhysicResistance =
                         LibraryStaticFunctions.GetRangeValue
@@ -415,7 +415,7 @@ namespace VotanGameplay
                         (SetParameterOfEnemy(0.1f, hardcoreMultiplier), 0.1f);  // Сопротивление к ледяной атаке
 
                     enemyBehaviour.ScoreAddingEffect.ScoreBonus =
-                        (int)SetParameterOfEnemy(750, hardcoreMultiplier * 2); // задаем количество очков
+                        (int)SetParameterOfEnemy(60, hardcoreMultiplier * 2); // задаем количество очков
                     break;
 
                 // ПЕРВЫЙ БОСС
@@ -438,7 +438,7 @@ namespace VotanGameplay
                     enemyBehaviour.EnemyConditions.FrostResistance = 
                         SetParameterOfEnemy(0.3f, hardcoreMultiplier);
                     enemyBehaviour.ScoreAddingEffect.ScoreBonus = 
-                        (int)SetParameterOfEnemy(3000, hardcoreMultiplier*2); 
+                        (int)SetParameterOfEnemy(600, hardcoreMultiplier*2); 
                     break;
             }
             if (number == StaticStorageWithEnemies.ListEnemy.Length - 1)

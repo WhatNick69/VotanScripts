@@ -39,17 +39,21 @@ namespace VotanLibraries
         public static int[] StringSplitter(string source, char splitter)
         {
             //инициализация
-			string[] tempArray = source.Split(splitter);
             List<int> destArray = new List<int>();
-			//разделение
-			for (int i = 0; i < tempArray.Length; i++)
-				if (!Regex.IsMatch(tempArray[i], "[a-z]"))
-				{
-					if(tempArray[i] != "")
-					destArray.Add(Convert.ToInt32(tempArray[i]));
-				}
-			//вывод
-			int[] resArray = new int[destArray.Count];
+            if (source != null && source != "")
+            {
+                string[] tempArray = source.Split(splitter);
+                //разделение
+                for (int i = 0; i < tempArray.Length; i++)
+                    if (!Regex.IsMatch(tempArray[i], "[a-z]"))
+                    {
+                        if (tempArray[i] != "")
+                            destArray.Add(Convert.ToInt32(tempArray[i]));
+                    }
+            }
+
+            //вывод
+            int[] resArray = new int[destArray.Count];
 			for (int i = 0; i < destArray.Count; i++)
 			{
 				resArray[i] = destArray[i];

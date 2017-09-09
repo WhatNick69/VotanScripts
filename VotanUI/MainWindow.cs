@@ -35,12 +35,15 @@ namespace VotanUI
 		GameObject Settings;
 		[SerializeField]
 		GameObject Shop;
+        [SerializeField]
+        GameObject buyItemsWindow;
 
         [SerializeField]
         private Image imageFromLoadingFone;
 
         [SerializeField]
         private TouchButtonEffect[] shopTouchButtons;
+        private int sceneNumber;
         #endregion
 
         #region Свойства
@@ -85,21 +88,31 @@ namespace VotanUI
 		{
 			onMenu(Settings);
 		}
+
+        public void SelectBuyItemsWindow()
+        {
+            onMenu(buyItemsWindow);
+        }
         #endregion
 
         /// <summary>
         /// Запуск арены
         /// </summary>
+        public void InitialisationArena(int number)
+        {
+            sceneNumber = number;
+        }
+
         public void PlayArena()
         {
-            Timing.RunCoroutine(CoroutineForLoadingScene());
+            Timing.RunCoroutine(CoroutineForLoadingScene(sceneNumber));
         }
 
         /// <summary>
         /// Корутина на загрузку сцены
         /// </summary>
         /// <returns></returns>
-        private IEnumerator<float> CoroutineForLoadingScene()
+        private IEnumerator<float> CoroutineForLoadingScene(int number)
         {
             onMenu();
             MenuSoundManager.PlaySoundStatic(2);
@@ -110,7 +123,7 @@ namespace VotanUI
                 if (imageFromLoadingFone.color.a >= 0.95f) break;
                 yield return Timing.WaitForOneFrame;
             }
-            SceneManager.LoadScene("Arena_" + 1);
+            SceneManager.LoadScene(number);
         }
 
         /// <summary>

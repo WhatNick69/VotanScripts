@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 namespace PlayerBehaviour
 {
+    /// <summary>
+    /// Ресурсы игрока
+    /// </summary>
     public class PlayerResources
         : MonoBehaviour
     {

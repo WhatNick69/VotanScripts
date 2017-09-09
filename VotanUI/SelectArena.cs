@@ -1,7 +1,8 @@
-﻿using System.Collections;
+﻿using CraftSystem;
+using MovementEffects;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using VotanLibraries;
 
 namespace VotanUI
 {
@@ -11,47 +12,65 @@ namespace VotanUI
     public class SelectArena 
         : MonoBehaviour
     {
-
         [SerializeField]
         private Transform arenaRepository;
         [SerializeField]
-        GameObject arenaButton;
-        [SerializeField, Tooltip("Арены")]
-        private List<GameObject> sceneList;
+        private MainWindow mainWindow;
+        private ArmorCraft armorCraft;
+        private WeaponCraft weaponCraft;
+        private ItemsSkillsCraft itemSkillsCraft;
+        private GameObject[] scenesArray;
 
-		private List<SceneScript> sceneArray;
-        int arenaNumber;
-
-		[SerializeField]
-		MainWindow MW;
-        SelectArena SA;
-
-        public int ArenaNumber
+        /// <summary>
+        /// Инициализация
+        /// </summary>
+        private void Start()
         {
-            get;
-            set;
-        }
+            armorCraft = GetComponent<ArmorCraft>();
+            weaponCraft = GetComponent<WeaponCraft>();
+            itemSkillsCraft = GetComponent<ItemsSkillsCraft>();
 
-        void Start()
-        {
-            SA = GetComponent<SelectArena>();
-			sceneArray = new List<SceneScript>();
             StartCoroutine(arenaLoad());
         }
 
-        private IEnumerator arenaLoad()
+        /// <summary>
+        /// Загрузка арен
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator<float> arenaLoad()
         {
-            int count = Resources.LoadAll("Scenes/Arena").Length;
-            for (int i = 0; i < count; i++)
+            ArenaButton arenaButton;
+            object[] scenes = Resources.LoadAll("Prefabs/Arena");
+            string str = PlayerPrefs.GetString("arenaArray");
+            int[] elements = LibraryObjectsWorker.StringSplitter(str, '_');
+            scenesArray = new GameObject[scenes.Length];
+
+            if (elements.Length == 0 || elements == null)
             {
-				GameObject ar = sceneList[i];
-                GameObject arena = Instantiate(arenaButton);
-                sceneArray.Add(ar.GetComponent<SceneScript>());
-
-
-                arena.transform.SetParent(arenaRepository, false);
+                string saveArenaString = "";
+                for (int i = 0; i < scenes.Length; i++)
+                {
+                    saveArenaString += "0_";
+                }
+                PlayerPrefs.SetString("arenaArray", saveArenaString);
             }
-            yield return 0;
+
+            for (int i = 0; i < scenes.Length; i++)
+            {
+                scenesArray[i] = Instantiate((GameObject)scenes[i], arenaRepository);
+                arenaButton = scenesArray[i].GetComponent<ArenaButton>();
+                if (i <= elements.Length-1)
+                {
+                    if (elements[i] == 0)
+                        arenaButton.IsCompleted = false;
+                    else
+                        arenaButton.IsCompleted = true;
+                }
+                arenaButton.SceneNumber = i+1;
+                arenaButton.Initialisation(mainWindow,armorCraft,weaponCraft, itemSkillsCraft);
+            }
+
+            yield return Timing.WaitForOneFrame;
         }
     }
 }

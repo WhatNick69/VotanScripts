@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using VotanLibraries;
 using ShopSystem;
 using VotanUI;
+using System;
 
 namespace CraftSystem
 {
@@ -211,13 +212,13 @@ namespace CraftSystem
         /// </summary>
         private void FixedUpdate()
         {
-            ChekScroll();
+            CheckScroll();
         }
 
         /// <summary>
         /// Запускать при старте игры, обязательно!
         /// </summary>
-        public void PlayArena()
+        public void PlayArenaArmor()
         {
             if (AP == null)
                 AP = GameObject.Find("GetPrefabs").GetComponent<ArmorPrefabs>();
@@ -293,20 +294,25 @@ namespace CraftSystem
         /// по центру окна прокрутки (определяется предыдущими проверками)
         /// - В самом кенце сохраняется позиция ленты, для проверки в следющем кадре 1го условия
         /// </summary>
-        private void ChekScroll()
+        private void CheckScroll()
         {
             if (normPosCuirass != scrollRectCuirasseRepository.horizontalNormalizedPosition ||
                 normPosHelmet != scrollRectHelmetRepository.horizontalNormalizedPosition ||
                 normPosShield != scrollRectShieldRepository.horizontalNormalizedPosition)
             {
                 if (cuirassItemNumber !=
-                    Mathf.Round(scrollRectCuirasseRepository.horizontalNormalizedPosition * (cuirassList.Count - 1)) ||
-                    helmetItemNumber != Mathf.Round(scrollRectHelmetRepository.horizontalNormalizedPosition * (helmetList.Count - 1)) ||
-                    shieldItemNumber != Mathf.Round(scrollRectShieldRepository.horizontalNormalizedPosition * (shieldList.Count - 1)))
+                    Mathf.Round(scrollRectCuirasseRepository.horizontalNormalizedPosition * (cuirassList.Count - 1)) 
+                    || helmetItemNumber != Mathf.Round(scrollRectHelmetRepository.horizontalNormalizedPosition 
+                    * (helmetList.Count - 1)) 
+                    || shieldItemNumber != Mathf.Round(scrollRectShieldRepository.horizontalNormalizedPosition 
+                    * (shieldList.Count - 1)))
                 {
-                    intemNumbCuirass = Mathf.Round(scrollRectCuirasseRepository.horizontalNormalizedPosition * (cuirassList.Count - 1));
-                    intemNumbHelmet = Mathf.Round(scrollRectHelmetRepository.horizontalNormalizedPosition * (helmetList.Count - 1));
-                    intemNumbShield = Mathf.Round(scrollRectShieldRepository.horizontalNormalizedPosition * (shieldList.Count - 1));
+                    intemNumbCuirass = Mathf.Round(scrollRectCuirasseRepository.horizontalNormalizedPosition 
+                        * (cuirassList.Count - 1));
+                    intemNumbHelmet = Mathf.Round(scrollRectHelmetRepository.horizontalNormalizedPosition 
+                        * (helmetList.Count - 1));
+                    intemNumbShield = Mathf.Round(scrollRectShieldRepository.horizontalNormalizedPosition 
+                        * (shieldList.Count - 1));
                 }
                 else
                 {
@@ -315,13 +321,23 @@ namespace CraftSystem
                     intemNumbShield = shieldItemNumber;
                 }
 
-                PStats.NewCuirassArmor = cuirassList[(int)intemNumbCuirass].ArmoryValue;
-                PStats.NewCuirassWeight = cuirassList[(int)intemNumbCuirass].WeightArmory;
-                PStats.NewHelmetArmor = helmetList[(int)intemNumbHelmet].ArmoryValue;
-                PStats.NewHelmetWeight = helmetList[(int)intemNumbHelmet].WeightArmory;
-                PStats.NewShieldArmor = shieldList[(int)intemNumbShield].ArmoryValue;
-                PStats.NewShieldWeight = shieldList[(int)intemNumbShield].WeightArmory;
+                if (intemNumbCuirass >= 0)
+                {
+                    PStats.NewCuirassArmor = cuirassList[(int)intemNumbCuirass].ArmoryValue;
+                    PStats.NewCuirassWeight = cuirassList[(int)intemNumbCuirass].WeightArmory;
+                }
+                if (intemNumbHelmet >= 0)
+                {
+                    PStats.NewHelmetArmor = helmetList[(int)intemNumbHelmet].ArmoryValue;
+                    PStats.NewHelmetWeight = helmetList[(int)intemNumbHelmet].WeightArmory;
+                }
+                if (intemNumbShield >= 0)
+                {
+                    PStats.NewShieldArmor = shieldList[(int)intemNumbShield].ArmoryValue;
+                    PStats.NewShieldWeight = shieldList[(int)intemNumbShield].WeightArmory;
+                }
             }
+
             normPosCuirass = scrollRectCuirasseRepository.horizontalNormalizedPosition;
             normPosHelmet = scrollRectHelmetRepository.horizontalNormalizedPosition;
             normPosShield = scrollRectShieldRepository.horizontalNormalizedPosition;
@@ -526,7 +542,7 @@ namespace CraftSystem
         /// <returns></returns>
         private IEnumerator<float> ShieldCorutine()
 		{
-            string str = PlayerPrefs.GetString("shieldArray");
+            string str = CheckEmptyShieldLocalSave();
             int[] elements = LibraryObjectsWorker.StringSplitter(str, '_');
             object[] tempObjects = new object[elements.Length];
             shieldInventoryElements = new IRepositoryObject[tempObjects.Length];
@@ -560,13 +576,24 @@ namespace CraftSystem
             yield return 0;
 		}
 
+        private string CheckEmptyShieldLocalSave()
+        {
+            string str = PlayerPrefs.GetString("shieldArray");
+            if (str == null || str == "")
+            {
+                str = "0_";
+                PlayerPrefs.SetString("shieldArray", str);
+            }
+            return str;
+        }
+
 		/// <summary>
 		/// Создает и настраивает кнопу в ленте - КИРАСА
 		/// </summary>
 		/// <returns></returns>
 		private IEnumerator<float> CuirassCorutine()
 		{
-            string str = PlayerPrefs.GetString("cuirassArray");
+            string str = CheckEmptyCuirassLocalSave();
             int[] elements = LibraryObjectsWorker.StringSplitter(str, '_');
             object[] tempObjects = new object[elements.Length];
             cuirassInventoryElements = new IRepositoryObject[tempObjects.Length];
@@ -600,13 +627,24 @@ namespace CraftSystem
             yield return 0;
 		}
 
-		/// <summary>
-		/// Создает и настраивает кнопу в ленте - ШЛЕМ
-		/// </summary>
-		/// <returns></returns>
-		private IEnumerator<float> HelmetCorutine()
+        private string CheckEmptyCuirassLocalSave()
+        {
+            string str = PlayerPrefs.GetString("cuirassArray");
+            if (str == null || str == "")
+            {
+                str = "0_";
+                PlayerPrefs.SetString("cuirassArray", str);
+            }
+            return str;
+        }
+
+        /// <summary>
+        /// Создает и настраивает кнопу в ленте - ШЛЕМ
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator<float> HelmetCorutine()
 		{
-            string str = PlayerPrefs.GetString("helmetArray");
+            string str = CheckEmptyHelmetLocalSave();
             int[] elements = LibraryObjectsWorker.StringSplitter(str, '_');
             object[] tempObjects = new object[elements.Length];
             helmetInventoryElements = new IRepositoryObject[tempObjects.Length];
@@ -639,6 +677,17 @@ namespace CraftSystem
                 helmetRepository.transform.parent.GetComponent<ScrollRect>();
             yield return 0;
 		}
+
+        private string CheckEmptyHelmetLocalSave()
+        {
+            string str = PlayerPrefs.GetString("helmetArray");
+            if (str == null || str == "")
+            {
+                str = "0_";
+                PlayerPrefs.SetString("helmetArray", str);
+            }
+            return str;
+        }
         #endregion
     }
 }

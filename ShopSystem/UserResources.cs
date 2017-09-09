@@ -16,6 +16,9 @@ namespace ShopSystem
         private static bool onLoad;
         public long money;
         public long gems;
+
+        private int gemsBonus;
+        private int goldBonus;
         #endregion
 
         #region Свойства
@@ -46,6 +49,33 @@ namespace ShopSystem
                 gems = value;
                 playerStats.RefreshUserGems(gems);
                 SaveUserResources();
+            }
+        }
+
+
+        public int GemsBonus
+        {
+            get
+            {
+                return gemsBonus;
+            }
+
+            set
+            {
+                gemsBonus = value;
+            }
+        }
+
+        public int GoldBonus
+        {
+            get
+            {
+                return goldBonus;
+            }
+
+            set
+            {
+                goldBonus = value;
             }
         }
         #endregion
@@ -101,7 +131,7 @@ namespace ShopSystem
             string str = PlayerPrefs.GetString("playerResources");
             if (str == null || str == "")
             {
-                PlayerPrefs.SetString("playerResources", "5000_3");
+                PlayerPrefs.SetString("playerResources", "500_0");
                 LoadUserResources();
             }
             else

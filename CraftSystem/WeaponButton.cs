@@ -49,9 +49,10 @@ namespace CraftSystem
 
         public void GetNumberTemp()
         {
-            wepCraft.WeaponItemNumberTemp = numberButton;
+            GetNumber();
             wepCraft.DisableListHighlightingInventory();
             HighlightingControl(true,false);
+            MenuSoundManager.PlaySoundStatic(1);
         }
 
         /// <summary>

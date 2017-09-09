@@ -1,22 +1,23 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace CraftSystem
 {
-	public class ItemOrSkillButton : MonoBehaviour
+    /// <summary>
+    /// Кнопка для умения, либо предмета
+    /// </summary>
+    public class ItemOrSkillButton 
+        : MonoBehaviour
 	{
 
 		int numberButton;
 		[SerializeField]
 		Image logo;
-		WeaponCraft wepCraft;
+		ItemsSkillsCraft itemsSkillsCraft;
 		[SerializeField]
 		Text nameSkill;
 		[SerializeField]
 		Text tutorialSkill;
-
 
 		public void SetImage(Sprite img)
 		{
@@ -56,17 +57,17 @@ namespace CraftSystem
 
 		public void GetNumberSkill()
 		{
-			wepCraft.SetSkillItemNumber(numberButton);
+            itemsSkillsCraft.SetSkillItemNumber(numberButton);
 		}
 
 		public void GetNumberItem()
 		{
-			wepCraft.SetItemNumber(numberButton);
+            itemsSkillsCraft.SetItemNumber(numberButton);
 		}
 
-		public void SetWeaponCraft(WeaponCraft WP)
+		public void SetItemSkillsCraft(ItemsSkillsCraft itemSC)
 		{
-			wepCraft = WP;
+            itemsSkillsCraft = itemSC;
 		}
 	}
 }

@@ -343,8 +343,7 @@ namespace VotanLibraries
 		/// <returns></returns> 
 		public static bool MayableToBeElectricity(IWeapon weapon)
 		{
-			return weapon.SpinSpeed / weapon.OriginalSpinSpeed >= 0.25f
-			? true : false;
+			return weapon.SpinSpeed / weapon.OriginalSpinSpeed >= 0.25f ? true : false;
 		}
 
 		/// <summary> 
@@ -419,7 +418,6 @@ namespace VotanLibraries
 			to - from).eulerAngles.y;
 		}
 
-
         /// <summary>
         /// Конвертатор очков в ресурсы (железо, дерево и гемы)
         /// </summary>
@@ -430,27 +428,19 @@ namespace VotanLibraries
             playerScore /= 100;
             playerResources.SteelResource = (long)(playerScore * 0.3f);
             playerResources.WoodResource = (long)(playerScore * 0.7f);
-            playerResources.Gems = GetRandomGemRes();
+            playerResources.Gems = GetRandomGemRes(playerResources.Gems);
         }
 
         /// <summary>
         /// Вернуть случайное количество гемов (от 0 до 3)
         /// </summary>
         /// <returns></returns>
-        private static long GetRandomGemRes()
+        private static long GetRandomGemRes(long gemCount)
         {
             float gems = UnityEngine.Random.RandomRange(0, 1f);
-            if (gems >= 0.99f)
+            if (gems >= 0.9f)
             {
-                return 3;
-            }
-            else if (gems >= 0.93f)
-            {
-                return 2;
-            }
-            else if (gems >= 0.9f)
-            {
-                return 1;
+                return gemCount;
             }
             else
             {

@@ -62,7 +62,7 @@ namespace ShopSystem
         string shieldPrefix = "Prefabs/Armor/Shield/";
         string shieldPostfix = "_S";
         string weaponPrefix = "Prefabs/Weapons/";
-        string weaponPostfix = "Weapon_";
+        string weaponPostfix = "_Weapon";
 
         private List<PartArmoryInformation> cuirassList;
 		private List<PartArmoryInformation> helmetList;
@@ -607,7 +607,10 @@ namespace ShopSystem
         /// <returns></returns>
         private IEnumerator<float> ShieldCorutine()
 		{
-            object[] tempObjects = Resources.LoadAll(shieldPrefix);
+            object[] tempObjects = new object[Resources.LoadAll(shieldPrefix).Length];
+            for (int i = 0; i < tempObjects.Length; i++)
+                tempObjects[i] = Resources.Load(shieldPrefix + i + shieldPostfix);
+
             shieldElements = new IRepositoryObject[tempObjects.Length];
 
             for (int i = 0; i < tempObjects.Length; i++)
@@ -643,7 +646,10 @@ namespace ShopSystem
 		/// <returns></returns>
 		private IEnumerator<float> CuirassCorutine()
 		{
-            object[] tempObjects = Resources.LoadAll(cuirassPrefix);
+            object[] tempObjects = new object[Resources.LoadAll(cuirassPrefix).Length];
+            for (int i = 0; i < tempObjects.Length; i++)
+                tempObjects[i] = Resources.Load(cuirassPrefix + i + cuirassPostfix);
+
             cuirassElements = new IRepositoryObject[tempObjects.Length];
 
             for (int i = 0; i < tempObjects.Length; i++)
@@ -679,7 +685,10 @@ namespace ShopSystem
 		/// <returns></returns>
 		private IEnumerator<float> HelmetCorutine()
 		{
-            object[] tempObjects = Resources.LoadAll(helmetPrefix);
+            object[] tempObjects = new object[Resources.LoadAll(helmetPrefix).Length];
+            for (int i = 0; i < tempObjects.Length; i++)
+                tempObjects[i] = Resources.Load(helmetPrefix + i + helmetPostfix);
+            
             helmetElements = new IRepositoryObject[tempObjects.Length];
 
             for (int i = 0; i < tempObjects.Length; i++)
@@ -716,7 +725,10 @@ namespace ShopSystem
 		/// <returns></returns>
 		private IEnumerator<float> WeaponCorutine()
 		{
-            object[] tempObjects = Resources.LoadAll(weaponPrefix);
+            object[] tempObjects = new object[Resources.LoadAll(weaponPrefix).Length];
+            for (int i = 0; i < tempObjects.Length; i++)
+                tempObjects[i] = Resources.Load(weaponPrefix + i + weaponPostfix);
+
             weaponElements = new IRepositoryObject[tempObjects.Length];
 
             for (int i = 0; i < tempObjects.Length; i++)

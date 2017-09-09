@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using VotanGameplay;
 using VotanLibraries;
 using UnityStandardAssets.CrossPlatformInput;
+using ShopSystem;
 
 namespace PlayerBehaviour
 {
@@ -76,12 +77,43 @@ namespace PlayerBehaviour
         }
 
         /// <summary>
+        /// Сохранить прохождение сцены
+        /// </summary>
+        private void SaveCompletedScene()
+        {
+            string str = PlayerPrefs.GetString("arenaArray");
+            int[] elements = LibraryObjectsWorker.StringSplitter(str, '_');
+
+            elements[SceneManager.GetActiveScene().buildIndex] = 1;
+
+            string saveArenaString = "";
+            for (int i = 0; i < elements.Length; i++)
+            {
+                saveArenaString += elements[i] + "_";
+            }
+            PlayerPrefs.SetString("arenaArray", saveArenaString);
+        }
+
+        /// <summary>
         /// Установить количество железа, дерева и гемов 
         /// исходя из количества очков после окончания игры
         /// </summary>
         private bool SetTotalResourcesAfterGame(bool isWin)
         {
-            if (!isWin) playerComponentsControl.PlayerResources.ScoreValue /= 4;
+            UserResources userResources = GameObject.Find("GetPrefabs").GetComponent<UserResources>();
+            if (!isWin)
+            {
+                playerComponentsControl.PlayerResources.ScoreValue /= 4;
+                playerComponentsControl.PlayerResources.Gems = 0;
+            }
+            else
+            {
+                playerComponentsControl.PlayerResources.ScoreValue
+                  += userResources.GoldBonus;
+                playerComponentsControl.PlayerResources.Gems
+                  += userResources.GemsBonus;
+                SaveCompletedScene();
+            }
 
             LibraryStaticFunctions.ConvertScoreToResources
                 (playerComponentsControl.PlayerResources);

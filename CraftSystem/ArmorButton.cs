@@ -34,7 +34,7 @@ namespace CraftSystem
         private static Color buttonDeactiveColor = new Color(0.487f, 0.331f, 0, 0.682f);
 
         string weight;
-        int numberButton;
+        public int numberButton;
         bool isMayToBuy;
 
         ArmoryClass armoryClass;
@@ -146,27 +146,30 @@ namespace CraftSystem
             switch (armoryClass)
             {
                 case ArmoryClass.Cuirass:
-                    armCraft.CuirassItemNumberTemp = numberButton;
-                    armCraft.HelmetItemNumberTemp = -1;
-                    armCraft.ShieldItemNumberTemp = -1;
+                    armCraft.CuirassItemNumber = numberButton;
+                    //armCraft.HelmetItemNumberTemp = -1;
+                    //armCraft.ShieldItemNumberTemp = -1;
                     armCraft.DisableListHighlightingInventory(0);
                     HighlightingControl(true,false);
+                    MenuSoundManager.PlaySoundStatic(1);
                     break;
 
                 case ArmoryClass.Helmet:
-                    armCraft.HelmetItemNumberTemp = numberButton;
-                    armCraft.CuirassItemNumberTemp = -1;
-                    armCraft.ShieldItemNumberTemp = -1;
+                    armCraft.HelmetItemNumber = numberButton;
+                    //armCraft.CuirassItemNumberTemp = -1;
+                    //armCraft.ShieldItemNumberTemp = -1;
                     armCraft.DisableListHighlightingInventory(1);
                     HighlightingControl(true,false);
+                    MenuSoundManager.PlaySoundStatic(1);
                     break;
 
                 case ArmoryClass.Shield:
-                    armCraft.ShieldItemNumberTemp = numberButton;
-                    armCraft.HelmetItemNumberTemp = -1;
-                    armCraft.CuirassItemNumberTemp = -1;
+                    armCraft.ShieldItemNumber = numberButton;
+                    //armCraft.HelmetItemNumberTemp = -1;
+                    //armCraft.CuirassItemNumberTemp = -1;
                     armCraft.DisableListHighlightingInventory(2);
                     HighlightingControl(true,false);
+                    MenuSoundManager.PlaySoundStatic(1);
                     break;
             }
         }

@@ -17,12 +17,10 @@ namespace CraftSystem
         GameObject cuirass, shield, helmet, weapon, newDamage, newArmor,
             newWeight, NewGemType, NewGemPuwer, NewCrit, skillOne, skillTwo,
             skillThree, itemOne, itemTwo, itemThree;
-        [SerializeField]
-        Sprite voidSprite;
 
         [SerializeField]
-        Text playerMoney1, playerMoney2, playerMoney3, 
-            playerGems1, playerGems2,playerGems3;
+        Text playerMoney1, playerMoney2, playerMoney3, playerMoney4,
+            playerGems1, playerGems2, playerGems3, playerGems4;
 
         Image skillOneImg;
         Image skillTwoImg;
@@ -313,9 +311,9 @@ namespace CraftSystem
             skillTwoImg = skillTwo.GetComponent<Image>();
             skillThreeImg = skillThree.GetComponent<Image>();
 
-            itemOneImg = itemOne.GetComponent<Image>();
-            itemTwoImg = itemTwo.GetComponent<Image>();
-            itemThreeImg = itemThree.GetComponent<Image>();
+            itemOneImg = itemOne.transform.GetChild(0).GetComponent<Image>();
+            itemTwoImg = itemTwo.transform.GetChild(0).GetComponent<Image>();
+            itemThreeImg = itemThree.transform.GetChild(0).GetComponent<Image>();
         }
         /// <summary>
         /// Обновляет значения в таблице характеристик 
@@ -461,12 +459,12 @@ namespace CraftSystem
             NewGemPuwer.SetActive(false);
             NewCrit.SetActive(false);
             newWeight.SetActive(false);
-            itemOne.SetActive(false);
-            itemTwo.SetActive(false);
-            itemThree.SetActive(false);
-            skillOne.SetActive(false);
-            skillTwo.SetActive(false);
-            skillThree.SetActive(false);
+            //itemOne.SetActive(false);
+            //itemTwo.SetActive(false);
+            //itemThree.SetActive(false);
+            //skillOne.SetActive(false);
+            //skillTwo.SetActive(false);
+            //skillThree.SetActive(false);
         }
 
         /// <summary>
@@ -497,9 +495,9 @@ namespace CraftSystem
         public void SkillPage()
         {
             PredPageLoad();
-            skillOne.SetActive(true);
-            skillTwo.SetActive(true);
-            skillThree.SetActive(true);
+            //skillOne.SetActive(true);
+            //skillTwo.SetActive(true);
+            //skillThree.SetActive(true);
         }
 
         /// <summary>
@@ -508,9 +506,9 @@ namespace CraftSystem
         public void ItemPage()
         {
             PredPageLoad();
-            itemOne.SetActive(true);
-            itemTwo.SetActive(true);
-            itemThree.SetActive(true);
+            //itemOne.SetActive(true);
+            //itemTwo.SetActive(true);
+            //itemThree.SetActive(true);
         }
 
         public void RefreshUserMoney(long money)
@@ -518,6 +516,7 @@ namespace CraftSystem
             playerMoney1.text = money.ToString();
             playerMoney2.text = money.ToString();
             playerMoney3.text = money.ToString();
+            playerMoney4.text = money.ToString();
         }
 
         public void RefreshUserGems(long gems)
@@ -525,6 +524,7 @@ namespace CraftSystem
             playerGems1.text = gems.ToString();
             playerGems2.text = gems.ToString();
             playerGems3.text = gems.ToString();
+            playerGems4.text = gems.ToString();
         }
 
         /// <summary>
@@ -558,13 +558,13 @@ namespace CraftSystem
             switch (index)
             {
                 case 0:
-                    skillOneImg.sprite = voidSprite;
+                    //skillOneImg.sprite = voidSprite;
                     break;
                 case 1:
-                    skillTwoImg.sprite = voidSprite;
+                    //skillTwoImg.sprite = voidSprite;
                     break;
                 case 2:
-                    skillThreeImg.sprite = voidSprite;
+                    //skillThreeImg.sprite = voidSprite;
                     break;
             }
         }
@@ -580,12 +580,15 @@ namespace CraftSystem
             {
                 case 0:
                     itemOneImg.sprite = spr;
+                    itemOneImg.color = Color.white;
                     break;
                 case 1:
                     itemTwoImg.sprite = spr;
+                    itemTwoImg.color = Color.white;
                     break;
                 case 2:
                     itemThreeImg.sprite = spr;
+                    itemThreeImg.color = Color.white;
                     break;
             }
         }
@@ -600,13 +603,13 @@ namespace CraftSystem
             switch (index)
             {
                 case 0:
-                    itemOneImg.sprite = voidSprite;
+                    itemOneImg.color = new Color(0, 0, 0, 0);
                     break;
                 case 1:
-                    itemTwoImg.sprite = voidSprite;
+                    itemTwoImg.color = new Color(0, 0, 0, 0);
                     break;
                 case 2:
-                    itemThreeImg.sprite = voidSprite;
+                    itemThreeImg.color = new Color(0, 0, 0, 0);
                     break;
             }
         }
