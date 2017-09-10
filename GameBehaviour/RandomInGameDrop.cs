@@ -172,7 +172,7 @@ namespace GameBehaviour
 
             while (isItemActive)
             {
-                yield return Timing.WaitForSeconds(1);
+                yield return Timing.WaitForSeconds(0.5f);
                 if (this == null) yield break;
 
                 for (int i = 0;i<AllPlayerManager.PlayerList.Count;i++)

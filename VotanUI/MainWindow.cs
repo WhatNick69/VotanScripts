@@ -56,7 +56,6 @@ namespace VotanUI
 		{
 			onMenu(Shop);
             shopComponent.CommonStoreWindow();
-
         }
 
 		public void WeaponMenuLoad()

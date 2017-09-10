@@ -28,10 +28,14 @@ namespace GameBehaviour
         private string skillName;
         [SerializeField, Tooltip("Описание умения")]
         private string skillTutorial;
+        [SerializeField, Tooltip("Стоимость умения в золоте умения")]
+        private long skillMoneyCost;
+        [SerializeField, Tooltip("Стоимость умения в гемах умения")]
+        private long skillGemsCost;
 
         private Color fonNonActiveColor;
         private int itemNumberPosition;
-        private bool isMayToFire;
+        private static bool isMayToFire;
         #endregion
 
         #region Свойства
@@ -105,12 +109,51 @@ namespace GameBehaviour
 				return priceExp;
 			}
 		}
-		#endregion
 
-		/// <summary>
-		/// Инициализация
-		/// </summary>
-		public void Starter(int number)
+        public long MoneyCost
+        {
+            get
+            {
+                return skillMoneyCost;
+            }
+
+            set
+            {
+                skillMoneyCost = value;
+            }
+        }
+
+        public long GemsCost
+        {
+            get
+            {
+                return skillGemsCost;
+            }
+
+            set
+            {
+                skillGemsCost = value;
+            }
+        }
+
+        public int SecondsForTimer
+        {
+            get
+            {
+                return secondsForTimer;
+            }
+
+            set
+            {
+                secondsForTimer = value;
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Инициализация
+        /// </summary>
+        public void Starter(int number)
         {
             parentImage = transform.GetComponentInParent<Image>();
             fonNonActiveColor = new Color(1, 1, 1, 0.2f);

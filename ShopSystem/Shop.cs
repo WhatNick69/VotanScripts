@@ -4,7 +4,10 @@ using PlayerBehaviour;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using VotanInterfaces;
 using VotanLibraries;
+using VotanUI;
+using System;
 
 namespace ShopSystem
 {
@@ -27,6 +30,12 @@ namespace ShopSystem
         private GameObject buttonsPanelStoreWeapons;
         [SerializeField, Tooltip("Общая для магазина панель кнопок")]
         private GameObject buttonsPanelStoreCommon;
+        [SerializeField, Tooltip("Кнопка покупки")]
+        private GameObject buttonBuyObj;
+        private Button buttonBuyButton;
+        private Text buttonBuyText;
+        private Image buttonBuyImage;
+
         [SerializeField]
 		private GameObject cuirassRepository;
 		[SerializeField]
@@ -35,13 +44,17 @@ namespace ShopSystem
 		private GameObject shieldRepository;
 		[SerializeField]
 		private GameObject weaponRepository;
+        [SerializeField]
+        private GameObject skillRepository;
 
-		[SerializeField, Tooltip("элемент брони")]
+        [SerializeField, Tooltip("элемент брони")]
 		private GameObject itemArmor;
 		[SerializeField, Tooltip("элемент оружия")]
 		private GameObject itemWeapon;
+        [SerializeField, Tooltip("элемент умения")]
+        private GameObject itemSkill;
 
-		[SerializeField]
+        [SerializeField]
 		GameObject helmetWindow;
 		[SerializeField]
 		GameObject cuirassWindow;
@@ -49,13 +62,16 @@ namespace ShopSystem
 		GameObject shieldWindow;
 		[SerializeField]
 		GameObject weaponWindow;
+        [SerializeField]
+        GameObject skillWindow;
 
-		private GameObject cuirass;
+        private GameObject cuirass;
 		private GameObject helmet;
 		private GameObject shield;
 		private GameObject weapon;
 
 		string cuirassPrefix = "Prefabs/Armor/Cuirass/";
+
         string cuirassPostfix = "_C";
         string helmetPrefix = "Prefabs/Armor/Helmet/";
         string helmetPostfix = "_H";
@@ -63,19 +79,24 @@ namespace ShopSystem
         string shieldPostfix = "_S";
         string weaponPrefix = "Prefabs/Weapons/";
         string weaponPostfix = "_Weapon";
+        string skillPrefix = "Prefabs/Skills/";
+        string skillPostfix = "_Skill";
 
         private List<PartArmoryInformation> cuirassList;
 		private List<PartArmoryInformation> helmetList;
 		private List<PartArmoryInformation> shieldList;
+        private List<ISkill> skillList;
         private List<Weapon> weaponList;
 
-        private IRepositoryObject[] cuirassElements, helmetElements, 
-            shieldElements, weaponElements;
+        private IRepositoryObject[] cuirassElements, helmetElements,
+            shieldElements, weaponElements, skillElements;
 
 		private int cuirassItemNumber;
 		private int helmetItemNumber;
 		private int shieldItemNumber;
 		private int weaponItemNumber;
+        private int itemToBuyType;
+        private int skillItemNumber;
 
 		ArmorPrefabs armorPrefabs;
 		Shop shopComponent;
@@ -83,22 +104,33 @@ namespace ShopSystem
 		WeaponCraft weaponCraft;
 		[SerializeField]
 		ArmorCraft armorCraft;
+        [SerializeField]
+        ItemsSkillsCraft itemsSkillsCraft;
         UserResources userResources;
 
         [SerializeField]
         private Text textShopName, textShopWeight, textShopArmor, 
-            textShopDamage, textShopCritChance, textShopGemPower;
-        private GameObject shopNameObj, shopWeightObj, shopArmorObj,
-            shopDamageObj, shopCritChanceObj, shopGemPowerObj;
+            textShopDamage, textShopCritChance, textShopGemPower, 
+            textShopRegenSpeed, textShopTutorial;
+        private GameObject shopNameObj, shopWeightObj, shopArmorObj, 
+            shopTutorialObj, shopDamageObj, shopCritChanceObj, 
+            shopGemPowerObj, shopRegenSpeedObj;
+
         [SerializeField]
         private Image imageShopGem;
-        [SerializeField]
-        private Color colorFrozen, colorFire, colorElectric, colorPowerful;
+        private static Color colorFrozen = new Color(0, 1, 1);
+        private static Color colorFire = new Color(0.5882f, 0, 0);
+        private static Color colorElectric = new Color(0.8431f, 0, 1);
+        private static Color colorPowerful = new Color(0.1137f, 0.9294f, 0.352f);
 
         ScrollRect scrollRectHelmetRepository;
 		ScrollRect scrollRectShieldRepository;
 		ScrollRect scrollRectCuirasseRepository;
 		ScrollRect scrollRectWeaponRepository;
+        ScrollRect scrollRectSkillRepository;
+
+        private Color originalColor;
+        private Color alphaColor;
         #endregion
 
         #region Свойства
@@ -154,6 +186,32 @@ namespace ShopSystem
 			}
 		}
 
+        public int ItemToBuyType
+        {
+            get
+            {
+                return itemToBuyType;
+            }
+
+            set
+            {
+                itemToBuyType = value;
+            }
+        }
+
+        public int SkillItemNumber
+        {
+            get
+            {
+                return skillItemNumber;
+            }
+
+            set
+            {
+                skillItemNumber = value;
+            }
+        }
+
         public GameObject GetCuirassPrafab()
         {
             return cuirass;
@@ -170,6 +228,116 @@ namespace ShopSystem
         }
         #endregion
 
+        #region Работа с окнами
+        /// <summary>
+        /// Вызывает окно с лнтой шлемов
+        /// </summary>
+        public void HelmetWindow()
+        {
+            shieldWindow.SetActive(false);
+            cuirassWindow.SetActive(false);
+            helmetWindow.SetActive(true);
+
+            UnshowAllUIElementsInShop();
+            scrollRectHelmetRepository.horizontalNormalizedPosition = 0;
+        }
+
+        /// <summary>
+        /// Вызывает окно с лнтой кирас
+        /// </summary>
+        public void CuirassWindow()
+        {
+            shieldWindow.SetActive(false);
+            helmetWindow.SetActive(false);
+            cuirassWindow.SetActive(true);
+
+            UnshowAllUIElementsInShop();
+            scrollRectCuirasseRepository.horizontalNormalizedPosition = 0;
+        }
+
+        /// <summary>
+        /// Вызывает окно с лнтой щитов
+        /// </summary>
+        public void ShieldWindow()
+        {
+            helmetWindow.SetActive(false);
+            cuirassWindow.SetActive(false);
+            shieldWindow.SetActive(true);
+
+            UnshowAllUIElementsInShop();
+            scrollRectShieldRepository.horizontalNormalizedPosition = 0;
+        }
+
+        /// <summary>
+        /// Общее окно магазина
+        /// </summary>
+        public void CommonStoreWindow()
+        {
+            armorWind.SetActive(false);
+            weaponWind.SetActive(false);
+            skillWindow.SetActive(false);
+
+            buttonsPanelStoreArmory.SetActive(false);
+            buttonsPanelStoreWeapons.SetActive(false);
+            buttonsPanelStoreCommon.SetActive(true);
+
+            UnshowAllUIElementsInShop();
+        }
+
+        /// <summary>
+        /// Открыть окно с оружием
+        /// </summary>
+        public void WeaponWindow()
+        {
+            buttonsPanelStoreWeapons.SetActive(true);
+            buttonsPanelStoreCommon.SetActive(false);
+            armorWind.SetActive(false);
+            weaponWind.SetActive(true);
+
+            UnshowAllUIElementsInShop();
+        }
+
+        /// <summary>
+        /// Открыть окно с бронёй
+        /// </summary>
+        public void ArmorWindow()
+        {
+            buttonsPanelStoreArmory.SetActive(true);
+            buttonsPanelStoreCommon.SetActive(false);
+            weaponWind.SetActive(false);
+            armorWind.SetActive(true);
+
+            UnshowAllUIElementsInShop();
+        }
+
+        public void SkillWindow()
+        {
+            buttonsPanelStoreWeapons.SetActive(true);
+            buttonsPanelStoreCommon.SetActive(false);
+            armorWind.SetActive(false);
+            skillWindow.SetActive(true);
+
+            UnshowAllUIElementsInShop();
+        }
+
+        public static Color GetColorFromGemType(GemType gemType)
+        {
+            switch (gemType)
+            {
+                case GemType.Frozen:
+                    return colorFrozen;
+                case GemType.Fire:
+                    return colorFire;
+                case GemType.Electric:
+                    return colorElectric;
+                case GemType.Powerful:
+                    return colorPowerful;
+                default:
+                    return Color.white;
+            }
+        }
+        #endregion
+
         /// <summary>
         /// ========================= Инициализация =========================
         /// </summary>
@@ -183,6 +351,7 @@ namespace ShopSystem
             helmetList = new List<PartArmoryInformation>();
             shieldList = new List<PartArmoryInformation>();
             weaponList = new List<Weapon>();
+            skillList = new List<ISkill>();
 
             shopNameObj = textShopName.transform.parent.gameObject;
             shopWeightObj = textShopWeight.transform.parent.gameObject;
@@ -190,93 +359,21 @@ namespace ShopSystem
             shopDamageObj = textShopDamage.transform.parent.gameObject;
             shopCritChanceObj = textShopCritChance.transform.parent.gameObject;
             shopGemPowerObj = textShopGemPower.transform.parent.gameObject;
+            shopRegenSpeedObj = textShopRegenSpeed.transform.parent.gameObject;
+            shopTutorialObj = textShopTutorial.transform.parent.gameObject;
+
+            buttonBuyButton = buttonBuyObj.GetComponent<Button>();
+            buttonBuyImage = buttonBuyObj.GetComponent<Image>();
+            buttonBuyText = buttonBuyObj.transform.GetChild(0).GetComponent<Text>();
+            originalColor = buttonBuyImage.color;
+            alphaColor = new Color(0, 0, 0, 0.5f);
 
             Timing.RunCoroutine(ShieldCorutine());
             Timing.RunCoroutine(HelmetCorutine());
             Timing.RunCoroutine(CuirassCorutine());
             Timing.RunCoroutine(WeaponCorutine());
+            Timing.RunCoroutine(SkillCoroutine());
         }
-
-        #region Работа с окнами
-        /// <summary>
-        /// Вызывает окно с лнтой шлемов
-        /// </summary>
-        public void HelmetWindow()
-		{
-			shieldWindow.SetActive(false);
-			cuirassWindow.SetActive(false);
-			helmetWindow.SetActive(true);
-
-            UnshowAllUIElementsInShop();
-            scrollRectHelmetRepository.horizontalNormalizedPosition = 0;
-		}
-
-		/// <summary>
-		/// Вызывает окно с лнтой кирас
-		/// </summary>
-		public void CuirassWindow()
-		{
-			shieldWindow.SetActive(false);
-			helmetWindow.SetActive(false);
-			cuirassWindow.SetActive(true);
-
-            UnshowAllUIElementsInShop();
-            scrollRectCuirasseRepository.horizontalNormalizedPosition = 0;
-		}
-
-		/// <summary>
-		/// Вызывает окно с лнтой щитов
-		/// </summary>
-		public void ShieldWindow()
-		{
-			helmetWindow.SetActive(false);
-			cuirassWindow.SetActive(false);
-			shieldWindow.SetActive(true);
-
-            UnshowAllUIElementsInShop();
-            scrollRectShieldRepository.horizontalNormalizedPosition = 0;
-		}
-
-        /// <summary>
-        /// Общее окно магазина
-        /// </summary>
-        public void CommonStoreWindow()
-        {
-            armorWind.SetActive(false);
-            weaponWind.SetActive(false);
-            buttonsPanelStoreArmory.SetActive(false);
-            buttonsPanelStoreWeapons.SetActive(false);
-            buttonsPanelStoreCommon.SetActive(true);
-
-            UnshowAllUIElementsInShop();
-        }
-
-		/// <summary>
-		/// Открыть окно с оружием
-		/// </summary>
-		public void WeaponWindow()
-		{
-            buttonsPanelStoreWeapons.SetActive(true);
-            buttonsPanelStoreCommon.SetActive(false);
-            armorWind.SetActive(false);
-			weaponWind.SetActive(true);
-
-            UnshowAllUIElementsInShop();
-        }
-
-		/// <summary>
-		/// Открыть окно с бронёй
-		/// </summary>
-		public void ArmorWindow()
-		{
-            buttonsPanelStoreArmory.SetActive(true);
-            buttonsPanelStoreCommon.SetActive(false);
-            weaponWind.SetActive(false);
-			armorWind.SetActive(true);
-
-            UnshowAllUIElementsInShop();
-        }
-        #endregion
 
         #region Покупка вещей
         /// <summary>
@@ -305,6 +402,10 @@ namespace ShopSystem
                         for (int i = 0; i < weaponElements.Length; i++)
                             weaponElements[i].HighlightingControl(false);
                         break;
+                    case 4: //w
+                        for (int i = 0; i < skillElements.Length; i++)
+                            skillElements[i].HighlightingControl(false);
+                        break;
                 }
             }
             else
@@ -327,6 +428,10 @@ namespace ShopSystem
                         for (int i = 0; i < weaponElements.Length; i++)
                             if (i != weaponItemNumber) weaponElements[i].HighlightingControl(false);
                         break;
+                    case 4:
+                        for (int i = 0; i < skillElements.Length; i++)
+                            if (i != skillItemNumber) skillElements[i].HighlightingControl(false);
+                        break;
                 }
             }
         }
@@ -343,6 +448,7 @@ namespace ShopSystem
                     textShopName.text = cuirassList[cuirassItemNumber].ArmoryName;
                     textShopArmor.text = cuirassList[cuirassItemNumber].ArmoryValue.ToString();
                     textShopWeight.text = cuirassList[cuirassItemNumber].WeightArmory.ToString();
+                    itemToBuyType = 0;
                     ShowNeedUIElements(0);
                     break;
 
@@ -350,6 +456,7 @@ namespace ShopSystem
                     textShopName.text = helmetList[helmetItemNumber].ArmoryName;
                     textShopArmor.text = helmetList[helmetItemNumber].ArmoryValue.ToString();
                     textShopWeight.text = helmetList[helmetItemNumber].WeightArmory.ToString();
+                    itemToBuyType = 1;
                     ShowNeedUIElements(1);
                     break;
 
@@ -357,6 +464,7 @@ namespace ShopSystem
                     textShopName.text = shieldList[shieldItemNumber].ArmoryName;
                     textShopArmor.text = shieldList[shieldItemNumber].ArmoryValue.ToString();
                     textShopWeight.text = shieldList[shieldItemNumber].WeightArmory.ToString();
+                    itemToBuyType = 2;
                     ShowNeedUIElements(2);
                     break;
 
@@ -365,10 +473,131 @@ namespace ShopSystem
                     textShopDamage.text = weaponList[weaponItemNumber].DamageBase.ToString();
                     textShopCritChance.text = weaponList[weaponItemNumber].CriticalChance.ToString();
                     textShopGemPower.text = weaponList[weaponItemNumber].GemPower.ToString();
+                    itemToBuyType = 3;
                     ShowNeedUIElements(3);
                     SetColorOfShopImageGem();
                     break;
+
+                case 4: //skill
+                    textShopName.text = skillList[skillItemNumber].SkillName;
+                    textShopRegenSpeed.text = skillList[skillItemNumber].SecondsForTimer + " sec.";
+                    textShopTutorial.text = skillList[skillItemNumber].SkillTutorial;
+                    itemToBuyType = 4;
+                    ShowNeedUIElements(4);
+                    break;
             }
+            if (!CheckIfWeMayToBuyItem())
+            {
+                buttonBuyButton.interactable = false;
+                buttonBuyImage.color = Color.red;
+                buttonBuyText.color = alphaColor;
+            }
+            else
+            {
+                buttonBuyButton.interactable = true;
+                buttonBuyImage.color = originalColor;
+                buttonBuyText.color = Color.black;
+            }
+        }
+
+        public void BuyStuffInShop()
+        {
+            switch (itemToBuyType)
+            {
+                case 0: //c
+                    BuyCuirass();
+                    MenuSoundManager.PlaySoundStatic(1);
+                    ShowNeedUIElements(0, false);
+                    armorCraft.RestartCuirassWindow();
+                    break;
+
+                case 1: //h
+                    BuyHelmet();
+                    MenuSoundManager.PlaySoundStatic(1);
+                    ShowNeedUIElements(0, false);
+                    armorCraft.RestartHelmetWindow();
+                    break;
+
+                case 2: //s
+                    BuyShield();
+                    MenuSoundManager.PlaySoundStatic(1);
+                    ShowNeedUIElements(0, false);
+                    armorCraft.RestartShieldWindow();
+                    break;
+
+                case 3: //w
+                    BuyWeapon();
+                    MenuSoundManager.PlaySoundStatic(1);
+                    ShowNeedUIElements(0, false);
+                    weaponCraft.RestartWeaponWindow();
+                    break;
+                case 4: //skill
+                    BuySkill();
+                    MenuSoundManager.PlaySoundStatic(1);
+                    ShowNeedUIElements(0, false);
+                    itemsSkillsCraft.RestartSkillWindow(); // restart
+                    break;
+            }
+        }
+
+        private bool BuySkill() // покупка
+        {
+            string str = PlayerPrefs.GetString("skillArray");
+
+            PlayerPrefs.SetString("skillArray", str + skillItemNumber + "_");
+            PlayerPrefs.Save();
+            userResources.Gems -= skillList[skillItemNumber].GemsCost;
+            userResources.Money -= skillList[skillItemNumber].MoneyCost;
+            skillElements[skillItemNumber].HighlightingControl(false);
+            return true;
+        }
+
+        public bool CheckIfWeMayToBuyItem()
+        {
+            string str;
+            int[] array;
+            switch (itemToBuyType)
+            {
+                case 0: //c
+                    str = PlayerPrefs.GetString("cuirassArray");
+                    array = LibraryObjectsWorker.StringSplitter(str, '_');
+
+                    for (int i = 0; i < array.Length; i++)
+                        if (array[i] == cuirassItemNumber) return false;
+                    return IsEnoughUserResources(0);
+
+                case 1: //h
+                    str = PlayerPrefs.GetString("helmetArray");
+                    array = LibraryObjectsWorker.StringSplitter(str, '_');
+
+                    for (int i = 0; i < array.Length; i++)
+                        if (array[i] == helmetItemNumber) return false;
+                    return IsEnoughUserResources(1);
+
+                case 2: //s
+                    str = PlayerPrefs.GetString("shieldArray");
+                    array = LibraryObjectsWorker.StringSplitter(str, '_');
+
+                    for (int i = 0; i < array.Length; i++)
+                        if (array[i] == shieldItemNumber) return false;
+                    return IsEnoughUserResources(2);
+
+                case 3: //w
+                    str = PlayerPrefs.GetString("weaponArray");
+                    array = LibraryObjectsWorker.StringSplitter(str, '_');
+
+                    for (int i = 0; i < array.Length; i++)
+                        if (array[i] == weaponItemNumber) return false;
+                    return IsEnoughUserResources(3);
+                case 4: //skill
+                    str = PlayerPrefs.GetString("skillArray");
+                    array = LibraryObjectsWorker.StringSplitter(str, '_');
+
+                    for (int i = 0; i < array.Length; i++)
+                        if (array[i] == skillItemNumber) return false;
+                    return IsEnoughUserResources(4);
+            }
+            return true;
         }
 
         /// <summary>
@@ -387,6 +616,7 @@ namespace ShopSystem
         {
             if (isActive)
             {
+                buttonBuyObj.SetActive(true);
                 shopNameObj.SetActive(true);
                 switch (numberItemType)
                 {
@@ -400,6 +630,7 @@ namespace ShopSystem
                         shopDamageObj.SetActive(false);
                         shopCritChanceObj.SetActive(false);
                         shopGemPowerObj.SetActive(false);
+                        shopRegenSpeedObj.SetActive(false);
 
                         textShopDamage.enabled = false;
                         textShopCritChance.enabled = false;
@@ -415,6 +646,7 @@ namespace ShopSystem
                         shopDamageObj.SetActive(false);
                         shopCritChanceObj.SetActive(false);
                         shopGemPowerObj.SetActive(false);
+                        shopRegenSpeedObj.SetActive(false);
 
                         textShopDamage.enabled = false;
                         textShopCritChance.enabled = false;
@@ -430,6 +662,7 @@ namespace ShopSystem
                         shopDamageObj.SetActive(false);
                         shopCritChanceObj.SetActive(false);
                         shopGemPowerObj.SetActive(false);
+                        shopRegenSpeedObj.SetActive(false);
 
                         textShopDamage.enabled = false;
                         textShopCritChance.enabled = false;
@@ -444,21 +677,43 @@ namespace ShopSystem
                         shopDamageObj.SetActive(true);
                         shopCritChanceObj.SetActive(true);
                         shopGemPowerObj.SetActive(true);
+                        shopRegenSpeedObj.SetActive(false);
 
                         textShopDamage.enabled = true;
                         textShopCritChance.enabled = true;
                         textShopGemPower.enabled = true;
                         break;
+                    case 4: //w
+                        textShopName.enabled = true;
+                        textShopArmor.enabled = false;
+                        textShopWeight.enabled = false;
+
+                        shopWeightObj.SetActive(false);
+                        shopArmorObj.SetActive(false);
+                        shopDamageObj.SetActive(false);
+                        shopCritChanceObj.SetActive(false);
+                        shopGemPowerObj.SetActive(false);
+
+                        shopRegenSpeedObj.SetActive(true);
+                        shopTutorialObj.SetActive(true);
+
+                        textShopDamage.enabled = false;
+                        textShopCritChance.enabled = false;
+                        textShopGemPower.enabled = false;
+                        break;
                 }
             }
             else
             {
+                buttonBuyObj.SetActive(false);
                 shopNameObj.SetActive(false);
                 shopWeightObj.SetActive(false);
                 shopArmorObj.SetActive(false);
                 shopDamageObj.SetActive(false);
                 shopCritChanceObj.SetActive(false);
                 shopGemPowerObj.SetActive(false);
+                shopRegenSpeedObj.SetActive(false);
+                shopTutorialObj.SetActive(false);
 
                 for (int i = 0; i < cuirassElements.Length; i++)
                     cuirassElements[i].HighlightingControl(false);
@@ -471,6 +726,9 @@ namespace ShopSystem
 
                 for (int i = 0; i < weaponElements.Length; i++)
                     weaponElements[i].HighlightingControl(false);
+
+                for (int i = 0; i < skillElements.Length; i++)
+                    skillElements[i].HighlightingControl(false);
             }
         }
 
@@ -485,9 +743,10 @@ namespace ShopSystem
                 case GemType.None:
                     imageShopGem.color = Color.white;
                     textShopGemPower.text = "0";
+                    shopGemPowerObj.SetActive(false);
                     break;
                 case GemType.Frozen:
-                    imageShopGem.color = colorFrozen;
+                    imageShopGem.color = (Color)colorFrozen;
                     break;
                 case GemType.Fire:
                     imageShopGem.color = colorFire;
@@ -507,15 +766,12 @@ namespace ShopSystem
         public bool BuyCuirass()
 		{
             string str = PlayerPrefs.GetString("cuirassArray");
-            int[] array = LibraryObjectsWorker.StringSplitter(str, '_');
-
-			for (int i = 0; i < array.Length; i++)
-				if (array[i] == cuirassItemNumber) return false;
 
 			PlayerPrefs.SetString("cuirassArray", str + cuirassItemNumber + "_" );
 			PlayerPrefs.Save();
             userResources.Gems -= cuirassList[cuirassItemNumber].GemsCost;
             userResources.Money -= cuirassList[cuirassItemNumber].MoneyCost;
+            cuirassElements[cuirassItemNumber].HighlightingControl(false);
             return true;
 		}
 
@@ -525,15 +781,12 @@ namespace ShopSystem
 		public bool BuyHelmet()
 		{
             string str = PlayerPrefs.GetString("helmetArray");
-            int[] array = LibraryObjectsWorker.StringSplitter(str, '_');
-
-			for (int i = 0; i < array.Length; i++)
-				if (array[i] == helmetItemNumber) return false;
 
 			PlayerPrefs.SetString("helmetArray", str + helmetItemNumber + "_");
 			PlayerPrefs.Save();
             userResources.Gems -= helmetList[helmetItemNumber].GemsCost;
             userResources.Money -= helmetList[helmetItemNumber].MoneyCost;
+            helmetElements[helmetItemNumber].HighlightingControl(false);
             return true;
 		}
 
@@ -543,15 +796,12 @@ namespace ShopSystem
 		public bool BuyShield()
 		{
             string str = PlayerPrefs.GetString("shieldArray");
-            int[] array = LibraryObjectsWorker.StringSplitter(str, '_');
-
-            for (int i = 0; i < array.Length; i++)
-                if (array[i] == shieldItemNumber) return false;
 
             PlayerPrefs.SetString("shieldArray", str + shieldItemNumber + "_");
-			PlayerPrefs.Save();
+			//PlayerPrefs.Save();
             userResources.Gems -= shieldList[shieldItemNumber].GemsCost;
             userResources.Money -= shieldList[shieldItemNumber].MoneyCost;
+            shieldElements[shieldItemNumber].HighlightingControl(false);
             return true;
         }
 
@@ -561,15 +811,12 @@ namespace ShopSystem
 		public bool BuyWeapon()
 		{
             string str = PlayerPrefs.GetString("weaponArray");
-            int[] array = LibraryObjectsWorker.StringSplitter(str, '_');
-
-            for (int i = 0; i < array.Length; i++)
-                if (array[i] == weaponItemNumber) return false;
 
             PlayerPrefs.SetString("weaponArray", str + weaponItemNumber + "_");
 			PlayerPrefs.Save();
             userResources.Gems -= weaponList[weaponItemNumber].GemsCost;
             userResources.Money -= weaponList[weaponItemNumber].MoneyCost;
+            weaponElements[weaponItemNumber].HighlightingControl(false);
             return true;
 		}
 
@@ -594,6 +841,9 @@ namespace ShopSystem
                 case 3:
                     return userResources.IsEnoughGemNMoney(weaponList[weaponItemNumber].MoneyCost,
                         weaponList[weaponItemNumber].GemsCost);
+                case 4:
+                    return userResources.IsEnoughGemNMoney(skillList[skillItemNumber].MoneyCost,
+                        skillList[skillItemNumber].GemsCost);
                 default:
                     return false;
             }
@@ -756,6 +1006,43 @@ namespace ShopSystem
 				weaponRepository.transform.parent.GetComponent<ScrollRect>();
 			yield return 0;
 		}
+
+        private IEnumerator<float> SkillCoroutine()
+        {
+            object[] tempObjects = new object[Resources.LoadAll(skillPrefix).Length];
+            for (int i = 0; i < tempObjects.Length; i++)
+            {
+                tempObjects[i] = Resources.Load(skillPrefix + i + skillPostfix);
+            }
+
+            skillElements = new IRepositoryObject[tempObjects.Length];
+
+            for (int i = 0; i < tempObjects.Length; i++)
+            {
+                GameObject skillObj = (GameObject)tempObjects[i];
+                GameObject item = Instantiate(itemSkill);
+                ItemOrSkillButton button = item.GetComponent<ItemOrSkillButton>();
+
+                skillList.Add(skillObj.GetComponent<ISkill>());
+                skillElements[i] = button;
+
+                button.SetItemSkillsCraft(itemsSkillsCraft);
+                button.SetShop(shopComponent);
+                button.SetNumber(i);
+
+                button.NameSkill.text = skillList[i].SkillName;
+                button.SetImage(skillList[i].SkillImage.sprite);
+                button.TutorialSkill = skillList[i].SkillTutorial;
+                button.MoneyCost.text = skillList[i].MoneyCost.ToString();
+                button.GemsCost.text = skillList[i].GemsCost.ToString();
+
+                item.transform.SetParent(skillRepository.transform, false);
+            }
+
+            scrollRectSkillRepository =
+                skillRepository.transform.parent.GetComponent<ScrollRect>();
+            yield return 0;
+        }
         #endregion
     }
 }

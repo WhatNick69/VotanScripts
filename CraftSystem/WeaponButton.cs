@@ -2,7 +2,6 @@
 using UnityEngine.UI;
 using ShopSystem;
 using VotanUI;
-using System;
 
 namespace CraftSystem
 {

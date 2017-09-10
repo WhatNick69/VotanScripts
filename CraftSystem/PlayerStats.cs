@@ -1,6 +1,8 @@
-﻿using PlayerBehaviour;
+﻿using System;
+using PlayerBehaviour;
 using UnityEngine;
 using UnityEngine.UI;
+using ShopSystem;
 
 namespace CraftSystem
 {
@@ -9,17 +11,20 @@ namespace CraftSystem
     {
         #region Переменные
         [SerializeField]
-		Text leveTextl,hpText,armorText,weightText,damageText,gemText,
+        Image inventoryImageGem;
+
+        [SerializeField]
+		Text leveTextl,hpText,armorText,weightText,damageText,
             gemDamageText,critChaceText,newArmorText,newWeightText,
-            newDamageText,newGemText,newGemDamageText,newCritChaceText;
+            newDamageText,newGemText,newCritChaceText;
 
         [SerializeField]
         GameObject cuirass, shield, helmet, weapon, newDamage, newArmor,
-            newWeight, NewGemType, NewGemPuwer, NewCrit, skillOne, skillTwo,
+            newWeight, NewGemPuwer, NewCrit, skillOne, skillTwo,
             skillThree, itemOne, itemTwo, itemThree;
 
         [SerializeField]
-        Text playerMoney1, playerMoney2, playerMoney3, playerMoney4,
+        Text experienceText, playerMoney1, playerMoney2, playerMoney3, playerMoney4,
             playerGems1, playerGems2, playerGems3, playerGems4;
 
         Image skillOneImg;
@@ -152,7 +157,7 @@ namespace CraftSystem
 			}
 		}
 
-		public float NewHeadDamage
+        public float NewHeadDamage
 		{
 			get
 			{
@@ -294,6 +299,19 @@ namespace CraftSystem
 				newCritChance = value;
 			}
 		}
+
+        public Image InventoryImageGem
+        {
+            get
+            {
+                return inventoryImageGem;
+            }
+
+            set
+            {
+                inventoryImageGem = value;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -301,10 +319,9 @@ namespace CraftSystem
         /// </summary>
         private void Start()
         {
-            leveTextl.text = PlayerPrefs.GetInt("level").ToString();
-            hpText.text = ((PlayerPrefs.GetInt("level") + 10) * 2).ToString();
             InitialisationComponents();
         }
+
         private void InitialisationComponents()
         {
             skillOneImg = skillOne.GetComponent<Image>();
@@ -315,6 +332,7 @@ namespace CraftSystem
             itemTwoImg = itemTwo.transform.GetChild(0).GetComponent<Image>();
             itemThreeImg = itemThree.transform.GetChild(0).GetComponent<Image>();
         }
+
         /// <summary>
         /// Обновляет значения в таблице характеристик 
         /// оружия и брони
@@ -448,6 +466,151 @@ namespace CraftSystem
             }
 		}
 
+        public void NewStatsForWeapon()
+        {
+            damageText.text = headDamage.ToString();
+            gemDamageText.text = GemPower.ToString();
+            critChaceText.text = CritChance.ToString();
+
+            // Crit Chance
+            if (NewCrit.activeInHierarchy)
+            {
+                if (newCritChance >= critChance)
+                {
+                    newCritChaceText.text = "+(" + Mathf.Abs(newCritChance - critChance) + ")";
+                    newCritChaceText.color = green;
+                }
+                else
+                {
+                    newCritChaceText.text = "-(" + Mathf.Abs(newCritChance - critChance) + ")";
+                    newCritChaceText.color = red;
+                }
+            }
+
+            // Head Damage
+            if (newDamage.activeInHierarchy)
+            {
+                if (newHeadDamage >= headDamage)
+                {
+                    newDamageText.text = "+(" + Mathf.Abs(newHeadDamage - headDamage) + ")";
+                    newDamageText.color = green;
+                }
+                else
+                {
+                    newDamageText.text = "-(" + Mathf.Abs(newHeadDamage - headDamage) + ")";
+                    newDamageText.color = red;
+
+                }
+
+                if (newGemPower >= gemPower)
+                {
+                    newGemText.text = "+(" + Mathf.Abs(newGemPower - gemPower) + ")";
+                    newGemText.color = green;
+                }
+                else
+                {
+                    newGemText.text = "-(" + Mathf.Abs(newGemPower - gemPower) + ")";
+                    newGemText.color = red;
+                }
+            }
+        }
+
+        public void NewStatsForHelmet()
+        {
+            armorText.text = (cuirassArmor + shieldArmor + helmetArmor).ToString();
+            weightText.text = (cuirassWeight + helmetWeight + shieldWeight).ToString();
+
+            // Helmet Weight
+            if (helmet.activeInHierarchy)
+            {
+                if (newHelmetWeight >= helmetWeight)
+                {
+                    newWeightText.text = "+(" + Mathf.Abs(newHelmetWeight - helmetWeight) + ")";
+                    newWeightText.color = green;
+                }
+                else
+                {
+                    newWeightText.text = "-(" + Mathf.Abs(newHelmetWeight - helmetWeight) + ")";
+                    newWeightText.color = red;
+                }
+
+                if (newHelmetArmor >= helmetArmor)
+                {
+                    newArmorText.text = "+(" + Mathf.Abs(newHelmetArmor - helmetArmor) + ")";
+                    newArmorText.color = green;
+                }
+                else
+                {
+                    newArmorText.text = "-(" + Mathf.Abs(newHelmetArmor - helmetArmor) + ")";
+                    newArmorText.color = red;
+                }
+            }
+        }
+
+        public void NewStatsForCuirass()
+        {
+            armorText.text = (cuirassArmor + shieldArmor + helmetArmor).ToString();
+            weightText.text = (cuirassWeight + helmetWeight + shieldWeight).ToString();
+            
+            // Cuiras Weight
+            if (cuirass.activeInHierarchy)
+            {
+                if (newCuirassWeight >= cuirassWeight)
+                {
+                    newWeightText.text = "+(" + Mathf.Abs(newCuirassWeight - cuirassWeight) + ")";
+                    newWeightText.color = red;
+                }
+                else
+                {
+                    newWeightText.text = "-(" + Mathf.Abs(newCuirassWeight - cuirassWeight) + ")";
+                    newWeightText.color = green;
+                }
+
+                if (newCuirassArmor >= cuirassArmor)
+                {
+                    newArmorText.text = "+(" + Mathf.Abs(newCuirassArmor - cuirassArmor) + ")";
+                    newArmorText.color = green;
+                }
+                else
+                {
+                    newArmorText.text = "-(" + Mathf.Abs(newCuirassArmor - cuirassArmor) + ")";
+                    newArmorText.color = red;
+                }
+            }
+        }
+
+        public void NewStatsForShield()
+        {
+            armorText.text = (cuirassArmor + shieldArmor + helmetArmor).ToString();
+            weightText.text = (cuirassWeight + helmetWeight + shieldWeight).ToString();
+           
+            // Shield Weight
+            if (shield.activeInHierarchy)
+            {
+                if (newShieldWeight >= shieldWeight)
+                {
+                    newWeightText.text = "+(" + Mathf.Abs(newShieldWeight - shieldWeight) + ")";
+                    newWeightText.color = green;
+                }
+                else
+                {
+                    newWeightText.text = "-(" + Mathf.Abs(newShieldWeight - shieldWeight) + ")";
+                    newWeightText.color = red;
+                }
+
+                if (newShieldArmor >= shieldArmor)
+                {
+                    newArmorText.text = "+(" + Mathf.Abs(newShieldArmor - shieldArmor) + ")";
+                    newArmorText.color = green;
+                }
+                else
+                {
+                    newArmorText.text = "-(" + Mathf.Abs(newShieldArmor - shieldArmor) + ")";
+                    newArmorText.color = red;
+                }
+            }
+        }
+
         /// <summary>
         /// Создана для удобства, просто отключает все окна с итемами
         /// </summary>
@@ -455,10 +618,10 @@ namespace CraftSystem
         {
             newDamage.SetActive(false);
             newArmor.SetActive(false);
-            NewGemType.SetActive(false);
             NewGemPuwer.SetActive(false);
             NewCrit.SetActive(false);
             newWeight.SetActive(false);
+            NewStats();
             //itemOne.SetActive(false);
             //itemTwo.SetActive(false);
             //itemThree.SetActive(false);
@@ -476,7 +639,6 @@ namespace CraftSystem
             newDamage.SetActive(true);
             NewCrit.SetActive(true);
             NewGemPuwer.SetActive(true);
-            NewGemType.SetActive(true);
         }
 
         /// <summary>
@@ -527,6 +689,40 @@ namespace CraftSystem
             playerGems4.text = gems.ToString();
         }
 
+        public void RefreshUserExp(long experience)
+        {
+            experienceText.text = experience.ToString();
+            LevelToHP(LevelFromExperience(Convert.ToInt32(experienceText.text)));
+        }
+
+        private void LevelToHP(int level)
+        {
+            leveTextl.text = level.ToString();
+            int hp = (level * 5) + 100;
+            hpText.text = hp.ToString();
+        }
+
+        private int LevelFromExperience(float userExperience)
+        {
+            float experience = 100;
+            int level = 0;
+            for (int i = 0;i<100;i++)
+            {
+                userExperience -= experience;
+                if (userExperience <= 0)
+                {
+                    break;
+                }
+                else
+                {
+                    level++;
+                }
+                experience = Mathf.Ceil(experience/100*1.2f) * 100;
+                Debug.Log(experience);
+            }
+            return level;
+        }
+
         /// <summary>
         /// Задать изображение кнопке выбранного в бой скила
         /// </summary>
@@ -537,12 +733,15 @@ namespace CraftSystem
             switch (index)
             {
                 case 0:
+                    skillOneImg.color = Color.white;
                     skillOneImg.sprite = spr;
                     break;
                 case 1:
+                    skillTwoImg.color = Color.white;
                     skillTwoImg.sprite = spr;
                     break;
                 case 2:
+                    skillThreeImg.color = Color.white;
                     skillThreeImg.sprite = spr;
                     break;
             }
@@ -558,13 +757,13 @@ namespace CraftSystem
             switch (index)
             {
                 case 0:
-                    //skillOneImg.sprite = voidSprite;
+                    skillOneImg.color = new Color(0, 0, 0, 0); 
                     break;
                 case 1:
-                    //skillTwoImg.sprite = voidSprite;
+                    skillTwoImg.color = new Color(0, 0, 0, 0); 
                     break;
                 case 2:
-                    //skillThreeImg.sprite = voidSprite;
+                    skillThreeImg.color = new Color(0, 0, 0, 0); 
                     break;
             }
         }

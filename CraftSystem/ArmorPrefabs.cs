@@ -15,7 +15,7 @@ namespace CraftSystem
         GameObject shield;
 
 
-        private void Start()
+        private void Awake()
         {
             if (!onLoad)
             {

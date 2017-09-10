@@ -102,10 +102,25 @@ namespace VotanInterfaces
     /// </summary>
     public interface ISkill
     {
-		/// <summary>
-		/// Сколько опыта стоит скилл
-		/// </summary>
-		int PriceExp { get; }
+        /// <summary>
+        /// Время перезарядки умения
+        /// </summary>
+        int SecondsForTimer { get; set; }
+
+        /// <summary>
+        /// Стоимость умения в золоте
+        /// </summary>
+        long MoneyCost { get; set; }
+
+        /// <summary>
+        /// Стоимость умения в гемах
+        /// </summary>
+        long GemsCost { get; set; }
+
+        /// <summary>
+        /// Сколько опыта стоит скилл
+        /// </summary>
+        int PriceExp { get; }
 
 		/// <summary>
 		/// Название умения

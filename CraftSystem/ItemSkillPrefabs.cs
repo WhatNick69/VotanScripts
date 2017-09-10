@@ -105,7 +105,7 @@ namespace CraftSystem
         /// <summary>
         /// Инициализация
         /// </summary>
-        private void Start()
+        private void Awake()
         {
             if (!onLoad)
             {
@@ -116,6 +116,20 @@ namespace CraftSystem
             {
                 Destroy(gameObject);
             }
+        }
+
+        public void ClearAllItems()
+        {
+            FirstItem = null;
+            SecondItem = null;
+            ThirdItem = null;
+        }
+
+        public void ClearAllSkills()
+        {
+            FirstSkill = null;
+            SecondSkill = null;
+            ThirdSkill = null;
         }
         #endregion
     }

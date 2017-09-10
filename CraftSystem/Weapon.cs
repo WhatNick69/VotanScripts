@@ -26,7 +26,7 @@ namespace CraftSystem
         private TrailRenderer trailRenderer;
         [SerializeField, Tooltip("Тип атаки камня")]
         private GemType damageTypeGem;
-        [SerializeField, Range(1, 100f), Tooltip("Сила камня")]
+        [SerializeField, Range(0, 100f), Tooltip("Сила камня")]
         private float gemPower;
 		[SerializeField]
 		Transform attackPoint;

@@ -51,7 +51,7 @@ namespace PlayerBehaviour
             set
             {
                 healthValue = value;
-         
+                Handheld.Vibrate();
                 if (healthValue > 0)
                 {
                     if (healthValue > initialisatedHealthValue)

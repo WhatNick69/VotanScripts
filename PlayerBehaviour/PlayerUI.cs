@@ -29,6 +29,8 @@ namespace PlayerBehaviour
         private GameObject scoreInterface;
         [SerializeField, Tooltip("Очки-объект")]
         private GameObject scoresObject;
+        [SerializeField, Tooltip("Опыт-объект")]
+        private GameObject expObject;
         [SerializeField, Tooltip("Железо-объект")]
         private GameObject steelObject;
         [SerializeField, Tooltip("Дерево-объект")]
@@ -79,19 +81,27 @@ namespace PlayerBehaviour
         /// <summary>
         /// Сохранить прохождение сцены
         /// </summary>
-        private void SaveCompletedScene()
+        private bool SaveCompletedScene()
         {
             string str = PlayerPrefs.GetString("arenaArray");
             int[] elements = LibraryObjectsWorker.StringSplitter(str, '_');
 
-            elements[SceneManager.GetActiveScene().buildIndex] = 1;
-
-            string saveArenaString = "";
-            for (int i = 0; i < elements.Length; i++)
+            if (elements[SceneManager.GetActiveScene().buildIndex-1] == 0)
             {
-                saveArenaString += elements[i] + "_";
+                elements[SceneManager.GetActiveScene().buildIndex-1] = 1;
+
+                string saveArenaString = "";
+                for (int i = 0; i < elements.Length; i++)
+                {
+                    saveArenaString += elements[i] + "_";
+                }
+                PlayerPrefs.SetString("arenaArray", saveArenaString);
+                return false;
             }
-            PlayerPrefs.SetString("arenaArray", saveArenaString);
+            else
+            {
+                return true;
+            }
         }
 
         /// <summary>
@@ -101,18 +111,21 @@ namespace PlayerBehaviour
         private bool SetTotalResourcesAfterGame(bool isWin)
         {
             UserResources userResources = GameObject.Find("GetPrefabs").GetComponent<UserResources>();
+            long experience = playerComponentsControl.PlayerResources.ScoreValue / 2;
             if (!isWin)
             {
+                experience /= 4;
                 playerComponentsControl.PlayerResources.ScoreValue /= 4;
                 playerComponentsControl.PlayerResources.Gems = 0;
             }
             else
             {
-                playerComponentsControl.PlayerResources.ScoreValue
-                  += userResources.GoldBonus;
-                playerComponentsControl.PlayerResources.Gems
-                  += userResources.GemsBonus;
-                SaveCompletedScene();
+                if (SaveCompletedScene())
+                {
+                    experience /= 4;
+                    playerComponentsControl.PlayerResources.ScoreValue /= 4;
+                    playerComponentsControl.PlayerResources.Gems = 0;
+                }
             }
 
             LibraryStaticFunctions.ConvertScoreToResources
@@ -122,17 +135,21 @@ namespace PlayerBehaviour
                 (scoresObject.transform.GetComponentInChildren<Text>(),
                 "Score: ", 1, playerComponentsControl.PlayerResources.ScoreValue, 50));
             Timing.RunCoroutine(CoroutineForSlowmotionAddingScore
-                (woodObject.transform.GetComponentInChildren<Text>(),
-                "Wood: ",1, playerComponentsControl.PlayerResources.WoodResource, 1));
-            Timing.RunCoroutine(CoroutineForSlowmotionAddingScore
-                (steelObject.transform.GetComponentInChildren<Text>(),
-                "Steel: ", 1, playerComponentsControl.PlayerResources.SteelResource, 1));
+                (expObject.transform.GetComponentInChildren<Text>(),
+                "Experience: ", 1, experience, 25));
+
+            //Timing.RunCoroutine(CoroutineForSlowmotionAddingScore
+            //    (woodObject.transform.GetComponentInChildren<Text>(),
+            //    "Wood: ",1, playerComponentsControl.PlayerResources.WoodResource, 1));
+            //Timing.RunCoroutine(CoroutineForSlowmotionAddingScore
+            //    (steelObject.transform.GetComponentInChildren<Text>(),
+            //    "Steel: ", 1, playerComponentsControl.PlayerResources.SteelResource, 1));
 
             if (isWin)
             {
                 playerComponentsControl.UserResources.SaveUserResources
                     (playerComponentsControl.PlayerResources.ScoreValue,
-                    playerComponentsControl.PlayerResources.Gems);
+                    playerComponentsControl.PlayerResources.Gems,experience);
                 if (playerComponentsControl.PlayerResources.Gems > 0)
                 {
                     gemObject.transform.GetComponentInChildren<Text>().text =
@@ -149,7 +166,7 @@ namespace PlayerBehaviour
                 playerComponentsControl.PlayerResources.Gems = 0;
                 playerComponentsControl.UserResources.SaveUserResources
                     (playerComponentsControl.PlayerResources.ScoreValue,
-                    playerComponentsControl.PlayerResources.Gems);
+                    playerComponentsControl.PlayerResources.Gems, experience);
                 return false;
             }
         }
@@ -194,8 +211,9 @@ namespace PlayerBehaviour
             pauseButton.SetActive(false);
             scoreInterface.SetActive(false);
             scoresObject.SetActive(true);
-            woodObject.SetActive(true);
-            steelObject.SetActive(true);
+            expObject.SetActive(true);
+            //woodObject.SetActive(true);
+            //steelObject.SetActive(true);
             gemObject.SetActive(SetTotalResourcesAfterGame(true));
 
             Joystick.IsDragPause = true;
@@ -212,8 +230,9 @@ namespace PlayerBehaviour
 
             scoreInterface.SetActive(false);
             scoresObject.SetActive(true);
-            woodObject.SetActive(true);
-            steelObject.SetActive(true);
+            expObject.SetActive(true);
+            //woodObject.SetActive(true);
+            //steelObject.SetActive(true);
             gemObject.SetActive(SetTotalResourcesAfterGame(false));
 
             pauseButton.SetActive(false);

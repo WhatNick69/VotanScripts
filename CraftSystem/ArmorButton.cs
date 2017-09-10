@@ -3,11 +3,10 @@ using UnityEngine.UI;
 using PlayerBehaviour;
 using VotanUI;
 using ShopSystem;
-using System;
 
 namespace CraftSystem
 {
-	/// <summary>
+    /// <summary>
     /// Кнопка брони
     /// </summary>
     public class ArmorButton 

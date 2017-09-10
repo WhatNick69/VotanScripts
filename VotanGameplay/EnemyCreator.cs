@@ -321,7 +321,7 @@ namespace VotanGameplay
                     enemyBehaviour.EnemyConditions.FrostResistance = 0; // Сопротивление к ледяной атаке
 
                     enemyBehaviour.ScoreAddingEffect.ScoreBonus = 
-                        (int)SetParameterOfEnemy(25,hardcoreMultiplier*2); // задаем количество очков
+                        (int)SetParameterOfEnemy(100,hardcoreMultiplier*2); // задаем количество очков
                     break;
 
                 // БЕШЕНЫЙ РЫЦАРЬ
@@ -353,7 +353,7 @@ namespace VotanGameplay
                         (SetParameterOfEnemy(0.1f, hardcoreMultiplier), 0.1f);  // Сопротивление к ледяной атаке
 
                     enemyBehaviour.ScoreAddingEffect.ScoreBonus = 
-                        (int)SetParameterOfEnemy(40, hardcoreMultiplier*2); // задаем количество очков
+                        (int)SetParameterOfEnemy(120, hardcoreMultiplier*2); // задаем количество очков
                     break;
 
                 // АЛЕБАРДИЙЩИК
@@ -382,7 +382,7 @@ namespace VotanGameplay
                         (SetParameterOfEnemy(0.1f, hardcoreMultiplier), 0.2f);  // Сопротивление к ледяной атаке
 
                     enemyBehaviour.ScoreAddingEffect.ScoreBonus =
-                        (int)SetParameterOfEnemy(80, hardcoreMultiplier * 2); // задаем количество очков
+                        (int)SetParameterOfEnemy(150, hardcoreMultiplier * 2); // задаем количество очков
                     break;
 
                 // Арбалетчик
@@ -415,7 +415,7 @@ namespace VotanGameplay
                         (SetParameterOfEnemy(0.1f, hardcoreMultiplier), 0.1f);  // Сопротивление к ледяной атаке
 
                     enemyBehaviour.ScoreAddingEffect.ScoreBonus =
-                        (int)SetParameterOfEnemy(60, hardcoreMultiplier * 2); // задаем количество очков
+                        (int)SetParameterOfEnemy(80, hardcoreMultiplier * 2); // задаем количество очков
                     break;
 
                 // ПЕРВЫЙ БОСС
@@ -438,7 +438,7 @@ namespace VotanGameplay
                     enemyBehaviour.EnemyConditions.FrostResistance = 
                         SetParameterOfEnemy(0.3f, hardcoreMultiplier);
                     enemyBehaviour.ScoreAddingEffect.ScoreBonus = 
-                        (int)SetParameterOfEnemy(600, hardcoreMultiplier*2); 
+                        (int)SetParameterOfEnemy(500, hardcoreMultiplier*2); 
                     break;
             }
             if (number == StaticStorageWithEnemies.ListEnemy.Length - 1)

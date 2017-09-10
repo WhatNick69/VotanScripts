@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using VotanInterfaces;
 using VotanUI;
+using System;
+using VotanLibraries;
 
 namespace CraftSystem
 {
@@ -36,12 +38,15 @@ namespace CraftSystem
 
         string skillPrefix = "Prefabs/Skills/";
         string itemPrefix = "Prefabs/Items/";
+        string skillPostfix = "_Skill";
 
         private List<ISkill> skillList;
         private List<IItem> itemList;
 
         [SerializeField, Tooltip("Закинуть сюда все зелья")]
         private List<GameObject> itemArray;
+
+        private IRepositoryObject[] skillInventoryElements;
 
         private int itemItemNumberOne;
         private int itemItemNumberTwo;
@@ -51,7 +56,9 @@ namespace CraftSystem
         private int skillItemNumberTwo;
         private int skillItemNumberThree;
 
+        Shop shop;
         ItemSkillPrefabs itemSkillPrefabs;
+        Inventory inventory;
         PlayerStats playerStats;
         UserResources userResources;
 
@@ -77,6 +84,12 @@ namespace CraftSystem
         public void SkillWindow()
         {
             skillWindow.SetActive(true);
+
+            inventory.ArmorCraftComponent.CloseAllWindows();
+            inventory.WeaponCraftComponent.CloseAllWindows();
+
+            playerStats.SkillPage();
+            scrollRectSkillRepository.horizontalNormalizedPosition = 0;
         }
 
         public void ItemWindow()
@@ -103,11 +116,15 @@ namespace CraftSystem
         /// <summary>
         /// Инициализация
         /// </summary>
-        private void Awake()
+        private void Start()
         {
             itemSkillPrefabs = GameObject.Find("GetPrefabs").GetComponent<ItemSkillPrefabs>();
+            itemSkillPrefabs.ClearAllItems();
+            itemSkillPrefabs.ClearAllSkills();
             userResources = GameObject.Find("GetPrefabs").GetComponent<UserResources>();
             playerStats = GetComponent<PlayerStats>();
+            inventory = GetComponent<Inventory>();
+            shop = GetComponent<Shop>();
 
             skillList = new List<ISkill>();
             itemList = new List<IItem>();
@@ -138,18 +155,24 @@ namespace CraftSystem
                 MenuSoundManager.PlaySoundStatic(1);
                 skillItemNumberOne = numberButton;
                 playerStats.SetSkillImg(skillList[numberButton].SkillImage.sprite, 0);
+
+                Inventory.SaveInventoryNumber(4, skillItemNumberOne);
             }
             else if (skillItemNumberTwo == -1)
             {
                 MenuSoundManager.PlaySoundStatic(1);
                 skillItemNumberTwo = numberButton;
                 playerStats.SetSkillImg(skillList[numberButton].SkillImage.sprite, 1);
+
+                Inventory.SaveInventoryNumber(5, skillItemNumberTwo);
             }
             else if (skillItemNumberThree == -1)
             {
                 MenuSoundManager.PlaySoundStatic(1);
                 skillItemNumberThree = numberButton;
                 playerStats.SetSkillImg(skillList[numberButton].SkillImage.sprite, 2);
+
+                Inventory.SaveInventoryNumber(6, skillItemNumberThree);
             }
         }
 
@@ -214,7 +237,8 @@ namespace CraftSystem
         /// </summary>
         public void RemoveItemOne()
         {
-            DeleteItemFromCart(itemList[itemItemNumberOne]);
+            if (itemItemNumberOne != -1)
+                DeleteItemFromCart(itemList[itemItemNumberOne]);
             itemItemNumberOne = -1;
             playerStats.SetItemImg(0);
         }
@@ -224,7 +248,8 @@ namespace CraftSystem
         /// </summary>
         public void RemoveItemTwo()
         {
-            DeleteItemFromCart(itemList[itemItemNumberTwo]);
+            if (itemItemNumberTwo != -1)
+                DeleteItemFromCart(itemList[itemItemNumberTwo]);
             itemItemNumberTwo = -1;
             playerStats.SetItemImg(1);
         }
@@ -234,7 +259,8 @@ namespace CraftSystem
         /// </summary>
         public void RemoveItemThree()
         {
-            DeleteItemFromCart(itemList[itemItemNumberThree]);
+            if (itemItemNumberThree != -1)
+                DeleteItemFromCart(itemList[itemItemNumberThree]);
             itemItemNumberThree = -1;
             playerStats.SetItemImg(2);
         }
@@ -248,11 +274,11 @@ namespace CraftSystem
             tempPrice = 0;
 
             if (skillItemNumberOne >= 0)
-                itemSkillPrefabs.FirstSkill = (GameObject)Resources.Load(skillPrefix + skillItemNumberOne);
+                itemSkillPrefabs.FirstSkill = (GameObject)Resources.Load(skillPrefix + skillItemNumberOne + skillPostfix);
             if (skillItemNumberTwo >= 0)
-                itemSkillPrefabs.SecondSkill = (GameObject)Resources.Load(skillPrefix + skillItemNumberTwo);
+                itemSkillPrefabs.SecondSkill = (GameObject)Resources.Load(skillPrefix + skillItemNumberTwo + skillPostfix);
             if (skillItemNumberThree >= 0)
-                itemSkillPrefabs.ThirdSkill = (GameObject)Resources.Load(skillPrefix + skillItemNumberThree);
+                itemSkillPrefabs.ThirdSkill = (GameObject)Resources.Load(skillPrefix + skillItemNumberThree + skillPostfix);
             if (itemItemNumberOne >= 0)
                 itemSkillPrefabs.FirstItem = itemArray[itemItemNumberOne];
             if (itemItemNumberTwo >= 0)
@@ -287,6 +313,12 @@ namespace CraftSystem
             }
         }
 
+        public void DisableListHighlightingInventory()
+        {
+            for (int i = 0; i < skillInventoryElements.Length; i++)
+                skillInventoryElements[i].HighlightingControl(false, false);
+        }
+
         /// <summary>
         /// Удалить вещь из корзины
         /// </summary>
@@ -313,29 +345,99 @@ namespace CraftSystem
             }
         }
 
+        private string CheckEmptySkillLocalSave()
+        {
+            string str = PlayerPrefs.GetString("skillArray");
+            if (str == null || str == "")
+            {
+                str = "";
+                PlayerPrefs.SetString("skillArray", str);
+            }
+            return str;
+        }
+
+        public void RestartSkillWindow()
+        {
+            for (int i = 0; i < skillsRepository.transform.childCount; i++)
+                Destroy(skillsRepository.transform.GetChild(i).gameObject);
+
+            skillList = new List<ISkill>();
+            Timing.RunCoroutine(SkillCorutine());
+        }
+
+        private bool LoadArmorInventory()
+        {
+            int[] armorNumbers = Inventory.LoadInventoryNumbers();
+            if (armorNumbers.Length == 0)
+            {
+                return false;
+            }
+            else
+            {
+                if (armorNumbers[4] != 255)
+                {
+                    Debug.Log(armorNumbers[4]);
+                    skillItemNumberOne = armorNumbers[4];
+                    playerStats.SetSkillImg(skillList[skillItemNumberOne].SkillImage.sprite, 0);
+                }
+                if (armorNumbers[5] != 255)
+                {
+                    skillItemNumberTwo = armorNumbers[5];
+                    playerStats.SetSkillImg(skillList[skillItemNumberTwo].SkillImage.sprite, 1);
+                }
+                if (armorNumbers[6] != 255)
+                {
+                    skillItemNumberThree = armorNumbers[6];
+                    playerStats.SetSkillImg(skillList[skillItemNumberThree].SkillImage.sprite, 2);
+                }
+
+                return true;
+            }
+        }
+
         /// <summary>
         /// Корутина для загрузки умений
         /// </summary>
         /// <returns></returns>
         private IEnumerator<float> SkillCorutine()
         {
-            object[] tempObjects = Resources.LoadAll(skillPrefix);
+            string str = CheckEmptySkillLocalSave();
+            int[] elements = LibraryObjectsWorker.StringSplitter(str, '_');
+            object[] tempObjects = new object[elements.Length];
+            skillInventoryElements = new IRepositoryObject[tempObjects.Length];
+            for (int i = 0; i < elements.Length; i++)
+                tempObjects[i] = Resources.Load(skillPrefix + elements[i] + skillPostfix);
 
+            GameObject skillGamObj;
+            GameObject item;
+            ItemOrSkillButton button;
             for (int i = 0; i < tempObjects.Length; i++)
             {
-                GameObject skillGamObj = (GameObject)tempObjects[i];
+                skillGamObj = (GameObject)tempObjects[i];
+                item = Instantiate(itemSkill);
+                button = item.GetComponent<ItemOrSkillButton>();
+
                 skillList.Add(skillGamObj.GetComponent<ISkill>());
-                GameObject item = Instantiate(itemSkill);
-                ItemOrSkillButton button = item.GetComponent<ItemOrSkillButton>();
+                skillInventoryElements[i] = button;
+
                 button.SetItemSkillsCraft(this);
+                button.SetShop(shop);
                 button.SetNumber(i);
+
                 button.NameSkill.text = skillList[i].SkillName;
-                button.TutorialSkill.text = skillList[i].SkillTutorial;
                 button.SetImage(skillList[i].SkillImage.sprite);
+                button.TutorialSkill = skillList[i].SkillTutorial;
+                button.MoneyCost.text = (skillList[i].MoneyCost / 4).ToString(); ;
+
                 item.transform.SetParent(skillsRepository.transform, false);
             }
             scrollRectSkillRepository =
                 skillsRepository.transform.parent.GetComponent<ScrollRect>();
+
+            while (!LoadArmorInventory())
+            {
+                yield return Timing.WaitForSeconds(0.5f);
+            }
             yield return Timing.WaitForSeconds(0);
         }
 
@@ -350,13 +452,16 @@ namespace CraftSystem
             for (int i = 0; i < count; i++)
             {
                 GameObject itemGamObj = itemArray[i];
-                itemList.Add(itemGamObj.GetComponent<IItem>());
                 GameObject item = Instantiate(itemItm);
                 ItemOrSkillButton button = item.GetComponent<ItemOrSkillButton>();
+
+                itemList.Add(itemGamObj.GetComponent<IItem>());
+
                 button.SetItemSkillsCraft(this);
                 button.SetNumber(i);
+
                 button.NameSkill.text = itemList[i].ItemName;
-                button.TutorialSkill.text = itemList[i].ItemTutorial;
+                button.TutorialSkill = itemList[i].ItemTutorial;
                 button.SetImage(itemList[i].ItemImage.sprite);
                 item.transform.SetParent(itemRepository.transform, false);
             }

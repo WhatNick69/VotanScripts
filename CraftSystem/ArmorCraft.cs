@@ -37,10 +37,6 @@ namespace CraftSystem
 		GameObject shieldWindow;
 		[SerializeField]
 		GameObject shieldUpadateButton;
-		[SerializeField]
-		GameObject upadatePanel;
-		[SerializeField]
-		GameObject updateButton;
 
 		private GameObject cuirass;
 		private GameObject helmet;
@@ -73,8 +69,7 @@ namespace CraftSystem
 
         ArmorPrefabs AP;
 		PlayerStats PStats;
-        WeaponCraft WC;
-        [SerializeField]
+        Inventory inventory;
         Shop shop;
 
         ScrollRect scrollRectHelmetRepository;
@@ -102,7 +97,10 @@ namespace CraftSystem
                 helmetItemNumber = value;
 				PStats.HelmetArmor = helmetList[value].ArmoryValue;
 				PStats.HelmetWeight = helmetList[value].WeightArmory;
-			}
+                PStats.NewStatsForHelmet();
+
+                Inventory.SaveInventoryNumber(0, helmetItemNumber);
+            }
         }
 
         public int CuirassItemNumber
@@ -117,7 +115,10 @@ namespace CraftSystem
                 cuirassItemNumber = value;
 				PStats.CuirassArmor = cuirassList[value].ArmoryValue;
 				PStats.CuirassWeight = cuirassList[value].WeightArmory;
-			}
+                PStats.NewStatsForCuirass();
+
+                Inventory.SaveInventoryNumber(2, helmetItemNumber);
+            }
         }
 
         public int ShieldItemNumber
@@ -132,7 +133,10 @@ namespace CraftSystem
                 shieldItemNumber = value;
 				PStats.ShieldArmor = shieldList[value].ArmoryValue;
 				PStats.ShieldWeight = shieldList[value].WeightArmory;
-			}
+                PStats.NewStatsForShield();
+
+                Inventory.SaveInventoryNumber(1, helmetItemNumber);
+            }
         }
 
         public int CuirassItemNumberTemp
@@ -193,26 +197,29 @@ namespace CraftSystem
         /// <summary>
         /// ======================= Инициализация =======================
         /// </summary>
-        private void Awake()
+        private void Start()
         {
             PStats = GetComponent<PlayerStats>();
-            WC = GetComponent<WeaponCraft>();
+            inventory = GetComponent<Inventory>();
+            shop = GetComponent<Shop>();
 
             cuirassList = new List<PartArmoryInformation>();
             helmetList = new List<PartArmoryInformation>();
             shieldList = new List<PartArmoryInformation>();
+
+            LoadArmorInventory();
 
             Timing.RunCoroutine(ShieldCorutine());
             Timing.RunCoroutine(HelmetCorutine());
             Timing.RunCoroutine(CuirassCorutine());
         }
 
-        /// <summary>
-        /// Проверка
-        /// </summary>
-        private void FixedUpdate()
+        private void LoadArmorInventory()
         {
-            CheckScroll();
+            int[] armorNumbers = Inventory.LoadInventoryNumbers();
+            helmetItemNumber = armorNumbers[0];
+            shieldItemNumber = armorNumbers[1];
+            cuirassItemNumber = armorNumbers[2];
         }
 
         /// <summary>
@@ -294,53 +301,79 @@ namespace CraftSystem
         /// по центру окна прокрутки (определяется предыдущими проверками)
         /// - В самом кенце сохраняется позиция ленты, для проверки в следющем кадре 1го условия
         /// </summary>
-        private void CheckScroll()
+        public void CheckCuirassScroll()
         {
-            if (normPosCuirass != scrollRectCuirasseRepository.horizontalNormalizedPosition ||
-                normPosHelmet != scrollRectHelmetRepository.horizontalNormalizedPosition ||
-                normPosShield != scrollRectShieldRepository.horizontalNormalizedPosition)
+            if (normPosCuirass != scrollRectCuirasseRepository.horizontalNormalizedPosition)
             {
                 if (cuirassItemNumber !=
-                    Mathf.Round(scrollRectCuirasseRepository.horizontalNormalizedPosition * (cuirassList.Count - 1)) 
-                    || helmetItemNumber != Mathf.Round(scrollRectHelmetRepository.horizontalNormalizedPosition 
-                    * (helmetList.Count - 1)) 
-                    || shieldItemNumber != Mathf.Round(scrollRectShieldRepository.horizontalNormalizedPosition 
-                    * (shieldList.Count - 1)))
+                    Mathf.Round(scrollRectCuirasseRepository.horizontalNormalizedPosition * (cuirassList.Count - 1)))
                 {
                     intemNumbCuirass = Mathf.Round(scrollRectCuirasseRepository.horizontalNormalizedPosition 
                         * (cuirassList.Count - 1));
-                    intemNumbHelmet = Mathf.Round(scrollRectHelmetRepository.horizontalNormalizedPosition 
-                        * (helmetList.Count - 1));
-                    intemNumbShield = Mathf.Round(scrollRectShieldRepository.horizontalNormalizedPosition 
-                        * (shieldList.Count - 1));
                 }
                 else
                 {
                     intemNumbCuirass = cuirassItemNumber;
-                    intemNumbHelmet = HelmetItemNumber;
-                    intemNumbShield = shieldItemNumber;
                 }
 
-                if (intemNumbCuirass >= 0)
+                if (intemNumbCuirass >= 0 && intemNumbCuirass < cuirassList.Count)
                 {
                     PStats.NewCuirassArmor = cuirassList[(int)intemNumbCuirass].ArmoryValue;
                     PStats.NewCuirassWeight = cuirassList[(int)intemNumbCuirass].WeightArmory;
                 }
-                if (intemNumbHelmet >= 0)
+            }
+            PStats.NewStatsForCuirass();
+            normPosCuirass = scrollRectCuirasseRepository.horizontalNormalizedPosition;
+        }
+
+        public void CheckShieldScroll()
+        {
+            if (normPosShield != scrollRectShieldRepository.horizontalNormalizedPosition)
+            {
+                if (shieldItemNumber != Mathf.Round(scrollRectShieldRepository.horizontalNormalizedPosition
+                    * (shieldList.Count - 1)))
                 {
-                    PStats.NewHelmetArmor = helmetList[(int)intemNumbHelmet].ArmoryValue;
-                    PStats.NewHelmetWeight = helmetList[(int)intemNumbHelmet].WeightArmory;
+                    intemNumbShield = Mathf.Round(scrollRectShieldRepository.horizontalNormalizedPosition
+                        * (shieldList.Count - 1));
                 }
-                if (intemNumbShield >= 0)
+                else
+                {
+                    intemNumbShield = shieldItemNumber;
+                }
+
+                if (intemNumbShield >= 0 && intemNumbShield < shieldList.Count)
                 {
                     PStats.NewShieldArmor = shieldList[(int)intemNumbShield].ArmoryValue;
                     PStats.NewShieldWeight = shieldList[(int)intemNumbShield].WeightArmory;
                 }
             }
-
-            normPosCuirass = scrollRectCuirasseRepository.horizontalNormalizedPosition;
-            normPosHelmet = scrollRectHelmetRepository.horizontalNormalizedPosition;
+            PStats.NewStatsForShield();
             normPosShield = scrollRectShieldRepository.horizontalNormalizedPosition;
+        }
+
+        public void CheckHelmetScroll()
+        {
+            if (normPosHelmet != scrollRectHelmetRepository.horizontalNormalizedPosition)
+            {
+                if (helmetItemNumber != Mathf.Round(scrollRectHelmetRepository.horizontalNormalizedPosition
+                    * (helmetList.Count - 1)))
+                {
+                    intemNumbHelmet = Mathf.Round(scrollRectHelmetRepository.horizontalNormalizedPosition
+                        * (helmetList.Count - 1));
+                }
+                else
+                {
+                    intemNumbHelmet = HelmetItemNumber;
+                }
+
+                if (intemNumbHelmet >= 0 && intemNumbHelmet < helmetList.Count)
+                {
+                    PStats.NewHelmetArmor = helmetList[(int)intemNumbHelmet].ArmoryValue;
+                    PStats.NewHelmetWeight = helmetList[(int)intemNumbHelmet].WeightArmory;
+                }
+            }
+            PStats.NewStatsForHelmet();
+            normPosHelmet = scrollRectHelmetRepository.horizontalNormalizedPosition;
         }
 
         #region Работа с окнами
@@ -353,7 +386,8 @@ namespace CraftSystem
             cuirassWindow.SetActive(false);
             helmetWindow.SetActive(true);
 
-            WC.CloseAllWindows();
+            inventory.WeaponCraftComponent.CloseAllWindows();
+            inventory.ItemsSkillsCraft.CloseAllWindows();
 
             PStats.ArmorPage();
             scrollRectHelmetRepository.horizontalNormalizedPosition = 0;
@@ -368,7 +402,8 @@ namespace CraftSystem
             helmetWindow.SetActive(false);
             cuirassWindow.SetActive(true);
 
-            WC.CloseAllWindows();
+            inventory.WeaponCraftComponent.CloseAllWindows();
+            inventory.ItemsSkillsCraft.CloseAllWindows();
 
             PStats.ArmorPage();
             scrollRectCuirasseRepository.horizontalNormalizedPosition = 0;
@@ -383,7 +418,8 @@ namespace CraftSystem
             cuirassWindow.SetActive(false);
             shieldWindow.SetActive(true);
 
-            WC.CloseAllWindows();
+            inventory.WeaponCraftComponent.CloseAllWindows();
+            inventory.ItemsSkillsCraft.CloseAllWindows();
 
             PStats.ArmorPage();
             scrollRectShieldRepository.horizontalNormalizedPosition = 0;
@@ -406,21 +442,18 @@ namespace CraftSystem
         {
             if (cuirassWindow.activeSelf)
             {
-                upadatePanel.SetActive(true);
                 cuirassUpadateButton.SetActive(true);
                 helmetUpadateButton.SetActive(false);
                 shieldUpadateButton.SetActive(false);
             }
             else if (helmetWindow.activeSelf)
             {
-                upadatePanel.SetActive(true);
                 helmetUpadateButton.SetActive(true);
                 shieldUpadateButton.SetActive(false);
                 cuirassUpadateButton.SetActive(false);
             }
             else
             {
-                upadatePanel.SetActive(true);
                 shieldUpadateButton.SetActive(true);
                 cuirassUpadateButton.SetActive(false);
                 helmetUpadateButton.SetActive(false);
@@ -428,27 +461,14 @@ namespace CraftSystem
         }
 
         /// <summary>
-        /// Закрыть окно обновления окон
-        /// </summary>
-        public void CloseUpdateWindow()
-        {
-            upadatePanel.SetActive(false);
-        }
-
-        /// <summary>
         /// Обновляет окно шлемов. Вызывать при покупке
         /// </summary>
         public void RestartHelmetWindow()
         {
-            int k = LibraryObjectsWorker.StringSplitter
-                            (PlayerPrefs.GetString("helmetArray"), '_').Length - 1;
-            for (int i = 0; i < k; i++)
-            {
+            for (int i = 0; i < helmetRepository.transform.childCount; i++)
+                Destroy(helmetRepository.transform.GetChild(i).gameObject);
 
-                GameObject d = helmetRepository.transform.GetChild(0).gameObject;
-                helmetRepository.transform.GetChild(0).SetParent(null);
-                Destroy(d);
-            }
+            helmetList = new List<PartArmoryInformation>();
             Timing.RunCoroutine(HelmetCorutine());
         }
 
@@ -457,17 +477,10 @@ namespace CraftSystem
         /// </summary>
         public void RestartCuirassWindow()
         {
-            int k = LibraryObjectsWorker.StringSplitter
-                            (PlayerPrefs.GetString("cuirassArray"), '_').Length - 1;
-            Debug.Log(k);
-            for (int i = 0; i < k; i++)
-            {
-                Debug.Log(i);
-                GameObject d = cuirassRepository.transform.GetChild(0).gameObject;
-                cuirassRepository.transform.GetChild(0).SetParent(null);
-                Destroy(d);
-                cuirassList.RemoveAt(0);
-            }
+            for (int i = 0; i < cuirassRepository.transform.childCount; i++)
+                Destroy(cuirassRepository.transform.GetChild(i).gameObject);
+
+            cuirassList = new List<PartArmoryInformation>();
             Timing.RunCoroutine(CuirassCorutine());
         }
 
@@ -476,62 +489,11 @@ namespace CraftSystem
         /// </summary>
         public void RestartShieldWindow()
         {
-            int k = LibraryObjectsWorker.StringSplitter
-                            (PlayerPrefs.GetString("shieldArray"), '_').Length - 1;
+            for (int i = 0; i < shieldRepository.transform.childCount; i++)
+                Destroy(shieldRepository.transform.GetChild(i).gameObject);
 
-            for (int i = 0; i < k; i++)
-            {
-                GameObject d = shieldRepository.transform.GetChild(0).gameObject;
-                shieldRepository.transform.GetChild(0).SetParent(null);
-                Destroy(d);
-                shieldList.RemoveAt(0);
-            }
+            shieldList = new List<PartArmoryInformation>();
             Timing.RunCoroutine(ShieldCorutine());
-        }
-
-        /// <summary>
-        /// Улучшает выбранную кирасу
-        /// </summary>
-        public void UpdateCuirass()
-        {
-            int level = PlayerPrefs.GetInt("cuirass_" + cuirassItemNumber);
-            if (level < 3)
-            {
-                PlayerPrefs.SetInt(("cuirass_" + cuirassItemNumber), level + 1);
-                Debug.Log(level + 1);
-                PlayerPrefs.Save();
-            }
-            upadatePanel.SetActive(false);
-        }
-
-        /// <summary>
-        /// Улучшает выбранный щит
-        /// </summary>
-        public void UpdateShield()
-        {
-            int level = PlayerPrefs.GetInt("shield_" + shieldItemNumber);
-            if (level < 3)
-            {
-                PlayerPrefs.SetInt(("shield_" + shieldItemNumber), level + 1);
-                Debug.Log(level + 1);
-                PlayerPrefs.Save();
-            }
-            upadatePanel.SetActive(false);
-        }
-
-        /// <summary>
-        /// Улучшает выбранный шлем
-        /// </summary>
-        public void UpdateHelmet()
-        {
-            int level = PlayerPrefs.GetInt("helmet_" + helmetItemNumber);
-            if (level < 3)
-            {
-                PlayerPrefs.SetInt(("helmet_" + helmetItemNumber), level + 1);
-                Debug.Log(level + 1);
-                PlayerPrefs.Save();
-            }
-            upadatePanel.SetActive(false);
         }
         #endregion
 
@@ -550,11 +512,14 @@ namespace CraftSystem
             for (int i = 0; i < elements.Length; i++)
                 tempObjects[i] = Resources.Load(shieldPrefix + elements[i] + shieldPostfix);
 
+            GameObject gemGgamObj;
+            GameObject item;
+            ArmorButton button;
             for (int i = 0; i < tempObjects.Length; i++)
 			{
-				GameObject gemGgamObj = (GameObject)tempObjects[i];
-				GameObject item = Instantiate(itemArmor);
-				ArmorButton button = item.GetComponent<ArmorButton>();
+				gemGgamObj = (GameObject)tempObjects[i];
+				item = Instantiate(itemArmor);
+				button = item.GetComponent<ArmorButton>();
 
                 shieldList.Add(gemGgamObj.GetComponent<PartArmoryInformation>());
                 shieldInventoryElements[i] = button;
@@ -573,6 +538,10 @@ namespace CraftSystem
 			}
             scrollRectShieldRepository = 
                 shieldRepository.transform.parent.GetComponent<ScrollRect>();
+
+            shieldInventoryElements[shieldItemNumber].HighlightingControl(true, false);
+            PStats.ShieldArmor = shieldList[shieldItemNumber].ArmoryValue;
+            PStats.ShieldWeight = shieldList[shieldItemNumber].WeightArmory;
             yield return 0;
 		}
 
@@ -601,11 +570,14 @@ namespace CraftSystem
             for (int i = 0; i < elements.Length; i++)
                 tempObjects[i] = Resources.Load(cuirassPrefix + elements[i] + cuirassPostfix);
 
+            GameObject gemGgamObj;
+            GameObject item;
+            ArmorButton button;
             for (int i = 0; i < tempObjects.Length; i++)
 			{
-				GameObject gemGgamObj = (GameObject)tempObjects[i];
-				GameObject item = Instantiate(itemArmor);
-				ArmorButton button = item.GetComponent<ArmorButton>();
+				gemGgamObj = (GameObject)tempObjects[i];
+				item = Instantiate(itemArmor);
+				button = item.GetComponent<ArmorButton>();
 
                 cuirassInventoryElements[i] = button;
                 cuirassList.Add(gemGgamObj.GetComponent<PartArmoryInformation>());
@@ -624,6 +596,10 @@ namespace CraftSystem
 			}
             scrollRectCuirasseRepository =
                 cuirassRepository.transform.parent.GetComponent<ScrollRect>();
+
+            cuirassInventoryElements[cuirassItemNumber].HighlightingControl(true, false);
+            PStats.CuirassArmor = cuirassList[cuirassItemNumber].ArmoryValue;
+            PStats.CuirassWeight = cuirassList[cuirassItemNumber].WeightArmory;
             yield return 0;
 		}
 
@@ -652,11 +628,14 @@ namespace CraftSystem
             for (int i = 0; i < elements.Length; i++)
                 tempObjects[i] = Resources.Load(helmetPrefix + elements[i] + helmetPostfix);
 
-			for (int i = 0; i < tempObjects.Length; i++)
+            GameObject gemGgamObj;
+            GameObject item;
+            ArmorButton button;
+            for (int i = 0; i < tempObjects.Length; i++)
 			{
-				GameObject gemGgamObj = (GameObject)tempObjects[i];
-				GameObject item = Instantiate(itemArmor);
-				ArmorButton button = item.GetComponent<ArmorButton>();
+				gemGgamObj = (GameObject)tempObjects[i];
+				item = Instantiate(itemArmor);
+				button = item.GetComponent<ArmorButton>();
 
                 helmetInventoryElements[i] = button;
                 helmetList.Add(gemGgamObj.GetComponent<PartArmoryInformation>());
@@ -675,6 +654,10 @@ namespace CraftSystem
 			}
             scrollRectHelmetRepository =
                 helmetRepository.transform.parent.GetComponent<ScrollRect>();
+
+            helmetInventoryElements[helmetItemNumber].HighlightingControl(true, false);
+            PStats.HelmetArmor = helmetList[helmetItemNumber].ArmoryValue;
+            PStats.HelmetWeight = helmetList[helmetItemNumber].WeightArmory;
             yield return 0;
 		}
 

@@ -12,7 +12,7 @@ namespace CraftSystem
         private static bool onLoad;
         GameObject weapon;
 
-        private void Start()
+        private void Awake()
         {
             if (!onLoad)
             {

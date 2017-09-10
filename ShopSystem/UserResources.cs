@@ -16,6 +16,7 @@ namespace ShopSystem
         private static bool onLoad;
         public long money;
         public long gems;
+        public long experience; 
 
         private int gemsBonus;
         private int goldBonus;
@@ -109,6 +110,7 @@ namespace ShopSystem
 
             playerStats.RefreshUserGems(gems);
             playerStats.RefreshUserMoney(money);
+            playerStats.RefreshUserExp(experience);
         }
 
         /// <summary>
@@ -131,7 +133,7 @@ namespace ShopSystem
             string str = PlayerPrefs.GetString("playerResources");
             if (str == null || str == "")
             {
-                PlayerPrefs.SetString("playerResources", "500_0");
+                PlayerPrefs.SetString("playerResources", "5000_0_1");
                 LoadUserResources();
             }
             else
@@ -139,6 +141,7 @@ namespace ShopSystem
                 int[] resources = LibraryObjectsWorker.StringSplitter(str, '_');
                 money = resources[0];
                 gems = resources[1];
+                experience = resources[2];
             }
         }
 
@@ -147,11 +150,12 @@ namespace ShopSystem
         /// </summary>
         /// <param name="money"></param>
         /// <param name="gems"></param>
-        public void SaveUserResources(long money=0, long gems=0)
+        public void SaveUserResources(long money=0, long gems=0,long experience=0)
         {
             if (money > 0) this.money += money;
             if (gems > 0) this.gems += money;
-            PlayerPrefs.SetString("playerResources", (this.money+"_"+this.gems).ToString());
+            if (experience > 0) this.experience += experience;
+            PlayerPrefs.SetString("playerResources", (this.money+"_"+this.gems+"_"+this.experience).ToString());
         }
     }
 }

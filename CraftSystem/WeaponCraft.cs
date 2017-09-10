@@ -22,8 +22,6 @@ namespace CraftSystem
         private GameObject itemWeapon;
         [SerializeField]
 		GameObject weaponWindow;
-		[SerializeField]
-		GameObject weaponUpadateButton; // Отображать вместе с weaponWindow
 
 		private GameObject weapon;
 		private GameObject weaponGamObj;
@@ -34,9 +32,6 @@ namespace CraftSystem
 		private List<Weapon> weaponList;
         private IRepositoryObject[] weaponInventoryElements;
 
-        private GameObject[] weaponArray;
-		private int[] weaponStats;
-
 		public int weaponItemNumber;
         private int weaponItemNumberTemp = -1;
 
@@ -44,7 +39,7 @@ namespace CraftSystem
 		WeaponPrefabs WP;
         [SerializeField]
         Shop shop;
-        ArmorCraft AC;
+        Inventory inventory;
 		PlayerStats PStats;
 
         ScrollRect scrollRectWeaponRepository;
@@ -69,9 +64,7 @@ namespace CraftSystem
         #region Свойства
         public void CloseAllWindows()
 		{
-
 			weaponWindow.SetActive(false);
-			weaponUpadateButton.SetActive(false);
 		}
 
 		/// <summary>
@@ -80,41 +73,14 @@ namespace CraftSystem
 		public void WeaponWindow()
 		{
 			weaponWindow.SetActive(true);
-			weaponUpadateButton.SetActive(true);
 
-            AC.CloseAllWindows();
+            inventory.ArmorCraftComponent.CloseAllWindows();
+            inventory.ItemsSkillsCraft.CloseAllWindows();
 
             PStats.WeaponPage();
 			scrollRectWeaponRepository.horizontalNormalizedPosition = 0;
         }
 
-		/// <summary>
-		/// Вызывать для открытия окна со скилами
-		/// </summary>
-		public void SkillWindow()
-		{
-			weaponWindow.SetActive(false);
-
-            AC.CloseAllWindows();
-
-            weaponUpadateButton.SetActive(false);
-			PStats.SkillPage();
-			scrollRectWeaponRepository.horizontalNormalizedPosition = 0;
-		}
-
-		/// <summary>
-		/// Вызывать для открытия окна с итемами
-		/// </summary>
-		public void ItemWindow()
-		{
-			weaponWindow.SetActive(false);
-			weaponUpadateButton.SetActive(false);
-
-            AC.CloseAllWindows();
-
-            PStats.SkillPage();
-			scrollRectWeaponRepository.horizontalNormalizedPosition = 0;
-		}
 		/// <summary>
 		/// При экипировке элемента оружия, его характеристики
 		/// отправляются в таблицу
@@ -124,9 +90,16 @@ namespace CraftSystem
 		{
             MenuSoundManager.PlaySoundStatic(1);
             weaponItemNumber = x;
+
 			PStats.HeadDamage = weaponList[x].DamageBase;
 			PStats.CritChance = weaponList[x].CriticalChance;
-		}
+            PStats.GemPower = weaponList[x].GemPower;
+            PStats.InventoryImageGem.color = Shop.GetColorFromGemType(weaponList[x].DamageTypeGem);
+
+            PStats.NewStatsForWeapon();
+
+            Inventory.SaveInventoryNumber(3, weaponItemNumber);
+        }
 
         public void EquipWeapon()
         {
@@ -138,37 +111,15 @@ namespace CraftSystem
         }
 
 		/// <summary>
-		/// Улучшает выбранное оружие
-		/// </summary>
-		public void UpdateWeapon()
-		{
-			weaponStats = LibraryObjectsWorker.StringSplitter(PlayerPrefs.GetString("weapon_" + weaponItemNumber), '_');
-			if (weaponStats[0] < 3)
-			{
-				weaponStats[0] = weaponStats[0] + 1;
-				PlayerPrefs.SetString("weapon_" + weaponItemNumber, 
-					(weaponStats[0] + "_" + weaponStats[1] + "_" + weaponStats[2]).ToString());
-				PlayerPrefs.Save();
-			}
-		}
-
-		/// <summary>
 		/// Обновляет окно оружия. Вызывать при покупке
 		/// </summary>
 		public void RestartWeaponWindow()
 		{
-			int k = LibraryObjectsWorker.StringSplitter
-				(PlayerPrefs.GetString("weaponArray"), '_').Length - 1;
+            for (int i = 0; i < weaponRepository.transform.childCount; i++)
+                Destroy(weaponRepository.transform.GetChild(i).gameObject);
 
-			for (int i = 0; i < k; i++)
-			{
-				GameObject d = weaponRepository.transform.GetChild(0).gameObject;
-				weaponRepository.transform.GetChild(0).SetParent(null);
-				Destroy(d);
-				weaponArray[i] = null;
-				weaponList.RemoveAt(0);
-			}
-			Timing.RunCoroutine(WeaponCorutine());
+            weaponList = new List<Weapon>();
+            Timing.RunCoroutine(WeaponCorutine());
 		}
 
 		/// <summary>
@@ -180,7 +131,7 @@ namespace CraftSystem
 		/// по центру окна прокрутки (определяется предыдущими проверками)
 		/// - В самом кенце сохраняется позиция ленты, для проверки в следющем кадре 1го условия
 		/// </summary>
-		private void CheckScroll()
+		public void CheckWeaponScroll()
 		{
 			if (normPosWeapon != scrollRectWeaponRepository.horizontalNormalizedPosition)
 			{
@@ -193,14 +144,16 @@ namespace CraftSystem
 					intemNumbWeapon = weaponItemNumber;
 				}
 
-                if (intemNumbWeapon >= 0)
+                if (intemNumbWeapon >= 0 && intemNumbWeapon < weaponList.Count)
                 {
                     PStats.NewHeadDamage = weaponList[(int)intemNumbWeapon].DamageBase;
                     PStats.NewCritChance = weaponList[(int)intemNumbWeapon].CriticalChance;
+                    PStats.NewGemPower = weaponList[(int)intemNumbWeapon].GemPower;
+                    PStats.InventoryImageGem.color = Shop.GetColorFromGemType(weaponList[(int)intemNumbWeapon].DamageTypeGem);
                 }
 			}
 			normPosWeapon = scrollRectWeaponRepository.horizontalNormalizedPosition;
-			PStats.NewStats();
+			PStats.NewStatsForWeapon();
 		}
 		#endregion
 
@@ -212,32 +165,40 @@ namespace CraftSystem
             if (WP == null)
                 WP = GameObject.Find("GetPrefabs").GetComponent<WeaponPrefabs>();
 
-			WP.Weapon = weaponArray[weaponItemNumber];
+			WP.Weapon = weaponList[weaponItemNumber].gameObject;
 		}
 
-		/// <summary>
+        /// <summary>
         /// Инициализация
         /// </summary>
-        private void Awake() // ____________start__________
-		{
-			PStats = GetComponent<PlayerStats>();
-            AC = GetComponent<ArmorCraft>();
+        private void Start() // ____________start__________
+        {
+            PStats = GetComponent<PlayerStats>();
+            inventory = GetComponent<Inventory>();
 
-			weaponList = new List<Weapon>();
+            weaponList = new List<Weapon>();
 
-			weaponArray = new GameObject[Resources.LoadAll("Prefabs/Weapons").Length];
-			weaponStats = new int[3];
+            Timing.RunCoroutine(WeaponCorutine());
+        }
 
-			Timing.RunCoroutine(WeaponCorutine());
-		}
-
-		/// <summary>
-        /// Обновление списков
-        /// </summary>
-        private void FixedUpdate()
-		{
-			CheckScroll();
-		}
+        private bool LoadArmorInventory()
+        {
+            int[] armorNumbers = Inventory.LoadInventoryNumbers();
+            if (armorNumbers.Length == 0)
+            {
+                return false;
+            }
+            else
+            {
+                weaponItemNumber = armorNumbers[3];
+                weaponInventoryElements[weaponItemNumber].HighlightingControl(true, false);
+                PStats.HeadDamage = weaponList[weaponItemNumber].DamageBase;
+                PStats.CritChance = weaponList[weaponItemNumber].CriticalChance;
+                PStats.GemPower = weaponList[weaponItemNumber].GemPower;
+                PStats.InventoryImageGem.color = Shop.GetColorFromGemType(weaponList[weaponItemNumber].DamageTypeGem);
+                return true;
+            }
+        }
 
         /// <summary>
         /// Отключить подсветку у элементов брони
@@ -262,13 +223,14 @@ namespace CraftSystem
             for (int i = 0; i < elements.Length; i++)
                 tempObjects[i] = Resources.Load(weaponPrefix + elements[i] + weaponPostfix);
 
+            GameObject item;
+            WeaponButton button;
             for (int i = 0; i < elements.Length; i++)
 			{
 				weaponGamObj = (GameObject)tempObjects[i];
-				GameObject item = Instantiate(itemWeapon);
-				WeaponButton button = item.GetComponent<WeaponButton>();
+				item = Instantiate(itemWeapon);
+				button = item.GetComponent<WeaponButton>();
 
-                weaponArray[i] = weaponGamObj;
                 weaponInventoryElements[i] = button;
                 weaponList.Add(weaponGamObj.GetComponent<Weapon>());
 
@@ -277,7 +239,7 @@ namespace CraftSystem
                 button.SetNumber(i);
 
                 button.SetName(weaponList[i].HeadName);
-                button.SetMoneyCost(weaponList[i].MoneyCost);
+                button.SetMoneyCost(weaponList[i].MoneyCost /4);
                 button.SetLogo (weaponList[i].ItemImage);
 
 				item.transform.SetParent(weaponRepository.transform, false);
@@ -285,6 +247,12 @@ namespace CraftSystem
 
             scrollRectWeaponRepository =
                 weaponRepository.transform.parent.GetComponent<ScrollRect>();
+
+            while (!LoadArmorInventory())
+            {
+                yield return Timing.WaitForSeconds(0.5f);
+            }
+
             yield return Timing.WaitForSeconds(0);
         }
 

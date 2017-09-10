@@ -146,7 +146,7 @@ namespace PlayerBehaviour
 		private WeaponType weaponType;
 		[SerializeField, Tooltip("Скорость вращения"), Range(10, 100f)]
 		private float spinSpeed;
-		[SerializeField, Tooltip("Сила камня"), Range(1, 100f)]
+		[SerializeField, Tooltip("Сила камня"), Range(0, 100f)]
 		private float gemPower;
 		[SerializeField, Tooltip("Временная защита")]
 		private float tempDefence;
@@ -238,8 +238,6 @@ namespace PlayerBehaviour
 			{
 				if (value > 100)
 					value = 100;
-				else if (value < 1)
-					value = 1;
 				gemPower = value;
 			}
 		}
