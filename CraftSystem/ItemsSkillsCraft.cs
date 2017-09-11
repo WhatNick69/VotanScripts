@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using VotanInterfaces;
 using VotanUI;
-using System;
 using VotanLibraries;
 
 namespace CraftSystem
@@ -241,6 +240,7 @@ namespace CraftSystem
                 DeleteItemFromCart(itemList[itemItemNumberOne]);
             itemItemNumberOne = -1;
             playerStats.SetItemImg(0);
+            CheckMoney();
         }
 
         /// <summary>
@@ -252,6 +252,7 @@ namespace CraftSystem
                 DeleteItemFromCart(itemList[itemItemNumberTwo]);
             itemItemNumberTwo = -1;
             playerStats.SetItemImg(1);
+            CheckMoney();
         }
 
         /// <summary>
@@ -263,6 +264,7 @@ namespace CraftSystem
                 DeleteItemFromCart(itemList[itemItemNumberThree]);
             itemItemNumberThree = -1;
             playerStats.SetItemImg(2);
+            CheckMoney();
         }
 
         /// <summary>
@@ -295,24 +297,52 @@ namespace CraftSystem
         {
             tempPrice += item.PriceGold;
             textCost.text = "Cost: " + tempPrice;
-            if (userResources.Money - tempPrice < 0)
+            CheckMoney();
+        }
+
+        /// <summary>
+        /// Проверить деньги пользователя
+        /// </summary>
+        private void CheckMoney()
+        {
+            if (!CheckEmptyItems())
             {
-                playButton.interactable = false;
-                imagePlayButton.color = 
-                textCost.color = Color.red;
-                imagePlayButton.color = nonActiveImageColorButton;
-            }
-            else
-            {
-                if (textCost.color==Color.red)
+                if (userResources.Money - tempPrice < 0)
+                {
+                    playButton.interactable = false;
+                    textCost.color = Color.red;
+                    imagePlayButton.color = nonActiveImageColorButton;
+                }
+                else
                 {
                     textCost.color = originalColor;
                     playButton.interactable = true;
                     imagePlayButton.color = Color.black;
                 }
             }
+            else
+            {
+                textCost.color = originalColor;
+                playButton.interactable = true;
+                imagePlayButton.color = Color.black;
+            }
         }
 
+        /// <summary>
+        /// Проверить, все ли предметы пустые
+        /// </summary>
+        /// <returns></returns>
+        private bool CheckEmptyItems()
+        {
+            return itemItemNumberOne == -1 
+                && itemItemNumberTwo == -1 
+                && itemItemNumberThree == -1 
+                    ? true : false;
+        } 
+
+        /// <summary>
+        /// Отключить все элементы инвентаря с подсветкой
+        /// </summary>
         public void DisableListHighlightingInventory()
         {
             for (int i = 0; i < skillInventoryElements.Length; i++)
@@ -327,24 +357,13 @@ namespace CraftSystem
         {
             tempPrice -= item.PriceGold;
             textCost.text = "Cost: " + tempPrice;
-            if (userResources.Money - tempPrice < 0)
-            {
-                playButton.interactable = false;
-                imagePlayButton.color =
-                textCost.color = Color.red;
-                imagePlayButton.color = nonActiveImageColorButton;
-            }
-            else
-            {
-                if (textCost.color == Color.red)
-                {
-                    textCost.color = originalColor;
-                    playButton.interactable = true;
-                    imagePlayButton.color = Color.black;
-                }
-            }
+            CheckMoney();
         }
 
+        /// <summary>
+        /// Проверить сохранение умений на пустоту
+        /// </summary>
+        /// <returns></returns>
         private string CheckEmptySkillLocalSave()
         {
             string str = PlayerPrefs.GetString("skillArray");
@@ -356,6 +375,9 @@ namespace CraftSystem
             return str;
         }
 
+        /// <summary>
+        /// Обновить окно умений
+        /// </summary>
         public void RestartSkillWindow()
         {
             for (int i = 0; i < skillsRepository.transform.childCount; i++)
@@ -365,6 +387,10 @@ namespace CraftSystem
             Timing.RunCoroutine(SkillCorutine());
         }
 
+        /// <summary>
+        /// Загрузить окно инвентаря
+        /// </summary>
+        /// <returns></returns>
         private bool LoadArmorInventory()
         {
             int[] armorNumbers = Inventory.LoadInventoryNumbers();
@@ -462,6 +488,8 @@ namespace CraftSystem
 
                 button.NameSkill.text = itemList[i].ItemName;
                 button.TutorialSkill = itemList[i].ItemTutorial;
+                button.TutorialText.text = button.TutorialSkill;
+                button.MoneyCost.text = itemList[i].PriceGold.ToString();
                 button.SetImage(itemList[i].ItemImage.sprite);
                 item.transform.SetParent(itemRepository.transform, false);
             }

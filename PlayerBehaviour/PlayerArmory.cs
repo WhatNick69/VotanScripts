@@ -204,7 +204,6 @@ namespace PlayerBehaviour
         {
             if (healthValue > 0)
             {
-                Handheld.Vibrate();
                 healthValue += value;
                 RefreshHealthCircle();
             }

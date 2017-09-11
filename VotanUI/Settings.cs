@@ -4,7 +4,7 @@ using UnityEngine.UI;
 namespace VotanUI
 {
     /// <summary>
-    /// Настройки
+    /// Настройки. Пока что только звук.
     /// </summary>
     public class Settings 
         : MonoBehaviour
@@ -13,9 +13,9 @@ namespace VotanUI
         private Slider slider;
 
         /// <summary>
-        /// Обновление с заданной частотой
+        /// Изменить громкость
         /// </summary>
-        private void FixedUpdate()
+        public void ChangeVolume()
         {
             AudioListener.volume = slider.value;
         }

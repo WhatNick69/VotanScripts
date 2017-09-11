@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using VotanLibraries;
 using ShopSystem;
 using VotanUI;
-using System;
 
 namespace CraftSystem
 {
@@ -214,6 +213,9 @@ namespace CraftSystem
             Timing.RunCoroutine(CuirassCorutine());
         }
 
+        /// <summary>
+        /// Загрузить экипированный инвентарь брони
+        /// </summary>
         private void LoadArmorInventory()
         {
             int[] armorNumbers = Inventory.LoadInventoryNumbers();
@@ -291,15 +293,9 @@ namespace CraftSystem
             }
         }
 
+
         /// <summary>
-        /// Метод проверяет: 
-        /// 1. Двинул ли игрок ленту с элементаи брони
-        /// 2. Сменился элемент на следующий или нет? Если да, то меняет номер элемента
-        /// кторый отправится в таблицу с характеристиками
-        /// 
-        /// - После этого, в таблицу отправляются значения элементов, которые находятся
-        /// по центру окна прокрутки (определяется предыдущими проверками)
-        /// - В самом кенце сохраняется позиция ленты, для проверки в следющем кадре 1го условия
+        /// Проверка предметов в инвентаре кирасс
         /// </summary>
         public void CheckCuirassScroll()
         {
@@ -326,6 +322,9 @@ namespace CraftSystem
             normPosCuirass = scrollRectCuirasseRepository.horizontalNormalizedPosition;
         }
 
+        /// <summary>
+        /// Проверка предметов в инвентаре щитов
+        /// </summary>
         public void CheckShieldScroll()
         {
             if (normPosShield != scrollRectShieldRepository.horizontalNormalizedPosition)
@@ -351,6 +350,9 @@ namespace CraftSystem
             normPosShield = scrollRectShieldRepository.horizontalNormalizedPosition;
         }
 
+        /// <summary>
+        /// Проверка предметов в инвентаре шлемов
+        /// </summary>
         public void CheckHelmetScroll()
         {
             if (normPosHelmet != scrollRectHelmetRepository.horizontalNormalizedPosition)
@@ -545,6 +547,10 @@ namespace CraftSystem
             yield return 0;
 		}
 
+        /// <summary>
+        /// Проверить сохранение щитов на пустоту
+        /// </summary>
+        /// <returns></returns>
         private string CheckEmptyShieldLocalSave()
         {
             string str = PlayerPrefs.GetString("shieldArray");
@@ -603,6 +609,10 @@ namespace CraftSystem
             yield return 0;
 		}
 
+        /// <summary>
+        /// Проверить сохранение кирасс на пустоту
+        /// </summary>
+        /// <returns></returns>
         private string CheckEmptyCuirassLocalSave()
         {
             string str = PlayerPrefs.GetString("cuirassArray");
@@ -661,6 +671,10 @@ namespace CraftSystem
             yield return 0;
 		}
 
+        /// <summary>
+        /// Проверить сохранение шлемов на пустоту
+        /// </summary>
+        /// <returns></returns>
         private string CheckEmptyHelmetLocalSave()
         {
             string str = PlayerPrefs.GetString("helmetArray");

@@ -2,10 +2,14 @@
 using PlayerBehaviour;
 using UnityEngine;
 using UnityEngine.UI;
-using ShopSystem;
 
 namespace CraftSystem
 {
+    /// <summary>
+    /// Менеджер всех значений, которые касаются игрока. 
+    /// Позволяет обновлять значения жизней, показывает деньги, гемы,
+    /// а также все параметры оружия и брони в инвентаре игрока
+    /// </summary>
     public class PlayerStats 
         : MonoBehaviour
     {
@@ -322,6 +326,9 @@ namespace CraftSystem
             InitialisationComponents();
         }
 
+        /// <summary>
+        /// Инициализация компонентов
+        /// </summary>
         private void InitialisationComponents()
         {
             skillOneImg = skillOne.GetComponent<Image>();
@@ -334,8 +341,7 @@ namespace CraftSystem
         }
 
         /// <summary>
-        /// Обновляет значения в таблице характеристик 
-        /// оружия и брони
+        /// Обновляет все значения в таблице характеристик 
         /// </summary>
         public void NewStats()
 		{
@@ -466,6 +472,9 @@ namespace CraftSystem
             }
 		}
 
+        /// <summary>
+        /// Обновляет значения оружия в таблице характеристик 
+        /// </summary>
         public void NewStatsForWeapon()
         {
             damageText.text = headDamage.ToString();
@@ -515,6 +524,9 @@ namespace CraftSystem
             }
         }
 
+        /// <summary>
+        /// Обновляет значения шлемов в таблице характеристик 
+        /// </summary>
         public void NewStatsForHelmet()
         {
             armorText.text = (cuirassArmor + shieldArmor + helmetArmor).ToString();
@@ -547,6 +559,9 @@ namespace CraftSystem
             }
         }
 
+        /// <summary>
+        /// Обновляет значения кирасс в таблице характеристик 
+        /// </summary>
         public void NewStatsForCuirass()
         {
             armorText.text = (cuirassArmor + shieldArmor + helmetArmor).ToString();
@@ -579,6 +594,9 @@ namespace CraftSystem
             }
         }
 
+        /// <summary>
+        /// Обновляет значения щитов в таблице характеристик 
+        /// </summary>
         public void NewStatsForShield()
         {
             armorText.text = (cuirassArmor + shieldArmor + helmetArmor).ToString();
@@ -622,12 +640,6 @@ namespace CraftSystem
             NewCrit.SetActive(false);
             newWeight.SetActive(false);
             NewStats();
-            //itemOne.SetActive(false);
-            //itemTwo.SetActive(false);
-            //itemThree.SetActive(false);
-            //skillOne.SetActive(false);
-            //skillTwo.SetActive(false);
-            //skillThree.SetActive(false);
         }
 
         /// <summary>
@@ -657,9 +669,6 @@ namespace CraftSystem
         public void SkillPage()
         {
             PredPageLoad();
-            //skillOne.SetActive(true);
-            //skillTwo.SetActive(true);
-            //skillThree.SetActive(true);
         }
 
         /// <summary>
@@ -668,11 +677,12 @@ namespace CraftSystem
         public void ItemPage()
         {
             PredPageLoad();
-            //itemOne.SetActive(true);
-            //itemTwo.SetActive(true);
-            //itemThree.SetActive(true);
         }
 
+        /// <summary>
+        /// Обновить деньги пользователя
+        /// </summary>
+        /// <param name="money"></param>
         public void RefreshUserMoney(long money)
         {
             playerMoney1.text = money.ToString();
@@ -681,6 +691,10 @@ namespace CraftSystem
             playerMoney4.text = money.ToString();
         }
 
+        /// <summary>
+        /// Обновить гемы пользователя
+        /// </summary>
+        /// <param name="gems"></param>
         public void RefreshUserGems(long gems)
         {
             playerGems1.text = gems.ToString();
@@ -689,19 +703,33 @@ namespace CraftSystem
             playerGems4.text = gems.ToString();
         }
 
-        public void RefreshUserExp(long experience)
+        /// <summary>
+        /// Обновить опыт пользователя
+        /// </summary>
+        /// <param name="experience"></param>
+        public int RefreshUserExpAndReturnHP(long experience)
         {
             experienceText.text = experience.ToString();
-            LevelToHP(LevelFromExperience(Convert.ToInt32(experienceText.text)));
+            return LevelToHP(LevelFromExperience(Convert.ToInt32(experienceText.text)));      
         }
 
-        private void LevelToHP(int level)
+        /// <summary>
+        /// Перевести уровень в жизни
+        /// </summary>
+        /// <param name="level"></param>
+        private int LevelToHP(int level)
         {
             leveTextl.text = level.ToString();
             int hp = (level * 5) + 100;
             hpText.text = hp.ToString();
+            return hp;
         }
 
+        /// <summary>
+        /// Перевести опыт в уровень
+        /// </summary>
+        /// <param name="userExperience"></param>
+        /// <returns></returns>
         private int LevelFromExperience(float userExperience)
         {
             float experience = 100;
@@ -718,7 +746,6 @@ namespace CraftSystem
                     level++;
                 }
                 experience = Mathf.Ceil(experience/100*1.2f) * 100;
-                Debug.Log(experience);
             }
             return level;
         }

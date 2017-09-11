@@ -7,7 +7,6 @@ using UnityEngine.UI;
 using VotanInterfaces;
 using VotanLibraries;
 using VotanUI;
-using System;
 
 namespace ShopSystem
 {
@@ -310,6 +309,9 @@ namespace ShopSystem
             UnshowAllUIElementsInShop();
         }
 
+        /// <summary>
+        /// Окно умений
+        /// </summary>
         public void SkillWindow()
         {
             buttonsPanelStoreWeapons.SetActive(true);
@@ -320,6 +322,11 @@ namespace ShopSystem
             UnshowAllUIElementsInShop();
         }
 
+        /// <summary>
+        /// Получить цвет гема из его типа
+        /// </summary>
+        /// <param name="gemType"></param>
+        /// <returns></returns>
         public static Color GetColorFromGemType(GemType gemType)
         {
             switch (gemType)
@@ -500,6 +507,9 @@ namespace ShopSystem
             }
         }
 
+        /// <summary>
+        /// Купить оружие/броню/умений в магазине
+        /// </summary>
         public void BuyStuffInShop()
         {
             switch (itemToBuyType)
@@ -540,6 +550,10 @@ namespace ShopSystem
             }
         }
 
+        /// <summary>
+        /// Купить умение
+        /// </summary>
+        /// <returns></returns>
         private bool BuySkill() // покупка
         {
             string str = PlayerPrefs.GetString("skillArray");
@@ -552,6 +566,10 @@ namespace ShopSystem
             return true;
         }
 
+        /// <summary>
+        /// Проверить, можем ли мы купить предмет
+        /// </summary>
+        /// <returns></returns>
         public bool CheckIfWeMayToBuyItem()
         {
             string str;
@@ -852,7 +870,7 @@ namespace ShopSystem
 
         #region Корутины
         /// <summary>
-        /// Создает и настраивает кнопу в ленте - ШИТ
+        /// Загрузить щиты в магазин
         /// </summary>
         /// <returns></returns>
         private IEnumerator<float> ShieldCorutine()
@@ -890,11 +908,11 @@ namespace ShopSystem
 			yield return 0;
 		}
 
-		/// <summary>
-		/// Создает и настраивает кнопу в ленте - КИРАСА
-		/// </summary>
-		/// <returns></returns>
-		private IEnumerator<float> CuirassCorutine()
+        /// <summary>
+        /// Загрузить кирасы в магазин
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator<float> CuirassCorutine()
 		{
             object[] tempObjects = new object[Resources.LoadAll(cuirassPrefix).Length];
             for (int i = 0; i < tempObjects.Length; i++)
@@ -929,11 +947,11 @@ namespace ShopSystem
 			yield return 0;
 		}
 
-		/// <summary>
-		/// Создает и настраивает кнопу в ленте - ШЛЕМ
-		/// </summary>
-		/// <returns></returns>
-		private IEnumerator<float> HelmetCorutine()
+        /// <summary>
+        /// Загрузить шлемы в магазин
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator<float> HelmetCorutine()
 		{
             object[] tempObjects = new object[Resources.LoadAll(helmetPrefix).Length];
             for (int i = 0; i < tempObjects.Length; i++)
@@ -969,11 +987,11 @@ namespace ShopSystem
 			yield return 0;
 		}
 
-		/// <summary>
-		/// Запускать для отображения элементов оружия в ленте
-		/// </summary>
-		/// <returns></returns>
-		private IEnumerator<float> WeaponCorutine()
+        /// <summary>
+        /// Загрузить оружие в магазин
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator<float> WeaponCorutine()
 		{
             object[] tempObjects = new object[Resources.LoadAll(weaponPrefix).Length];
             for (int i = 0; i < tempObjects.Length; i++)
@@ -1007,6 +1025,10 @@ namespace ShopSystem
 			yield return 0;
 		}
 
+        /// <summary>
+        /// Загрузить умения в магазин
+        /// </summary>
+        /// <returns></returns>
         private IEnumerator<float> SkillCoroutine()
         {
             object[] tempObjects = new object[Resources.LoadAll(skillPrefix).Length];

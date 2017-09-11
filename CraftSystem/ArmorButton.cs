@@ -140,6 +140,9 @@ namespace CraftSystem
             }
         }
 
+        /// <summary>
+        /// Задать значение кнопки брони
+        /// </summary>
         public void SetNumberTemp()
         {
             switch (armoryClass)

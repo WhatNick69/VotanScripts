@@ -28,6 +28,10 @@ namespace VotanUI
             }
         }
 
+        /// <summary>
+        /// Проиграть статичное аудио (?)
+        /// </summary>
+        /// <param name="state"></param>
         public static void PlaySoundStatic(int state = 0)
         {
             audioSource.clip = audioUI[state];

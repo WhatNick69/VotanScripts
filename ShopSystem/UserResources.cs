@@ -20,6 +20,8 @@ namespace ShopSystem
 
         private int gemsBonus;
         private int goldBonus;
+
+        private int hpPoints;
         #endregion
 
         #region Свойства
@@ -79,6 +81,19 @@ namespace ShopSystem
                 goldBonus = value;
             }
         }
+
+        public int HpPoints
+        {
+            get
+            {
+                return hpPoints;
+            }
+
+            set
+            {
+                hpPoints = value;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -110,7 +125,7 @@ namespace ShopSystem
 
             playerStats.RefreshUserGems(gems);
             playerStats.RefreshUserMoney(money);
-            playerStats.RefreshUserExp(experience);
+            hpPoints =  playerStats.RefreshUserExpAndReturnHP(experience);
         }
 
         /// <summary>
@@ -133,7 +148,7 @@ namespace ShopSystem
             string str = PlayerPrefs.GetString("playerResources");
             if (str == null || str == "")
             {
-                PlayerPrefs.SetString("playerResources", "5000_0_1");
+                PlayerPrefs.SetString("playerResources", "500_0_1");
                 LoadUserResources();
             }
             else

@@ -107,6 +107,10 @@ namespace CraftSystem
         }
 
 
+        /// <summary>
+        /// Загрузить все номера экипированных предметов игроком
+        /// </summary>
+        /// <returns></returns>
         public static int[] LoadInventoryNumbers()
         {
             string str = PlayerPrefs.GetString("inventoryNumbers");
@@ -118,6 +122,11 @@ namespace CraftSystem
             return LibraryObjectsWorker.StringSplitter(str, '_');
         }
 
+        /// <summary>
+        /// Сохранить номер предмета, экипированного игроком в инвентаре
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="number"></param>
         public static void SaveInventoryNumber(int position, int number)
         {
             string str = PlayerPrefs.GetString("inventoryNumbers");

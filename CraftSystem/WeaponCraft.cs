@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using MovementEffects;
 using VotanUI;
 using UnityEngine.UI;
-using VotanInterfaces;
 using VotanLibraries;
 using ShopSystem;
 
@@ -101,6 +100,9 @@ namespace CraftSystem
             Inventory.SaveInventoryNumber(3, weaponItemNumber);
         }
 
+        /// <summary>
+        /// Экипировать оружие
+        /// </summary>
         public void EquipWeapon()
         {
             if (weaponItemNumberTemp != -1)
@@ -181,6 +183,10 @@ namespace CraftSystem
             Timing.RunCoroutine(WeaponCorutine());
         }
 
+        /// <summary>
+        /// Загрузить экипированный инвентарь оружия
+        /// </summary>
+        /// <returns></returns>
         private bool LoadArmorInventory()
         {
             int[] armorNumbers = Inventory.LoadInventoryNumbers();
@@ -201,7 +207,7 @@ namespace CraftSystem
         }
 
         /// <summary>
-        /// Отключить подсветку у элементов брони
+        /// Отключить подсветку у элементов оружия
         /// </summary>
         /// <param name="numberItemType"></param>
         public void DisableListHighlightingInventory()
@@ -256,6 +262,10 @@ namespace CraftSystem
             yield return Timing.WaitForSeconds(0);
         }
 
+        /// <summary>
+        /// Проверить локальное сохранение на пустоту
+        /// </summary>
+        /// <returns></returns>
         private string CheckEmptyWeaponLocalSave()
         {
             string str = PlayerPrefs.GetString("weaponArray");

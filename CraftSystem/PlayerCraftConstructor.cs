@@ -179,7 +179,10 @@ namespace CraftSystem
 				cuirassArmoryInformation.WeightArmory);
 		}
 
-		private void OtherPlayerInitialisation()
+		/// <summary>
+        /// Инициализация других значений пользователя
+        /// </summary>
+        private void OtherPlayerInitialisation()
 		{
 			plComponents.PlayerController.OriginalSpinSpeed =
 				plComponents.PlayerWeapon.SpinSpeed;

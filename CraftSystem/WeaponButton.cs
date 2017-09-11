@@ -92,6 +92,11 @@ namespace CraftSystem
             }
         }
 
+        /// <summary>
+        /// Подсветка оружия
+        /// </summary>
+        /// <param name="flag"></param>
+        /// <param name="isHaveButton"></param>
         public void HighlightingControl(bool flag,bool isHaveButton=true)
         {
             if (flag)

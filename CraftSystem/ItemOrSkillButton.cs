@@ -1,5 +1,4 @@
 ﻿using ShopSystem;
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 using VotanUI;
@@ -22,9 +21,9 @@ namespace CraftSystem
         Image highlighting;
         [SerializeField, Tooltip("Кнопка предмета")]
         Image buttonImage;
-        ItemsSkillsCraft itemsSkillsCraft;
-        Shop shop;
-		[SerializeField]
+        [SerializeField, Tooltip("Описание предмета")]
+        Text tutorialText;
+        [SerializeField]
 		Text nameSkill;
 		[SerializeField]
 		string tutorialSkill;
@@ -32,7 +31,10 @@ namespace CraftSystem
         Text moneyCost;
         [SerializeField]
         Text gemsCost;
+
         private bool isMayToBuy;
+        ItemsSkillsCraft itemsSkillsCraft;
+        Shop shop;
 
         private static Color highlightingColor = new Color(0.352f, 1, 0.588f, 1);
         private static Color buttonActiveColor = new Color(0.487f, 0.331f, 0, 1);
@@ -97,6 +99,19 @@ namespace CraftSystem
             }
         }
 
+        public Text TutorialText
+        {
+            get
+            {
+                return tutorialText;
+            }
+
+            set
+            {
+                tutorialText = value;
+            }
+        }
+
         public void SetNumber(int x)
 		{
 			numberButton = x;
@@ -107,20 +122,21 @@ namespace CraftSystem
             itemsSkillsCraft.SetItemNumber(numberButton);
 		}
 
-        public void GetNumberSkillTemp()
-        {
-            itemsSkillsCraft.SetSkillItemNumber(numberButton);
-            itemsSkillsCraft.DisableListHighlightingInventory();
-            HighlightingControl(true, false);
-            MenuSoundManager.PlaySoundStatic(1);
-        }
 
 		public void SetItemSkillsCraft(ItemsSkillsCraft itemSC)
 		{
             itemsSkillsCraft = itemSC;
 		}
+
+        public void SetShop(Shop shopComponent)
+        {
+            shop = shopComponent;
+        }
         #endregion
 
+        /// <summary>
+        /// Кликнуть по скиллу в магазине
+        /// </summary>
         public void GetNumberSkill()
         {
             shop.SkillItemNumber = numberButton;
@@ -130,6 +146,22 @@ namespace CraftSystem
             MenuSoundManager.PlaySoundStatic(1);
         }
 
+        /// <summary>
+        /// Кликнуть по скиллу в инвентаре
+        /// </summary>
+        public void GetNumberSkillTemp()
+        {
+            itemsSkillsCraft.SetSkillItemNumber(numberButton);
+            itemsSkillsCraft.DisableListHighlightingInventory();
+            HighlightingControl(true, false);
+            MenuSoundManager.PlaySoundStatic(1);
+        }
+
+        /// <summary>
+        /// Подсветка кнопки
+        /// </summary>
+        /// <param name="flag"></param>
+        /// <param name="isHaveButton"></param>
         public void HighlightingControl(bool flag, bool isHaveButton = true)
         {
             if (flag)
@@ -148,11 +180,6 @@ namespace CraftSystem
                 highlighting.enabled = false;
                 isMayToBuy = false;
             }
-        }
-
-        public void SetShop(Shop shopComponent)
-        {
-            shop = shopComponent;
         }
     }
 }

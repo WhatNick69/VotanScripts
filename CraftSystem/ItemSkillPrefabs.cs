@@ -118,6 +118,9 @@ namespace CraftSystem
             }
         }
 
+        /// <summary>
+        /// Очистить все предметы
+        /// </summary>
         public void ClearAllItems()
         {
             FirstItem = null;
@@ -125,6 +128,9 @@ namespace CraftSystem
             ThirdItem = null;
         }
 
+        /// <summary>
+        /// Очистить все умения
+        /// </summary>
         public void ClearAllSkills()
         {
             FirstSkill = null;

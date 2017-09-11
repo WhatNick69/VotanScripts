@@ -7,6 +7,7 @@ using VotanLibraries;
 using VotanInterfaces;
 using VotanGameplay;
 using UnityStandardAssets.CrossPlatformInput;
+using ShopSystem;
 
 namespace PlayerBehaviour
 {
@@ -51,7 +52,6 @@ namespace PlayerBehaviour
             set
             {
                 healthValue = value;
-                Handheld.Vibrate();
                 if (healthValue > 0)
                 {
                     if (healthValue > initialisatedHealthValue)
@@ -143,6 +143,7 @@ namespace PlayerBehaviour
         /// </summary>
         public void Start()
         {
+            healthValue = GameObject.Find("GetPrefabs").GetComponent<UserResources>().HpPoints;
             IsAlive = true;
             isRageRegen = true;
             ringRageUIAnimation = ringRageUI.GetComponent<Animation>();
@@ -229,6 +230,7 @@ namespace PlayerBehaviour
                     if (!playerComponentsControl.PlayerArmory.IsAlive)
                     {
                         // проиграть звук получения урона по телу
+                        Handheld.Vibrate();
                         playerComponentsControl.PlayerSounder.PlayGetDamageAudio(false);
 
                         playerComponentsControl.PlayerVisualEffects.
@@ -251,6 +253,7 @@ namespace PlayerBehaviour
                     else
                     {
                         // проиграть звук получения урона по броне
+                        Handheld.Vibrate();
                         playerComponentsControl.PlayerSounder.PlayGetDamageAudio(true);
 
                         if (playerComponentsControl.PlayerFight.IsDefensing)
