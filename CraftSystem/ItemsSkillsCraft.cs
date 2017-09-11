@@ -211,6 +211,7 @@ namespace CraftSystem
         {
             skillItemNumberOne = -1;
             playerStats.SetSkillImg(0);
+            MenuSoundManager.PlaySoundStatic(4);
         }
 
         /// <summary>
@@ -220,6 +221,7 @@ namespace CraftSystem
         {
             skillItemNumberTwo = -1;
             playerStats.SetSkillImg(1);
+            MenuSoundManager.PlaySoundStatic(4);
         }
 
         /// <summary>
@@ -229,6 +231,7 @@ namespace CraftSystem
         {
             skillItemNumberThree = -1;
             playerStats.SetSkillImg(2);
+            MenuSoundManager.PlaySoundStatic(4);
         }
 
         /// <summary>
@@ -241,6 +244,7 @@ namespace CraftSystem
             itemItemNumberOne = -1;
             playerStats.SetItemImg(0);
             CheckMoney();
+            MenuSoundManager.PlaySoundStatic(4);
         }
 
         /// <summary>
@@ -253,6 +257,7 @@ namespace CraftSystem
             itemItemNumberTwo = -1;
             playerStats.SetItemImg(1);
             CheckMoney();
+            MenuSoundManager.PlaySoundStatic(4);
         }
 
         /// <summary>
@@ -265,6 +270,7 @@ namespace CraftSystem
             itemItemNumberThree = -1;
             playerStats.SetItemImg(2);
             CheckMoney();
+            MenuSoundManager.PlaySoundStatic(4);
         }
 
         /// <summary>

@@ -51,7 +51,7 @@ namespace CraftSystem
             GetNumber();
             wepCraft.DisableListHighlightingInventory();
             HighlightingControl(true,false);
-            MenuSoundManager.PlaySoundStatic(1);
+            MenuSoundManager.PlaySoundStatic(6);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace CraftSystem
             shop.ShowItemParameters(3);
             shop.DisableListHighlightingShop(3);
             HighlightingControl(true);
-            MenuSoundManager.PlaySoundStatic(1);
+            MenuSoundManager.PlaySoundStatic(4);
         }
 
         /// <summary>

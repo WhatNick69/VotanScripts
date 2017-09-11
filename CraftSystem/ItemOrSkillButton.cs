@@ -117,11 +117,6 @@ namespace CraftSystem
 			numberButton = x;
 		}
 
-		public void GetNumberItem()
-		{
-            itemsSkillsCraft.SetItemNumber(numberButton);
-		}
-
 
 		public void SetItemSkillsCraft(ItemsSkillsCraft itemSC)
 		{
@@ -143,7 +138,16 @@ namespace CraftSystem
             itemsSkillsCraft.DisableListHighlightingInventory();
             shop.ShowItemParameters(4);
             HighlightingControl(true, false);
-            MenuSoundManager.PlaySoundStatic(1);
+            MenuSoundManager.PlaySoundStatic(4);
+        }
+
+        /// <summary>
+        /// Кликнуть по предмету в магазине
+        /// </summary>
+        public void GetNumberItem()
+        {
+            itemsSkillsCraft.SetItemNumber(numberButton);
+            MenuSoundManager.PlaySoundStatic(6);
         }
 
         /// <summary>
@@ -154,7 +158,7 @@ namespace CraftSystem
             itemsSkillsCraft.SetSkillItemNumber(numberButton);
             itemsSkillsCraft.DisableListHighlightingInventory();
             HighlightingControl(true, false);
-            MenuSoundManager.PlaySoundStatic(1);
+            MenuSoundManager.PlaySoundStatic(6);
         }
 
         /// <summary>

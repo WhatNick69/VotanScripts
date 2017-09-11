@@ -56,6 +56,7 @@ namespace VotanUI
 		{
 			onMenu(Shop);
             shopComponent.CommonStoreWindow();
+            MenuSoundManager.PlaySoundStatic(0);
         }
 
 		public void WeaponMenuLoad()
@@ -114,7 +115,7 @@ namespace VotanUI
         private IEnumerator<float> CoroutineForLoadingScene(int number)
         {
             onMenu();
-            MenuSoundManager.PlaySoundStatic(2);
+            MenuSoundManager.PlaySoundStatic(3);
             while (true)
             {
                 imageFromLoadingFone.color = 
@@ -142,7 +143,7 @@ namespace VotanUI
 					continue;
 				}
 			}
-            MenuSoundManager.PlaySoundStatic();
+            MenuSoundManager.PlaySoundStatic(0);
             if (page) page.SetActive(true);
 		}
 
@@ -155,6 +156,8 @@ namespace VotanUI
             for (int i = 0; i < shopTouchButtons.Length; i++)
                 shopTouchButtons[i].HighlightingControl(false);
             tBE.HighlightingControl(true);
+
+            MenuSoundManager.PlaySoundStatic(1);
         }
 
         /// <summary>

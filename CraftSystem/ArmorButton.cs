@@ -153,7 +153,7 @@ namespace CraftSystem
                     //armCraft.ShieldItemNumberTemp = -1;
                     armCraft.DisableListHighlightingInventory(0);
                     HighlightingControl(true,false);
-                    MenuSoundManager.PlaySoundStatic(1);
+                    MenuSoundManager.PlaySoundStatic(6);
                     break;
 
                 case ArmoryClass.Helmet:
@@ -162,7 +162,7 @@ namespace CraftSystem
                     //armCraft.ShieldItemNumberTemp = -1;
                     armCraft.DisableListHighlightingInventory(1);
                     HighlightingControl(true,false);
-                    MenuSoundManager.PlaySoundStatic(1);
+                    MenuSoundManager.PlaySoundStatic(6);
                     break;
 
                 case ArmoryClass.Shield:
@@ -171,7 +171,7 @@ namespace CraftSystem
                     //armCraft.CuirassItemNumberTemp = -1;
                     armCraft.DisableListHighlightingInventory(2);
                     HighlightingControl(true,false);
-                    MenuSoundManager.PlaySoundStatic(1);
+                    MenuSoundManager.PlaySoundStatic(6);
                     break;
             }
         }
@@ -188,7 +188,7 @@ namespace CraftSystem
                     shop.ShowItemParameters(0);
                     shop.DisableListHighlightingShop(0);
                     HighlightingControl(true);
-                    MenuSoundManager.PlaySoundStatic(1);
+                    MenuSoundManager.PlaySoundStatic(4);
                     break;
 
                 case ArmoryClass.Helmet:
@@ -196,7 +196,7 @@ namespace CraftSystem
                     shop.ShowItemParameters(1);
                     shop.DisableListHighlightingShop(1);
                     HighlightingControl(true);
-                    MenuSoundManager.PlaySoundStatic(1);
+                    MenuSoundManager.PlaySoundStatic(4);
                     break;
 
                 case ArmoryClass.Shield:
@@ -204,7 +204,7 @@ namespace CraftSystem
                     shop.ShowItemParameters(2);
                     shop.DisableListHighlightingShop(2);
                     HighlightingControl(true);
-                    MenuSoundManager.PlaySoundStatic(1);
+                    MenuSoundManager.PlaySoundStatic(4);
                     break;
             }
         }

@@ -279,7 +279,7 @@ namespace ShopSystem
             buttonsPanelStoreArmory.SetActive(false);
             buttonsPanelStoreWeapons.SetActive(false);
             buttonsPanelStoreCommon.SetActive(true);
-
+            MenuSoundManager.PlaySoundStatic(1);
             UnshowAllUIElementsInShop();
         }
 
@@ -292,7 +292,7 @@ namespace ShopSystem
             buttonsPanelStoreCommon.SetActive(false);
             armorWind.SetActive(false);
             weaponWind.SetActive(true);
-
+            MenuSoundManager.PlaySoundStatic(1);
             UnshowAllUIElementsInShop();
         }
 
@@ -305,7 +305,7 @@ namespace ShopSystem
             buttonsPanelStoreCommon.SetActive(false);
             weaponWind.SetActive(false);
             armorWind.SetActive(true);
-
+            MenuSoundManager.PlaySoundStatic(1);
             UnshowAllUIElementsInShop();
         }
 
@@ -318,7 +318,7 @@ namespace ShopSystem
             buttonsPanelStoreCommon.SetActive(false);
             armorWind.SetActive(false);
             skillWindow.SetActive(true);
-
+            MenuSoundManager.PlaySoundStatic(1);
             UnshowAllUIElementsInShop();
         }
 
@@ -516,34 +516,34 @@ namespace ShopSystem
             {
                 case 0: //c
                     BuyCuirass();
-                    MenuSoundManager.PlaySoundStatic(1);
+                    MenuSoundManager.PlaySoundStatic(-1);
                     ShowNeedUIElements(0, false);
                     armorCraft.RestartCuirassWindow();
                     break;
 
                 case 1: //h
                     BuyHelmet();
-                    MenuSoundManager.PlaySoundStatic(1);
+                    MenuSoundManager.PlaySoundStatic(-1);
                     ShowNeedUIElements(0, false);
                     armorCraft.RestartHelmetWindow();
                     break;
 
                 case 2: //s
                     BuyShield();
-                    MenuSoundManager.PlaySoundStatic(1);
+                    MenuSoundManager.PlaySoundStatic(-1);
                     ShowNeedUIElements(0, false);
                     armorCraft.RestartShieldWindow();
                     break;
 
                 case 3: //w
                     BuyWeapon();
-                    MenuSoundManager.PlaySoundStatic(1);
+                    MenuSoundManager.PlaySoundStatic(-1);
                     ShowNeedUIElements(0, false);
                     weaponCraft.RestartWeaponWindow();
                     break;
                 case 4: //skill
                     BuySkill();
-                    MenuSoundManager.PlaySoundStatic(1);
+                    MenuSoundManager.PlaySoundStatic(-1);
                     ShowNeedUIElements(0, false);
                     itemsSkillsCraft.RestartSkillWindow(); // restart
                     break;
