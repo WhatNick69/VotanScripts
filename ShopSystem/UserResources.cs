@@ -148,7 +148,7 @@ namespace ShopSystem
             string str = PlayerPrefs.GetString("playerResources");
             if (str == null || str == "")
             {
-                PlayerPrefs.SetString("playerResources", "500_0_1");
+                PlayerPrefs.SetString("playerResources", "50000_50_1");
                 LoadUserResources();
             }
             else

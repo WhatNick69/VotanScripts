@@ -38,6 +38,8 @@ namespace VotanGameplay
         private int maxSnipersCount;
         [SerializeField,Tooltip("Точка респауна врагов")]
         private Transform respawnPoint;
+        [SerializeField, Tooltip("Хардкор-мультипликатор")]
+        private float hardcoreMultiplier;
 
         private int tempEnemiesForWave;
         private int tempEnemyIndexNumber;
@@ -48,7 +50,6 @@ namespace VotanGameplay
         private bool isTimerStillRunning;
 
         private float nextWaveBoostTimer;
-        private float hardcoreMultiplier;
         #endregion
 
         /// <summary>
@@ -72,7 +73,6 @@ namespace VotanGameplay
             if (isHadrcoreMode)
             {
                 nextWaveBoostTimer = 7.5f;
-                hardcoreMultiplier = 0.25f;
                 perWaveEnemiesNumber = 
                     (int)(SetParameterOfEnemy(perWaveEnemiesNumber,hardcoreMultiplier));
                 timeToInstantiate = 

@@ -29,6 +29,8 @@ namespace ShopSystem
         private GameObject buttonsPanelStoreWeapons;
         [SerializeField, Tooltip("Общая для магазина панель кнопок")]
         private GameObject buttonsPanelStoreCommon;
+        [SerializeField, Tooltip("Общая для магазина панель умений")]
+        private GameObject buttonsPanelSkills;
         [SerializeField, Tooltip("Кнопка покупки")]
         private GameObject buttonBuyObj;
         private Button buttonBuyButton;
@@ -273,12 +275,14 @@ namespace ShopSystem
         public void CommonStoreWindow()
         {
             armorWind.SetActive(false);
-            weaponWind.SetActive(false);
+            weaponWind.SetActive(true);
             skillWindow.SetActive(false);
 
             buttonsPanelStoreArmory.SetActive(false);
-            buttonsPanelStoreWeapons.SetActive(false);
-            buttonsPanelStoreCommon.SetActive(true);
+            buttonsPanelStoreWeapons.SetActive(true);
+            buttonsPanelStoreCommon.SetActive(false);
+            buttonsPanelSkills.SetActive(false);
+
             MenuSoundManager.PlaySoundStatic(1);
             UnshowAllUIElementsInShop();
         }
@@ -290,8 +294,12 @@ namespace ShopSystem
         {
             buttonsPanelStoreWeapons.SetActive(true);
             buttonsPanelStoreCommon.SetActive(false);
+            buttonsPanelStoreArmory.SetActive(false);
+            buttonsPanelSkills.SetActive(false);
+
             armorWind.SetActive(false);
             weaponWind.SetActive(true);
+            skillWindow.SetActive(false);
             MenuSoundManager.PlaySoundStatic(1);
             UnshowAllUIElementsInShop();
         }
@@ -301,10 +309,14 @@ namespace ShopSystem
         /// </summary>
         public void ArmorWindow()
         {
+            buttonsPanelStoreWeapons.SetActive(false);
             buttonsPanelStoreArmory.SetActive(true);
             buttonsPanelStoreCommon.SetActive(false);
+            buttonsPanelSkills.SetActive(false);
+
             weaponWind.SetActive(false);
             armorWind.SetActive(true);
+            skillWindow.SetActive(false);
             MenuSoundManager.PlaySoundStatic(1);
             UnshowAllUIElementsInShop();
         }
@@ -314,10 +326,14 @@ namespace ShopSystem
         /// </summary>
         public void SkillWindow()
         {
-            buttonsPanelStoreWeapons.SetActive(true);
+            buttonsPanelStoreArmory.SetActive(false);
+            buttonsPanelStoreWeapons.SetActive(false);
             buttonsPanelStoreCommon.SetActive(false);
+            buttonsPanelSkills.SetActive(true);
+
             armorWind.SetActive(false);
             skillWindow.SetActive(true);
+            weaponWind.SetActive(false);
             MenuSoundManager.PlaySoundStatic(1);
             UnshowAllUIElementsInShop();
         }
